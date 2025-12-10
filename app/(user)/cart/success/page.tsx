@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { CheckCircle, Package, ArrowRight } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCart } from "@/stores/useCart";
 
-const SuccessPage = () => {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { clearCart } = useCart();
@@ -184,7 +184,24 @@ const SuccessPage = () => {
       <Footer />
     </div>
   );
-};
+}
 
-export default SuccessPage;
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+        <Navbar />
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
+            <p className="text-[#1C3163] text-lg">Loading...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
+  );
+}
 

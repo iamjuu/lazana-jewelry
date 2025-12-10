@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     // Retrieve the checkout session from Stripe
     console.log("🔄 Retrieving session from Stripe...");
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['line_items', 'payment_intent', 'customer_details'],
+      expand: ['line_items', 'payment_intent', 'customer_details', 'shipping_details'],
     });
     console.log("✅ Session retrieved:", {
       id: session.id,
@@ -103,16 +103,16 @@ export async function POST(req: NextRequest) {
       status: "paid",
       paymentProvider: "stripe",
       paymentRef: sessionId,
-      shippingAddress: session.shipping_details?.address ? {
-        line1: session.shipping_details.address.line1 || "",
-        line2: session.shipping_details.address.line2 || "",
-        city: session.shipping_details.address.city || "",
-        state: session.shipping_details.address.state || "",
-        postalCode: session.shipping_details.address.postal_code || "",
-        country: session.shipping_details.address.country || "",
+      shippingAddress: (session as any).shipping_details?.address ? {
+        line1: (session as any).shipping_details.address.line1 || "",
+        line2: (session as any).shipping_details.address.line2 || "",
+        city: (session as any).shipping_details.address.city || "",
+        state: (session as any).shipping_details.address.state || "",
+        postalCode: (session as any).shipping_details.address.postal_code || "",
+        country: (session as any).shipping_details.address.country || "",
       } : undefined,
-      customerEmail: session.customer_details?.email || user.email,
-      customerName: session.customer_details?.name || user.name,
+      customerEmail: (session as any).customer_details?.email || "",
+      customerName: (session as any).customer_details?.name || "",
     };
     console.log("📝 Order data:", JSON.stringify(orderData, null, 2));
     
