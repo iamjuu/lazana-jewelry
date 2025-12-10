@@ -16,6 +16,7 @@ const navItems = [
   { label: "Yoga Sessions", href: "/admin/dashboard/sessions" },
   { label: "Yoga Sessions Enquiries", href: "/admin/dashboard/enquiries" },
   { label: "Products", href: "/admin/dashboard/products" },
+  { label: "Categories", href: "/admin/dashboard/categories" },
   { label: "Users", href: "/admin/dashboard/users" },
   { label: "Blogs", href: "/admin/dashboard/blogs" },
   { label: "Events", href: "/admin/dashboard/events" },

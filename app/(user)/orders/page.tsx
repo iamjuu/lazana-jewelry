@@ -7,6 +7,7 @@ import { Package, Truck, CheckCircle, XCircle, Clock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import ProtectedRoute from "@/components/user/ProtectedRoute";
 
 interface OrderItem {
   productId: string;
@@ -25,7 +26,7 @@ interface Order {
   paymentProvider?: string;
 }
 
-const OrdersPage = () => {
+const OrdersPageContent = () => {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,8 +36,6 @@ const OrdersPage = () => {
       const token = localStorage.getItem("userToken");
       
       if (!token) {
-        toast.error("Please login to view your orders");
-        router.push("/login");
         return;
       }
 
@@ -236,5 +235,11 @@ const OrdersPage = () => {
   );
 };
 
-export default OrdersPage;
+export default function OrdersPage() {
+  return (
+    <ProtectedRoute>
+      <OrdersPageContent />
+    </ProtectedRoute>
+  );
+}
 

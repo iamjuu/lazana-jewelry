@@ -51,10 +51,19 @@ export interface IAdministrator extends WithTimestamps {
 export interface Product extends WithTimestamps {
   _id: string;
   name: string;
-  description: string;
+  shortDescription?: string; // Brief description
+  description: string; // Long description
+  category?: string; // Category name
   price: number; // smallest currency unit
   imageUrl: string[]; // Array of base64 image strings
   videoUrl?: string | string[]; // Base64 video string(s) or URL(s) - supports up to 2 videos
+}
+
+export interface Category extends WithTimestamps {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
 }
 
 export interface OrderItem {

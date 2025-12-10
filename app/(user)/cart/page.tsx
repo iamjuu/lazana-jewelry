@@ -9,8 +9,9 @@ import { useCart } from "@/stores/useCart";
 import { Trash2, ShoppingBag, Lock, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import ProtectedRoute from "@/components/user/ProtectedRoute";
 
-const CartPage = () => {
+const CartPageContent = () => {
   const router = useRouter();
   const { items, removeItem, increment, decrement, subtotal, totalQuantity, clearCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
@@ -322,5 +323,11 @@ const CartPage = () => {
   );
 };
 
-export default CartPage;
+export default function CartPage() {
+  return (
+    <ProtectedRoute>
+      <CartPageContent />
+    </ProtectedRoute>
+  );
+}
 

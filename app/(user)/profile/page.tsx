@@ -7,6 +7,7 @@ import Footer from "@/components/user/Footer";
 import toast from "react-hot-toast";
 import { User, Mail, Phone, MapPin, Camera, LogOut, Save } from "lucide-react";
 import Image from "next/image";
+import ProtectedRoute from "@/components/user/ProtectedRoute";
 
 type UserProfile = {
   _id: string;
@@ -23,7 +24,7 @@ type UserProfile = {
   };
 };
 
-export default function ProfilePage() {
+function ProfilePageContent() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,13 +42,11 @@ export default function ProfilePage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("userToken") : null;
-    if (!token) {
-      router.push("/login");
-      return;
+    const token = localStorage.getItem("userToken");
+    if (token) {
+      fetchUserData(token);
     }
-    fetchUserData(token);
-  }, [router]);
+  }, []);
 
   const fetchUserData = async (token: string) => {
     try {
@@ -55,7 +54,18 @@ export default function ProfilePage() {
       const res = await fetch("/api/auth/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("Failed to fetch user data");
+      
+      if (!res.ok) {
+        if (res.status === 401) {
+          // Token invalid or expired
+          localStorage.removeItem("userToken");
+          toast.error("Session expired. Please login again.");
+          router.push("/login");
+          return;
+        }
+        throw new Error("Failed to fetch user data");
+      }
+      
       const data = await res.json();
       if (data.success && data.data) {
         setUser(data.data);
@@ -73,6 +83,7 @@ export default function ProfilePage() {
         }
       }
     } catch (err) {
+      console.error("Profile fetch error:", err);
       toast.error("Failed to load profile");
     } finally {
       setLoading(false);
@@ -443,6 +454,14 @@ export default function ProfilePage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <ProtectedRoute>
+      <ProfilePageContent />
+    </ProtectedRoute>
   );
 }
 

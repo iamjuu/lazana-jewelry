@@ -1,13 +1,20 @@
 "use client";
 
 import NextImage from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+type Category = {
+  _id: string;
+  name: string;
+};
 
 type ProductFormProps = {
   productId?: string;
   initialData?: {
     name?: string;
+    shortDescription?: string;
     description?: string;
+    category?: string;
     price?: string;
     imageUrl?: string[];
     videoUrl?: string | string[];
@@ -21,10 +28,14 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
   
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
+    shortDescription: initialData?.shortDescription || "",
     description: initialData?.description || "",
+    category: initialData?.category || "",
     price: initialData?.price || "",
     images: initialData?.imageUrl || [] as string[],
     videos: Array.isArray(initialData?.videoUrl) 
@@ -33,6 +44,25 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
         ? [initialData.videoUrl] 
         : [] as string[],
   });
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/admin/categories");
+        const data = await response.json();
+        if (data.success) {
+          setCategories(data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
 
   // Helper to convert base64 string to data URL if needed
   const normalizeImageUrl = (url: string): string => {
@@ -317,7 +347,9 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
         },
         body: JSON.stringify({
           name: formData.name.trim(),
+          shortDescription: formData.shortDescription.trim() || undefined,
           description: formData.description.trim(),
+          category: formData.category || undefined,
           price: formData.price,
           imageUrl: formData.images,
           videoUrl: formData.videos.length > 0 ? formData.videos : undefined,
@@ -361,17 +393,63 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
       </div>
 
       <div className="space-y-1">
+        <label htmlFor="product-category" className="text-sm font-medium text-white">
+          Category
+        </label>
+        {loadingCategories ? (
+          <div className="text-xs text-zinc-400 py-2">Loading categories...</div>
+        ) : (
+          <select
+            id="product-category"
+            value={formData.category}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+          >
+            <option value="">Select a category</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat.name}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        )}
+        {!loadingCategories && categories.length === 0 && (
+          <p className="text-xs text-zinc-400 mt-1">
+            No categories available. Create categories in the Categories section.
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-1">
+        <label htmlFor="product-short-description" className="text-sm font-medium text-white">
+          Short Description
+        </label>
+        <textarea
+          id="product-short-description"
+          rows={2}
+          value={formData.shortDescription}
+          onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
+          className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+          placeholder="Brief summary for product cards..."
+          maxLength={200}
+        />
+        <p className="text-xs text-zinc-400">
+          {formData.shortDescription.length}/200 characters
+        </p>
+      </div>
+
+      <div className="space-y-1">
         <label htmlFor="product-description" className="text-sm font-medium text-white">
-          Description <span className="text-red-500">*</span>
+          Full Description <span className="text-red-500">*</span>
         </label>
         <textarea
           id="product-description"
-          rows={3}
+          rows={4}
           required
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-          placeholder="Short product summary..."
+          placeholder="Detailed product description..."
         />
       </div>
 
