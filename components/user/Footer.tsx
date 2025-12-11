@@ -227,7 +227,7 @@ const Footer = () => {
                       href="#"
                       className="text-black hover:text-[black] transition-colors break-words"
                     >
-                      mail@abcdefghijklmn.com{" "}
+                      mail@frankieyogini@gmail.com{" "}
                     </a>
                   </li>
                   <li>
@@ -235,7 +235,7 @@ const Footer = () => {
                       href="#"
                       className="text-black hover:text-[black] transition-colors"
                     >
-                      +91 989272927{" "}
+                      +91 6596381988{" "}
                     </a>
                   </li>
                 </ul>
