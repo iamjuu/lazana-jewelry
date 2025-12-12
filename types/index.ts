@@ -129,6 +129,11 @@ export interface Booking extends WithTimestamps {
   status: BookingStatus;
   phone?: string;
   comment?: string;
+  paymentProvider?: "stripe" | "paypal" | "bank_transfer";
+  paymentRef?: string;
+  paymentStatus?: "pending" | "paid" | "failed";
+  sessionType?: "regular" | "private" | "corporate";
+  slotId?: string;
 }
 
 export type CartItem = {
