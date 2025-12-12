@@ -3,14 +3,25 @@ import { requireAuth } from "@/lib/auth";
 import connectDB from "@/lib/mongodb";
 import Booking from "@/models/Booking";
 import AvailableSlot from "@/models/AvailableSlot";
+import User from "@/models/User";
+import type { IUser } from "@/types";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", );
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await requireAuth(req);
+    const authUser = await requireAuth(req);
     await connectDB();
+    
+    // Get full user details from database (name, phone, email, etc.)
+    const user = await User.findById(authUser._id).lean<IUser>();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "User not found" },
+        { status: 404 }
+      );
+    }
 
     const { sessionId } = await req.json();
 
@@ -21,8 +32,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Retrieve the session from Stripe
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    // Retrieve the session from Stripe (don't expand shipping_details for private sessions)
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['payment_intent', 'customer_details'], // Only expand what we need
+    });
 
     if (!session || session.payment_status !== "paid") {
       return NextResponse.json(
@@ -85,7 +98,7 @@ export async function POST(req: NextRequest) {
       paymentStatus: "paid",
       sessionType: "private",
       slotId: metadata.slotId,
-      phone: user.phone || "N/A",
+      phone: user.phone || "N/A", // Get from user profile
       comment: `Private Session - ${metadata.date} at ${metadata.time}`,
     });
 
