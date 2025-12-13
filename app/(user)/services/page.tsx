@@ -31,12 +31,30 @@ const ServicesPage = () => {
   const [privateCurrentIndex, setPrivateCurrentIndex] = useState(0);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+  const [itemsPerView, setItemsPerView] = useState(1);
+  const [isLoggedIn] = useState(() => {
     if (typeof window !== "undefined") {
       return !!localStorage.getItem("userToken");
     }
     return false;
   });
+
+  // Update items per view based on screen size
+  useEffect(() => {
+    const updateItemsPerView = () => {
+      if (window.innerWidth >= 768) {
+        setItemsPerView(3); // md and up: 3 items
+      } else if (window.innerWidth >= 640) {
+        setItemsPerView(2); // sm: 2 items
+      } else {
+        setItemsPerView(1); // mobile: 1 item
+      }
+    };
+
+    updateItemsPerView();
+    window.addEventListener('resize', updateItemsPerView);
+    return () => window.removeEventListener('resize', updateItemsPerView);
+  }, []);
 
   // Fetch sessions
   const fetchSessions = async () => {
@@ -69,27 +87,31 @@ const ServicesPage = () => {
   const privateSessions = sessions.filter((s) => s.sessionType === "private");
 
   const handleCorporatePrev = () => {
-    setCorporateCurrentIndex((prev) =>
-      prev === 0 ? Math.max(0, corporateSessions.length - 1) : prev - 1
-    );
+    setCorporateCurrentIndex((prev) => {
+      const maxIndex = Math.max(0, corporateSessions.length - itemsPerView);
+      return prev === 0 ? maxIndex : Math.max(0, prev - 1);
+    });
   };
 
   const handleCorporateNext = () => {
-    setCorporateCurrentIndex((prev) =>
-      prev === Math.max(0, corporateSessions.length - 1) ? 0 : prev + 1
-    );
+    setCorporateCurrentIndex((prev) => {
+      const maxIndex = Math.max(0, corporateSessions.length - itemsPerView);
+      return prev >= maxIndex ? 0 : prev + 1;
+    });
   };
 
   const handlePrivatePrev = () => {
-    setPrivateCurrentIndex((prev) =>
-      prev === 0 ? Math.max(0, privateSessions.length - 1) : prev - 1
-    );
+    setPrivateCurrentIndex((prev) => {
+      const maxIndex = Math.max(0, privateSessions.length - itemsPerView);
+      return prev === 0 ? maxIndex : Math.max(0, prev - 1);
+    });
   };
 
   const handlePrivateNext = () => {
-    setPrivateCurrentIndex((prev) =>
-      prev === Math.max(0, privateSessions.length - 1) ? 0 : prev + 1
-    );
+    setPrivateCurrentIndex((prev) => {
+      const maxIndex = Math.max(0, privateSessions.length - itemsPerView);
+      return prev >= maxIndex ? 0 : prev + 1;
+    });
   };
 
   return (
@@ -214,7 +236,7 @@ const ServicesPage = () => {
             </div>
           </div>
 
-          <div className="max-w-6xl mx-auto mt-16 md:mt-20 lg:mt-24 px-4 md:px-0">
+          <div className="max-w-7xl mx-auto mt-16 md:mt-20 lg:mt-24 px-4 md:px-0">
             <h2 className="text-[32px] pb-[70px]  sm:text-[36px] md:text-[40px]  text-[#D5B584] font-light leading-tight">
               For Corporate & Group
             </h2>
@@ -224,20 +246,20 @@ const ServicesPage = () => {
               <div className="text-center py-12 text-[#6B5D4F]">No corporate sessions available.</div>
             ) : (
               <div className="relative">
-                {/* Carousel Container */}
+                {/* Responsive Carousel Container */}
                 <div className="overflow-hidden">
                   <div
                     className="flex gap-3 sm:gap-4 transition-transform duration-500 ease-in-out"
                     style={{
                       transform: `translateX(-${
-                        corporateCurrentIndex * (100 / 3)
+                        corporateCurrentIndex * (100 / itemsPerView)
                       }%)`
                     }}
                   >
                     {corporateSessions.map((item) => (
                       <div
                         key={item._id}
-                        className="min-w-[calc(100%/3-0.67rem)] sm:min-w-[calc(100%/3-0.89rem)] flex-shrink-0"
+                        className="w-full sm:w-[calc((100%-1rem)/2)] md:w-[calc((100%-2rem)/3)] flex-shrink-0"
                       >
                         <div className="relative group overflow-hidden rounded-[20px] h-[400px] sm:h-[450px] md:h-[640px] w-full">
                           {item.imageUrl ? (
@@ -355,11 +377,11 @@ const ServicesPage = () => {
                 </div>
 
                 {/* Navigation Arrows */}
-                {corporateSessions.length > 0 && (
+                {corporateSessions.length > itemsPerView && (
                   <>
-                    <button
+                    {/* <button
                       onClick={handleCorporatePrev}
-                      className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-10"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-4 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-10"
                       aria-label="Previous slide"
                     >
                       <svg
@@ -380,7 +402,7 @@ const ServicesPage = () => {
                     </button>
                     <button
                       onClick={handleCorporateNext}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-10"
+                      className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-4 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-10"
                       aria-label="Next slide"
                     >
                       <svg
@@ -398,18 +420,18 @@ const ServicesPage = () => {
                           strokeLinejoin="round"
                         />
                       </svg>
-                    </button>
+                    </button> */}
                   </>
                 )}
 
                 {/* Dots Indicator */}
                 <div className="flex justify-center gap-2 mt-6">
-                  {corporateSessions.map((_, index) => (
+                  {Array.from({ length: Math.ceil(corporateSessions.length / itemsPerView) }).map((_, index) => (
                     <button
                       key={index}
-                      onClick={() => setCorporateCurrentIndex(index)}
+                      onClick={() => setCorporateCurrentIndex(index * itemsPerView)}
                       className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        index === corporateCurrentIndex
+                        Math.floor(corporateCurrentIndex / itemsPerView) === index
                           ? "bg-[#D5B584] w-8"
                           : "bg-[#D5B584]/30"
                       }`}
@@ -421,7 +443,7 @@ const ServicesPage = () => {
             )}
           </div>
 
-          <div className="max-w-6xl  mx-auto mt-16 md:mt-20 lg:mt-24 px-4 md:px-0">
+          <div className="max-w-7xl mx-auto mt-16 md:mt-20 lg:mt-24 px-4 md:px-0">
             <h2 className="text-[32px] pb-[70px]  sm:text-[36px] md:text-[40px]  text-[#D5B584] font-light leading-tight">
               Private & Group Offerings
             </h2>
@@ -431,20 +453,20 @@ const ServicesPage = () => {
               <div className="text-center py-12 text-[#6B5D4F]">No private sessions available.</div>
             ) : (
               <div className="relative">
-                {/* Carousel Container */}
+                {/* Responsive Carousel Container */}
                 <div className="overflow-hidden">
                   <div
                     className="flex gap-3 sm:gap-4 transition-transform duration-500 ease-in-out"
                     style={{
                       transform: `translateX(-${
-                        privateCurrentIndex * (100 / 3)
+                        privateCurrentIndex * (100 / itemsPerView)
                       }%)`
                     }}
                   >
                     {privateSessions.map((item) => (
                       <div
                         key={item._id}
-                        className="min-w-[calc(100%/3-0.67rem)] sm:min-w-[calc(100%/3-0.89rem)] flex-shrink-0"
+                        className="w-full sm:w-[calc((100%-1rem)/2)] md:w-[calc((100%-2rem)/3)] flex-shrink-0"
                       >
                         <div className="relative group overflow-hidden rounded-[20px] h-[400px] sm:h-[450px] md:h-[640px] w-full">
                           {item.imageUrl ? (
@@ -461,7 +483,7 @@ const ServicesPage = () => {
                             </div>
                           )}
                           {/* Default Overlay with Title and Button */}
-                          <div className="absolute bottom-0 left-0 right-0 to-transparent p-4 sm:p-5 md:p-6 group-hover:opacity-0 transition-opacity duration-300">
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 sm:p-5 md:p-6 group-hover:opacity-0 transition-opacity duration-300">
                             <h3 className="text-white text-[16px] sm:text-[18px] md:text-[20px] font-normal mb-3 leading-snug">
                               {item.title || "Private Session"}
                             </h3>
@@ -562,11 +584,11 @@ const ServicesPage = () => {
                 </div>
 
                 {/* Navigation Arrows */}
-                {privateSessions.length > 0 && (
+                {privateSessions.length > itemsPerView && (
                   <>
-                    <button
+                    {/* <button
                       onClick={handlePrivatePrev}
-                      className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-10"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-4 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-10"
                       aria-label="Previous slide"
                     >
                       <svg
@@ -587,7 +609,7 @@ const ServicesPage = () => {
                     </button>
                     <button
                       onClick={handlePrivateNext}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-10"
+                      className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-4 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-10"
                       aria-label="Next slide"
                     >
                       <svg
@@ -605,25 +627,27 @@ const ServicesPage = () => {
                           strokeLinejoin="round"
                         />
                       </svg>
-                    </button>
+                    </button> */}
                   </>
                 )}
 
                 {/* Dots Indicator */}
-                <div className="flex justify-center gap-2 mt-6">
-                  {privateSessions.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setPrivateCurrentIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        index === privateCurrentIndex
-                          ? "bg-[#D5B584] w-8"
-                          : "bg-[#D5B584]/30"
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
+                {privateSessions.length > itemsPerView && (
+                  <div className="flex justify-center gap-2 mt-6">
+                    {Array.from({ length: Math.ceil(privateSessions.length / itemsPerView) }).map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setPrivateCurrentIndex(index * itemsPerView)}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          Math.floor(privateCurrentIndex / itemsPerView) === index
+                            ? "bg-[#D5B584] w-8"
+                            : "bg-[#D5B584]/30"
+                        }`}
+                        aria-label={`Go to slide ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -29,7 +29,7 @@ export default function Home() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat on WhatsApp"
-        className={`fixed z-50 bottom-20 right-1 size-26 flex justify-end rounded-full p-4 transition-all duration-300 hover:scale-110 ${
+        className={`fixed z-50 bottom-20 right-1 size-24 flex justify-end rounded-full p-4 transition-all duration-300 hover:scale-110 ${
           isBouncing ? "animate-bounce" : ""
         }`}
       >
