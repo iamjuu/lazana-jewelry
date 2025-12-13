@@ -211,8 +211,8 @@ const Navbar = () => {
                         }}
                       >
                         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                          <div className="flex flex-row justify-between">
-                            {shopCategories.map((category) => (
+                          <div className="grid grid-cols-3 gap-4">
+                            {shopCategories.slice(0, 6).map((category) => (
                               <Link
                                 key={category.href}
                                 href={category.href}
@@ -250,7 +250,7 @@ const Navbar = () => {
             <Link 
               href="/book" 
               onClick={(e) => handleNavigation(e, '/book')}
-              className={`text-[#D5B584] border border-[#D5B584] px-4 xl:px-6 py-2 rounded hover:bg-white hover:text-black transition-all duration-300 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-105 hover:shadow-lg ${
+              className={`text-[#D5B584]  px-4 xl:px-6 py-2 rounded hover:bg-white/80 hover:backdrop-blur-sm hover:text-black transition-all duration-300 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-105 hover:shadow-lg ${
                 pathname === '/book' ? 'bg-white text-black scale-105 shadow-lg' : ''
               }`}
             >

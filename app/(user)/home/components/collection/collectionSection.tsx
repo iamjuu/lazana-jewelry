@@ -59,7 +59,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({ products }) => {
       <div className="max-w-6xl items-center flex flex-col mx-auto px-4">
         <div className="flex w-full items-center justify-between mb-8 md:mb-0">
           <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] font-normal">
-            Collection
+            Collections
           </h2>
           <Link
             href="/shop"
