@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/user/Navbar";
 import Image from "next/image";
+import localFont from "next/font/local";
 import {
   Bucket1,
   Bucket2,
@@ -26,6 +27,55 @@ import Link from "next/link";
 import { ArrowRight, Volume2, VolumeX } from "lucide-react";
 import AboutSectionComponent from "./components/about/AboutSection";
 import CollectionSection from "./components/collection/collectionSection"
+
+// Ivy Mode font configuration
+const ivyMode = localFont({
+  src: [
+    {
+      path: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Italic.woff2",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Light.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-LightItalic.woff2",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-SemiBoldItalic.woff2",
+      weight: "600",
+      style: "italic",
+    },
+    {
+      path: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-BoldItalic.woff2",
+      weight: "700",
+      style: "italic",
+    },
+  ],
+  variable: "--font-ivy-mode",
+  display: "swap",
+});
+
 const Data = [
   {
     id: 1,
@@ -254,7 +304,7 @@ const Index = () => {
           <Navbar />
 
           <div className="relative">
-            <h1 className="text-center pb-[60px] sm:pb-[80px] md:pb-[100px] lg:pb-[120px] px-4 text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[50px] italic leading-tight">
+            <h1 className={`${ivyMode.className} text-center pb-[60px] sm:pb-[80px] md:pb-[100px] lg:pb-[120px] px-4 text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[50px] italic leading-tight`}>
               The go-to crystal bowls for <br /> sound healers worldwide.
             </h1>
             
