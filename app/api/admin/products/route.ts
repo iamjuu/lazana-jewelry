@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     await connectDB();
     
     const body = await req.json();
-    const { name, description, price, imageUrl, videoUrl } = body;
+    const { name, shortDescription, description, price, imageUrl, videoUrl } = body;
 
     // Validation
     if (!name || !description || !price) {
@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
 
     const product = await Product.create({
       name: String(name).trim(),
+      shortDescription: shortDescription ? String(shortDescription).trim() : "",
       description: String(description).trim(),
       price: priceInRupees,
       imageUrl: imageUrl,

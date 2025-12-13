@@ -470,40 +470,40 @@ export default function CategoriesPage() {
                 )}
                 
                 <div className="p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="text-lg font-semibold text-white">
-                          {category.name}
-                        </h3>
+                      {category.name}
+                    </h3>
                         {category.isFeatured && (
                           <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                         )}
                       </div>
-                      <p className="text-xs text-zinc-500">
-                        Slug: {category.slug}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(category)}
-                        className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded transition-colors"
-                        title="Edit category"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(category._id, category.name)}
-                        className="p-2 text-zinc-400 hover:text-red-400 hover:bg-zinc-700 rounded transition-colors"
-                        title="Delete category"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
+                    <p className="text-xs text-zinc-500">
+                      Slug: {category.slug}
+                    </p>
                   </div>
-                  
-                  <div className="text-xs text-zinc-500">
-                    Created {new Date(category.createdAt).toLocaleDateString()}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(category)}
+                      className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded transition-colors"
+                      title="Edit category"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category._id, category.name)}
+                      className="p-2 text-zinc-400 hover:text-red-400 hover:bg-zinc-700 rounded transition-colors"
+                      title="Delete category"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="text-xs text-zinc-500">
+                  Created {new Date(category.createdAt).toLocaleDateString()}
                   </div>
                 </div>
               </div>

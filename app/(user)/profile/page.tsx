@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 import toast from "react-hot-toast";
-import { User, Mail, Phone, MapPin, Camera, LogOut, Save, Package, Calendar } from "lucide-react";
+import { User, Mail, Phone, MapPin, LogOut, Save, Package, Calendar } from "lucide-react";
 import Image from "next/image";
 import ProtectedRoute from "@/components/user/ProtectedRoute";
 import { CheckCircle, Clock, XCircle, Truck } from "lucide-react";
@@ -77,7 +77,15 @@ function ProfilePageContent() {
     country: "",
   });
   const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  // Check URL query parameter for tab on mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get("tab");
+    if (tabParam === "orders" || tabParam === "sessions" || tabParam === "bookings") {
+      setActiveTab(tabParam === "sessions" ? "bookings" : tabParam as TabType);
+    }
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("userToken");
@@ -236,32 +244,6 @@ function ProfilePageContent() {
     });
   };
 
-  const handleImageUpload = async (file: File | null) => {
-    if (!file) {
-      setImageFile(null);
-      setPreviewUrl("");
-      return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size should be less than 5MB");
-      return;
-    }
-
-    try {
-      const compressed = await compressImageToBase64(file);
-      setPreviewUrl(compressed);
-      setImageFile(file);
-    } catch (err) {
-      toast.error("Failed to process image");
-    }
-  };
-
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = typeof window !== "undefined" ? localStorage.getItem("userToken") : null;
@@ -284,10 +266,6 @@ function ProfilePageContent() {
         },
       };
 
-      if (previewUrl && imageFile) {
-        updateData.imageUrl = previewUrl;
-      }
-
       const res = await fetch("/api/auth/profile", {
         method: "PUT",
         headers: {
@@ -309,7 +287,6 @@ function ProfilePageContent() {
           setPreviewUrl(getImageUrl(data.data.imageUrl));
         }
       }
-      setImageFile(null);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to update profile");
     } finally {
@@ -427,17 +404,6 @@ function ProfilePageContent() {
                     </div>
                   )}
                 </div>
-                {activeTab === "profile" && (
-                  <label className="absolute bottom-0 right-0 bg-[#D5B584] text-white p-3 rounded-full cursor-pointer hover:bg-[#C4A574] transition-colors shadow-lg group-hover:scale-110 transform">
-                    <Camera size={20} />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleImageUpload(e.target.files?.[0] || null)}
-                    />
-                  </label>
-                )}
               </div>
 
               {/* User Info */}
@@ -518,107 +484,107 @@ function ProfilePageContent() {
             {/* Profile Tab */}
             {activeTab === "profile" && (
               <form onSubmit={handleSave} className="space-y-6">
-                {/* Personal Information */}
-                <div>
-                  <h2 className="text-2xl font-bold text-[#1C3163] mb-6 flex items-center gap-2">
-                    <User size={24} />
-                    Personal Information
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
-                      />
-                    </div>
+              {/* Personal Information */}
+              <div>
+                <h2 className="text-2xl font-bold text-[#1C3163] mb-6 flex items-center gap-2">
+                  <User size={24} />
+                  Personal Information
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                    />
                   </div>
                 </div>
+              </div>
 
-                {/* Address Information */}
-                <div>
-                  <h2 className="text-2xl font-bold text-[#1C3163] mb-6 flex items-center gap-2">
-                    <MapPin size={24} />
-                    Address Information
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Street Address
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.street}
-                        onChange={(e) => setFormData({ ...formData, street: e.target.value })}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-                      <input
-                        type="text"
-                        value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
-                      <input
-                        type="text"
-                        value={formData.state}
-                        onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
-                      <input
-                        type="text"
-                        value={formData.zipCode}
-                        onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
-                      <input
-                        type="text"
-                        value={formData.country}
-                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
-                      />
-                    </div>
+              {/* Address Information */}
+              <div>
+                <h2 className="text-2xl font-bold text-[#1C3163] mb-6 flex items-center gap-2">
+                  <MapPin size={24} />
+                  Address Information
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Street Address
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.street}
+                      onChange={(e) => setFormData({ ...formData, street: e.target.value })}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                    <input
+                      type="text"
+                      value={formData.city}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
+                    <input
+                      type="text"
+                      value={formData.state}
+                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
+                    <input
+                      type="text"
+                      value={formData.zipCode}
+                      onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                    <input
+                      type="text"
+                      value={formData.country}
+                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                    />
                   </div>
                 </div>
+              </div>
 
-                {/* Save Button */}
-                <div className="flex justify-end pt-4">
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="flex items-center gap-2 bg-gradient-to-r from-[#D5B584] to-[#FEC1A2] text-white px-8 py-3 rounded-lg font-semibold hover:from-[#C4A574] hover:to-[#E8B192] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Save size={20} />
-                    {saving ? "Saving..." : "Save Changes"}
-                  </button>
-                </div>
+              {/* Save Button */}
+              <div className="flex justify-end pt-4">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex items-center gap-2 bg-gradient-to-r from-[#D5B584] to-[#FEC1A2] text-white px-8 py-3 rounded-lg font-semibold hover:from-[#C4A574] hover:to-[#E8B192] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Save size={20} />
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
               </form>
             )}
 
@@ -779,7 +745,7 @@ function ProfilePageContent() {
                 )}
               </div>
             )}
-          </div>
+            </div>
         </div>
       </div>
 

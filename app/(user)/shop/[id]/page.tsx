@@ -16,6 +16,7 @@ type Product = {
   price: number;
   createdAt: string;
   description?: string;
+  shortDescription?: string;
   imageUrl?: string[];
   videoUrl?: string | string[];
 };
@@ -109,6 +110,7 @@ const ProductDetailPage = () => {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [buyingNow, setBuyingNow] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
   const { addItem } = useCart();
 
   const fetchProduct = async () => {
@@ -370,17 +372,57 @@ const ProductDetailPage = () => {
                 <span>Secure payment powered by Stripe</span>
               </div>
 
-              {/* About Product */}
-              {product.description && (
-                <div>
+              {/* Short Description - Always show fully */}
+              {product.shortDescription && (
+                <div className="mb-6">
                   <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium mb-3">
-                    About Product
+                    Product Summary
                   </h3>
-                  <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mb-4">
-                    {product.description}
+                  <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed whitespace-pre-wrap">
+                    {product.shortDescription}
                   </p>
                 </div>
               )}
+
+              {/* Full Description - Show truncated with Read More */}
+              {product.description && (
+                <div className="mb-6">
+                  <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium mb-3">
+                    Full Description
+                  </h3>
+                  <div className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed">
+                    {showFullDescription || product.description.length <= 200 ? (
+                      <p className="whitespace-pre-wrap">{product.description}</p>
+                    ) : (
+                      <p className="whitespace-pre-wrap">{product.description.substring(0, 200)}...</p>
+                    )}
+                    {product.description.length > 200 && (
+                      <button
+                        onClick={() => setShowFullDescription(!showFullDescription)}
+                        className="text-[#D5B584] hover:text-[#C4A574] font-medium mt-2 underline"
+                      >
+                        {showFullDescription ? "Read Less" : "Read More"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Product Information */}
+              <div className="bg-[#FEF9F5] border border-[#D5B584]/30 rounded-lg p-4 sm:p-6 space-y-3">
+                <div>
+                  <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Return Policy</h4>
+                  <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">No Returns unless it's broken</p>
+                </div>
+                <div>
+                  <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Care Instructions</h4>
+                  <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">Wipe with soft cloth, avoid water contact</p>
+                </div>
+                <div>
+                  <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Includes Accessories</h4>
+                  <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">Rubber ring + suede mallet</p>
+                </div>
+              </div>
             </div>
           </div>
 

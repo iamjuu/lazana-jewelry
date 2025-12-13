@@ -19,17 +19,13 @@ const navigationItems = [
   // { href: '/faq', label: 'FAQ' },
 ]
 
-// Shop dropdown categories
-const shopCategories = [
-  { href: '/shop?category=7-chakras-set', label: '7 Chakras Set' },
-  { href: '/shop?category=elements-set', label: 'Elements Set' },
-  { href: '/shop?category=endocrine-set', label: 'Endocrine Set' },
-  { href: '/shop?category=harmonic-binaural-beats-set', label: 'Harmonic Binaural Beats Set' },
-  { href: '/shop?category=corporate-wellness-collection', label: 'Corporate Wellness Collection' },
-  { href: '/shop?category=crystal-handle', label: 'Crystal Handle' },
-  { href: '/shop?category=harmonised-set', label: 'Harmonised Set' },
-  { href: '/shop?category=all', label: 'View All Products' },
-]
+type Category = {
+  _id: string;
+  name: string;
+  slug: string;
+  imageUrl?: string;
+  isFeatured?: boolean;
+}
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -49,6 +45,26 @@ const Navbar = () => {
   const navRef = useRef<HTMLElement>(null)
   const [dropdownTop, setDropdownTop] = useState(0)
   const shopHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [categories, setCategories] = useState<Category[]>([])
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories')
+        const data = await response.json()
+        if (data.success) {
+          setCategories(data.data || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error)
+      }
+    }
+    
+    if (mounted) {
+      fetchCategories()
+    }
+  }, [mounted])
 
   // Only render cart count after hydration to prevent mismatch
   useEffect(() => {
@@ -212,17 +228,30 @@ const Navbar = () => {
                       >
                         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                           <div className="grid grid-cols-3 gap-4">
-                            {shopCategories.slice(0, 6).map((category) => (
+                            {/* All Products Option */}
+                            <Link
+                              href="/shop?category=all"
+                              onClick={(e) => {
+                                // Don't use handleNavigation for same-page navigation
+                                setIsShopHovered(false)
+                              }}
+                              className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
+                            >
+                              All Products
+                            </Link>
+                            {/* Dynamic Categories */}
+                            {categories.slice(0, 8).map((category) => (
                               <Link
-                                key={category.href}
-                                href={category.href}
+                                key={category._id}
+                                href={`/shop?category=${category.slug}`}
                                 onClick={(e) => {
-                                  handleNavigation(e, category.href)
+                                  // Don't use handleNavigation for query param changes (same page)
+                                  // Just close the dropdown and let the link navigate
                                   setIsShopHovered(false)
                                 }}
                                 className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
                               >
-                                {category.label}
+                                {category.name}
                               </Link>
                             ))}
                           </div>

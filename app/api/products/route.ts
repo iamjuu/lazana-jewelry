@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
+import Category from "@/models/Category";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
@@ -11,10 +12,37 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20", 10);
     const skip = (page - 1) * limit;
     const excludeImages = searchParams.get("excludeImages") === "true";
+    const categoryParam = searchParams.get("category");
+
+    // Build query for category filtering
+    let query: any = {};
+    if (categoryParam && categoryParam !== "all") {
+      try {
+        // Try to match by slug first
+        const category = await Category.findOne({
+          slug: categoryParam
+        }).lean();
+
+        if (category) {
+          // Match products by category name (products store category as name string like "7 Chakras Set")
+          query.category = category.name;
+        } else {
+          // Fallback: try case-insensitive match on product category field (might be stored as slug)
+          query.$or = [
+            { category: categoryParam },
+            { category: { $regex: new RegExp(categoryParam.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') } }
+          ];
+        }
+      } catch (catError) {
+        console.error("Error matching category:", catError);
+        // If category matching fails, still try to match products directly
+        query.category = { $regex: new RegExp(categoryParam.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') };
+      }
+    }
 
     const [products, total] = await Promise.all([
-      Product.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      Product.countDocuments(),
+      Product.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Product.countDocuments(query),
     ]);
 
     // If images are excluded, remove them to reduce payload size (for better performance)
@@ -37,8 +65,9 @@ export async function GET(req: NextRequest) {
         hasPrev: page > 1,
       },
     });
-  } catch {
-    return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Error fetching products:", error);
+    return NextResponse.json({ success: false, message: error.message || "Server error" }, { status: 500 });
   }
 }
 

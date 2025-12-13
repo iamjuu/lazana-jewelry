@@ -436,11 +436,7 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
           onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
           className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
           placeholder="Brief summary for product cards..."
-          maxLength={200}
         />
-        <p className="text-xs text-zinc-400">
-          {formData.shortDescription.length}/200 characters
-        </p>
       </div>
 
       <div className="space-y-1">

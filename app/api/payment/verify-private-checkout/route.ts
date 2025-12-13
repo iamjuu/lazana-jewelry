@@ -99,25 +99,25 @@ export async function POST(req: NextRequest) {
       sessionIdToUse = oldSessionId;
       privateSession = await PrivateSession.findById(oldSessionId);
       
-      if (!privateSession) {
-        return NextResponse.json(
-          { success: false, message: "Private session not found" },
-          { status: 404 }
-        );
-      }
+    if (!privateSession) {
+      return NextResponse.json(
+        { success: false, message: "Private session not found" },
+        { status: 404 }
+      );
+    }
 
-      if (privateSession.bookedSeats >= privateSession.totalSeats) {
-        return NextResponse.json(
-          { success: false, message: "Session is already fully booked" },
-          { status: 400 }
-        );
-      }
+    if (privateSession.bookedSeats >= privateSession.totalSeats) {
+      return NextResponse.json(
+        { success: false, message: "Session is already fully booked" },
+        { status: 400 }
+      );
+    }
 
       // Update enquiry status for old flow
       const enquiry = await SessionEnquiry.findById(enquiryId);
-      if (enquiry) {
-        enquiry.status = "completed";
-        await enquiry.save();
+    if (enquiry) {
+      enquiry.status = "completed";
+      await enquiry.save();
       }
     } else {
       // Invalid metadata - neither flow has required fields

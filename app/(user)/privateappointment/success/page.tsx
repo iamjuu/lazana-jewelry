@@ -149,7 +149,7 @@ const SuccessPageContent = () => {
 
             <div className="mt-8 flex gap-4">
               <button
-                onClick={() => router.push("/profile")}
+                onClick={() => router.push("/profile?tab=sessions")}
                 className="flex-1 bg-[#D5B584] hover:bg-[#C4A574] text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 View My Bookings

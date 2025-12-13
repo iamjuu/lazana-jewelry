@@ -9,6 +9,7 @@ type ProductListItem = {
   price: number;
   createdAt: string;
   description?: string;
+  shortDescription?: string;
   imageUrl?: string[];
   videoUrl?: string | string[];
 };
@@ -96,6 +97,7 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
                       productId={product._id}
                       initialData={{
                         name: product.name,
+                        shortDescription: product.shortDescription,
                         description: product.description,
                         price: product.price.toString(),
                         imageUrl: product.imageUrl || [],

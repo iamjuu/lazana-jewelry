@@ -146,7 +146,7 @@ function SuccessContent() {
                 <ArrowRight size={20} />
               </Link>
               <Link
-                href="/orders"
+                href="/profile?tab=orders"
                 className="inline-flex items-center justify-center gap-2 border-2 border-[#2C3E50] text-[#2C3E50] hover:bg-[#2C3E50] hover:text-white px-8 py-3 rounded-lg transition-colors font-medium"
               >
                 View Orders

@@ -23,8 +23,7 @@ const CartPageContent = () => {
 
   // Calculate totals (prices are stored in rupees/dollars)
   const itemsSubtotal = subtotal();
-  const shippingCost = itemsSubtotal > 0 ? (itemsSubtotal > 5000 ? 0 : 200) : 0;
-  const totalAmount = itemsSubtotal + shippingCost;
+  const totalAmount = itemsSubtotal;
 
   const handleCheckout = async () => {
     if (items.length === 0) {
@@ -242,17 +241,6 @@ const CartPageContent = () => {
                     <span>Subtotal ({totalQuantity()} items)</span>
                     <span>${itemsSubtotal.toLocaleString("en-US")}</span>
                   </div>
-                  <div className="flex justify-between text-[#2C3E50]">
-                    <span>Shipping</span>
-                    <span className={shippingCost === 0 ? "text-green-600 font-medium" : ""}>
-                      {shippingCost === 0 ? "FREE" : `$${shippingCost}`}
-                    </span>
-                  </div>
-                  {shippingCost > 0 && (
-                    <p className="text-xs text-green-600">
-                      Add ${(5000 - itemsSubtotal).toLocaleString("en-US")} more for FREE shipping
-                    </p>
-                  )}
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex justify-between text-[#1C3163] text-lg font-semibold">
                       <span>Total</span>

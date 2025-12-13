@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     
     const { id } = await context.params;
     const body = await req.json();
-    const { name, description, price, imageUrl, videoUrl } = body;
+    const { name, shortDescription, description, price, imageUrl, videoUrl } = body;
 
     // Validation
     if (name !== undefined && !name) {
@@ -38,6 +38,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 
     const updateData: any = {};
     if (name !== undefined) updateData.name = String(name).trim();
+    if (shortDescription !== undefined) updateData.shortDescription = shortDescription ? String(shortDescription).trim() : "";
     if (description !== undefined) updateData.description = String(description).trim();
     if (price !== undefined) {
       const priceString = String(price).trim();
