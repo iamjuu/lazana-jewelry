@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import DiscoverySession from "@/models/DiscoverySession";
 import PrivateSession from "@/models/PrivateSession";
-import YogaSession from "@/models/YogaSession"; // Keep for corporate
+import CorporateSession from "@/models/CorporateSession";
 import { requireAdmin } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
@@ -273,23 +273,26 @@ export async function POST(req: NextRequest) {
         benefits: filteredBenefits,
       });
     } else if (sessionType === "corporate") {
-      // Corporate session - keep using YogaSession model (enquiry-based)
-      session = await YogaSession.create({
+      // Corporate session - save to CorporateSession collection
+      session = await CorporateSession.create({
         title: String(title).trim(),
         description: String(description).trim(),
-        sessionType: "corporate",
         imageUrl: imageUrl ? String(imageUrl).trim() : undefined,
         videoUrl: videoUrl ? String(videoUrl).trim() : undefined,
         format: format ? String(format).trim() : undefined,
         benefits: filteredBenefits,
-        // Set default values for required fields
-        instructor: "TBD",
+        // Set default values for required fields (these will be updated when company books)
+        companyName: "Pending",
+        contactPerson: "TBD",
+        email: "tbd@example.com",
+        phone: "0000000000",
+        employeeCount: 0,
         date: new Date().toISOString().split("T")[0],
         startTime: "09:00",
         endTime: "10:00",
-        totalSeats: 10, // Default for corporate
-        bookedSeats: 0,
+        duration: 60,
         price: 0,
+        status: "pending",
       });
     } else {
       return NextResponse.json(

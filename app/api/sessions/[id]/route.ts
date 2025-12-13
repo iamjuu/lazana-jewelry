@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import DiscoverySession from "@/models/DiscoverySession";
 import PrivateSession from "@/models/PrivateSession";
-import YogaSession from "@/models/YogaSession";
+import CorporateSession from "@/models/CorporateSession";
 import { requireAdmin } from "@/lib/auth";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -23,9 +23,9 @@ export async function GET(_req: NextRequest, context: RouteContext) {
       return NextResponse.json({ success: true, data: { ...session, sessionType: "private" } });
     }
     
-    session = await YogaSession.findById(id).lean();
+    session = await CorporateSession.findById(id).lean();
     if (session) {
-      return NextResponse.json({ success: true, data: session });
+      return NextResponse.json({ success: true, data: { ...session, sessionType: "corporate" } });
     }
     
     return NextResponse.json({ success: false, message: "Not found" }, { status: 404 });
@@ -53,8 +53,8 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       existingSession = await PrivateSession.findById(id);
       SessionModel = PrivateSession;
     } else if (sessionType === "corporate") {
-      existingSession = await YogaSession.findById(id);
-      SessionModel = YogaSession;
+      existingSession = await CorporateSession.findById(id);
+      SessionModel = CorporateSession;
     } else {
       // Try to find in all collections
       existingSession = await DiscoverySession.findById(id);
@@ -65,8 +65,8 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
         if (existingSession) {
           SessionModel = PrivateSession;
         } else {
-          existingSession = await YogaSession.findById(id);
-          SessionModel = YogaSession;
+          existingSession = await CorporateSession.findById(id);
+          SessionModel = CorporateSession;
         }
       }
     }
@@ -177,7 +177,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
       return NextResponse.json({ success: true });
     }
     
-    deleted = await YogaSession.findByIdAndDelete(id);
+    deleted = await CorporateSession.findByIdAndDelete(id);
     if (deleted) {
       return NextResponse.json({ success: true });
     }

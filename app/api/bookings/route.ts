@@ -3,7 +3,7 @@ import connectDB from "@/lib/mongodb";
 import Booking from "@/models/Booking";
 import DiscoverySession from "@/models/DiscoverySession";
 import PrivateSession from "@/models/PrivateSession";
-import YogaSession from "@/models/YogaSession"; // For corporate
+import CorporateSession from "@/models/CorporateSession";
 import { requireAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {

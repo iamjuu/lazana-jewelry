@@ -98,6 +98,28 @@ export interface Order extends WithTimestamps {
   customerName?: string;
 }
 
+export interface CorporateSession extends WithTimestamps {
+  _id: string;
+  companyName: string;
+  contactPerson: string;
+  email: string;
+  phone: string;
+  employeeCount: number;
+  date: string;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  price: number;
+  sessionName?: string;
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  format?: string;
+  benefits?: string[];
+  status?: string;
+}
+
 export interface YogaSession extends WithTimestamps {
   _id: string;
   instructor: string;

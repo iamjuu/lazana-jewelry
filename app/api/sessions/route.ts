@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import DiscoverySession from "@/models/DiscoverySession";
 import PrivateSession from "@/models/PrivateSession";
-import YogaSession from "@/models/YogaSession"; // For corporate
+import CorporateSession from "@/models/CorporateSession";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET(_req: NextRequest) {
@@ -13,7 +13,7 @@ export async function GET(_req: NextRequest) {
     const [discoverySessions, privateSessions, corporateSessions] = await Promise.all([
       DiscoverySession.find().sort({ date: 1, startTime: 1 }).lean(),
       PrivateSession.find().sort({ date: 1, startTime: 1 }).lean(),
-      YogaSession.find({ sessionType: "corporate" }).sort({ date: 1, startTime: 1 }).lean(),
+      CorporateSession.find().sort({ date: 1, startTime: 1 }).lean(),
     ]);
 
     // Add sessionType to each for frontend filtering
@@ -35,7 +35,19 @@ export async function POST(req: NextRequest) {
     await requireAdmin(req);
     await connectDB();
     const body = await req.json();
-    const created = await YogaSession.create(body);
+    
+    // Route to correct model based on sessionType
+    let created;
+    if (body.sessionType === "discovery") {
+      created = await DiscoverySession.create(body);
+    } else if (body.sessionType === "private") {
+      created = await PrivateSession.create(body);
+    } else if (body.sessionType === "corporate") {
+      created = await CorporateSession.create(body);
+    } else {
+      return NextResponse.json({ success: false, message: "Invalid session type" }, { status: 400 });
+    }
+    
     return NextResponse.json({ success: true, data: created }, { status: 201 });
   } catch (e: any) {
     const status = e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
