@@ -70,7 +70,7 @@ const AboutPage = () => {
               <span className="text-[#D5B584] italic text-[18px] sm:text-[22px] md:text-[30px] ">
                 Crystal Bowl Studio
               </span>{" "}
-              <span className="text-[#1C3163] text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px]">
+              <span className="text-black text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px]">
                 is created and designed by master sound and energy healer
                 Francesca Wong, fulfilling her dream to create a range of
                 crystal bowls that are beautifully designed, with premium
@@ -79,7 +79,7 @@ const AboutPage = () => {
                 to healers all over the world.
               </span>
             </h1>
-            <div className="flex flex-col text-[14px] sm:text-[15px] md:text-[16px] font-[300] gap-[20px] sm:gap-[25px] md:gap-[30px]">
+            <div className="flex mt-5 flex-col text-[14px] sm:text-[15px] md:text-[16px] font-[300] gap-[20px] sm:gap-[25px] md:gap-[30px]">
               <p>
                 Our Crystal Bowls are 100% clear quartz crystal, with some of
                 our premium designs infused with other crystals, metals and
@@ -93,13 +93,13 @@ const AboutPage = () => {
                 aesthetic as a healer.
               </p>
 
-              <h2 className="text-[20px] sm:text-[24px] md:text-[28px] lg:text-[30px] text-[#D5B584] font-[500]">
+              <h1 className="text-[20px] sm:text-[24px]  md:text-[20px] lg:text-[22px] text-black font-[400]">
                 Yogi & music healer inspired by ancient traditions & modern
                 well-being. 
-              </h2>
+              </h1>
 
               <div>
-                <h1 className="text-[20px] sm:text-[24px] md:text-[28px] lg:text-[30px] text-[#1C3163] font-[500]">
+                <h1 className="text-[20px] sm:text-[24px]  md:text-[20px] lg:text-[22px] text-black font-[400]">
                   Find Balance. Heal Through Yoga & Sound. Awaken Your True
                   Self.
                 </h1>
@@ -111,7 +111,7 @@ const AboutPage = () => {
                   reconnect you to your essence.
                 </p>
               </div>
-              <p className="text-[14px] sm:text-[15px] md:text-[16px] font-[300] text-[#1C3163]"> Based in Singapore | Available for global retreats & corporate wellness</p>
+              <p className="text-[14px] sm:text-[15px] md:text-[16px] font-[300] text-black"> Based in Singapore | Available for global retreats & corporate wellness</p>
             </div>
           </div>
         </div>
@@ -125,7 +125,7 @@ const AboutPage = () => {
               Meet Frankie
             </h2>
             
-            <div className="space-y-4 text-[#1C3163]">
+            <div className="space-y-4 text-black]">
               <p className="text-[15px] sm:text-[16px] md:text-[26px] leading-relaxed">
                 <span className="font-medium">Frankie</span> is a certified yoga teacher (e-RYT500), 
                 sound healer, and transformational guide. With over 15 years of experience and deep 
@@ -133,7 +133,7 @@ const AboutPage = () => {
                 practices.
               </p>
               
-              <p className="text-[14px] sm:text-[15px] md:text-[16px] font-[300] leading-relaxed italic text-[#1C3163]/80">
+              <p className="text-[14px] sm:text-[15px] md:text-[16px] font-[300] leading-relaxed italic text-black">
                 Her mission? To help individuals and teams manage stress, activate inner healing, and find 
                 balance through yoga, sound baths, and energy work.
               </p>

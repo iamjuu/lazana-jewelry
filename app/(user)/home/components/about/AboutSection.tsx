@@ -17,22 +17,21 @@ const AboutSectionComponent = () => {
           <div className="flex  flex-col lg:flex-row w-full gap-8 md:gap-10 lg:gap-12">
             {/* Left side - Text Content */}
             <div className="w-full lg:w-[65%] xl:w-[70%]">
-              <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-black leading-relaxed sm:leading-relaxed md:leading-loose">
+              <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#6B5D4F] leading-relaxed sm:leading-relaxed md:leading-loose">
                 <p>
                   Crystal Bowl Studio is created and designed by master sound
                   and energy healer Francesca Wong, fulfilling her dream to
-                  create a range of crystal bowls that are beautifully
-                  designed, with premium crystal quality and sound, with a
-                  powerful resonance and energy. at a more affordable price to
-                  make sound healing more accessible to healers all over the
-                  world.
+                  create a range of crystal bowls that are beautifully designed,
+                  with premium crystal quality and sound, with a powerful
+                  resonance and energy, at a more affordable price to make sound
+                  healing more accessible to healers all over the world.
                 </p>
 
                 <p>
-                  Our Crystal Bowls are 100% clear quartz crystal, with some
-                  of our premium designs infused with other crystals, metals
-                  and earth elements. They are lightweight and come in the
-                  most magical designs and colors to really make your practice
+                  Our Crystal Bowls are 100% clear quartz crystal, with some of
+                  our premium designs infused with other crystals, metals and
+                  earth elements. They are lightweight and come in the most
+                  magical designs and colors to really make your practice
                   unique. Take them with you on your Travels!
                 </p>
 
@@ -66,15 +65,11 @@ const AboutSectionComponent = () => {
             {/* Read More Link */}
             <div className="flex pt-6 sm:pt-7 md:pt-8 lg:pt-9 items-center">
               <a
-                href="#"
+                href="/about"
                 className="inline-flex text-[#D5B584] items-center gap-2 text-[15px] sm:text-[16px] md:text-[17px] lg:text-[18px] font-medium hover:opacity-80 transition-opacity"
               >
                 Read More
-                {/* <Image
-                  className="w-4 sm:w-5 h-auto"
-                  src={RightArrow}
-                  alt="right arrow"
-                /> */}
+              
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#D5B584]" />
               </a>
             </div>
@@ -86,4 +81,3 @@ const AboutSectionComponent = () => {
 };
 
 export default AboutSectionComponent;
-

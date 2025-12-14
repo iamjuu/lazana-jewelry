@@ -36,17 +36,15 @@ const BookPage = () => {
 
               {/* Right side - Content */}
               <div className="w-full lg:w-1/2 flex flex-col gap-6">
-                <h1 className="text-[32px] sm:text-[36px] md:text-[40px] text-[#5B7C99] font-light leading-tight">
-                  Lorem ipsum dolor sit amet consectetur. dolor sit amet
+                <h1 className="text-[32px] sm:text-[36px] md:text-[40px] text-black font-light leading-tight">
+                Get in Touch with Frankie
                 </h1>
 
-                <div className="flex flex-col gap-4 text-[14px] sm:text-[15px] md:text-[16px] text-[#5B7C99] font-light leading-relaxed">
+                <div className="flex flex-col gap-4 text-[14px] sm:text-[15px] md:text-[16px] text-[#6B5D4F] font-light leading-relaxed">
                   <p>
-                    Lorem ipsum dolor sit amet consectetur. Nulla cras lacus enim gravida lectus duis tempus. Sed eget elementum amet sem nulla commodo amet non donec.
-                  </p>
-                  <p>
-                    Lorem ipsum dolor sit amet consectetur. Nulla cras lacus enim gravida lectus duis tempus. Sed eget elementum amet sem nulla commodo amet non donec.
-                  </p>
+                  Your Journey to Inner Peace and Transformation Starts Here"
+                  Whether you're looking for personalized yoga sessions, group retreats, or simply want to learn more about the transformative practices Frankie offers, we’d love to hear from you. Reach out today to begin your journey towards balance and healing.                  </p>
+                
                 </div>
 
                 <div className="mt-4">

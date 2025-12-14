@@ -27,6 +27,7 @@ type Product = {
 const ShopPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const { addItem } = useCart();
   const router = useRouter();
 
@@ -82,6 +83,21 @@ const ShopPage = () => {
     });
 
     toast.success("Added to cart!");
+  };
+
+  // Toggle expanded state for description
+  const toggleExpanded = (e: React.MouseEvent, itemId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setExpandedItems((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -156,23 +172,64 @@ const ShopPage = () => {
                             />
                           )}
                         </div>
-                        <div className="items-end justify-between  flex ">
+                        <div className="items-end justify-between flex ">
                           <div className="w-full">
                             <p className="pt-4 sm:pt-6 md:pt-[28px] text-[14px] sm:text-[16px] md:text-[18px]">
                               {item.name}
                             </p>
-                            <p className="text-[12px]   w-full flex items-center justify-between sm:text-[13px] md:text-[14px]">
-                              {item.description || "Premium product"}{" "}
-                              <span>
-                                <button
-                                  onClick={(e) => handleAddToCart(e, item)}
-                                  className="border rounded-full p-1 hover:bg-[#1C3163] hover:text-white transition-colors cursor-pointer"
-                                  aria-label="Add to cart"
-                                >
-                                  <Plus size={16} />
-                                </button>
-                              </span>
-                            </p>
+                            <div className="text-[12px] w-full sm:text-[13px] md:text-[14px]">
+                              {expandedItems.has(item._id) ? (
+                                <>
+                                  <div className="flex items-start justify-between gap-2">
+                                    <p className="flex-1 min-w-0 break-words whitespace-normal">
+                                      {item.description || "Premium product"}
+                                    </p>
+                                    <span className="shrink-0">
+                                      <button
+                                        onClick={(e) => handleAddToCart(e, item)}
+                                        className="border rounded-full p-1 hover:bg-[#1C3163] hover:text-white transition-colors cursor-pointer"
+                                        aria-label="Add to cart"
+                                      >
+                                        <Plus size={16} />
+                                      </button>
+                                    </span>
+                                  </div>
+                                  {item.description && item.description.length > 80 && (
+                                    <button
+                                      onClick={(e) => toggleExpanded(e, item._id)}
+                                      className="text-[#1C3163] hover:underline mt-1 text-[11px] sm:text-[12px]"
+                                    >
+                                      Show less
+                                    </button>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  <div className="flex items-start justify-between gap-2">
+                                    <p className="flex-1 min-w-0 line-clamp-3">
+                                      {item.description || "Premium product"}
+                                    </p>
+                                    <span className="shrink-0">
+                                      <button
+                                        onClick={(e) => handleAddToCart(e, item)}
+                                        className="border rounded-full p-1 hover:bg-[#1C3163] hover:text-white transition-colors cursor-pointer"
+                                        aria-label="Add to cart"
+                                      >
+                                        <Plus size={16} />
+                                      </button>
+                                    </span>
+                                  </div>
+                                  {item.description && item.description.length > 80 && (
+                                    <button
+                                      onClick={(e) => toggleExpanded(e, item._id)}
+                                      className="text-[#1C3163] hover:underline mt-1 text-[11px] sm:text-[12px]"
+                                    >
+                                      Show more
+                                    </button>
+                                  )}
+                                </>
+                              )}
+                            </div>
                             <p className="pt-3 sm:pt-4 md:pt-[18px] text-[10px] sm:text-[11px] md:text-[12px]">
                               ₹{priceInRupees}
                             </p>

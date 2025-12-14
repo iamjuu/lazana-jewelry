@@ -317,7 +317,7 @@ const Navbar = () => {
             <Link 
               href="/book" 
               onClick={(e) => handleNavigation(e, '/book')}
-              className={`text-[#D5B584] border border-[#D5B584] px-4 xl:px-6 py-2 rounded hover:bg-white hover:text-black transition-all duration-300 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-105 hover:shadow-lg ${
+              className={`text-[#D5B584]  px-4 xl:px-6 py-2 rounded hover:bg-white hover:text-black transition-all duration-300 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-105 hover:shadow-lg ${
                 pathname === '/book' ? 'bg-white text-black scale-105 shadow-lg' : ''
               }`}
             >

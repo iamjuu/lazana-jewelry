@@ -23,28 +23,29 @@ const Icons = [
     id: 1,
     image: PremiumQuality,
     title: "Premium Quality",
-    para: "Our bowls have a powerful sound qualityand resonance. made with 99.9% pureclear quartz and infused with other crystals and precious elements to elevate your practice."
+    para: "Each bowl is masterfully created from 99.9% pure clear quartz, harmonised with rare crystals and precious elements. This fusion produces a sound of remarkable depth and celestial resonance, inviting you into a higher realm of healing."
   },
+
   {
     id: 2,
     image: UniqueToYou,
     title: "Unique To You",
-    para: "Every bowl is unique and can be completely customised by chakra design, note and frequency to help you find yourdream crystal bowls."
+    para: "No two bowls are ever the same. Every piece can be attuned to your chakra, note, frequency, and design, allowing you to summon the bowl that mirrors your inner essence—your true energetic signature."
   },
+
   {
     id: 3,
     image: LightWeight,
     title: "Light Weight",
-    para: "Our bowls are durably made, light - weight and easy to travel with (a sound healers dream) in our protective cases."
+    para: "Elegant yet enduring, our bowls are crafted to be light in the hand and effortless to carry. Paired with our luxury protective cases, they become the perfect companion for healers who travel between worlds."
   },
   {
     id: 4,
     image: Intention,
     title: "Intention",
-    para: "Each bowl is infused with its ownhealing energy and intention, so you can choose you bowls to match your unique energy as a healer"
+    para: "Each bowl is imbued with its own sacred purpose and healing vibration, waiting to align with the energy of the healer who chooses it. These bowls do more than sound—they speak to your journey, your intention, your awakening."
   }
 ];
-
 // Helper to convert base64 string to data URL if needed
 const normalizeImageUrl = (url: string): string => {
   if (!url) return "";
@@ -85,7 +86,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({ products }) => {
                 </Link>
                 <div className="leading-5">
                   <p className="pt-4 sm:pt-6 md:pt-[28px] text-[14px] sm:text-[16px] md:text-[18px]">{item.name}</p>
-                  <p className="text-[12px] sm:text-[13px] md:text-[14px]">{item.description}</p>
+                  {/* <p className="text-[12px] sm:text-[13px] md:text-[14px]">{item.description}</p> */}
                   <p className="pt-3 sm:pt-4 md:pt-[18px] text-[10px] sm:text-[11px] md:text-[12px]">₹{item.price}</p>
                 </div>
               </div>

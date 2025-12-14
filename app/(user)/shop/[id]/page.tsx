@@ -109,6 +109,7 @@ const ProductDetailPage = () => {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [buyingNow, setBuyingNow] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const { addItem } = useCart();
 
   const fetchProduct = async () => {
@@ -305,13 +306,7 @@ const ProductDetailPage = () => {
               {/* Main Image */}
               <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-white">
                 {mainImage ? (
-                  <Image
-                    src={mainImage}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
+                  <ImageMagnifier src={mainImage} alt={product.name} />
                 ) : (
                   <Image
                     src={Bucket1}
@@ -372,13 +367,26 @@ const ProductDetailPage = () => {
 
               {/* About Product */}
               {product.description && (
-                <div>
-                  <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium mb-3">
+                <div className="w-full max-w-full px-0 sm:px-0">
+                  <h3 className="text-[#1C3163] text-[16px] sm:text-[18px] md:text-[20px] font-medium mb-2 sm:mb-3">
                     About Product
                   </h3>
-                  <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mb-4">
+                  <p 
+                    className={`text-[#1C3163] text-[13px] sm:text-[14px] md:text-[15px] leading-relaxed mb-3 sm:mb-4 break-words overflow-wrap-break-word whitespace-pre-wrap ${
+                      !isDescriptionExpanded ? 'line-clamp-4' : ''
+                    }`}
+                    style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}
+                  >
                     {product.description}
                   </p>
+                  {product.description.length > 0 && (
+                    <button
+                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                      className="text-[#1C3163] text-[13px] sm:text-[14px] md:text-[15px] font-medium hover:underline transition-all mt-1 sm:mt-0"
+                    >
+                      {isDescriptionExpanded ? 'Show less' : 'Show more'}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -402,7 +410,15 @@ const ProductDetailPage = () => {
                     <div key={item._id} className="group">
                       <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-white mb-4">
                         {itemImageUrl ? (
-                          <ImageMagnifier src={itemImageUrl} alt={item.name} />
+                          <Link href={`/shop/${item._id}`} className="block w-full h-full">
+                            <Image
+                              src={itemImageUrl}
+                              alt={item.name}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              unoptimized
+                            />
+                          </Link>
                         ) : (
                           <Link href={`/shop/${item._id}`} className="block w-full h-full">
                             <Image

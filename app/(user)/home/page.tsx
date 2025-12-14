@@ -8,6 +8,9 @@ import {
   Bucket3,
   Intention,
   LightWeight,
+  ServiceImage1,
+  ServiceImage2,
+  ServiceImage3,
   TestimonialIcon,
   UniqueToYou,
   Yoga1,
@@ -57,53 +60,26 @@ const Data = [
   }
 ];
 
-const Icons = [
-  {
-    id: 1,
-    image: PremiumQuality,
-    title: "Premium Quality",
-    para: "Our bowls have a powerful sound qualityand resonance. made with 99.9% pureclear quartz and infused with other crystals and precious elements to elevate your practice."
-  },
 
-  {
-    id: 2,
-    image: UniqueToYou,
-    title: "Unique To You",
-    para: "Every bowl is unique and can be completely customised by chakra design, note and frequency to help you find yourdream crystal bowls."
-  },
-
-  {
-    id: 3,
-    image: LightWeight,
-    title: "Light Weight",
-    para: "Our bowls are durably made, light - weight and easy to travel with (a sound healers dream) in our protective cases."
-  },
-  {
-    id: 4,
-    image: Intention,
-    title: "Intention",
-    para: "Each bowl is infused with its ownhealing energy and intention, so you can choose you bowls to match your unique energy as a healer"
-  }
-];
 
 const YogaImage = [
   {
     id: 1,
-    image: Yoga1,
+    image: ServiceImage1,
     title: "Sound Healing & Yoga",
     description:
       "Personalized sessions for deep healing & alignment"
   },
   {
     id: 2,
-    image: Yoga2,
+    image: ServiceImage2,
     title: "Corporate Wellness Programs",
     description:
       "Stress management & mindfulness for teams"
   },
   {
     id: 3,
-    image: Yoga3,
+    image: ServiceImage3,
     title: "Moon Circles & Group Sound Journeys",
     description:
       "Community-based healing experiences"
@@ -292,7 +268,7 @@ const Index = () => {
             <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
               Services
             </h2>
-            <p className="text-[#1C3163] text-[14px] sm:text-[16px] md:text-[18px] font-light">
+            <p className="text-black text-[14px] sm:text-[16px] md:text-[18px] font-light">
               Private Sessions & <br/> Corporate Wellness
             </p>
           </div>
@@ -313,17 +289,17 @@ const Index = () => {
 
                 {/* Content - Right Side */}
                 <div className="flex w-[40%] h-full justify-between flex-col">
-                  <h3 className="text-[#1C3163] pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight">
+                  <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight">
                     {item.title}
                   </h3>
                   <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
-                    <p className="text-[#1C3163] text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed">
+                    <p className="text-black text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed">
                       {item.description}
                     </p>
                     {/* Arrow Button */}
                     <Link href="/services" >
                       <button className="size-[18px] sm:size-[20px] md:size-[22px] rounded-full border-1 border-[#1C3163] flex items-center justify-center hover:bg-[#1C3163] transition-colors group">
-                        <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-[#1C3163] hover:text-white" strokeWidth={.9} />
+                        <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-black hover:text-white" strokeWidth={.9} />
                       </button>
                     </Link>
                   </div>
@@ -334,7 +310,7 @@ const Index = () => {
 
           {/* Second Section Header */}
           <div className="mb-8 md:mb-12 mt-12 md:mt-20">
-            <h2 className="text-[#1C3163] text-[13px] sm:text-[14px] md:text-[16px] font-normal leading-tight">
+            <h2 className="text-black text-[13px] sm:text-[14px] md:text-[16px] font-normal leading-tight">
               Journey to Healing:
               <br />
               Sound & Music for Creatives
@@ -357,7 +333,7 @@ const Index = () => {
 
                 {/* Content - Right Side */}
                 <div className="flex w-[40%] h-full justify-between flex-col">
-                  <h3 className="text-[#1C3163] pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight">
+                  <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight">
                     {item.title}
                   </h3>
                   <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
@@ -476,10 +452,10 @@ const Index = () => {
                 </div>
                 </Link>
                 <div className="flex flex-col gap-2">
-                  <p className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[24px] font-normal">
+                  <p className="text-black text-[14px] sm:text-[15px] md:text-[24px] font-normal">
                     {event.date}
                   </p>
-                  <h3 className="text-[#1C3163] text-[12px] sm:text-[13px] md:text-[20px] font-light leading-tight">
+                  <h3 className="text-black text-[12px] sm:text-[13px] md:text-[20px] font-light leading-tight">
                     {event.title}
                   </h3>
                 </div>

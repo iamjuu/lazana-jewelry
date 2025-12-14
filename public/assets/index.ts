@@ -56,4 +56,13 @@ export { default as YouTubeIcon } from './footer/youtube.svg';
 export { default as InstagramIcon } from './footer/Vector (10).svg';
 
 
+
+// serviceimage 
+export { default as ServiceImage1 } from './services/DSC09472.jpg';
+export { default as ServiceImage2 } from './services/DSC09470.jpg';
+export { default as ServiceImage3 } from './services/DSC09506.jpg';
+export { default as ServiceImage4 } from './services/DSC09537.jpg';
+export { default as ServiceImage5 } from './services/DSC09543.jpg';
+export { default as ServiceImage6 } from './services/DSC09583.jpg';
+
 export {default as WhatsAppIconSvg} from './icon/whatsapp-svgrepo-com (1).svg'
