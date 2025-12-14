@@ -82,7 +82,7 @@ const Footer = () => {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
                 >
-                  <span>{selectedOption || "Book a private session"}</span>
+                  <span>{selectedOption || "Book a Discovery"}</span>
                   <ChevronDown
                     className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ${
                       isDropdownOpen ? "rotate-180" : ""
@@ -90,40 +90,16 @@ const Footer = () => {
                     strokeWidth={1.5}
                   />
                 </button>
-
-                {/* Dropdown Menu */}
-                {isDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 z-50 overflow-hidden">
-                    <Link
-                      href="/discoveryappointment"
-                      onClick={() => {
-                        setSelectedOption("Book a Discovery");
-                        setIsDropdownOpen(false);
-                      }}
-                      className="block px-4 sm:px-6 py-3 sm:py-4 text-[14px] sm:text-[16px] md:text-[18px] text-[#1C3163] hover:bg-[#1C3163] hover:text-white transition-colors"
-                    >
-                      Book a Discovery
-                    </Link>
-
-                    <Link
-                      href="/form"
-                      onClick={() => {
-                        setSelectedOption("Book a Corporate");
-                        setIsDropdownOpen(false);
-                      }}
-                      className="block px-4 sm:px-6 py-3 sm:py-4 text-[14px] sm:text-[16px] md:text-[18px] text-[#1C3163] hover:bg-[#1C3163] hover:text-white transition-colors border-t border-gray-200"
-                    >
-                      Book a Corporate
-                    </Link>
-                  </div>
-                )}
               </div>
-              <button className="size-[44px] sm:size-[52px] rounded-xl sm:rounded-2xl bg-white text-[#1C3163] flex items-center justify-center hover:bg-white/90 transition-colors">
-                <ArrowRight
-                  className="w-5 h-5 sm:w-6 sm:h-6"
-                  strokeWidth={1.5}
-                />
-              </button>
+
+              <Link href="/discoveryappointment">
+                <button className="size-[44px] sm:size-[52px] rounded-xl sm:rounded-2xl bg-white text-[#1C3163] flex items-center justify-center hover:bg-white/90 transition-colors">
+                  <ArrowRight
+                    className="w-5 h-5 sm:w-6 sm:h-6"
+                    strokeWidth={1.5}
+                  />
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -170,7 +146,7 @@ const Footer = () => {
                       href="/faq"
                       className="text-black hover:text-[black] transition-colors"
                     >
-                      Faq
+                      FAkueue{" "}
                     </a>
                   </li>
                 </ul>
@@ -219,23 +195,15 @@ const Footer = () => {
                       href="#"
                       className="text-black hover:text-[black] transition-colors break-words"
                     >
-                      Singapore{" "}
+                      Based in Singapore{" "}
                     </a>
                   </li>
                   <li>
                     <a
                       href="#"
-                      className="text-black hover:text-[black] transition-colors break-words"
+                      className="text-black hover:text-[black] transition-colors "
                     >
-                      mail@frankieyogini@gmail.com{" "}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-black hover:text-[black] transition-colors"
-                    >
-                      +91 6596381988{" "}
+                      hello@crystalbowlstudio.com
                     </a>
                   </li>
                 </ul>

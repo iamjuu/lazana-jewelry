@@ -60,7 +60,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({ products }) => {
       <div className="max-w-6xl items-center flex flex-col mx-auto px-4">
         <div className="flex w-full items-center justify-between mb-8 md:mb-0">
           <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] font-normal">
-            Collection
+            Collections
           </h2>
           <Link
             href="/shop"
@@ -87,7 +87,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({ products }) => {
                 <div className="leading-5">
                   <p className="pt-4 sm:pt-6 md:pt-[28px] text-[14px] sm:text-[16px] md:text-[18px]">{item.name}</p>
                   {/* <p className="text-[12px] sm:text-[13px] md:text-[14px]">{item.description}</p> */}
-                  <p className="pt-3 sm:pt-4 md:pt-[18px] text-[10px] sm:text-[11px] md:text-[12px]">₹{(item.price / 100).toFixed(2)}</p>
+                  <p className="pt-3 sm:pt-4 md:pt-[18px] text-[10px] sm:text-[11px] md:text-[12px]">₹{item.price}</p>
                 </div>
               </div>
             ))}

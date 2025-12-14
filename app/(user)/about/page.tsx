@@ -37,7 +37,7 @@ const AboutPage = () => {
   if (isLoading) {
     return (
       <>
-        <Navbar />
+        {/* <Navbar /> */}
         <AboutSkeleton />
         <Footer />
       </>

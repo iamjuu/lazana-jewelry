@@ -20,6 +20,47 @@ body {
   font-family: var(--font-montserrat), sans-serif;
 }
 
+/* Ivy Mode Font */
+@font-face {
+  font-family: 'Ivy Mode';
+  src: url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Regular.woff2') format('woff2'),
+       url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Regular.woff') format('woff'),
+       url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ivy Mode';
+  src: url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Light.woff2') format('woff2'),
+       url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Light.woff') format('woff'),
+       url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ivy Mode';
+  src: url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-SemiBold.woff2') format('woff2'),
+       url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-SemiBold.woff') format('woff'),
+       url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ivy Mode';
+  src: url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Bold.woff2') format('woff2'),
+       url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Bold.woff') format('woff'),
+       url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-ivy-mode {
+  font-family: 'Ivy Mode', sans-serif;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

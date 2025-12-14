@@ -191,10 +191,18 @@ const Navbar = () => {
                 Shop
               </Link>
               
+              {/* Backdrop Blur Overlay */}
+              {isShopHovered && (
+                <div 
+                  className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+                  onClick={() => setIsShopHovered(false)}
+                />
+              )}
+              
               {/* Shop Dropdown Menu - Full Width */}
               {isShopHovered && (
                 <div 
-                  className="fixed left-0 right-0 w-full mt-2 bg-white shadow-lg border-t border-gray-200 z-50 pointer-events-auto" 
+                  className="fixed left-0 right-0 w-full mt-2 bg-white/20 shadow-lg border-t border-gray-200 z-50 pointer-events-auto" 
                   style={{ top: `${dropdownTop}px` }}
                   onMouseEnter={() => {
                     if (shopHoverTimeoutRef.current) {
@@ -209,88 +217,100 @@ const Navbar = () => {
                     }, 200)
                   }}
                 >
-                  <div className="w-full max-w-7xl   mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex flex-row justify-between ">
-                      <Link
-                        href="/shop?category=7-chakras-set"
-                        onClick={(e) => {
-                          handleNavigation(e, '/shop?category=7-chakras-set')
-                          setIsShopHovered(false)
-                        }}
-                        className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
-                      >
-                        7 Chakras Set
-                      </Link>
-                      <Link
-                        href="/shop?category=elements-set"
-                        onClick={(e) => {
-                          handleNavigation(e, '/shop?category=elements-set')
-                          setIsShopHovered(false)
-                        }}
-                        className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
-                      >
-                        Elements Set
-                      </Link>
-                      <Link
-                        href="/shop?category=endocrine-set"
-                        onClick={(e) => {
-                          handleNavigation(e, '/shop?category=endocrine-set')
-                          setIsShopHovered(false)
-                        }}
-                        className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
-                      >
-                        Endocrine Set
-                      </Link>
-                      <Link
-                        href="/shop?category=harmonic-binaural-beats-set"
-                        onClick={(e) => {
-                          handleNavigation(e, '/shop?category=harmonic-binaural-beats-set')
-                          setIsShopHovered(false)
-                        }}
-                        className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
-                      >
-                        Harmonic Binaural Beats Set
-                      </Link>
-                      <Link
-                        href="/shop?category=corporate-wellness-collection"
-                        onClick={(e) => {
-                          handleNavigation(e, '/shop?category=corporate-wellness-collection')
-                          setIsShopHovered(false)
-                        }}
-                        className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
-                      >
-                        Corporate Wellness Collection
-                      </Link>
-                      <Link
-                        href="/shop?category=crystal-handle"
-                        onClick={(e) => {
-                          handleNavigation(e, '/shop?category=crystal-handle')
-                          setIsShopHovered(false)
-                        }}
-                        className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
-                      >
-                        Crystal Handle
-                      </Link>
-                      <Link
-                        href="/shop?category=harmonised-set"
-                        onClick={(e) => {
-                          handleNavigation(e, '/shop?category=harmonised-set')
-                          setIsShopHovered(false)
-                        }}
-                        className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
-                      >
-                        Harmonised Set
-                      </Link>
-                      <Link
-                        href="/shop?category=all"
-                        onClick={(e) => {
-                          handleNavigation(e, '/shop?category=all')
-                          setIsShopHovered(false)
-                        }}
-                        className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
-                      >
-                        View All Products
-                      </Link>
+                  <div className="w-full max-w-5xl  mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <div className="flex flex-col gap-4">
+                      {/* First Row */}
+                      <div className="flex flex-row justify-between">
+                        <Link
+                          href="/shop?category=7-chakras-set"
+                          onClick={(e) => {
+                            handleNavigation(e, '/shop?category=7-chakras-set')
+                            setIsShopHovered(false)
+                          }}
+                          className="text-[#1C3163] hover:text-white transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
+                        >
+                          7 Chakras Set
+                        </Link>
+                        <Link
+                          href="/shop?category=elements-set"
+                          onClick={(e) => {
+                            handleNavigation(e, '/shop?category=elements-set')
+                            setIsShopHovered(false)
+                          }}
+                          className="text-[#1C3163] hover:text-white transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
+                        >
+                          Elements Set
+                        </Link>
+                      </div>
+                      {/* Second Row */}
+                      <div className="flex flex-row justify-between">
+                        <Link
+                          href="/shop?category=endocrine-set"
+                          onClick={(e) => {
+                            handleNavigation(e, '/shop?category=endocrine-set')
+                            setIsShopHovered(false)
+                          }}
+                          className="text-[#1C3163] hover:text-white transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
+                        >
+                          Endocrine Set
+                        </Link>
+                        <Link
+                          href="/shop?category=harmonic-binaural-beats-set"
+                          onClick={(e) => {
+                            handleNavigation(e, '/shop?category=harmonic-binaural-beats-set')
+                            setIsShopHovered(false)
+                          }}
+                          className="text-[#1C3163] hover:text-white transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
+                        >
+                          Harmonic Binaural Beats Set
+                        </Link>
+                      </div>
+                      {/* Third Row */}
+                      <div className="flex flex-row justify-between">
+                        <Link
+                          href="/shop?category=corporate-wellness-collection"
+                          onClick={(e) => {
+                            handleNavigation(e, '/shop?category=corporate-wellness-collection')
+                            setIsShopHovered(false)
+                          }}
+                          className="text-[#1C3163] hover:text-white transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
+                        >
+                          Corporate Wellness Collection
+                        </Link>
+                        <Link
+                          href="/shop?category=crystal-handle"
+                          onClick={(e) => {
+                            handleNavigation(e, '/shop?category=crystal-handle')
+                            setIsShopHovered(false)
+                          }}
+                          className="text-[#1C3163] hover:text-white transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
+                        >
+                          Crystal Handle
+                        </Link>
+                      </div>
+                      {/* Fourth Row */}
+                      <div className="flex flex-row   justify-between">
+                        <Link
+                          href="/shop?category=harmonised-set"
+                          onClick={(e) => {
+                            handleNavigation(e, '/shop?category=harmonised-set')
+                            setIsShopHovered(false)
+                          }}
+                          className="text-[#1C3163] hover:text-white transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
+                        >
+                          Harmonised Set
+                        </Link>
+                        <Link
+                          href="/shop?category=all"
+                          onClick={(e) => {
+                            handleNavigation(e, '/shop?category=all')
+                            setIsShopHovered(false)
+                          }}
+                          className="text-[#1C3163] hover:text-white transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
+                        >
+                          View All Products
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
