@@ -275,7 +275,7 @@ const ProductDetailPage = () => {
       <section className="w-full py-[40px] md:py-[68px]">
         <div className="max-w-6xl mx-auto px-4">
           {/* Product Detail Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16 lg:mb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16 lg:mb-24 lg:items-start">
             {/* Left Side - Images */}
             <div className="flex flex-col-reverse sm:flex-row gap-4">
               {/* Thumbnail Images */}
