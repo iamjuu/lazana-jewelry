@@ -22,27 +22,27 @@ const Icons = [
   {
     id: 1,
     image: PremiumQuality,
-    title: "Premium Quality",
+    title: "Exquisite Purity",
     para: "Each bowl is masterfully created from 99.9% pure clear quartz, harmonised with rare crystals and precious elements. This fusion produces a sound of remarkable depth and celestial resonance, inviting you into a higher realm of healing."
   },
 
   {
     id: 2,
     image: UniqueToYou,
-    title: "Unique To You",
+    title: "Crafted for Your Soul",
     para: "No two bowls are ever the same. Every piece can be attuned to your chakra, note, frequency, and design, allowing you to summon the bowl that mirrors your inner essence—your true energetic signature."
   },
 
   {
     id: 3,
     image: LightWeight,
-    title: "Light Weight",
+    title: "Gracefully Lightweight",
     para: "Elegant yet enduring, our bowls are crafted to be light in the hand and effortless to carry. Paired with our luxury protective cases, they become the perfect companion for healers who travel between worlds."
   },
   {
     id: 4,
     image: Intention,
-    title: "Intention",
+    title: "Intention Woven Within",
     para: "Each bowl is imbued with its own sacred purpose and healing vibration, waiting to align with the energy of the healer who chooses it. These bowls do more than sound—they speak to your journey, your intention, your awakening."
   }
 ];

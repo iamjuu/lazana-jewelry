@@ -13,6 +13,10 @@ import {
   ServiceImage3,
   TestimonialIcon,
   UniqueToYou,
+  UpcomingEvent1,
+  UpcomingEvent2,
+  UpcomingEvent3,
+  UpcomingEvent4,
   Yoga1,
   Yoga2,
   Yoga3,
@@ -131,25 +135,25 @@ const TestimonialsData = [
 const UpcomingEventsData = [
   {
     id: 1,
-    image: Yoga1,
+    image: UpcomingEvent1,
     date: "07 Monday",
     title: "Full Moon Sound Healing Journey"
   },
   {
     id: 2,
-    image: Yoga2,
+    image: UpcomingEvent2,
     date: "10 Thursday",
     title: "Corporate Mindfulness & Stress Release Workshop"
   },
   {
     id: 3,
-    image: Yoga3,
+    image: UpcomingEvent3,
     date: "17 Friday",
     title: "1:1 Sound Healing Availability"
   },
   {
     id: 4,
-    image: Yoga1,
+    image: UpcomingEvent4,
     date: "07 Monday",
     title: "Full Moon Sound Healing Journey"
   }
@@ -264,11 +268,11 @@ const Index = () => {
         className="w-full py-[40px] md:py-[68px] ">
         <div className="max-w-6xl mx-auto px-4">
           {/* Header */}
-          <div className="mb-8 md:mb-12 flex flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]">
+          <div className="mb-8 md:mb-12 flex    flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]">
             <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
               Services
             </h2>
-            <p className="text-black text-[14px] sm:text-[16px] md:text-[18px] font-light">
+            <p className="text-black text-[14px] mt-3 sm:text-[16px] md:text-[18px] font-light">
               Private Sessions & <br/> Corporate Wellness
             </p>
           </div>

@@ -82,13 +82,8 @@ const Footer = () => {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
                 >
-                  <span>{selectedOption || "Book a Discovery"}</span>
-                  <ChevronDown
-                    className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ${
-                      isDropdownOpen ? "rotate-180" : ""
-                    }`}
-                    strokeWidth={1.5}
-                  />
+                  <span>{selectedOption || "Book a Discovery Session"}</span>
+               
                 </button>
               </div>
 
@@ -146,7 +141,7 @@ const Footer = () => {
                       href="/faq"
                       className="text-black hover:text-[black] transition-colors"
                     >
-                      FAkueue{" "}
+                      FAQs
                     </a>
                   </li>
                 </ul>
@@ -162,14 +157,14 @@ const Footer = () => {
                     </a>
                   </li>
 
-                  <li>
+                  {/* <li>
                     <a
                       href="#"
                       className="text-black hover:text-[black] transition-colors"
                     >
                       Testimonials
                     </a>
-                  </li>
+                  </li> */}
                   <li>
                     <a
                       href="#"
