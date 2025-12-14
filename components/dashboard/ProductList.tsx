@@ -10,6 +10,7 @@ type ProductListItem = {
   createdAt: string;
   description?: string;
   shortDescription?: string;
+  category?: string | { _id: string; name: string; slug: string };
   imageUrl?: string[];
   videoUrl?: string | string[];
 };
@@ -99,6 +100,7 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
                         name: product.name,
                         shortDescription: product.shortDescription,
                         description: product.description,
+                        category: product.category,
                         price: product.price.toString(),
                         imageUrl: product.imageUrl || [],
                         videoUrl: product.videoUrl,

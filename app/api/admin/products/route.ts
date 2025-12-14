@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     await connectDB();
     
     const body = await req.json();
-    const { name, shortDescription, description, price, imageUrl, videoUrl } = body;
+    const { name, shortDescription, description, category, price, imageUrl, videoUrl } = body;
 
     // Validation
     if (!name || !description || !price) {
@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
       name: String(name).trim(),
       shortDescription: shortDescription ? String(shortDescription).trim() : "",
       description: String(description).trim(),
+      category: category || undefined,
       price: priceInRupees,
       imageUrl: imageUrl,
       videoUrl: processedVideoUrl.length > 0 ? processedVideoUrl : [],

@@ -53,7 +53,7 @@ export interface Product extends WithTimestamps {
   name: string;
   shortDescription?: string; // Brief description
   description: string; // Long description
-  category?: string; // Category name
+  category?: string | Category; // Category reference (can be ObjectId string or populated Category object)
   price: number; // Price in rupees/dollars (not cents/paise)
   imageUrl: string[]; // Array of base64 image strings
   videoUrl?: string | string[]; // Base64 video string(s) or URL(s) - supports up to 2 videos

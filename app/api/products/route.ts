@@ -24,24 +24,23 @@ export async function GET(req: NextRequest) {
         }).lean();
 
         if (category) {
-          // Match products by category name (products store category as name string like "7 Chakras Set")
-          query.category = category.name;
-        } else {
-          // Fallback: try case-insensitive match on product category field (might be stored as slug)
-          query.$or = [
-            { category: categoryParam },
-            { category: { $regex: new RegExp(categoryParam.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') } }
-          ];
+          // Match products by category ObjectId
+          query.category = category._id;
         }
       } catch (catError) {
         console.error("Error matching category:", catError);
-        // If category matching fails, still try to match products directly
-        query.category = { $regex: new RegExp(categoryParam.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') };
+        // If category matching fails, return no products
+        query.category = null;
       }
     }
 
     const [products, total] = await Promise.all([
-      Product.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Product.find(query)
+        .populate('category', 'name slug') // Populate category with name and slug
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
       Product.countDocuments(query),
     ]);
 

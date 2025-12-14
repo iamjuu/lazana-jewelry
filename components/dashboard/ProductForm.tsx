@@ -14,7 +14,7 @@ type ProductFormProps = {
     name?: string;
     shortDescription?: string;
     description?: string;
-    category?: string;
+    category?: string | { _id: string; name: string; slug: string };
     price?: string;
     imageUrl?: string[];
     videoUrl?: string | string[];
@@ -35,7 +35,9 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
     name: initialData?.name || "",
     shortDescription: initialData?.shortDescription || "",
     description: initialData?.description || "",
-    category: initialData?.category || "",
+    category: typeof initialData?.category === 'object' && initialData?.category?._id 
+      ? String(initialData.category._id) 
+      : (initialData?.category ? String(initialData.category) : ""),
     price: initialData?.price || "",
     images: initialData?.imageUrl || [] as string[],
     videos: Array.isArray(initialData?.videoUrl) 
@@ -412,7 +414,7 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
           >
             <option value="">Select a category</option>
             {categories.map((cat) => (
-              <option key={cat._id} value={cat.name}>
+              <option key={cat._id} value={cat._id}>
                 {cat.name}
               </option>
             ))}
