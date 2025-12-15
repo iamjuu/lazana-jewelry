@@ -106,3 +106,4 @@ async function migrateProductCategories() {
 // Run migration
 migrateProductCategories();
 
+
