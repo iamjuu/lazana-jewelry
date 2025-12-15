@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
-import { About1, About2, About3, HeroImage, UpcomingEvent1 } from "@/public/assets";
+import { About1, About2, About3, HeroImage } from "@/public/assets";
 import { AboutSkeleton, ImageWithShimmer } from "./components";
 
 const AboutPage = () => {
@@ -161,7 +161,7 @@ const AboutPage = () => {
               {/* Main Image */}
               <div className="relative w-full aspect-[3/4] rounded-[15px] sm:rounded-[18px] md:rounded-[20px] overflow-hidden  z-10">
                 <ImageWithShimmer
-                  src={UpcomingEvent1}
+                  src={HeroImage}
                   alt="Frankie in meditation pose"
                   fill
                   className="object-cover group-hover:rotate-3 transition-transform duration-300 ease-out"
