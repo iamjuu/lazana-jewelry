@@ -235,11 +235,12 @@ const ServicesPage = () => {
                     }}
                   >
                     {corporateSessions.map((item) => (
+                
                       <div
                         key={item._id}
-                        className="min-w-[calc(100%/3-0.67rem)] sm:min-w-[calc(100%/3-0.89rem)] flex-shrink-0"
+                        className=""
                       >
-                        <div className="relative group overflow-hidden rounded-[20px] h-[400px] sm:h-[450px] md:h-[640px] w-full">
+                        <div className="relative   group overflow-hidden rounded-[20px] h-[400px] sm:h-[450px] md:h-[640px] w-full">
                           {item.imageUrl ? (
                             <Image
                               src={item.imageUrl}
@@ -444,7 +445,7 @@ const ServicesPage = () => {
                     {privateSessions.map((item) => (
                       <div
                         key={item._id}
-                        className="min-w-[calc(100%/3-0.67rem)] sm:min-w-[calc(100%/3-0.89rem)] flex-shrink-0"
+                        className=""
                       >
                         <div className="relative group overflow-hidden rounded-[20px] h-[400px] sm:h-[450px] md:h-[640px] w-full">
                           {item.imageUrl ? (
