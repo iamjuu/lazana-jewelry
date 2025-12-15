@@ -68,27 +68,31 @@ const ServicesPage = () => {
   const corporateSessions = sessions.filter((s) => s.sessionType === "corporate");
   const privateSessions = sessions.filter((s) => s.sessionType === "private");
 
+  const ITEMS_PER_PAGE = 3;
+
   const handleCorporatePrev = () => {
     setCorporateCurrentIndex((prev) =>
-      prev === 0 ? Math.max(0, corporateSessions.length - 1) : prev - 1
+      prev === 0 ? Math.max(0, Math.ceil(corporateSessions.length / ITEMS_PER_PAGE) - 1) : prev - 1
     );
   };
 
   const handleCorporateNext = () => {
+    const maxPage = Math.max(0, Math.ceil(corporateSessions.length / ITEMS_PER_PAGE) - 1);
     setCorporateCurrentIndex((prev) =>
-      prev === Math.max(0, corporateSessions.length - 1) ? 0 : prev + 1
+      prev === maxPage ? 0 : prev + 1
     );
   };
 
   const handlePrivatePrev = () => {
     setPrivateCurrentIndex((prev) =>
-      prev === 0 ? Math.max(0, privateSessions.length - 1) : prev - 1
+      prev === 0 ? Math.max(0, Math.ceil(privateSessions.length / ITEMS_PER_PAGE) - 1) : prev - 1
     );
   };
 
   const handlePrivateNext = () => {
+    const maxPage = Math.max(0, Math.ceil(privateSessions.length / ITEMS_PER_PAGE) - 1);
     setPrivateCurrentIndex((prev) =>
-      prev === Math.max(0, privateSessions.length - 1) ? 0 : prev + 1
+      prev === maxPage ? 0 : prev + 1
     );
   };
 
@@ -229,16 +233,14 @@ const ServicesPage = () => {
                   <div
                     className="flex gap-3 sm:gap-4 transition-transform duration-500 ease-in-out"
                     style={{
-                      transform: `translateX(-${
-                        corporateCurrentIndex * (100 / 3)
-                      }%)`
+                      transform: `translateX(-${corporateCurrentIndex * 100}%)`
                     }}
                   >
                     {corporateSessions.map((item) => (
                 
                       <div
                         key={item._id}
-                        className=""
+                        className="min-w-[calc(33.333%-0.5rem)] sm:min-w-[calc(33.333%-0.667rem)]"
                       >
                         <div className="relative   group overflow-hidden rounded-[20px] h-[400px] sm:h-[450px] md:h-[640px] w-full">
                           {item.imageUrl ? (
@@ -356,7 +358,7 @@ const ServicesPage = () => {
                 </div>
 
                 {/* Navigation Arrows */}
-                {corporateSessions.length > 0 && (
+                {corporateSessions.length > ITEMS_PER_PAGE && (
                   <>
                     <button
                       onClick={handleCorporatePrev}
@@ -404,20 +406,22 @@ const ServicesPage = () => {
                 )}
 
                 {/* Dots Indicator */}
-                <div className="flex justify-center gap-2 mt-6">
-                  {corporateSessions.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCorporateCurrentIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        index === corporateCurrentIndex
-                          ? "bg-[#D5B584] w-8"
-                          : "bg-[#D5B584]/30"
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
+                {corporateSessions.length > ITEMS_PER_PAGE && (
+                  <div className="flex justify-center gap-2 mt-6">
+                    {Array.from({ length: Math.ceil(corporateSessions.length / ITEMS_PER_PAGE) }).map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCorporateCurrentIndex(index)}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          index === corporateCurrentIndex
+                            ? "bg-[#D5B584] w-8"
+                            : "bg-[#D5B584]/30"
+                        }`}
+                        aria-label={`Go to page ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -437,15 +441,13 @@ const ServicesPage = () => {
                   <div
                     className="flex gap-3 sm:gap-4 transition-transform duration-500 ease-in-out"
                     style={{
-                      transform: `translateX(-${
-                        privateCurrentIndex * (100 / 3)
-                      }%)`
+                      transform: `translateX(-${privateCurrentIndex * 100}%)`
                     }}
                   >
                     {privateSessions.map((item) => (
                       <div
                         key={item._id}
-                        className=""
+                        className="min-w-[calc(33.333%-0.5rem)] sm:min-w-[calc(33.333%-0.667rem)]"
                       >
                         <div className="relative group overflow-hidden rounded-[20px] h-[400px] sm:h-[450px] md:h-[640px] w-full">
                           {item.imageUrl ? (
@@ -563,7 +565,7 @@ const ServicesPage = () => {
                 </div>
 
                 {/* Navigation Arrows */}
-                {privateSessions.length > 0 && (
+                {privateSessions.length > ITEMS_PER_PAGE && (
                   <>
                     <button
                       onClick={handlePrivatePrev}
@@ -611,20 +613,22 @@ const ServicesPage = () => {
                 )}
 
                 {/* Dots Indicator */}
-                <div className="flex justify-center gap-2 mt-6">
-                  {privateSessions.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setPrivateCurrentIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        index === privateCurrentIndex
-                          ? "bg-[#D5B584] w-8"
-                          : "bg-[#D5B584]/30"
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
+                {privateSessions.length > ITEMS_PER_PAGE && (
+                  <div className="flex justify-center gap-2 mt-6">
+                    {Array.from({ length: Math.ceil(privateSessions.length / ITEMS_PER_PAGE) }).map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setPrivateCurrentIndex(index)}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          index === privateCurrentIndex
+                            ? "bg-[#D5B584] w-8"
+                            : "bg-[#D5B584]/30"
+                        }`}
+                        aria-label={`Go to page ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
