@@ -55,5 +55,10 @@ export { default as FacebookIcon } from './footer/Vector (9).svg';
 export { default as YouTubeIcon } from './footer/youtube.svg';
 export { default as InstagramIcon } from './footer/Vector (10).svg';
 
+// Upcoming Event Images
+export { default as UpcomingEvent1 } from './images/upcommingEvent/DSC09500.jpg';
+export { default as UpcomingEvent2 } from './images/upcommingEvent/DSC09536.jpg';
+export { default as UpcomingEvent3 } from './images/upcommingEvent/DSC09562.jpg';
+export { default as UpcomingEvent4 } from './images/upcommingEvent/DSC09605.jpg';
 
 export {default as WhatsAppIconSvg} from './icon/whatsapp-svgrepo-com (1).svg'
