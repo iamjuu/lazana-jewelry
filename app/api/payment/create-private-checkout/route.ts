@@ -1,15 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
+import connectDB from "@/lib/mongodb";
+import User from "@/models/User";
+import type { IUser } from "@/types";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", );
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await requireAuth(req);
+    const authUser = await requireAuth(req);
+    await connectDB();
+    
+    // Get full user details including email
+    const user = await User.findById(authUser._id).lean<IUser>();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "User not found" },
+        { status: 404 }
+      );
+    }
     
     const body = await req.json();
-    const { items, amount, currency } = body;
+    const { slotId, amount, date, time } = body;
 
     // Get base URL from request or environment variable
     let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
@@ -31,14 +44,14 @@ export async function POST(req: NextRequest) {
     
     console.log('Stripe checkout baseUrl:', baseUrl);
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
+    if (!slotId || !amount || !date || !time) {
       return NextResponse.json(
-        { success: false, message: "Invalid items" },
+        { success: false, message: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    if (!amount || amount <= 0) {
+    if (amount <= 0) {
       return NextResponse.json(
         { success: false, message: "Invalid amount" },
         { status: 400 }
@@ -48,42 +61,30 @@ export async function POST(req: NextRequest) {
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: items.map((item: any) => {
-        // Filter out base64 images - Stripe only accepts HTTP/HTTPS URLs under 2048 chars
-        const validImageUrl = item.imageUrl && 
-                             (item.imageUrl.startsWith('http://') || item.imageUrl.startsWith('https://')) &&
-                             item.imageUrl.length < 2000
-                             ? item.imageUrl 
-                             : null;
-        
-        return {
+      line_items: [
+        {
           price_data: {
-            currency: currency?.toLowerCase() || "usd",
+            currency: "usd",
             product_data: {
-              name: item.name,
-              images: validImageUrl ? [validImageUrl] : [],
+              name: "Private Yoga Session",
+              description: `${date} at ${time}`,
             },
-            unit_amount: Math.round(item.price * 100), // Convert to smallest currency unit (cents for USD)
+            unit_amount: amount, // Amount in cents
           },
-          quantity: item.quantity,
-        };
-      }),
+          quantity: 1,
+        },
+      ],
       mode: "payment",
-      success_url: `${baseUrl}/cart/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/cart`,
+      success_url: `${baseUrl}/privateappointment/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/privateappointment`,
       metadata: {
-        userId: user._id.toString(),
-        items: JSON.stringify(items.map((item: any) => ({
-          productId: item.id, // Changed from 'id' to 'productId' to match Order model
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-        }))),
+        userId: String(user._id),
+        slotId: slotId,
+        sessionType: "private",
+        date: date,
+        time: time,
       },
-      billing_address_collection: "required",
-      shipping_address_collection: {
-        allowed_countries: ["IN", "US", "GB", "CA", "AU"],
-      },
+      customer_email: user.email || undefined,
     });
 
     return NextResponse.json({
@@ -102,4 +103,5 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import {
   FooterIcon1,
   FooterIcon2,
@@ -12,29 +11,9 @@ import {
 } from "@/public/assets";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronDown, ArrowUp } from "lucide-react";
+import { ArrowRight, ArrowUp } from "lucide-react";
 
 const Footer = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
   return (
     <section className="w-full py-[40px] md:py-[68px] bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2]">
       <div className="max-w-6xl border-b pb-[64px] border-black items-stretch flex flex-col md:flex-row justify-between mx-auto px-4 gap-6 md:gap-6">
@@ -73,27 +52,21 @@ const Footer = () => {
             </div>
 
             {/* Row 2 */}
-            <div
-              className="grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4 relative"
-              ref={dropdownRef}
-            >
-              <div className="relative w-full">
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
-                >
-                  <span>{selectedOption || "Book a Discovery Session"}</span>
-               
-                </button>
-              </div>
-
-              <Link href="/discoveryappointment">
-                <button className="size-[44px] sm:size-[52px] rounded-xl sm:rounded-2xl bg-white text-[#1C3163] flex items-center justify-center hover:bg-white/90 transition-colors">
-                  <ArrowRight
-                    className="w-5 h-5 sm:w-6 sm:h-6"
-                    strokeWidth={1.5}
-                  />
-                </button>
+            <div className="grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4">
+              <Link
+                href="/discoveryappointment"
+                className="w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
+              >
+                Book a Discovery
+              </Link>
+              <Link
+                href="/discoveryappointment"
+                className="size-[44px] sm:size-[52px] rounded-xl sm:rounded-2xl bg-white text-[#1C3163] flex items-center justify-center hover:bg-white/90 transition-colors"
+              >
+                <ArrowRight
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                  strokeWidth={1.5}
+                />
               </Link>
             </div>
           </div>
@@ -141,7 +114,7 @@ const Footer = () => {
                       href="/faq"
                       className="text-black hover:text-[black] transition-colors"
                     >
-                      FAQs
+                      Faq
                     </a>
                   </li>
                 </ul>
@@ -198,9 +171,11 @@ const Footer = () => {
                       href="#"
                       className="text-black hover:text-[black] transition-colors "
                     >
-                      hello@crystalbowlstudio.com
+                      mail@frankieyogini@gmail.com{" "}
                     </a>
                   </li>
+                
+                
                 </ul>
               </div>
             </div>

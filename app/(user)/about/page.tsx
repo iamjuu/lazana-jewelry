@@ -126,7 +126,7 @@ const AboutPage = () => {
             </h2>
 
             <div className="space-y-4 text-black]">
-              <p className="text-[15px] sm:text-[16px] md:text-[26px] leading-relaxed">
+              <p className="text-[15px] sm:text-[16px] md:text-[22px] leading-relaxed">
                 <span className="font-medium">Frankie</span> Yogi & music healer
                 inspired by ancient traditions & modern well-being. ✨ Find
                 Balance. Heal Through Yoga & Sound. Awaken Your True Self.
