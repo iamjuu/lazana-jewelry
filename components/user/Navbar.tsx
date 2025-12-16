@@ -35,12 +35,7 @@ const Navbar = () => {
   const router = useRouter()
   const { totalQuantity, items } = useCart() // Subscribe to items to trigger re-render
   const [cartCount, setCartCount] = useState(0)
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !!localStorage.getItem("userToken");
-    }
-    return false;
-  })
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isShopHovered, setIsShopHovered] = useState(false)
   const navRef = useRef<HTMLElement>(null)
   const [dropdownTop, setDropdownTop] = useState(0)
@@ -69,6 +64,8 @@ const Navbar = () => {
   // Only render cart count after hydration to prevent mismatch
   useEffect(() => {
     setMounted(true)
+    // Check login status after mount to prevent hydration mismatch
+    setIsLoggedIn(!!localStorage.getItem("userToken"))
   }, [])
 
   // Update cart count whenever items change
@@ -114,7 +111,7 @@ const Navbar = () => {
     // Delay navigation for smooth animation
     setTimeout(() => {
       router.push(href)
-    }, 300)
+    }, 150)
   }
 
   const handleCartNavigation = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -134,14 +131,14 @@ const Navbar = () => {
     
     setTimeout(() => {
       router.push(targetPath)
-    }, 300)
+    }, 150)
   }
 
   return (
     <>
       {/* Page Transition Overlay */}
       <div 
-        className={`fixed inset-0 bg-linear-to-br from-[#FDECE2] via-[#FEC1A2] to-[#D5B584] z-9999 pointer-events-none transition-all duration-500 ease-in-out ${
+        className={`fixed inset-0 bg-linear-to-br from-[#FDECE2] via-[#FEC1A2] to-[#D5B584] z-9999 pointer-events-none transition-all duration-300 ease-in-out ${
           isNavigating 
             ? 'opacity-100 scale-100' 
             : 'opacity-0 scale-95'
@@ -195,24 +192,24 @@ const Navbar = () => {
                     onMouseLeave={() => {
                       shopHoverTimeoutRef.current = setTimeout(() => {
                         setIsShopHovered(false)
-                      }, 200)
+                      }, 100)
                     }}
                   >
                     <Link 
                       href={item.href} 
                       onClick={(e) => handleNavigation(e, item.href)}
-                      className={`text-[#D5B584] hover:text-white transition-all duration-300 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 ${
+                      className={`group relative text-[#D5B584] hover:text-white transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 overflow-hidden ${
                         pathname === item.href || pathname.startsWith('/shop') ? 'text-white font-semibold scale-110' : ''
                       }`}
                     >
-                      {item.label}
+                      <span className="relative z-10">{item.label}</span>
+                      <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out bg-gradient-to-r from-transparent via-white/30 to-transparent"></span>
                     </Link>
                     
-                    {/* Shop Dropdown Menu - Full Width */}
+                    {/* Shop Dropdown Menu - Narrow Vertical */}
                     {isShopHovered && (
                       <div 
-                        className="fixed left-0 right-0 w-full mt-2 bg-white shadow-lg border-t border-gray-200 z-50 pointer-events-auto" 
-                        style={{ top: `${dropdownTop}px` }}
+                        className="absolute left-0 top-full mt-2 w-48 bg-white/80 backdrop-blur-sm shadow-lg border border-white/20 rounded-lg z-50 pointer-events-auto py-2" 
                         onMouseEnter={() => {
                           if (shopHoverTimeoutRef.current) {
                             clearTimeout(shopHoverTimeoutRef.current)
@@ -223,38 +220,36 @@ const Navbar = () => {
                         onMouseLeave={() => {
                           shopHoverTimeoutRef.current = setTimeout(() => {
                             setIsShopHovered(false)
-                          }, 200)
+                          }, 100)
                         }}
                       >
-                        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                          <div className="grid grid-cols-3 gap-4">
-                            {/* All Products Option */}
+                        <div className="flex flex-col">
+                          {/* All Products Option */}
+                          <Link
+                            href="/shop?category=all"
+                            onClick={(e) => {
+                              // Don't use handleNavigation for same-page navigation
+                              setIsShopHovered(false)
+                            }}
+                            className="text-[#1C3163] hover:text-[#D5B584] transition-all duration-150 text-sm xl:text-base font-normal py-2 px-4 hover:translate-x-2 cursor-pointer"
+                          >
+                            All Products
+                          </Link>
+                          {/* Dynamic Categories */}
+                          {categories.slice(0, 8).map((category) => (
                             <Link
-                              href="/shop?category=all"
+                              key={category._id}
+                              href={`/shop?category=${category.slug}`}
                               onClick={(e) => {
-                                // Don't use handleNavigation for same-page navigation
+                                // Don't use handleNavigation for query param changes (same page)
+                                // Just close the dropdown and let the link navigate
                                 setIsShopHovered(false)
                               }}
-                              className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
+                              className="text-[#1C3163] hover:text-[#D5B584] transition-all duration-150 text-sm xl:text-base font-normal py-2 px-4 hover:translate-x-2 cursor-pointer"
                             >
-                              All Products
+                              {category.name}
                             </Link>
-                            {/* Dynamic Categories */}
-                            {categories.slice(0, 8).map((category) => (
-                              <Link
-                                key={category._id}
-                                href={`/shop?category=${category.slug}`}
-                                onClick={(e) => {
-                                  // Don't use handleNavigation for query param changes (same page)
-                                  // Just close the dropdown and let the link navigate
-                                  setIsShopHovered(false)
-                                }}
-                                className="text-[#1C3163] hover:text-[#D5B584] transition-all text-sm xl:text-base font-normal py-2 hover:translate-x-2 cursor-pointer"
-                              >
-                                {category.name}
-                              </Link>
-                            ))}
-                          </div>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -268,29 +263,31 @@ const Navbar = () => {
                   key={item.href}
                   href={item.href} 
                   onClick={(e) => handleNavigation(e, item.href)}
-                  className={`text-[#D5B584] hover:text-white transition-all duration-300 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 ${
+                  className={`group relative text-[#D5B584] hover:text-white transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 overflow-hidden ${
                     pathname === item.href ? 'text-white font-semibold scale-110' : ''
                   }`}
                 >
-                  {item.label}
+                  <span className="relative z-10">{item.label}</span>
+                  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out bg-gradient-to-r from-transparent via-white/30 to-transparent"></span>
                 </Link>
               )
             })}
             <Link 
               href="/book" 
               onClick={(e) => handleNavigation(e, '/book')}
-              className={`text-[#D5B584]  px-4 xl:px-6 py-2 rounded hover:bg-white/80 hover:backdrop-blur-sm hover:text-black transition-all duration-300 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-105 hover:shadow-lg ${
+              className={`group relative text-[#D5B584] px-4 xl:px-6 py-2 rounded hover:bg-white/80 hover:backdrop-blur-sm hover:text-black transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-105 hover:shadow-lg overflow-hidden ${
                 pathname === '/book' ? 'bg-white text-black scale-105 shadow-lg' : ''
               }`}
             >
-              Book a Session
+              <span className="relative z-10">Book a Session</span>
+              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out bg-gradient-to-r from-transparent via-white/30 to-transparent"></span>
             </Link>
             
             {/* Profile Icon - Always visible */}
             <Link 
               href="/profile" 
               onClick={(e) => handleNavigation(e, '/profile')}
-              className={`relative text-[#D5B584] hover:text-white transition-all duration-300 hover:scale-110 ${
+              className={`relative text-[#D5B584] hover:text-white transition-all duration-150 hover:scale-110 ${
                 pathname === '/profile' ? 'text-white scale-110' : ''
               }`}
             >
@@ -301,7 +298,7 @@ const Navbar = () => {
             <Link 
               href={isLoggedIn ? "/cart" : "/login"} 
               onClick={handleCartNavigation}
-              className="relative text-[#D5B584] hover:text-white transition-all duration-300 hover:scale-110"
+              className="relative text-[#D5B584] hover:text-white transition-all duration-150 hover:scale-110"
             >
               <ShoppingCart size={24} />
               {mounted && cartCount > 0 && (
@@ -332,7 +329,7 @@ const Navbar = () => {
             <Link 
               href="/profile" 
               onClick={(e) => handleNavigation(e, '/profile')}
-              className={`relative text-[#D5B584] hover:text-white transition-all duration-300 ${
+              className={`relative text-[#D5B584] hover:text-white transition-all duration-150 ${
                 pathname === '/profile' ? 'text-white' : ''
               }`}
             >
@@ -343,7 +340,7 @@ const Navbar = () => {
             <Link 
               href={isLoggedIn ? "/cart" : "/login"} 
               onClick={handleCartNavigation}
-              className="relative text-[#D5B584] hover:text-white transition-all duration-300"
+              className="relative text-[#D5B584] hover:text-white transition-all duration-150"
             >
               <ShoppingCart size={24} />
               {mounted && cartCount > 0 && (
@@ -356,7 +353,7 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button 
               onClick={toggleMobileMenu}
-              className="text-[#D5B584] hover:text-white transition-colors p-2"
+              className="text-[#D5B584] hover:text-white transition-colors duration-150 p-2"
               aria-label="Toggle menu"
             >
             {isMobileMenuOpen ? (
@@ -388,7 +385,7 @@ const Navbar = () => {
 
         {/* Mobile Menu Dropdown */}
         <div 
-          className={`lg:hidden bg-black/15 backdrop-blur-sm overflow-hidden transition-all duration-300 ease-in-out ${
+          className={`lg:hidden bg-black/15 backdrop-blur-sm overflow-hidden transition-all duration-150 ease-in-out ${
             isMobileMenuOpen ? 'max-h-[500px] opacity-100 mt-6' : 'max-h-0 opacity-0'
           }`}
         >
@@ -398,22 +395,24 @@ const Navbar = () => {
                 key={item.href}
                 href={item.href} 
                 onClick={(e) => handleNavigation(e, item.href)}
-                className={`text-[#D5B584] hover:text-white transition-all duration-300 text-base font-normal py-2 px-4 hover:bg-white/5 rounded hover:translate-x-2 ${
+                className={`group relative text-[#D5B584] hover:text-white transition-all duration-150 text-base font-normal py-2 px-4 hover:bg-white/5 rounded hover:translate-x-2 overflow-hidden ${
                   pathname === item.href || (item.href === '/shop' && pathname.startsWith('/shop')) ? 'bg-white/10 text-white font-semibold translate-x-2' : ''
                 }`}
               >
-                {item.label}
+                <span className="relative z-10">{item.label}</span>
+                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out bg-gradient-to-r from-transparent via-white/30 to-transparent"></span>
               </Link>
             ))}
             <div className='px-2 pt-2'>
               <Link 
                 href="/book" 
                 onClick={(e) => handleNavigation(e, '/book')}
-                className={`block text-[#D5B584] border border-[#D5B584] px-6 py-3 rounded hover:bg-white hover:text-black transition-all duration-300 text-base font-normal text-center hover:scale-105 hover:shadow-lg ${
+                className={`group relative block text-[#D5B584] border border-[#D5B584] px-6 py-3 rounded hover:bg-white hover:text-black transition-all duration-150 text-base font-normal text-center hover:scale-105 hover:shadow-lg overflow-hidden ${
                   pathname === '/book' ? 'bg-white text-black scale-105 shadow-lg' : ''
                 }`}
               >
-                Book a Session
+                <span className="relative z-10">Book a Session</span>
+                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out bg-gradient-to-r from-transparent via-white/30 to-transparent"></span>
               </Link>
             </div>
           </div>
