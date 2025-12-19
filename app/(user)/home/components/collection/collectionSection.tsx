@@ -59,8 +59,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({ categories, loadi
       <div className="max-w-6xl items-center flex flex-col mx-auto px-4">
         <div className="flex w-full items-center justify-between mb-8 md:mb-0">
           <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] font-normal">
-            Collections
-          </h2>
+          Shop Collection          </h2>
           <Link
             href="/shop?category=all"
             className="text-[#D5B584] flex gap-2 text-[14px] sm:text-[16px] md:text-[18px]"
@@ -104,6 +103,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({ categories, loadi
                     <p className="pt-4 sm:pt-6 md:pt-[28px] text-center text-[14px] sm:text-[16px] md:text-[18px]">
                       {category.name}
                     </p>
+                
                   </div>
                 </div>
               ))

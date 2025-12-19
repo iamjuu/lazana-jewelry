@@ -334,13 +334,13 @@ const Index = () => {
             {/* Mute/Unmute Button */}
             <button
               onClick={toggleMute}
-              className="absolute bottom-[20px] sm:bottom-[30px] md:bottom-[40px] lg:bottom-[50px] right-4 sm:right-6 md:right-8 lg:right-12 p-2 sm:p-3 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm transition-all duration-300 border border-[#D5B584]/30"
+              className="fixed z-50 bottom-20 left-1 size-18 flex justify-center items-center rounded-full p-4 bg-black/30 hover:bg-black/50 backdrop-blur-sm transition-all duration-300 border border-[#D5B584]/30"
               aria-label={isMuted ? "Unmute video" : "Mute video"}
             >
               {isMuted ? (
-                <VolumeX className="w-5 h-5 sm:w-6 sm:h-6 text-[#D5B584]" />
+                <VolumeX className="w-6 h-6  text-[#D5B584]" />
               ) : (
-                <Volume2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#D5B584]" />
+                <Volume2 className="w-6 h-6 sm:w-6 sm:h-6 text-[#D5B584]" />
               )}
             </button>
           </div>
@@ -493,7 +493,7 @@ const Index = () => {
                       className="min-w-full flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center"
                     >
                       {/* Left Side - Profile Image */}
-                      <div className="flex-shrink-0 mx-auto md:mx-0">
+                      {/* <div className="flex-shrink-0 mx-auto md:mx-0">
                         <div className="rounded-2xl md:rounded-3xl overflow-hidden w-[140px] h-[180px] md:w-[180px] md:h-[220px] border-2 border-[#C7A97B]">
                           <Image
                             src={testimonial.image}
@@ -503,7 +503,7 @@ const Index = () => {
                             className="object-cover w-full h-full"
                           />
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Right Side - Testimonial Card */}
                       <div className="flex-1 w-full border rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 min-h-[280px] sm:min-h-[320px] md:min-h-[380px] flex flex-col justify-center">

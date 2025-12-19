@@ -71,3 +71,7 @@ export { default as ServiceImage5 } from './services/DSC09543.jpg';
 export { default as ServiceImage6 } from './services/DSC09583.jpg';
 
 export {default as WhatsAppIconSvg} from './icon/whatsapp-svgrepo-com (1).svg'
+
+
+export {default as AboutNew1 } from './images/landing/aboutnew1.jpg'
+export {default as AboutNew2 } from './images/landing/aboutnew2.jpg'

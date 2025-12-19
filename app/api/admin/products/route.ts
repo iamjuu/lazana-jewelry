@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { requireAdmin } from "@/lib/auth";
+import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,11 +56,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Validate and process category - must be a valid ObjectId or empty
+    let processedCategory: string | undefined = undefined;
+    if (category) {
+      const categoryStr = String(category).trim();
+      if (categoryStr && mongoose.Types.ObjectId.isValid(categoryStr)) {
+        processedCategory = categoryStr;
+      }
+      // If category is provided but invalid, silently ignore it (set to undefined)
+    }
+
     const product = await Product.create({
       name: String(name).trim(),
       shortDescription: shortDescription ? String(shortDescription).trim() : "",
       description: String(description).trim(),
-      category: category || undefined,
+      category: processedCategory,
       price: priceInRupees,
       imageUrl: imageUrl,
       videoUrl: processedVideoUrl.length > 0 ? processedVideoUrl : [],
