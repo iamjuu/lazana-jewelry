@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
 import { requireAdmin } from "@/lib/auth";
+import mongoose from "mongoose";
 
 export async function GET(req: NextRequest) {
   try {
@@ -75,6 +76,18 @@ export async function POST(req: NextRequest) {
     await requireAdmin(req);
     await connectDB();
     const body = await req.json();
+    
+    // Validate and process category - must be a valid ObjectId or empty
+    if (body.category) {
+      const categoryStr = String(body.category).trim();
+      if (categoryStr && mongoose.Types.ObjectId.isValid(categoryStr)) {
+        body.category = categoryStr;
+      } else {
+        // If category is provided but invalid, set to undefined
+        body.category = undefined;
+      }
+    }
+    
     const created = await Product.create(body);
     return NextResponse.json({ success: true, data: created }, { status: 201 });
   } catch (e: any) {

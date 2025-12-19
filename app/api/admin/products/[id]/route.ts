@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { requireAdmin } from "@/lib/auth";
+import mongoose from "mongoose";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -40,7 +41,17 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     if (name !== undefined) updateData.name = String(name).trim();
     if (shortDescription !== undefined) updateData.shortDescription = shortDescription ? String(shortDescription).trim() : "";
     if (description !== undefined) updateData.description = String(description).trim();
-    if (category !== undefined) updateData.category = category || undefined;
+    if (category !== undefined) {
+      // Validate category - must be a valid ObjectId or empty
+      const categoryStr = category ? String(category).trim() : "";
+      if (categoryStr && mongoose.Types.ObjectId.isValid(categoryStr)) {
+        updateData.category = categoryStr;
+      } else if (categoryStr === "") {
+        // Empty string means remove category
+        updateData.category = null;
+      }
+      // If category is provided but invalid, silently ignore it (don't update the field)
+    }
     if (price !== undefined) {
       const priceString = String(price).trim();
       const priceInRupees = parseFloat(priceString);
