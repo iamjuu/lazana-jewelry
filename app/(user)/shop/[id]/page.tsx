@@ -19,6 +19,7 @@ type Product = {
   shortDescription?: string;
   imageUrl?: string[];
   videoUrl?: string | string[];
+  relativeproduct?: boolean;
 };
 
 // Magnifier Component
@@ -108,9 +109,10 @@ const ProductDetailPage = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [relativeProduct, setRelativeProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [buyingNow, setBuyingNow] = useState(false);
-  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const { addItem } = useCart();
 
   const fetchProduct = async () => {
@@ -144,13 +146,51 @@ const ProductDetailPage = () => {
     }
   };
 
+  const fetchRelativeProduct = async () => {
+    try {
+      // Fetch products including relative products
+      const response = await fetch("/api/products?includeRelative=true&limit=100");
+      const data = await response.json();
+      if (data.success && data.data) {
+        // Look for a relative product that's not the current one
+        const relative = data.data.find((p: Product) => p.relativeproduct === true && p._id !== productId);
+        if (relative) {
+          setRelativeProduct(relative);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch relative product:", error);
+    }
+  };
+
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(sectionId)) {
+        newSet.delete(sectionId);
+      } else {
+        newSet.add(sectionId);
+      }
+      return newSet;
+    });
+  };
+
   useEffect(() => {
     if (productId) {
       fetchProduct();
       fetchRelatedProducts();
+      // Only fetch relative product if current product is not a relative product
+      fetchRelativeProduct();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productId]);
+
+  useEffect(() => {
+    // Only show relative product if current product is NOT a relative product
+    if (product && product.relativeproduct) {
+      setRelativeProduct(null);
+    }
+  }, [product]);
 
   // Helper function to normalize image URL
   const normalizeImageUrl = (url: string): string => {
@@ -199,8 +239,15 @@ const ProductDetailPage = () => {
     ? normalizeImageUrl(productImages[safeSelectedImage])
     : null;
   
-  // Price is already in dollars
-  const priceInDollars = product.price.toFixed(2);
+  // Format price to show decimals only if needed
+  const formatPrice = (price: number) => {
+    const rounded = Math.round(price * 100) / 100;
+    if (rounded % 1 === 0) {
+      return `$${rounded}`;
+    }
+    return `$${rounded.toFixed(2)}`;
+  };
+  const priceInDollars = formatPrice(product.price);
 
   // Handle Add to Cart
   const handleAddToCart = () => {
@@ -225,10 +272,9 @@ const ProductDetailPage = () => {
     });
 
     toast.success("Added to cart!");
-    router.push("/cart");
   };
 
-  // Handle Instant Buy with Stripe
+  // Handle Instant Buy - redirect to order confirmation
   const handleBuyNow = async () => {
     // Check if user is logged in
     const token = localStorage.getItem("userToken");
@@ -238,35 +284,8 @@ const ProductDetailPage = () => {
       return;
     }
 
-    setBuyingNow(true);
-
-    try {
-      const response = await fetch("/api/payment/instant-buy", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          productId: product._id,
-          quantity: 1,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success && data.data?.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.data.url;
-      } else {
-        toast.error(data.message || "Failed to initiate payment");
-      }
-    } catch (error) {
-      console.error("Instant buy error:", error);
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setBuyingNow(false);
-    }
+    // Redirect to order confirmation with instant buy params
+    router.push(`/order-confirmation?type=instant&productId=${product._id}&quantity=1`);
   };
 
   return (
@@ -325,11 +344,20 @@ const ProductDetailPage = () => {
                 {product.name}
               </h1>
 
-              <div className="mb-6">
+              <div className="mb-4">
                 <p className="text-[#1C3163] text-[24px] sm:text-[28px] lg:text-[32px] font-medium">
-                  ${priceInDollars}
+                  {priceInDollars}
                 </p>
               </div>
+
+              {/* Short Description - Show after price */}
+              {product.shortDescription && (
+                <div className="mb-6">
+                  <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed">
+                    {product.shortDescription}
+                  </p>
+                </div>
+              )}
 
               {/* Add to Cart Button */}
               <button 
@@ -366,49 +394,175 @@ const ProductDetailPage = () => {
                 <span>Secure payment powered by Stripe</span>
               </div>
 
-              {/* Short Description - Always show fully */}
-              {product.shortDescription && (
-                <div className="mb-6">
-                  <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium mb-3">
-                    Product Summary
-                  </h3>
-                  <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed whitespace-pre-wrap">
-                    {product.shortDescription}
-                  </p>
-                  {product.description.length > 0 && (
-                    <button
-                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                      className="text-[#1C3163] text-[13px] sm:text-[14px] md:text-[15px] font-medium hover:underline transition-all mt-1 sm:mt-0"
-                    >
-                      {isDescriptionExpanded ? 'Show less' : 'Show more'}
-                    </button>
+              {/* Relative Product - Show after cart button if current product is NOT a relative product */}
+              {relativeProduct && !product.relativeproduct && (
+                <div className="mb-8 border border-[#D5B584]/30 rounded-lg p-4 bg-white">
+                  <Link href={`/shop/${relativeProduct._id}`} className="block">
+                    <div className="flex items-center gap-4">
+                      {relativeProduct.imageUrl && relativeProduct.imageUrl.length > 0 && (
+                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0">
+                          <Image
+                            src={normalizeImageUrl(relativeProduct.imageUrl[0])}
+                            alt={relativeProduct.name}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <h4 className="text-[#1C3163] text-[16px] font-medium mb-1">
+                          {relativeProduct.name}
+                        </h4>
+                        <p className="text-[#1C3163] text-[14px] mb-2">
+                          {formatPrice(relativeProduct.price)}
+                        </p>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push(`/shop/${relativeProduct._id}`);
+                          }}
+                          className="text-[#1C3163] border border-[#1C3163] px-4 py-2 rounded-md text-sm font-medium hover:bg-[#1C3163] hover:text-white transition-colors"
+                        >
+                          View Product
+                        </button>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              )}
+
+              {/* Description Section - Accordion Style */}
+              {product.description && (
+                <div className="mb-6 border-t border-b border-[#D5B584]/30">
+                  <button
+                    onClick={() => toggleSection("description")}
+                    className="w-full py-4 flex items-center justify-between text-left"
+                  >
+                    <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium">
+                      Description
+                    </h3>
+                    <span className="text-[#1C3163] text-2xl">
+                      {expandedSections.has("description") ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedSections.has("description") && (
+                    <div className="pb-4">
+                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed whitespace-pre-wrap">
+                        {product.description}
+                      </p>
+                    </div>
                   )}
                 </div>
               )}
 
-              {/* Full Description - Show truncated with Read More */}
-              {product.description && (
-                <div className="mb-6">
-                  <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium mb-3">
-                    Full Description
-                  </h3>
-                  <div className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed">
-                    {showFullDescription || product.description.length <= 200 ? (
-                      <p className="whitespace-pre-wrap">{product.description}</p>
-                    ) : (
-                      <p className="whitespace-pre-wrap">{product.description.substring(0, 200)}...</p>
-                    )}
-                    {product.description.length > 200 && (
-                      <button
-                        onClick={() => setShowFullDescription(!showFullDescription)}
-                        className="text-[#D5B584] hover:text-[#C4A574] font-medium mt-2 underline"
-                      >
-                        {showFullDescription ? "Read Less" : "Read More"}
-                      </button>
-                    )}
-                  </div>
+              {/* Additional Information Sections - Accordion Style */}
+              <div className="mb-6 space-y-0">
+                {/* Bowl Sizing */}
+                <div className="border-t border-[#D5B584]/30">
+                  <button
+                    onClick={() => toggleSection("bowlSizing")}
+                    className="w-full py-4 flex items-center justify-between text-left"
+                  >
+                    <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium">
+                      Bowl Sizing
+                    </h3>
+                    <span className="text-[#1C3163] text-2xl">
+                      {expandedSections.has("bowlSizing") ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedSections.has("bowlSizing") && (
+                    <div className="pb-4">
+                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed">
+                        Our crystal bowls come in various sizes to suit different healing practices. We offer bowls ranging from small (4-6 inches) for personal use to large (12-14 inches) for group sessions. Each size is carefully crafted to produce specific frequencies and resonances. The size you choose depends on your intended use - smaller bowls are perfect for individual meditation and chakra work, while larger bowls create powerful sound waves ideal for group healing sessions.
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
+
+                {/* Shipping and Delivery */}
+                <div className="border-t border-[#D5B584]/30">
+                  <button
+                    onClick={() => toggleSection("shipping")}
+                    className="w-full py-4 flex items-center justify-between text-left"
+                  >
+                    <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium">
+                      Shipping and Delivery
+                    </h3>
+                    <span className="text-[#1C3163] text-2xl">
+                      {expandedSections.has("shipping") ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedSections.has("shipping") && (
+                    <div className="pb-4">
+                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mb-3">
+                        We offer Air Express shipping to ensure your crystal bowls arrive safely and promptly. Shipping charges are calculated based on the total number of bowls in your order:
+                      </p>
+                      <ul className="list-disc list-inside text-[#1C3163] text-[14px] sm:text-[15px] space-y-2 ml-2">
+                        <li>1 Bowl: SGD $65</li>
+                        <li>2-3 Bowls: SGD $111</li>
+                        <li>4-7 Bowls: SGD $155</li>
+                        <li>8+ Bowls: Rates continue in cycles (8 = $65, 9-10 = $111, 11-14 = $155, and so on)</li>
+                      </ul>
+                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mt-3">
+                        All orders are carefully packaged to protect your bowls during transit. Delivery times vary by location, typically 7-14 business days for international orders.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* 3rd vs 4th Octave */}
+                <div className="border-t border-[#D5B584]/30">
+                  <button
+                    onClick={() => toggleSection("octave")}
+                    className="w-full py-4 flex items-center justify-between text-left"
+                  >
+                    <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium">
+                      What's the difference between 3rd and 4th Octave bowls?
+                    </h3>
+                    <span className="text-[#1C3163] text-2xl">
+                      {expandedSections.has("octave") ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedSections.has("octave") && (
+                    <div className="pb-4">
+                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed">
+                        The 3rd octave bowls produce deeper, more grounding frequencies that are ideal for root chakra work and deep meditation. These bowls create a rich, resonant sound that helps anchor you to the earth and promotes feelings of stability and security. The 4th octave bowls have higher, more ethereal frequencies that are perfect for crown chakra activation and spiritual connection. These bowls produce lighter, more uplifting tones that can help elevate consciousness and facilitate connection with higher realms. Each octave offers unique healing properties, and many practitioners use both in their healing sessions for a complete chakra balancing experience.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Tuning System */}
+                <div className="border-t border-[#D5B584]/30">
+                  <button
+                    onClick={() => toggleSection("tuning")}
+                    className="w-full py-4 flex items-center justify-between text-left"
+                  >
+                    <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium">
+                      Which tuning system are GLOW Bowls made in?
+                    </h3>
+                    <span className="text-[#1C3163] text-2xl">
+                      {expandedSections.has("tuning") ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedSections.has("tuning") && (
+                    <div className="pb-4">
+                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mb-3">
+                        Our bowls are available in multiple tuning frequencies to suit your preferences:
+                      </p>
+                      <ul className="list-disc list-inside text-[#1C3163] text-[14px] sm:text-[15px] space-y-2 ml-2">
+                        <li><strong>432 Hz:</strong> The healing frequency of nature, known for its calming and harmonizing effects. This is our standard tuning and is believed to resonate with the natural frequency of the universe.</li>
+                        <li><strong>440 Hz:</strong> Western standard tuning, commonly used in modern music. This frequency is familiar to most ears and works well for general sound healing.</li>
+                        <li><strong>528 Hz:</strong> The miracle frequency of unconditional love, known for its transformative and healing properties. This frequency is said to repair DNA and promote positive transformation.</li>
+                      </ul>
+                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mt-3">
+                        If you would like your bowls in an alternative frequency, please leave a note on your order at checkout and we can customize your order to your preferred frequency.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Product Information */}
               <div className="bg-[#FEF9F5] border border-[#D5B584]/30 rounded-lg p-4 sm:p-6 space-y-3">
@@ -428,19 +582,20 @@ const ProductDetailPage = () => {
             </div>
           </div>
 
-          {/* Related Products Section */}
-          <div>
-            <h2 className="text-black text-[28px] sm:text-[32px] lg:text-[40px] font-normal mb-8 lg:mb-12">
-              Related Products
-            </h2>
+          {/* Related Products Section - Only show if current product is NOT a relative product */}
+          {!product.relativeproduct && (
+            <div>
+              <h2 className="text-black text-[28px] sm:text-[32px] lg:text-[40px] font-normal mb-8 lg:mb-12">
+                Related Products
+              </h2>
 
-            {relatedProducts.length > 0 ? (
+              {relatedProducts.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                 {relatedProducts.map((item) => {
                   const itemImageUrl = item.imageUrl && item.imageUrl.length > 0 
                     ? normalizeImageUrl(item.imageUrl[0])
                     : null;
-                  const itemPriceInRupees = item.price.toFixed(2);
+                  const itemPriceInDollars = formatPrice(item.price);
                   
                   return (
                     <div key={item._id} className="group">
@@ -476,7 +631,7 @@ const ProductDetailPage = () => {
                           </p>
                           <div className="flex items-center justify-between">
                             <p className="text-[#1C3163] text-[12px] sm:text-[14px]">
-                              ${itemPriceInRupees}
+                              {itemPriceInDollars}
                             </p>
                             <button 
                               onClick={(e) => {
@@ -494,10 +649,11 @@ const ProductDetailPage = () => {
                   );
                 })}
               </div>
-            ) : (
-              <p className="text-[#1C3163] text-center py-8">No related products available</p>
-            )}
-          </div>
+              ) : (
+                <p className="text-[#1C3163] text-center py-8">No related products available</p>
+              )}
+            </div>
+          )}
         </div>
       </section>
 

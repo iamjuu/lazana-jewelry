@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import DiscoverySession from "@/models/DiscoverySession";
 import PrivateSession from "@/models/PrivateSession";
 import CorporateSession from "@/models/CorporateSession";
+import FreeStudioVisit from "@/models/FreeStudioVisit";
 import { requireAdmin } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
@@ -293,6 +294,21 @@ export async function POST(req: NextRequest) {
         duration: 60,
         price: 0,
         status: "pending",
+      });
+    } else if (sessionType === "freeStudioVisit") {
+      // Free Studio Visit - save to FreeStudioVisit collection
+      if (!duration) {
+        return NextResponse.json(
+          { success: false, message: "Duration is required for Free Studio Visit" },
+          { status: 400 }
+        );
+      }
+      session = await FreeStudioVisit.create({
+        title: String(title).trim(),
+        description: String(description).trim(),
+        imageUrl: imageUrl ? String(imageUrl).trim() : undefined,
+        videoUrl: videoUrl ? String(videoUrl).trim() : undefined,
+        duration: Number(duration),
       });
     } else {
       return NextResponse.json(

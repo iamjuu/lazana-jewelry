@@ -8,13 +8,39 @@ export async function GET(req: NextRequest) {
   try {
     const user = await requireAuth(req);
     await connectDB();
-    const orders = await Order.find({ userId: user._id }).lean();
-    return NextResponse.json({ success: true, data: orders });
+    
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const skip = (page - 1) * limit;
+    
+    // Fetch orders sorted by newest first, with pagination
+    const orders = await Order.find({ userId: user._id })
+      .sort({ createdAt: -1 }) // Newest first
+      .skip(skip)
+      .limit(limit)
+      .lean();
+    
+    // Get total count for pagination
+    const total = await Order.countDocuments({ userId: user._id });
+    
+    return NextResponse.json({ 
+      success: true, 
+      data: orders,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasMore: skip + orders.length < total,
+      }
+    });
   } catch (e: any) {
     const status = e?.message === "UNAUTHORIZED" ? 401 : 500;
     return NextResponse.json({ success: false, message: e?.message || "Server error" }, { status });
   }
 }
+
 
 export async function POST(req: NextRequest) {
   try {

@@ -11,6 +11,7 @@ type ProductListItem = {
   description?: string;
   shortDescription?: string;
   category?: string | { _id: string; name: string; slug: string };
+  subcategory?: string | { _id: string; name: string; slug: string; category: string | { _id: string; name: string; slug: string } };
   imageUrl?: string[];
   videoUrl?: string | string[];
 };
@@ -20,7 +21,14 @@ type Props = {
   onRefresh: () => void;
 };
 
-const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
+const formatCurrency = (amount: number) => {
+  // Show decimals only if the number has decimal values
+  const rounded = Math.round(amount * 100) / 100;
+  if (rounded % 1 === 0) {
+    return `$${rounded}`;
+  }
+  return `$${rounded.toFixed(2)}`;
+};
 
 const getMainImageUrl = (product: ProductListItem) => {
   const img = product.imageUrl?.[0];
@@ -101,9 +109,18 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
                         shortDescription: product.shortDescription,
                         description: product.description,
                         category: product.category,
+                        subcategory: product.subcategory,
                         price: product.price.toString(),
                         imageUrl: product.imageUrl || [],
                         videoUrl: product.videoUrl,
+                        isSet: (product as any).isSet,
+                        numberOfSets: (product as any).numberOfSets,
+                        newAddition: (product as any).newAddition,
+                        featured: (product as any).featured,
+                        tuning: (product as any).tuning,
+                        octave: (product as any).octave,
+                        size: (product as any).size,
+                        weight: (product as any).weight,
                       }}
                       onComplete={handleEditComplete}
                       onCancel={() => setEditingId(null)}

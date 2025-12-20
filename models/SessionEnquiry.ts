@@ -8,7 +8,7 @@ export interface SessionEnquiryType {
   email: string;
   comment?: string;
   status: "pending" | "contacted" | "completed";
-  sessionType: "discovery" | "private" | "corporate";
+  sessionType: "discovery" | "private" | "corporate" | "freeStudioVisit";
   sessionId?: string; // Reference to DiscoverySession or PrivateSession
   bookedDate?: string; // Date of the booked session (YYYY-MM-DD)
   bookedTime?: string; // Time of the booked session (HH:mm)
@@ -30,7 +30,7 @@ const SessionEnquirySchema = new Schema<SessionEnquiryType>(
     },
     sessionType: { 
       type: String, 
-      enum: ["discovery", "private", "corporate"], 
+      enum: ["discovery", "private", "corporate", "freeStudioVisit"], 
       default: "discovery" 
     },
     sessionId: { type: String }, // Reference to session

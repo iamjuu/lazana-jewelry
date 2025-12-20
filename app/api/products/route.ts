@@ -14,31 +14,92 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * limit;
     const excludeImages = searchParams.get("excludeImages") === "true";
     const categoryParam = searchParams.get("category");
+    const includeRelative = searchParams.get("includeRelative") === "true";
+    
+    // Filter parameters
+    const featured = searchParams.get("featured");
+    const newAddition = searchParams.get("newAddition");
+    const weight = searchParams.get("weight");
+    const octave = searchParams.get("octave");
+    const size = searchParams.get("size");
+    const tuning = searchParams.get("tuning");
+    
+    // Sort parameters
+    const sortBy = searchParams.get("sortBy"); // price, name
+    const sortOrder = searchParams.get("sortOrder"); // asc, desc
 
-    // Build query for category filtering
+    // Build query for filtering
     let query: any = {};
+    
+    // Category filter
     if (categoryParam && categoryParam !== "all") {
       try {
-        // Try to match by slug first
         const category = await Category.findOne({
           slug: categoryParam
         }).lean();
 
         if (category) {
-          // Match products by category ObjectId
           query.category = category._id;
         }
       } catch (catError) {
         console.error("Error matching category:", catError);
-        // If category matching fails, return no products
         query.category = null;
       }
+    }
+    
+    // Featured filter
+    if (featured === "true") {
+      query.featured = true;
+    }
+    
+    // New Addition filter
+    if (newAddition === "true") {
+      query.newAddition = true;
+    }
+    
+    // Weight filter
+    if (weight) {
+      query.weight = weight;
+    }
+    
+    // Octave filter
+    if (octave) {
+      query.octave = octave;
+    }
+    
+    // Size filter
+    if (size) {
+      query.size = size;
+    }
+    
+    // Tuning filter (exact match by Hz number)
+    if (tuning) {
+      const tuningNum = parseFloat(tuning);
+      if (!isNaN(tuningNum)) {
+        query.tuning = tuningNum;
+      }
+    }
+    
+    // Exclude universal products (relativeproduct = true) from regular shop view
+    // Only show regular products unless explicitly requested via includeRelative parameter
+    if (!includeRelative) {
+      query.relativeproduct = { $ne: true };
+    }
+
+    // Build sort object
+    let sort: any = { createdAt: -1 }; // Default sort
+    
+    if (sortBy === "price") {
+      sort = { price: sortOrder === "desc" ? -1 : 1 };
+    } else if (sortBy === "name") {
+      sort = { name: sortOrder === "desc" ? -1 : 1 };
     }
 
     const [products, total] = await Promise.all([
       Product.find(query)
-        .populate('category', 'name slug') // Populate category with name and slug
-        .sort({ createdAt: -1 })
+        .populate('category', 'name slug')
+        .populate('subcategory', 'name slug category')
+        .sort(sort)
         .skip(skip)
         .limit(limit)
         .lean(),

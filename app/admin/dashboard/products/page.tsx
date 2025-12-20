@@ -12,6 +12,7 @@ type Product = {
   description?: string;
   shortDescription?: string;
   category?: string | { _id: string; name: string; slug: string };
+  subcategory?: string | { _id: string; name: string; slug: string; category: string | { _id: string; name: string; slug: string } };
   imageUrl?: string[];
   videoUrl?: string | string[];
 };
@@ -20,6 +21,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isUniversalProduct, setIsUniversalProduct] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -50,18 +52,39 @@ export default function ProductsPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-white">Products Management</h1>
           {!showAddForm && (
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100"
-            >
-              Add Product
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setIsUniversalProduct(false);
+                  setShowAddForm(true);
+                }}
+                className="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100"
+              >
+                Add Product
+              </button>
+              <button
+                onClick={() => {
+                  setIsUniversalProduct(true);
+                  setShowAddForm(true);
+                }}
+                className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              >
+                Add Universal Product
+              </button>
+            </div>
           )}
         </div>
 
         {showAddForm && (
           <div className="mb-8">
-            <ProductForm onComplete={handleAddComplete} onCancel={() => setShowAddForm(false)} />
+            <ProductForm 
+              onComplete={handleAddComplete} 
+              onCancel={() => {
+                setShowAddForm(false);
+                setIsUniversalProduct(false);
+              }}
+              isUniversalProduct={isUniversalProduct}
+            />
           </div>
         )}
 

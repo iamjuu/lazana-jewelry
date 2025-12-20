@@ -40,6 +40,22 @@ const ShopPage = () => {
   
   // Get category from URL using window.location (avoid useSearchParams Suspense issue)
   const [categoryParam, setCategoryParam] = useState<string | null>(null);
+  
+  // Filter states
+  const [filters, setFilters] = useState({
+    featured: false,
+    newAddition: false,
+    weight: "",
+    octave: "",
+    size: "",
+    tuning: "",
+    sortBy: "",
+    sortOrder: "asc",
+  });
+  
+  // Filter panel visibility
+  const [showFilters, setShowFilters] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   // Parse URL on client side and listen for changes
   useEffect(() => {
@@ -81,10 +97,40 @@ const ShopPage = () => {
       try {
         setLoading(true);
         
-        // Build API URL with category filter
+        // Build API URL with category and filters
         let apiUrl = "/api/products";
+        const params = new URLSearchParams();
+        
         if (categoryParam && categoryParam !== "all") {
-          apiUrl += `?category=${encodeURIComponent(categoryParam)}`;
+          params.append("category", categoryParam);
+        }
+        
+        // Add filters
+        if (filters.featured) {
+          params.append("featured", "true");
+        }
+        if (filters.newAddition) {
+          params.append("newAddition", "true");
+        }
+        if (filters.weight) {
+          params.append("weight", filters.weight);
+        }
+        if (filters.octave) {
+          params.append("octave", filters.octave);
+        }
+        if (filters.size) {
+          params.append("size", filters.size);
+        }
+        if (filters.tuning) {
+          params.append("tuning", filters.tuning);
+        }
+        if (filters.sortBy) {
+          params.append("sortBy", filters.sortBy);
+          params.append("sortOrder", filters.sortOrder);
+        }
+        
+        if (params.toString()) {
+          apiUrl += `?${params.toString()}`;
         }
 
         // Add timeout to prevent hanging requests
@@ -164,7 +210,7 @@ const ShopPage = () => {
       // Force loading to false on cleanup to prevent stuck state
       setLoading(false);
     };
-  }, [categoryParam]); // Use stable category param value
+  }, [categoryParam, filters]); // Re-fetch when category or filters change
 
   // Helper function to normalize image URL
   const normalizeImageUrl = (url: string): string => {
@@ -236,8 +282,11 @@ const ShopPage = () => {
                     : "Browse our collection"}
                 </p>
               </div>
-              <div className="flex p-[6px] rounded-[6px] gap-4  border">
-                <button className="border-r border-r-gray-300 pr-4">
+              <div className="flex p-[6px] rounded-[6px] gap-4 border">
+                <button 
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`border-r border-r-gray-300 pr-4 ${showFilters ? 'bg-[#1C3163] rounded' : ''}`}
+                >
                   <Image src={FliterIcon} alt="filter" />
                 </button>
 
@@ -246,6 +295,160 @@ const ShopPage = () => {
                 </button>
               </div>
             </div>
+            
+            {/* Filter Panel */}
+            {showFilters && (
+              <div className="w-full bg-white rounded-lg p-6 shadow-lg mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Featured & New Addition Checkboxes */}
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={filters.featured}
+                        onChange={(e) => setFilters({ ...filters, featured: e.target.checked })}
+                        className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
+                      />
+                      <span className="text-[#1C3163] text-sm font-medium">Featured</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={filters.newAddition}
+                        onChange={(e) => setFilters({ ...filters, newAddition: e.target.checked })}
+                        className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
+                      />
+                      <span className="text-[#1C3163] text-sm font-medium">New Addition</span>
+                    </label>
+                  </div>
+                  
+                  {/* Weight Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-[#1C3163] mb-2">Weight</label>
+                    <select
+                      value={filters.weight}
+                      onChange={(e) => setFilters({ ...filters, weight: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1C3163] text-sm"
+                    >
+                      <option value="">All Weights</option>
+                      <option value="less than 1kg">Less than 1kg</option>
+                      <option value="less than 6kg">Less than 6kg</option>
+                      <option value="between 1-3kg">Between 1-3kg</option>
+                      <option value="3-5kg">3-5kg</option>
+                    </select>
+                  </div>
+                  
+                  {/* Octave Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-[#1C3163] mb-2">Octave</label>
+                    <select
+                      value={filters.octave}
+                      onChange={(e) => setFilters({ ...filters, octave: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1C3163] text-sm"
+                    >
+                      <option value="">All Octaves</option>
+                      <option value="3rd octave">3rd Octave</option>
+                      <option value="4th octave">4th Octave</option>
+                    </select>
+                  </div>
+                  
+                  {/* Size Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-[#1C3163] mb-2">Size</label>
+                    <select
+                      value={filters.size}
+                      onChange={(e) => setFilters({ ...filters, size: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1C3163] text-sm"
+                    >
+                      <option value="">All Sizes</option>
+                      <option value="5-6">5-6</option>
+                      <option value="6-7">6-7</option>
+                      <option value="7-8">7-8</option>
+                      <option value="8">8</option>
+                    </select>
+                  </div>
+                  
+                  {/* Tuning Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-[#1C3163] mb-2">Tuning (Hz)</label>
+                    <select
+                      value={filters.tuning}
+                      onChange={(e) => setFilters({ ...filters, tuning: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1C3163] text-sm"
+                    >
+                      <option value="">All Tuning</option>
+                      <option value="432">432 Hz</option>
+                      <option value="440">440 Hz</option>
+                      <option value="528">528 Hz</option>
+                    </select>
+                  </div>
+                  
+                  {/* Sort By Price */}
+                  <div>
+                    <label className="block text-sm font-medium text-[#1C3163] mb-2">Sort by Price</label>
+                    <select
+                      value={filters.sortBy === "price" ? `price-${filters.sortOrder}` : ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "") {
+                          setFilters({ ...filters, sortBy: "", sortOrder: "asc" });
+                        } else {
+                          const [sortBy, sortOrder] = value.split("-");
+                          setFilters({ ...filters, sortBy, sortOrder });
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1C3163] text-sm"
+                    >
+                      <option value="">Default</option>
+                      <option value="price-asc">Price: Low to High</option>
+                      <option value="price-desc">Price: High to Low</option>
+                    </select>
+                  </div>
+                  
+                  {/* Sort Alphabetically */}
+                  <div>
+                    <label className="block text-sm font-medium text-[#1C3163] mb-2">Sort Alphabetically</label>
+                    <select
+                      value={filters.sortBy === "name" ? `name-${filters.sortOrder}` : ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "") {
+                          setFilters({ ...filters, sortBy: "", sortOrder: "asc" });
+                        } else {
+                          const [sortBy, sortOrder] = value.split("-");
+                          setFilters({ ...filters, sortBy, sortOrder });
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1C3163] text-sm"
+                    >
+                      <option value="">Default</option>
+                      <option value="name-asc">A-Z</option>
+                      <option value="name-desc">Z-A</option>
+                    </select>
+                  </div>
+                </div>
+                
+                {/* Clear Filters Button */}
+                <div className="mt-6 flex justify-end">
+                  <button
+                    onClick={() => setFilters({
+                      featured: false,
+                      newAddition: false,
+                      weight: "",
+                      octave: "",
+                      size: "",
+                      tuning: "",
+                      sortBy: "",
+                      sortOrder: "asc",
+                    })}
+                    className="px-4 py-2 text-sm text-[#1C3163] border border-[#1C3163] rounded-md hover:bg-[#1C3163] hover:text-white transition-colors"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              </div>
+            )}
+            
             <div className="flex  w-full bg-amber-100flex-col gap-12 md:gap-16 lg:gap-[80px]">
               {loading ? (
                 <div className="text-center py-12 text-[#1C3163]">
@@ -265,8 +468,15 @@ const ShopPage = () => {
                     const imageUrl = item.imageUrl && item.imageUrl.length > 0 
                       ? item.imageUrl[0] 
                       : null;
-                    // Price is already in rupees
-                    const priceInRupees = item.price.toFixed(2);
+                    // Price is already in dollars - format to show decimals only if needed
+                    const formatPrice = (price: number) => {
+                      const rounded = Math.round(price * 100) / 100;
+                      if (rounded % 1 === 0) {
+                        return `$${rounded}`;
+                      }
+                      return `$${rounded.toFixed(2)}`;
+                    };
+                    const priceInRupees = formatPrice(item.price);
                     
                     return (
                       <Link 
@@ -300,7 +510,7 @@ const ShopPage = () => {
                               {item.name}
                             </p>
                             <p className="pt-3 sm:pt-4 md:pt-[18px] text-[10px] sm:text-[11px] md:text-[12px]">
-                              ${priceInRupees}
+                              {priceInRupees}
                             </p>
                           </div>
                           <button

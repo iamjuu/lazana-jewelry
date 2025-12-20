@@ -16,6 +16,7 @@ const navigationItems = [
   { href: '/shop', label: 'Shop', hasDropdown: true },
   { href: '/events', label: 'Events' },
   { href: '/blog', label: 'Blog' },
+  { href: '/book', label: 'Book' },
   // { href: '/faq', label: 'FAQ' },
 ]
 
@@ -273,13 +274,13 @@ const Navbar = () => {
               )
             })}
             <Link 
-              href="/book" 
-              onClick={(e) => handleNavigation(e, '/book')}
+              href="/book-a-session" 
+              onClick={(e) => handleNavigation(e, '/book-a-session')}
               className={`group relative text-[#D5B584] px-4 xl:px-6 py-2 rounded hover:bg-white/80 hover:backdrop-blur-sm hover:text-black transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-105 hover:shadow-lg overflow-hidden ${
-                pathname === '/book' ? 'bg-white text-black scale-105 shadow-lg' : ''
+                pathname === '/book-a-session' ? 'bg-white text-black scale-105 shadow-lg' : ''
               }`}
             >
-              <span className="relative z-10">Book a Session</span>
+              <span className="relative z-10">Book a Call</span>
               <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out bg-gradient-to-r from-transparent via-white/30 to-transparent"></span>
             </Link>
             
@@ -405,13 +406,13 @@ const Navbar = () => {
             ))}
             <div className='px-2 pt-2'>
               <Link 
-                href="/book" 
-                onClick={(e) => handleNavigation(e, '/book')}
+                href="/book-a-session" 
+                onClick={(e) => handleNavigation(e, '/book-a-session')}
                 className={`group relative block text-[#D5B584] border border-[#D5B584] px-6 py-3 rounded hover:bg-white hover:text-black transition-all duration-150 text-base font-normal text-center hover:scale-105 hover:shadow-lg overflow-hidden ${
-                  pathname === '/book' ? 'bg-white text-black scale-105 shadow-lg' : ''
+                  pathname === '/book-a-session' ? 'bg-white text-black scale-105 shadow-lg' : ''
                 }`}
               >
-                <span className="relative z-10">Book a Session</span>
+                <span className="relative z-10">Book a Call</span>
                 <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-in-out bg-gradient-to-r from-transparent via-white/30 to-transparent"></span>
               </Link>
             </div>

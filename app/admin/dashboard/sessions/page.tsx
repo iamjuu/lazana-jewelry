@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { Calendar, Clock } from "lucide-react";
 
-type TabType = "discovery" | "private" | "corporate";
+type TabType = "discovery" | "private" | "corporate" | "freeStudioVisit";
 type MediaType = "image" | "video" | null;
 
 type Session = {
@@ -13,7 +13,8 @@ type Session = {
   description?: string;
   imageUrl?: string;
   videoUrl?: string;
-  sessionType?: "regular" | "corporate" | "private" | "discovery";
+  sessionType?: "regular" | "corporate" | "private" | "discovery" | "freeStudioVisit";
+  duration?: number;
   format?: string;
   benefits?: string[];
   createdAt: string;
@@ -169,6 +170,7 @@ export default function SessionsPage() {
     { id: "discovery" as TabType, label: "Discovery" },
     { id: "private" as TabType, label: "Private Session" },
     { id: "corporate" as TabType, label: "Corporate Sessions" },
+    { id: "freeStudioVisit" as TabType, label: "Free Studio Visit" },
   ];
 
   // Fetch sessions
@@ -214,6 +216,8 @@ export default function SessionsPage() {
       filtered = sessions.filter((s) => s.sessionType === "private");
     } else if (activeTab === "corporate") {
       filtered = sessions.filter((s) => s.sessionType === "corporate");
+    } else if (activeTab === "freeStudioVisit") {
+      filtered = sessions.filter((s) => s.sessionType === "freeStudioVisit");
     }
     
     console.log(`Filtered sessions for ${activeTab}:`, filtered.length, "out of", sessions.length);
@@ -530,6 +534,10 @@ export default function SessionsPage() {
 
       if (activeTab === "private") {
         requestBody.price = Number(formData.price);
+      }
+
+      if (activeTab === "freeStudioVisit") {
+        requestBody.duration = Number(formData.duration);
       }
 
       if (isEdit) {
@@ -1032,15 +1040,15 @@ export default function SessionsPage() {
               </div>
             )}
 
-            {/* Duration - For Discovery and Private */}
-            {(activeTab === "discovery" || activeTab === "private") && (
+            {/* Duration - For Discovery, Private, and Free Studio Visit */}
+            {(activeTab === "discovery" || activeTab === "private" || activeTab === "freeStudioVisit") && (
               <div className="space-y-1">
                 <label htmlFor="duration" className="text-sm font-medium text-white">
                   Duration (minutes) <span className="text-red-500">*</span>
                 </label>
                 <select
                   id="duration"
-                  required={activeTab === "discovery" || activeTab === "private"}
+                  required={activeTab === "discovery" || activeTab === "private" || activeTab === "freeStudioVisit"}
                   value={formData.duration}
                   onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                   className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"

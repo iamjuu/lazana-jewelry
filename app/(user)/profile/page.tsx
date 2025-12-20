@@ -67,6 +67,9 @@ function ProfilePageContent() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [bookingsLoading, setBookingsLoading] = useState(false);
+  const [ordersPage, setOrdersPage] = useState(1);
+  const [hasMoreOrders, setHasMoreOrders] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -96,7 +99,7 @@ function ProfilePageContent() {
 
   useEffect(() => {
     if (activeTab === "orders" && orders.length === 0 && !ordersLoading) {
-      fetchOrders();
+      fetchOrders(1, false);
     }
     if (activeTab === "bookings" && bookings.length === 0 && !bookingsLoading) {
       fetchBookings();
@@ -144,19 +147,31 @@ function ProfilePageContent() {
     }
   };
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (page: number = 1, append: boolean = false) => {
     const token = localStorage.getItem("userToken");
     if (!token) return;
 
     try {
-      setOrdersLoading(true);
-      const response = await fetch("/api/orders", {
+      if (append) {
+        setIsLoadingMore(true);
+      } else {
+        setOrdersLoading(true);
+        setOrders([]); // Clear previous orders when fetching first page
+      }
+      
+      const response = await fetch(`/api/orders?page=${page}&limit=10`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await response.json();
       if (data.success) {
-        setOrders(data.data || []);
+        if (append) {
+          setOrders((prev) => [...prev, ...(data.data || [])]);
+        } else {
+          setOrders(data.data || []);
+        }
+        setHasMoreOrders(data.pagination?.hasMore || false);
+        setOrdersPage(page);
       } else {
         toast.error(data.message || "Failed to fetch orders");
       }
@@ -165,6 +180,14 @@ function ProfilePageContent() {
       toast.error("Something went wrong");
     } finally {
       setOrdersLoading(false);
+      setIsLoadingMore(false);
+    }
+  };
+
+  // Load more orders when scrolling
+  const handleLoadMoreOrders = () => {
+    if (!isLoadingMore && hasMoreOrders) {
+      fetchOrders(ordersPage + 1, true);
     }
   };
 
@@ -635,24 +658,64 @@ function ProfilePageContent() {
                           </div>
                         </div>
                         <div className="p-6">
+                          {/* Admin Message */}
+                          {order.currentMessage && (
+                            <div className="mb-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                              <div className="flex items-start gap-2">
+                                <div className="flex-shrink-0 mt-0.5">
+                                  <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-blue-800">Latest Update:</p>
+                                  <p className="text-sm text-blue-700 mt-1">{order.currentMessage}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
                           <div className="space-y-4 mb-4">
                             {order.items.map((item, index) => (
                               <div key={index} className="flex justify-between items-start">
                                 <div className="flex-1">
                                   <p className="text-[#1C3163] font-medium">{item.name}</p>
-                                  <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                                  <p className="text-sm text-gray-600">
+                                    Quantity: {item.quantity} {item.isSet ? '(Set)' : '(Piece)'}
+                                  </p>
                                 </div>
                                 <p className="text-[#1C3163] font-medium">
-                                  ${item.price.toLocaleString("en-US")}
+                                  ${(item.price * item.quantity).toFixed(2)}
                                 </p>
                               </div>
                             ))}
                           </div>
-                          <div className="border-t border-gray-200 pt-4 mt-4">
-                            <div className="flex justify-between items-center">
-                              <p className="text-[#1C3163] font-semibold text-lg">Total Amount</p>
+                          <div className="border-t border-gray-200 pt-4 mt-4 space-y-2">
+                            {order.deliveryCharges && (
+                              <>
+                                <div className="flex justify-between items-center text-sm">
+                                  <p className="text-gray-600">Product Total</p>
+                                  <p className="text-[#1C3163] font-medium">
+                                    ${order.productTotal ? order.productTotal.toFixed(2) : order.amount.toFixed(2)}
+                                  </p>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                  <p className="text-gray-600">Delivery ({order.deliveryCharges.method})</p>
+                                  <p className="text-[#1C3163] font-medium">
+                                    ${order.deliveryCharges.total.toFixed(2)}
+                                  </p>
+                                </div>
+                                {order.deliveryCharges.breakdown && (
+                                  <p className="text-xs text-gray-500 italic pl-4">
+                                    {order.deliveryCharges.breakdown}
+                                  </p>
+                                )}
+                              </>
+                            )}
+                            <div className="flex justify-between items-center pt-2 border-t border-gray-300">
+                              <p className="text-[#1C3163] font-semibold text-lg">Total Amount (SGD)</p>
                               <p className="text-[#1C3163] font-semibold text-xl">
-                                ${order.amount.toLocaleString("en-US")}
+                                ${order.amount.toFixed(2)}
                               </p>
                             </div>
                             {order.paymentProvider && (
@@ -660,10 +723,29 @@ function ProfilePageContent() {
                                 Paid via {order.paymentProvider.charAt(0).toUpperCase() + order.paymentProvider.slice(1)}
                               </p>
                             )}
+                            {order.customerComments && (
+                              <div className="mt-4 pt-4 border-t border-gray-200">
+                                <p className="text-sm font-medium text-gray-700 mb-1">Your Comments:</p>
+                                <p className="text-sm text-gray-600 italic">{order.customerComments}</p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
                     ))}
+
+                    {/* Load More Button */}
+                    {hasMoreOrders && (
+                      <div className="text-center py-6">
+                        <button
+                          onClick={handleLoadMoreOrders}
+                          disabled={isLoadingMore}
+                          className="bg-[#1C3163] text-white px-6 py-2 rounded-lg hover:bg-[#152747] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isLoadingMore ? "Loading..." : "Load More Orders"}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
