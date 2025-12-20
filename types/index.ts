@@ -54,9 +54,19 @@ export interface Product extends WithTimestamps {
   shortDescription?: string; // Brief description
   description: string; // Long description
   category?: string | Category; // Category reference (can be ObjectId string or populated Category object)
+  subcategory?: string | Subcategory; // Subcategory reference (can be ObjectId string or populated Subcategory object)
   price: number; // Price in rupees/dollars (not cents/paise)
   imageUrl: string[]; // Array of base64 image strings
   videoUrl?: string | string[]; // Base64 video string(s) or URL(s) - supports up to 2 videos
+  isSet?: boolean; // Checkbox field (true/false)
+  numberOfSets?: number; // Number of sets (only if isSet is true)
+  newAddition?: boolean; // New addition checkbox
+  featured?: boolean; // Featured checkbox
+  tuning?: number; // Hz value like 20, 30 (number in Hz)
+  relativeproduct?: boolean; // Checkbox field (true/false)
+  octave?: '3rd octave' | '4th octave'; // Dropdown: 3rd octave or 4th octave
+  size?: string; // Size like "7-8 inch", "8 inch"
+  weight?: 'less than 1kg' | 'less than 6kg' | 'between 1-3kg' | '3-5kg'; // Weight category
 }
 
 export interface Category extends WithTimestamps {
@@ -66,36 +76,77 @@ export interface Category extends WithTimestamps {
   description?: string;
 }
 
+export interface Subcategory extends WithTimestamps {
+  _id: string;
+  name: string;
+  slug: string;
+  category: string | Category; // Category reference (can be ObjectId string or populated Category object)
+  imageUrl?: string;
+}
+
 export interface OrderItem {
   productId: string;
   name: string;
   price: number;
   quantity: number;
+  isSet?: boolean; // To calculate delivery charges
 }
 
-export type OrderStatus = "pending" | "paid" | "shipped" | "delivered" | "cancelled" | "refunded";
+export type OrderStatus = "pending" | "paid" | "cancelled"; // Payment status only
+
+export type DeliveryStatus = "pending" | "processing" | "ready to ship" | "shipped" | "reached to your country" | "on the way to delivery" | "delivered";
+
+export type DeliveryMethod = "Air Express" | "Air Economy"; // Air Economy kept for backward compatibility, but only Air Express is available for new orders
+
+export interface DeliveryCharges {
+  method: DeliveryMethod;
+  breakdown: string; // e.g., "3 sets × $170 + 2 pcs × $65 = $640"
+  total: number;
+}
 
 export interface ShippingAddress {
-  line1?: string;
-  line2?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
-  country?: string;
+  fullName: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface OrderStatusUpdate {
+  status: OrderStatus;
+  message?: string; // Admin's custom message
+  updatedAt: Date;
+}
+
+export interface DeliveryStatusUpdate {
+  deliveryStatus: DeliveryStatus;
+  message?: string; // Admin's custom message
+  updatedAt: Date;
+  emailSent?: boolean; // Track if email was sent for this status update
+  emailSentAt?: Date; // When email was sent
 }
 
 export interface Order extends WithTimestamps {
   _id: string;
   userId: string;
   items: OrderItem[];
-  amount: number;
-  currency: string;
-  status: OrderStatus;
-  paymentProvider?: "razorpay" | "stripe";
+  productTotal: number; // Total product cost
+  deliveryCharges: DeliveryCharges;
+  amount: number; // productTotal + deliveryCharges.total
+  currency: string; // SGD
+  status: OrderStatus; // Payment status (pending, paid, cancelled)
+  deliveryStatus: DeliveryStatus; // Delivery status (pending, processing, ready to ship, shipped, reached to your country, on the way to delivery, delivered)
+  statusHistory: OrderStatusUpdate[]; // Track payment status updates
+  deliveryStatusHistory: DeliveryStatusUpdate[]; // Track delivery status updates with messages
+  currentMessage?: string; // Latest admin message (can be updated without triggering email)
+  customerComments?: string; // User's comments/questions
+  paymentProvider?: "stripe";
   paymentRef?: string;
-  shippingAddress?: ShippingAddress;
-  customerEmail?: string;
-  customerName?: string;
+  shippingAddress: ShippingAddress;
+  customerEmail: string;
+  customerName: string;
 }
 
 export interface CorporateSession extends WithTimestamps {
@@ -176,6 +227,16 @@ export interface PrivateSession extends WithTimestamps {
   format?: string;
   benefits?: string[];
   slotId?: string;
+}
+
+export interface FreeStudioVisit extends WithTimestamps {
+  _id: string;
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  duration?: number; // Time in minutes
+  sessionType: "freeStudioVisit";
 }
 
 export type BookingStatus = "pending" | "confirmed" | "cancelled";

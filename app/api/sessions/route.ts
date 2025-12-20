@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import DiscoverySession from "@/models/DiscoverySession";
 import PrivateSession from "@/models/PrivateSession";
 import CorporateSession from "@/models/CorporateSession";
+import FreeStudioVisit from "@/models/FreeStudioVisit";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET(_req: NextRequest) {
@@ -10,10 +11,11 @@ export async function GET(_req: NextRequest) {
     await connectDB();
     
     // Fetch from all collections
-    const [discoverySessions, privateSessions, corporateSessions] = await Promise.all([
+    const [discoverySessions, privateSessions, corporateSessions, freeStudioVisitSessions] = await Promise.all([
       DiscoverySession.find().sort({ date: 1, startTime: 1 }).lean(),
       PrivateSession.find().sort({ date: 1, startTime: 1 }).lean(),
       CorporateSession.find().sort({ date: 1, startTime: 1 }).lean(),
+      FreeStudioVisit.find().sort({ createdAt: -1 }).lean(),
     ]);
 
     // Add sessionType to each for frontend filtering
@@ -21,6 +23,7 @@ export async function GET(_req: NextRequest) {
       ...discoverySessions.map(s => ({ ...s, sessionType: "discovery" })),
       ...privateSessions.map(s => ({ ...s, sessionType: "private" })),
       ...corporateSessions.map(s => ({ ...s, sessionType: "corporate" })),
+      ...freeStudioVisitSessions.map(s => ({ ...s, sessionType: "freeStudioVisit" })),
     ];
 
     return NextResponse.json({ success: true, data: allSessions });

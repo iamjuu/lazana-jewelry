@@ -9,7 +9,10 @@ export async function GET(_req: NextRequest, context: RouteContext) {
   try {
     await connectDB();
     const { id } = await context.params;
-    const product = await Product.findById(id).populate('category', 'name slug').lean();
+    const product = await Product.findById(id)
+      .populate('category', 'name slug')
+      .populate('subcategory', 'name slug category')
+      .lean();
     if (!product) return NextResponse.json({ success: false, message: "Not found" }, { status: 404 });
     return NextResponse.json({ success: true, data: product });
   } catch {

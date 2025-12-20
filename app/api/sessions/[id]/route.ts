@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import DiscoverySession from "@/models/DiscoverySession";
 import PrivateSession from "@/models/PrivateSession";
 import CorporateSession from "@/models/CorporateSession";
+import FreeStudioVisit from "@/models/FreeStudioVisit";
 import { requireAdmin } from "@/lib/auth";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -26,6 +27,11 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     session = await CorporateSession.findById(id).lean();
     if (session) {
       return NextResponse.json({ success: true, data: { ...session, sessionType: "corporate" } });
+    }
+    
+    session = await FreeStudioVisit.findById(id).lean();
+    if (session) {
+      return NextResponse.json({ success: true, data: { ...session, sessionType: "freeStudioVisit" } });
     }
     
     return NextResponse.json({ success: false, message: "Not found" }, { status: 404 });
@@ -55,6 +61,9 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     } else if (sessionType === "corporate") {
       existingSession = await CorporateSession.findById(id);
       SessionModel = CorporateSession;
+    } else if (sessionType === "freeStudioVisit") {
+      existingSession = await FreeStudioVisit.findById(id);
+      SessionModel = FreeStudioVisit;
     } else {
       // Try to find in all collections
       existingSession = await DiscoverySession.findById(id);
@@ -66,7 +75,12 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
           SessionModel = PrivateSession;
         } else {
           existingSession = await CorporateSession.findById(id);
-          SessionModel = CorporateSession;
+          if (existingSession) {
+            SessionModel = CorporateSession;
+          } else {
+            existingSession = await FreeStudioVisit.findById(id);
+            SessionModel = FreeStudioVisit;
+          }
         }
       }
     }
@@ -149,6 +163,11 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       }
     }
 
+    // Handle duration for freeStudioVisit (no date/time conflict checking needed)
+    if (sessionType === "freeStudioVisit" && duration !== undefined) {
+      updateData.duration = Number(duration);
+    }
+
     const updated = await SessionModel.findByIdAndUpdate(id, updateData, { new: true });
     if (!updated) {
       return NextResponse.json({ success: false, message: "Not found" }, { status: 404 });
@@ -178,6 +197,11 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     }
     
     deleted = await CorporateSession.findByIdAndDelete(id);
+    if (deleted) {
+      return NextResponse.json({ success: true });
+    }
+    
+    deleted = await FreeStudioVisit.findByIdAndDelete(id);
     if (deleted) {
       return NextResponse.json({ success: true });
     }

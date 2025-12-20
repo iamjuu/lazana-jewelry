@@ -365,17 +365,18 @@ export async function POST(req: NextRequest) {
     }
 
     // For corporate - create enquiry without payment
-    const enquiry = await SessionEnquiry.create({
-      fullName: fullName || "Corporate Enquiry",
-      services: services || "Corporate Session",
-      phone: phone || "N/A",
-      email: email || "corporate@example.com",
-      comment: comment || "",
-      status: "pending",
-      sessionType: "corporate",
-    });
+    if (sessionType === "corporate") {
+      const enquiry = await SessionEnquiry.create({
+        fullName: fullName || "Corporate Enquiry",
+        services: services || "Corporate Session",
+        phone: phone || "N/A",
+        email: email || "corporate@example.com",
+        comment: comment || "",
+        status: "pending",
+        sessionType: "corporate",
+      });
 
-    // Send regular confirmation to user for corporate sessions
+      // Send regular confirmation to user for corporate sessions
       sendEnquiryConfirmationToUser({
         fullName: enquiry.fullName,
         email: enquiry.email,
@@ -385,14 +386,67 @@ export async function POST(req: NextRequest) {
         console.error("Failed to send user confirmation email:", error);
       });
 
+      return NextResponse.json(
+        { 
+          success: true, 
+          message: "Enquiry submitted successfully", 
+          data: enquiry,
+          requiresPayment: false,
+        },
+        { status: 201 }
+      );
+    }
+
+    // For freeStudioVisit - create enquiry without payment (similar to corporate)
+    if (sessionType === "freeStudioVisit") {
+      const enquiry = await SessionEnquiry.create({
+        fullName: fullName || "Free Studio Visit Enquiry",
+        services: services || "Free Studio Visit",
+        phone: phone || "N/A",
+        email: email || "visit@example.com",
+        comment: comment || "",
+        status: "pending",
+        sessionType: "freeStudioVisit",
+      });
+
+      // Send notification to admin
+      sendEnquiryNotificationToAdmin({
+        fullName: enquiry.fullName,
+        email: enquiry.email,
+        phone: enquiry.phone,
+        services: enquiry.services,
+        sessionType: enquiry.sessionType,
+        comment: enquiry.comment,
+        createdAt: enquiry.createdAt.toISOString(),
+      }).catch((error) => {
+        console.error("Failed to send admin notification email:", error);
+      });
+
+      // Send confirmation to user
+      sendEnquiryConfirmationToUser({
+        fullName: enquiry.fullName,
+        email: enquiry.email,
+        services: enquiry.services,
+        sessionType: enquiry.sessionType,
+      }).catch((error) => {
+        console.error("Failed to send user confirmation email:", error);
+      });
+
+      return NextResponse.json(
+        { 
+          success: true, 
+          message: "Free Studio Visit enquiry submitted successfully", 
+          data: enquiry,
+          requiresPayment: false,
+        },
+        { status: 201 }
+      );
+    }
+
+    // If sessionType doesn't match any known type
     return NextResponse.json(
-      { 
-        success: true, 
-        message: "Enquiry submitted successfully", 
-        data: enquiry,
-        requiresPayment: false,
-      },
-      { status: 201 }
+      { success: false, message: "Invalid session type" },
+      { status: 400 }
     );
   } catch (error) {
     console.error("Error creating enquiry:", error);

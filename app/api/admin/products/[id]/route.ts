@@ -13,7 +13,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     
     const { id } = await context.params;
     const body = await req.json();
-    const { name, shortDescription, description, category, price, imageUrl, videoUrl } = body;
+    const { name, shortDescription, description, category, subcategory, price, imageUrl, videoUrl, isSet, numberOfSets, newAddition, featured, tuning, octave, size, weight } = body;
 
     // Validation
     if (name !== undefined && !name) {
@@ -52,15 +52,30 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       }
       // If category is provided but invalid, silently ignore it (don't update the field)
     }
+    if (subcategory !== undefined) {
+      // Validate subcategory - must be a valid ObjectId or empty
+      const subcategoryStr = subcategory ? String(subcategory).trim() : "";
+      if (subcategoryStr && mongoose.Types.ObjectId.isValid(subcategoryStr)) {
+        updateData.subcategory = subcategoryStr;
+      } else if (subcategoryStr === "") {
+        // Empty string means remove subcategory
+        updateData.subcategory = null;
+      }
+      // If subcategory is provided but invalid, silently ignore it (don't update the field)
+    }
     if (price !== undefined) {
       const priceString = String(price).trim();
       const priceInRupees = parseFloat(priceString);
+      
+      // Round to 2 decimal places to avoid floating point precision issues
+      const roundedPrice = Math.round(priceInRupees * 100) / 100;
       
       console.log("=== PRODUCT UPDATE DEBUG ===");
       console.log("Raw price received:", price);
       console.log("Price type:", typeof price);
       console.log("Price string:", priceString);
       console.log("Parsed price:", priceInRupees);
+      console.log("Rounded price:", roundedPrice);
       console.log("Is NaN?", isNaN(priceInRupees));
       console.log("==============================");
       
@@ -70,7 +85,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
           { status: 400 }
         );
       }
-      updateData.price = priceInRupees;
+      updateData.price = roundedPrice;
     }
     if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
     if (videoUrl !== undefined) {
@@ -83,8 +98,62 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
         updateData.videoUrl = [];
       }
     }
+    if (isSet !== undefined) {
+      updateData.isSet = Boolean(isSet);
+      // If isSet is false, clear numberOfSets
+      if (!isSet) {
+        updateData.numberOfSets = null;
+      }
+    }
+    if (numberOfSets !== undefined) {
+      if (isSet === true && numberOfSets !== null && numberOfSets !== undefined) {
+        const setsNum = typeof numberOfSets === 'number' ? numberOfSets : parseInt(String(numberOfSets));
+        if (!isNaN(setsNum) && setsNum > 0) {
+          updateData.numberOfSets = setsNum;
+        }
+      } else if (numberOfSets === null || numberOfSets === undefined || numberOfSets === "") {
+        updateData.numberOfSets = null;
+      }
+    }
+    if (newAddition !== undefined) updateData.newAddition = Boolean(newAddition);
+    if (featured !== undefined) updateData.featured = Boolean(featured);
+    if (tuning !== undefined) {
+      if (tuning !== null && tuning !== "") {
+        const tuningNum = typeof tuning === 'number' ? tuning : parseFloat(String(tuning));
+        if (!isNaN(tuningNum)) {
+          updateData.tuning = tuningNum;
+        } else {
+          updateData.tuning = null; // Remove tuning if invalid
+        }
+      } else {
+        updateData.tuning = null; // Remove tuning if empty
+      }
+    }
+    if (octave !== undefined) {
+      if (octave && String(octave).trim()) {
+        updateData.octave = String(octave).trim();
+      } else {
+        updateData.octave = null; // Remove octave if empty
+      }
+    }
+    if (size !== undefined) {
+      if (size && String(size).trim()) {
+        updateData.size = String(size).trim();
+      } else {
+        updateData.size = null; // Remove size if empty
+      }
+    }
+    if (weight !== undefined) {
+      if (weight && String(weight).trim()) {
+        updateData.weight = String(weight).trim();
+      } else {
+        updateData.weight = null; // Remove weight if empty
+      }
+    }
 
-    const updated = await Product.findByIdAndUpdate(id, updateData, { new: true }).populate('category', 'name slug');
+    const updated = await Product.findByIdAndUpdate(id, updateData, { new: true })
+      .populate('category', 'name slug')
+      .populate('subcategory', 'name slug category');
     
     if (!updated) {
       return NextResponse.json(

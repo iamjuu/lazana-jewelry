@@ -8,6 +8,12 @@ type Category = {
   name: string;
 };
 
+type Subcategory = {
+  _id: string;
+  name: string;
+  category: string | Category;
+};
+
 type ProductFormProps = {
   productId?: string;
   initialData?: {
@@ -15,21 +21,33 @@ type ProductFormProps = {
     shortDescription?: string;
     description?: string;
     category?: string | { _id: string; name: string; slug: string };
+    subcategory?: string | { _id: string; name: string; slug: string; category: string | Category };
     price?: string;
     imageUrl?: string[];
     videoUrl?: string | string[];
+    isSet?: boolean;
+    numberOfSets?: number;
+    newAddition?: boolean;
+    featured?: boolean;
+    tuning?: string;
+    octave?: '3rd octave' | '4th octave';
+    size?: string;
+    weight?: 'less than 1kg' | 'less than 6kg' | 'between 1-3kg' | '3-5kg';
   };
   onComplete?: () => void;
   onCancel?: () => void;
+  isUniversalProduct?: boolean; // New prop to indicate universal product
 };
 
-export default function ProductForm({ productId, initialData, onComplete, onCancel }: ProductFormProps) {
+export default function ProductForm({ productId, initialData, onComplete, onCancel, isUniversalProduct = false }: ProductFormProps) {
   const isEdit = !!productId;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
+  const [loadingSubcategories, setLoadingSubcategories] = useState(false);
   
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
@@ -38,6 +56,9 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
     category: typeof initialData?.category === 'object' && initialData?.category?._id 
       ? String(initialData.category._id) 
       : (initialData?.category ? String(initialData.category) : ""),
+    subcategory: typeof initialData?.subcategory === 'object' && initialData?.subcategory?._id 
+      ? String(initialData.subcategory._id) 
+      : (initialData?.subcategory ? String(initialData.subcategory) : ""),
     price: initialData?.price || "",
     images: initialData?.imageUrl || [] as string[],
     videos: Array.isArray(initialData?.videoUrl) 
@@ -45,6 +66,14 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
       : initialData?.videoUrl 
         ? [initialData.videoUrl] 
         : [] as string[],
+    isSet: initialData?.isSet || false,
+    numberOfSets: initialData?.numberOfSets ? String(initialData.numberOfSets) : "",
+    newAddition: initialData?.newAddition || false,
+    featured: initialData?.featured || false,
+    tuning: initialData?.tuning ? String(initialData.tuning) : "",
+    octave: initialData?.octave || "",
+    size: initialData?.size || "",
+    weight: initialData?.weight || "",
   });
 
   // Fetch categories on component mount
@@ -65,6 +94,35 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
     
     fetchCategories();
   }, []);
+
+  // Fetch subcategories when category changes
+  useEffect(() => {
+    const fetchSubcategories = async () => {
+      if (!formData.category) {
+        setSubcategories([]);
+        setFormData(prev => ({ ...prev, subcategory: "" })); // Reset subcategory when category is cleared
+        return;
+      }
+
+      try {
+        setLoadingSubcategories(true);
+        const response = await fetch(`/api/admin/subcategories?categoryId=${formData.category}`);
+        const data = await response.json();
+        if (data.success) {
+          setSubcategories(data.data);
+        } else {
+          setSubcategories([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch subcategories:", error);
+        setSubcategories([]);
+      } finally {
+        setLoadingSubcategories(false);
+      }
+    };
+    
+    fetchSubcategories();
+  }, [formData.category]);
 
   // Helper to convert base64 string to data URL if needed
   const normalizeImageUrl = (url: string): string => {
@@ -305,6 +363,18 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
       return;
     }
 
+    if (isUniversalProduct && !formData.shortDescription.trim()) {
+      setError("Short description is required for universal products");
+      setLoading(false);
+      return;
+    }
+
+    if (!isUniversalProduct && formData.isSet && (!formData.numberOfSets || parseInt(formData.numberOfSets) <= 0)) {
+      setError("Number of sets is required when 'Is Set' is checked");
+      setLoading(false);
+      return;
+    }
+
     if (!formData.description.trim()) {
       setError("Description is required");
       setLoading(false);
@@ -356,10 +426,20 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
           name: formData.name.trim(),
           shortDescription: formData.shortDescription.trim() || undefined,
           description: formData.description.trim(),
-          category: formData.category || undefined,
+          category: isUniversalProduct ? undefined : (formData.category || undefined),
+          subcategory: isUniversalProduct ? undefined : (formData.subcategory || undefined),
           price: priceValue,
           imageUrl: formData.images,
           videoUrl: formData.videos.length > 0 ? formData.videos : undefined,
+          isSet: isUniversalProduct ? undefined : (formData.isSet || undefined),
+          numberOfSets: isUniversalProduct ? undefined : (formData.isSet && formData.numberOfSets ? parseInt(formData.numberOfSets) : undefined),
+          newAddition: isUniversalProduct ? undefined : (formData.newAddition || undefined),
+          featured: isUniversalProduct ? undefined : (formData.featured || undefined),
+          tuning: isUniversalProduct ? undefined : (formData.tuning ? parseFloat(formData.tuning) : undefined),
+          octave: isUniversalProduct ? undefined : (formData.octave || undefined),
+          size: isUniversalProduct ? undefined : (formData.size.trim() || undefined),
+          weight: isUniversalProduct ? undefined : (formData.weight || undefined),
+          relativeproduct: isUniversalProduct ? true : undefined,
         }),
       });
 
@@ -384,6 +464,13 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-zinc-700 bg-zinc-800 p-6 shadow-sm">
+      {isUniversalProduct && (
+        <div className="mb-4 p-3 bg-blue-900/30 border border-blue-700 rounded-lg">
+          <h3 className="text-lg font-semibold text-blue-300">Universal Product</h3>
+          <p className="text-sm text-blue-200 mt-1">This product will have limited fields compared to regular products.</p>
+        </div>
+      )}
+
       <div className="space-y-1">
         <label htmlFor="product-name" className="text-sm font-medium text-white">
           Product name <span className="text-red-500">*</span>
@@ -399,17 +486,20 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
         />
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="product-category" className="text-sm font-medium text-white">
-          Category
-        </label>
+      {!isUniversalProduct && (
+        <>
+
+          <div className="space-y-1">
+            <label htmlFor="product-category" className="text-sm font-medium text-white">
+              Category
+            </label>
         {loadingCategories ? (
           <div className="text-xs text-zinc-400 py-2">Loading categories...</div>
         ) : (
           <select
             id="product-category"
             value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value, subcategory: "" })}
             className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
           >
             <option value="">Select a category</option>
@@ -425,19 +515,52 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
             No categories available. Create categories in the Categories section.
           </p>
         )}
-      </div>
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="product-subcategory" className="text-sm font-medium text-white">
+              Subcategory
+            </label>
+        {!formData.category ? (
+          <div className="text-xs text-zinc-400 py-2">Please select a category first</div>
+        ) : loadingSubcategories ? (
+          <div className="text-xs text-zinc-400 py-2">Loading subcategories...</div>
+        ) : (
+          <select
+            id="product-subcategory"
+            value={formData.subcategory}
+            onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
+            className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+          >
+            <option value="">Select a subcategory (optional)</option>
+            {subcategories.map((subcat) => (
+              <option key={subcat._id} value={subcat._id}>
+                {subcat.name}
+              </option>
+            ))}
+          </select>
+        )}
+        {formData.category && !loadingSubcategories && subcategories.length === 0 && (
+          <p className="text-xs text-zinc-400 mt-1">
+            No subcategories available for this category. Create subcategories in the Subcategories section.
+          </p>
+          )}
+          </div>
+        </>
+      )}
 
       <div className="space-y-1">
         <label htmlFor="product-short-description" className="text-sm font-medium text-white">
-          Short Description
+          Short Description {isUniversalProduct && <span className="text-red-500">*</span>}
         </label>
         <textarea
           id="product-short-description"
           rows={2}
+          required={isUniversalProduct}
           value={formData.shortDescription}
           onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
           className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-          placeholder="Brief summary for product cards..."
+          placeholder={isUniversalProduct ? "Brief summary for product cards..." : "Brief summary for product cards..."}
         />
       </div>
 
@@ -475,6 +598,149 @@ export default function ProductForm({ productId, initialData, onComplete, onCanc
           Enter price in dollars (e.g., 29.99 for $29.99)
         </p>
       </div>
+
+      {!isUniversalProduct && (
+        <>
+          <div className="space-y-1">
+            <label htmlFor="product-is-set" className="flex items-center gap-2 text-sm font-medium text-white">
+              <input
+                id="product-is-set"
+                type="checkbox"
+                checked={formData.isSet}
+                onChange={(e) => setFormData({ ...formData, isSet: e.target.checked, numberOfSets: e.target.checked ? formData.numberOfSets : "" })}
+                className="w-4 h-4 text-white bg-zinc-900 border-zinc-600 rounded focus:ring-white focus:ring-2"
+              />
+              Is Set
+            </label>
+            <p className="text-xs text-zinc-400">
+              Check if this product is a set
+            </p>
+          </div>
+
+          {formData.isSet && (
+            <div className="space-y-1">
+              <label htmlFor="product-number-of-sets" className="text-sm font-medium text-white">
+                Number of Sets <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="product-number-of-sets"
+                type="number"
+                min="1"
+                required={formData.isSet}
+                value={formData.numberOfSets}
+                onChange={(e) => setFormData({ ...formData, numberOfSets: e.target.value })}
+                className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                placeholder="e.g., 2, 3, 5"
+              />
+              <p className="text-xs text-zinc-400">
+                Enter the number of sets in this product
+              </p>
+            </div>
+          )}
+
+          <div className="space-y-1">
+            <label htmlFor="product-new-addition" className="flex items-center gap-2 text-sm font-medium text-white">
+              <input
+                id="product-new-addition"
+                type="checkbox"
+                checked={formData.newAddition}
+                onChange={(e) => setFormData({ ...formData, newAddition: e.target.checked })}
+                className="w-4 h-4 text-white bg-zinc-900 border-zinc-600 rounded focus:ring-white focus:ring-2"
+              />
+              New Addition
+            </label>
+            <p className="text-xs text-zinc-400">
+              Mark this product as a new addition
+            </p>
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="product-featured" className="flex items-center gap-2 text-sm font-medium text-white">
+              <input
+                id="product-featured"
+                type="checkbox"
+                checked={formData.featured}
+                onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                className="w-4 h-4 text-white bg-zinc-900 border-zinc-600 rounded focus:ring-white focus:ring-2"
+              />
+              Featured
+            </label>
+            <p className="text-xs text-zinc-400">
+              Mark this product as featured
+            </p>
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="product-tuning" className="text-sm font-medium text-white">
+              Tuning (Hz)
+            </label>
+            <input
+              id="product-tuning"
+              type="number"
+              step="0.1"
+              min="0"
+              value={formData.tuning}
+              onChange={(e) => setFormData({ ...formData, tuning: e.target.value })}
+              className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+              placeholder="e.g., 20, 30"
+            />
+            <p className="text-xs text-zinc-400">
+              Enter tuning frequency in Hz (optional)
+            </p>
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="product-octave" className="text-sm font-medium text-white">
+              Octave
+            </label>
+            <select
+              id="product-octave"
+              value={formData.octave}
+              onChange={(e) => setFormData({ ...formData, octave: e.target.value as '3rd octave' | '4th octave' })}
+              className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+            >
+              <option value="">Select octave (optional)</option>
+              <option value="3rd octave">3rd octave</option>
+              <option value="4th octave">4th octave</option>
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="product-size" className="text-sm font-medium text-white">
+              Size
+            </label>
+            <input
+              id="product-size"
+              type="text"
+              value={formData.size}
+              onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+              className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+              placeholder="e.g., 5-6, 6-7, 7-8, or 8"
+            />
+            <p className="text-xs text-zinc-400">
+              Enter size: range like "5-6" or "7-8" (between) or single value like "8" (exact inches) - optional
+            </p>
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="product-weight" className="text-sm font-medium text-white">
+              Weight
+            </label>
+            <select
+              id="product-weight"
+              value={formData.weight}
+              onChange={(e) => setFormData({ ...formData, weight: e.target.value as 'less than 1kg' | 'less than 6kg' | 'between 1-3kg' | '3-5kg' })}
+              className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+            >
+              <option value="">Select weight category (optional)</option>
+              <option value="less than 1kg">Less than 1kg</option>
+              <option value="less than 6kg">Less than 6kg</option>
+              <option value="between 1-3kg">Between 1-3kg</option>
+              <option value="3-5kg">3-5kg</option>
+            </select>
+          </div>
+        </>
+      )}
 
       <div className="space-y-1">
         <label className="text-sm font-medium text-white">

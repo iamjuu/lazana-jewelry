@@ -39,43 +39,8 @@ const CartPageContent = () => {
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      // Create Stripe checkout session
-      const response = await fetch("/api/payment/create-checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          items: items.map((item) => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            imageUrl: item.imageUrl,
-          })),
-          amount: Math.round(totalAmount * 100), // Convert to cents/paise for Stripe
-          currency: "USD",
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success && data.data?.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.data.url;
-      } else {
-        toast.error(data.message || "Failed to create checkout session");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    // Redirect to order confirmation page
+    router.push("/order-confirmation");
   };
 
   if (!isClient) {

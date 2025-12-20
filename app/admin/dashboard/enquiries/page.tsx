@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 
 
-type TabType = "discovery" | "private" | "corporate";
+type TabType = "discovery" | "private" | "corporate" | "freeStudioVisit";
 
 
 
@@ -28,7 +28,7 @@ type Enquiry = {
 
   status: "pending" | "contacted" | "completed";
 
-  sessionType: "discovery" | "private" | "corporate";
+  sessionType: "discovery" | "private" | "corporate" | "freeStudioVisit";
 
   sessionId?: string;
 
@@ -78,6 +78,8 @@ export default function EnquiriesPage() {
     { id: "private" as TabType, label: "Private Session" },
 
     { id: "corporate" as TabType, label: "Corporate Sessions" },
+
+    { id: "freeStudioVisit" as TabType, label: "Free Studio Visit" },
 
   ];
 

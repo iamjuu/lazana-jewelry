@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-type OrderStatus = "pending" | "paid" | "shipped" | "delivered" | "cancelled" | "refunded";
+type PaymentStatus = "pending" | "paid" | "cancelled";
+type DeliveryStatus = "pending" | "processing" | "ready to ship" | "shipped" | "reached to your country" | "on the way to delivery" | "delivered";
 
 type OrderItem = {
   productId: string;
@@ -26,12 +27,15 @@ type OrderItem = {
 };
 
 type ShippingAddress = {
-  line1?: string;
-  line2?: string;
+  fullName?: string;
+  phone?: string;
+  street?: string;
   city?: string;
   state?: string;
   postalCode?: string;
   country?: string;
+  line1?: string;
+  line2?: string;
 };
 
 type Order = {
@@ -40,12 +44,15 @@ type Order = {
   items: OrderItem[];
   amount: number;
   currency: string;
-  status: OrderStatus;
+  status: PaymentStatus; // Payment status
+  deliveryStatus?: DeliveryStatus; // Delivery status
   paymentProvider?: string;
   paymentRef?: string;
   shippingAddress?: ShippingAddress;
   customerEmail?: string;
   customerName?: string;
+  currentMessage?: string;
+  deliveryStatusHistory?: Array<{ deliveryStatus: DeliveryStatus; message?: string; updatedAt: Date }>;
   createdAt: string;
   updatedAt: string;
 };
@@ -56,12 +63,15 @@ export default function OrdersPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusMessage, setStatusMessage] = useState<string>("");
+  const [deliveryMessage, setDeliveryMessage] = useState<string>("");
+  const [customerMessage, setCustomerMessage] = useState<string>("");
+  const [updatingDeliveryStatus, setUpdatingDeliveryStatus] = useState<string | null>(null); // Track which status is being updated
+  const [clearingMessage, setClearingMessage] = useState<boolean>(false); // Track if message is being cleared
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
     paid: 0,
-    shipped: 0,
-    delivered: 0,
     cancelled: 0,
     totalRevenue: 0,
   });
@@ -117,11 +127,9 @@ export default function OrdersPage() {
           total: ordersList.length,
           pending: ordersList.filter((o: Order) => o.status === "pending").length,
           paid: ordersList.filter((o: Order) => o.status === "paid").length,
-          shipped: ordersList.filter((o: Order) => o.status === "shipped").length,
-          delivered: ordersList.filter((o: Order) => o.status === "delivered").length,
           cancelled: ordersList.filter((o: Order) => o.status === "cancelled").length,
           totalRevenue: ordersList
-            .filter((o: Order) => ["paid", "shipped", "delivered"].includes(o.status))
+            .filter((o: Order) => o.status === "paid")
             .reduce((sum: number, o: Order) => sum + o.amount, 0),
         };
         setStats(stats);
@@ -144,7 +152,7 @@ export default function OrdersPage() {
     }
   };
 
-  const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+  const updatePaymentStatus = async (orderId: string, newStatus: PaymentStatus, message?: string) => {
     try {
       const token = localStorage.getItem("adminToken");
       const response = await fetch(`/api/admin/orders/${orderId}`, {
@@ -153,43 +161,179 @@ export default function OrdersPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus, message }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        toast.success("Order status updated");
+        toast.success("Payment status updated successfully");
         fetchOrders();
         if (selectedOrder?._id === orderId) {
           setSelectedOrder({ ...selectedOrder, status: newStatus });
         }
       } else {
-        toast.error(data.message || "Failed to update order");
+        toast.error(data.message || "Failed to update payment status");
       }
     } catch (error) {
-      console.error("Failed to update order:", error);
-      toast.error("Failed to update order status");
+      console.error("Failed to update payment status:", error);
+      toast.error("Failed to update payment status");
     }
   };
 
-  const getStatusBadge = (status: OrderStatus) => {
+  const updateDeliveryStatus = async (orderId: string, newDeliveryStatus: DeliveryStatus, message?: string) => {
+    setUpdatingDeliveryStatus(newDeliveryStatus); // Set loading state
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await fetch(`/api/admin/orders/${orderId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ deliveryStatus: newDeliveryStatus, message }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const emailStatuses = ["processing", "ready to ship", "reached to your country", "delivered"];
+        const emailSent = emailStatuses.includes(newDeliveryStatus);
+        toast.success(emailSent ? "Delivery status updated and email sent to customer" : "Delivery status updated");
+        fetchOrders();
+        if (selectedOrder?._id === orderId) {
+          // Refresh selected order data to show email status
+          const updatedOrder = data.data;
+          setSelectedOrder(updatedOrder);
+        }
+        setDeliveryMessage(""); // Clear message after sending
+      } else {
+        toast.error(data.message || "Failed to update delivery status");
+      }
+    } catch (error) {
+      console.error("Failed to update delivery status:", error);
+      toast.error("Failed to update delivery status");
+    } finally {
+      setUpdatingDeliveryStatus(null); // Clear loading state
+    }
+  };
+
+  const updateCustomerMessage = async (orderId: string, message: string) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await fetch(`/api/admin/orders/${orderId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message }), // Only message, no status update
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Message updated successfully");
+        fetchOrders();
+        if (selectedOrder?._id === orderId) {
+          setSelectedOrder({ ...selectedOrder, currentMessage: message });
+        }
+        setCustomerMessage(""); // Clear message after sending
+      } else {
+        toast.error(data.message || "Failed to update message");
+      }
+    } catch (error) {
+      console.error("Failed to update message:", error);
+      toast.error("Failed to update message");
+    }
+  };
+
+  const clearCustomerMessage = async (orderId: string) => {
+    setClearingMessage(true); // Start loading state
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await fetch(`/api/admin/orders/${orderId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ clearMessage: true }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Message cleared successfully");
+        fetchOrders();
+        if (selectedOrder?._id === orderId) {
+          const updatedOrder = data.data;
+          setSelectedOrder(updatedOrder); // Update with full order data
+          setCustomerMessage(""); // Clear message input
+        }
+      } else {
+        toast.error(data.message || "Failed to clear message");
+      }
+    } catch (error) {
+      console.error("Failed to clear message:", error);
+      toast.error("Failed to clear message");
+    } finally {
+      setClearingMessage(false); // End loading state
+    }
+  };
+
+  const getPaymentStatusBadge = (status: PaymentStatus) => {
     const badges = {
       pending: { bg: "bg-yellow-100", text: "text-yellow-800", icon: Clock },
       paid: { bg: "bg-green-100", text: "text-green-800", icon: CheckCircle },
-      shipped: { bg: "bg-blue-100", text: "text-blue-800", icon: Truck },
-      delivered: { bg: "bg-purple-100", text: "text-purple-800", icon: Package },
       cancelled: { bg: "bg-red-100", text: "text-red-800", icon: XCircle },
-      refunded: { bg: "bg-gray-100", text: "text-gray-800", icon: DollarSign },
     };
 
     const badge = badges[status];
+    if (!badge) {
+      return (
+        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          {status.toUpperCase()}
+        </span>
+      );
+    }
+
     const Icon = badge.icon;
 
     return (
       <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${badge.bg} ${badge.text}`}>
         <Icon size={14} />
         {status.toUpperCase()}
+      </span>
+    );
+  };
+
+  const getDeliveryStatusBadge = (deliveryStatus: DeliveryStatus) => {
+    const badges = {
+      pending: { bg: "bg-gray-100", text: "text-gray-800", icon: Clock },
+      processing: { bg: "bg-blue-100", text: "text-blue-800", icon: Package },
+      "ready to ship": { bg: "bg-indigo-100", text: "text-indigo-800", icon: Package },
+      shipped: { bg: "bg-purple-100", text: "text-purple-800", icon: Truck },
+      "reached to your country": { bg: "bg-green-100", text: "text-green-800", icon: Truck },
+      "on the way to delivery": { bg: "bg-orange-100", text: "text-orange-800", icon: Truck },
+      delivered: { bg: "bg-emerald-100", text: "text-emerald-800", icon: CheckCircle },
+    };
+
+    const badge = badges[deliveryStatus];
+    if (!badge) {
+      return (
+        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          {deliveryStatus.toUpperCase()}
+        </span>
+      );
+    }
+
+    const Icon = badge.icon;
+
+    return (
+      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${badge.bg} ${badge.text}`}>
+        <Icon size={14} />
+        {deliveryStatus.charAt(0).toUpperCase() + deliveryStatus.slice(1)}
       </span>
     );
   };
@@ -252,14 +396,6 @@ export default function OrdersPage() {
 
           <div className="bg-zinc-800 rounded-lg p-6 border border-zinc-700">
             <div className="flex items-center justify-between mb-2">
-              <Truck className="text-purple-400" size={24} />
-              <span className="text-2xl font-bold text-white">{stats.shipped}</span>
-            </div>
-            <p className="text-zinc-400 text-sm">Shipped Orders</p>
-          </div>
-
-          <div className="bg-zinc-800 rounded-lg p-6 border border-zinc-700">
-            <div className="flex items-center justify-between mb-2">
               <DollarSign className="text-yellow-400" size={24} />
               <span className="text-2xl font-bold text-white">
                 {formatCurrency(stats.totalRevenue)}
@@ -276,7 +412,7 @@ export default function OrdersPage() {
               <Filter className="text-zinc-400" size={20} />
               <span className="text-white font-medium">Filter by Status:</span>
             </div>
-            {["all", "pending", "paid", "shipped", "delivered", "cancelled"].map((status) => (
+            {["all", "pending", "paid", "cancelled"].map((status) => (
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
@@ -404,7 +540,16 @@ export default function OrdersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(order.status)}
+                        <div className="flex flex-col gap-1">
+                          <div className="text-xs text-zinc-400">Payment:</div>
+                          {getPaymentStatusBadge(order.status)}
+                          {order.deliveryStatus && (
+                            <>
+                              <div className="text-xs text-zinc-400 mt-1">Delivery:</div>
+                              {getDeliveryStatusBadge(order.deliveryStatus)}
+                            </>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm text-zinc-400">
@@ -413,7 +558,10 @@ export default function OrdersPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
-                          onClick={() => setSelectedOrder(order)}
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            setCustomerMessage(order.currentMessage || ""); // Load current message when opening order
+                          }}
                           className="text-blue-400 hover:text-blue-300 transition-colors"
                         >
                           <Eye size={18} />
@@ -557,9 +705,13 @@ export default function OrdersPage() {
                       </span>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Status:</span>
-                    <div>{getStatusBadge(selectedOrder.status)}</div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-zinc-400">Payment Status:</span>
+                    <div>{getPaymentStatusBadge(selectedOrder.status)}</div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-zinc-400">Delivery Status:</span>
+                    <div>{selectedOrder.deliveryStatus ? getDeliveryStatusBadge(selectedOrder.deliveryStatus) : <span className="text-zinc-400 text-sm">Not set</span>}</div>
                   </div>
                 </div>
               </div>
@@ -582,15 +734,18 @@ export default function OrdersPage() {
                 </div>
               </div>
 
-              {/* Update Status */}
+              {/* Update Payment Status */}
               <div className="bg-zinc-900 rounded-lg p-4 border border-zinc-700">
-                <h3 className="text-lg font-semibold text-white mb-4">Update Order Status</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">Update Payment Status</h3>
+                
                 <div className="flex flex-wrap gap-2">
-                  {["pending", "paid", "shipped", "delivered", "cancelled", "refunded"].map(
+                  {(["pending", "paid", "cancelled"] as PaymentStatus[]).map(
                     (status) => (
                       <button
                         key={status}
-                        onClick={() => updateOrderStatus(selectedOrder._id, status as OrderStatus)}
+                        onClick={() => {
+                          updatePaymentStatus(selectedOrder._id, status);
+                        }}
                         disabled={selectedOrder.status === status}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                           selectedOrder.status === status
@@ -601,6 +756,233 @@ export default function OrdersPage() {
                         Mark as {status.charAt(0).toUpperCase() + status.slice(1)}
                       </button>
                     )
+                  )}
+                </div>
+              </div>
+
+              {/* Update Delivery Status - Email Sending Buttons */}
+              <div className="bg-zinc-900 rounded-lg p-4 border border-zinc-700">
+                <h3 className="text-lg font-semibold text-white mb-4">Send Order Status Email</h3>
+                <p className="text-sm text-zinc-400 mb-4">These actions will update delivery status and send email to customer</p>
+                
+                {/* Message Input for Delivery Status */}
+                <div className="mb-4">
+                  <label htmlFor="delivery-message" className="block text-sm font-medium text-zinc-300 mb-2">
+                    Message to Customer (Optional)
+                  </label>
+                  <textarea
+                    id="delivery-message"
+                    value={deliveryMessage}
+                    onChange={(e) => setDeliveryMessage(e.target.value)}
+                    placeholder="e.g., Your order is being processed and will be ready soon..."
+                    rows={3}
+                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="text-xs text-zinc-400 mt-1">
+                    This message will be emailed to the customer along with the status update
+                  </p>
+                </div>
+
+                {/* Email Status Buttons - Only for statuses that send emails */}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => {
+                      updateDeliveryStatus(selectedOrder._id, "processing", deliveryMessage);
+                    }}
+                    disabled={
+                      selectedOrder.deliveryStatus === "processing" || 
+                      updatingDeliveryStatus === "processing" ||
+                      selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "processing" && h.emailSent)
+                    }
+                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                      selectedOrder.deliveryStatus === "processing" || 
+                      updatingDeliveryStatus === "processing" ||
+                      selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "processing" && h.emailSent)
+                        ? "bg-zinc-700 text-zinc-500 cursor-not-allowed"
+                        : "bg-blue-600 hover:bg-blue-700 text-white"
+                    }`}
+                  >
+                    {updatingDeliveryStatus === "processing" ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>📦</span>
+                        <span>Order Processing</span>
+                        {selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "processing" && h.emailSent) && (
+                          <span className="text-xs">✓ Sent</span>
+                        )}
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      updateDeliveryStatus(selectedOrder._id, "ready to ship", deliveryMessage);
+                    }}
+                    disabled={
+                      selectedOrder.deliveryStatus === "ready to ship" || 
+                      updatingDeliveryStatus === "ready to ship" ||
+                      selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "ready to ship" && h.emailSent)
+                    }
+                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                      selectedOrder.deliveryStatus === "ready to ship" || 
+                      updatingDeliveryStatus === "ready to ship" ||
+                      selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "ready to ship" && h.emailSent)
+                        ? "bg-zinc-700 text-zinc-500 cursor-not-allowed"
+                        : "bg-purple-600 hover:bg-purple-700 text-white"
+                    }`}
+                  >
+                    {updatingDeliveryStatus === "ready to ship" ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>🚚</span>
+                        <span>Order Shipping</span>
+                        {selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "ready to ship" && h.emailSent) && (
+                          <span className="text-xs">✓ Sent</span>
+                        )}
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      updateDeliveryStatus(selectedOrder._id, "reached to your country", deliveryMessage);
+                    }}
+                    disabled={
+                      selectedOrder.deliveryStatus === "reached to your country" || 
+                      updatingDeliveryStatus === "reached to your country" ||
+                      selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "reached to your country" && h.emailSent)
+                    }
+                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                      selectedOrder.deliveryStatus === "reached to your country" || 
+                      updatingDeliveryStatus === "reached to your country" ||
+                      selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "reached to your country" && h.emailSent)
+                        ? "bg-zinc-700 text-zinc-500 cursor-not-allowed"
+                        : "bg-green-600 hover:bg-green-700 text-white"
+                    }`}
+                  >
+                    {updatingDeliveryStatus === "reached to your country" ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>🌍</span>
+                        <span>Reached to Your Country</span>
+                        {selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "reached to your country" && h.emailSent) && (
+                          <span className="text-xs">✓ Sent</span>
+                        )}
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      updateDeliveryStatus(selectedOrder._id, "delivered", deliveryMessage);
+                    }}
+                    disabled={
+                      selectedOrder.deliveryStatus === "delivered" || 
+                      updatingDeliveryStatus === "delivered" ||
+                      selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "delivered" && h.emailSent)
+                    }
+                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                      selectedOrder.deliveryStatus === "delivered" || 
+                      updatingDeliveryStatus === "delivered" ||
+                      selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "delivered" && h.emailSent)
+                        ? "bg-zinc-700 text-zinc-500 cursor-not-allowed"
+                        : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                    }`}
+                  >
+                    {updatingDeliveryStatus === "delivered" ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>✅</span>
+                        <span>Order Delivered</span>
+                        {selectedOrder.deliveryStatusHistory?.some((h: any) => h.deliveryStatus === "delivered" && h.emailSent) && (
+                          <span className="text-xs">✓ Sent</span>
+                        )}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Update Customer Message (No Email) */}
+              <div className="bg-zinc-900 rounded-lg p-4 border border-zinc-700">
+                <h3 className="text-lg font-semibold text-white mb-4">Update Customer Message (No Email)</h3>
+                
+                {/* Show Current Message */}
+                {selectedOrder.currentMessage && (
+                  <div className="mb-4 p-3 bg-zinc-800 border border-zinc-600 rounded-lg">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <p className="text-xs text-zinc-400 mb-1">Current Message:</p>
+                        <p className="text-white text-sm">{selectedOrder.currentMessage}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="mb-4">
+                  <label htmlFor="customer-message" className="block text-sm font-medium text-zinc-300 mb-2">
+                    {selectedOrder.currentMessage ? "New Message (will replace current)" : "Latest Message to Customer"}
+                  </label>
+                  <textarea
+                    id="customer-message"
+                    value={customerMessage}
+                    onChange={(e) => setCustomerMessage(e.target.value)}
+                    placeholder={selectedOrder.currentMessage ? "Enter new message to replace current..." : "e.g., Product reached Coimbatore..."}
+                    rows={3}
+                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="text-xs text-zinc-400 mt-1">
+                    This message will be saved but will NOT trigger an email. Use this to update the latest message shown to customers.
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      if (customerMessage.trim()) {
+                        updateCustomerMessage(selectedOrder._id, customerMessage.trim());
+                      }
+                    }}
+                    disabled={!customerMessage.trim()}
+                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {selectedOrder.currentMessage ? "Update Message" : "Send Message"}
+                  </button>
+                  {selectedOrder.currentMessage && (
+                    <button
+                      onClick={() => {
+                        if (confirm("Are you sure you want to clear this message?")) {
+                          clearCustomerMessage(selectedOrder._id);
+                        }
+                      }}
+                      disabled={clearingMessage}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {clearingMessage ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <span>Clearing...</span>
+                        </>
+                      ) : (
+                        <span>Clear Message</span>
+                      )}
+                    </button>
                   )}
                 </div>
               </div>
