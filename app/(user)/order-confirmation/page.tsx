@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
@@ -48,7 +48,7 @@ const calculateShippingByBowlCount = (bowlCount: number): number => {
   }
 };
 
-export default function OrderConfirmationPage() {
+function OrderConfirmationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { items: cartItems, clearCart } = useCart();
@@ -168,7 +168,7 @@ export default function OrderConfirmationPage() {
   const fetchCartProducts = async () => {
     try {
       // Fetch product details for each cart item to get isSet, numberOfSets, and relativeproduct
-      const productPromises = cartItems.map(async (cartItem) => {
+      const productPromises = cartItems.map(async (cartItem): Promise<CartItem | null> => {
         const response = await fetch(`/api/products/${cartItem.id}`);
         const data = await response.json();
         if (data.success) {
@@ -181,7 +181,7 @@ export default function OrderConfirmationPage() {
             isSet: data.data.isSet || false,
             numberOfSets: data.data.numberOfSets || 0,
             relativeproduct: data.data.relativeproduct || false,
-          };
+          } as CartItem;
         }
         return null;
       });
@@ -556,6 +556,25 @@ export default function OrderConfirmationPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function OrderConfirmationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+        <Navbar />
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
+            <p className="text-[#1C3163]">Loading...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    }>
+      <OrderConfirmationContent />
+    </Suspense>
   );
 }
 

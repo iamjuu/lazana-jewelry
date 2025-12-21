@@ -66,12 +66,12 @@ export async function GET(req: NextRequest) {
                 phone: userDoc.phone ? String(userDoc.phone) : undefined,
               }
             : null,
-          session: sessionDoc && 'instructor' in sessionDoc
+          session: sessionDoc && ('instructorName' in sessionDoc || 'instructor' in sessionDoc) && 'date' in sessionDoc && 'startTime' in sessionDoc
             ? {
-                instructor: String(sessionDoc.instructor),
-                date: String(sessionDoc.date),
-                startTime: String(sessionDoc.startTime),
-                endTime: String(sessionDoc.endTime),
+                instructor: 'instructorName' in sessionDoc ? String((sessionDoc as any).instructorName) : String((sessionDoc as any).instructor),
+                date: String((sessionDoc as any).date),
+                startTime: String((sessionDoc as any).startTime),
+                endTime: (sessionDoc as any).endTime ? String((sessionDoc as any).endTime) : undefined,
               }
             : null,
         };

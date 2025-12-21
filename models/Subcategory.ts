@@ -80,3 +80,4 @@ if (mongoose.models.Subcategory) {
 
 export default mongoose.model<ISubcategory>('Subcategory', SubcategorySchema);
 
+
