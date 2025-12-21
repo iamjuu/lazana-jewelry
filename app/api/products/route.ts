@@ -2,12 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
+import Subcategory from "@/models/Subcategory";
 import { requireAdmin } from "@/lib/auth";
 import mongoose from "mongoose";
 
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
+    
+    // Ensure Subcategory model is registered before populate
+    // Force the model to be loaded by referencing it and ensuring it's registered
+    void Subcategory; // This ensures the import is executed
+    // Double-check model is registered - if not, it means the import didn't execute properly
+    if (!mongoose.models.Subcategory) {
+      console.error("Subcategory model not found in mongoose.models after import");
+      // Try to get the model directly - this will throw if not registered
+      mongoose.model('Subcategory');
+    }
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "20", 10);
