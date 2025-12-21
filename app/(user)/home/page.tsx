@@ -157,24 +157,39 @@ const CreativeJourneyData = [
 const TestimonialsData = [
   {
     id: 1,
-    image: Yoga1,
-    name: "John Anderson",
+    name: "Tanisha M.",
     testimonial:
-      "The crystal bowls from this studio have transformed my healing practice. The sound quality is absolutely incredible and my clients can feel the difference immediately."
+      "If I were to think of someone who embodies the spirit of yoga, it will be Frankie. She is extremely knowledgeable, genuine and kind. Her classes are delightful, intense and insightful. She explains how each pose is linked to practices of mindfulness and how they promote a better lifestyle. Her cues and tricks to adjust your body to better feel a stretch or pose. She practices what she preaches and I truly think she is one of the best teachers I've ever come across. Thank for you imparting your knowledge"
   },
   {
     id: 2,
-    image: Yoga2,
-    name: "Sarah Mitchell",
+    name: "David V.",
     testimonial:
-      "Frankie's sound healing transported me to another dimension. I felt lighter, freer, and more in tune with myself."
+      "I would like to specifically thank Frankie for being such an amazing teacher. As a yogini, she not only has perfect mastery of the poses, but on top of that she has a good understanding of their physiological impact as well as deep knowledge of yogic philosophy. Then as a teacher, she is patient and willing to help, observant both of individual details and the group dynamic as a whole, and her natural enthusiasm and spontaneity are inspiring and turn every class into a wholesome experience. On top of that she teaches a wide range of classes; Hatha Foundation for students who just started their yoga journey, several advanced classes for those looking for a challenge and even sound classes which offer a moment of introspection. In short, Frankie is a world class yoga teacher!"
   },
   {
     id: 3,
-    image: Yoga3,
-    name: "Emma Thompson",
+    name: "Neeraj K.",
     testimonial:
-      "As a professional sound healer, I've tried many crystal bowls, but these are by far the best. The resonance is powerful and the energy is pure."
+      "Frankie you are Absolutely amazing and your specific impacts and voice calmness, strength and clarity are superb your teaching style distinctly clear, patient and inspiring. Your wisdom helps off the mat in life balance and mindfulness. Bravo"
+  },
+  {
+    id: 4,
+    name: "John V.",
+    testimonial:
+      "I have struggled with stress and anxiety my entire life, so I decided to give yoga a go this year. Frankie has shared so much knowledge, wisdom and has been an absolute inspiration to me. Frankie has given me the confidence I needed to consistently continue my practice, and I could not have continued without this guiding light. I have now completed more than fifty yoga sessions, so I joined Frankie's Yin, Gong and Crystal Bowl class and was absolutely blown away by this experience. Having struggled to calm my monkey mind and relax all throughout my life this class was incredible. We should all give ourselves this gift of retreat, rest and relaxation."
+  },
+  {
+    id: 5,
+    name: "Peter H.",
+    testimonial:
+      "I am now regularly attending Hatha, Vinyasa Flo, Yin Yang and will most definitely continue Gong classes. Whilst there have certainly been considerable physical benefits after only a few months, its the mental health benefit that is truly life changing for me. I have struggled with depression, anxiety and sleeplessness for most of my life and with my daily yoga practice my mood has been positively lifted, my anxiety is kept in check, and I am sustaining longer and better-quality sleep."
+  },
+  {
+    id: 6,
+    name: "Nipun M.",
+    testimonial:
+      "When the sound vibrations detached my body from the mental awareness and alertness, that's when I felt myself elevating from the weight of my duties, and responsibilities. The detachment brought a sense of peace in a tangible way. I felt oblivion to everything. I really went far and beyond to notice physically where I was. There was a conscious noticeable detachment of physical realm and mental awareness. It certainly works. We should bring this service to corporate professionals. Being under tremendous pressure takes away a lot. But this service felt like a \"much needed magic potion\" to feel my 100% again."
   }
 ];
 
@@ -506,9 +521,9 @@ const Index = () => {
                       </div> */}
 
                       {/* Right Side - Testimonial Card */}
-                      <div className="flex-1 w-full border rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 min-h-[280px] sm:min-h-[320px] md:min-h-[380px] flex flex-col justify-center">
+                      <div className="flex-1 w-full border rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[200px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
                         <div className="animate-fadeIn">
-                          <blockquote className="text-black text-[18px] sm:text-[22px] md:text-[28px] lg:text-[32px] font-light leading-relaxed mb-6 md:mb-8 italic">
+                          <blockquote className="text-black text-[12px] sm:text-[12px] md:text-[14px] lg:text-[14px] font-light leading-relaxed mb-6 md:mb-8 italic">
                             &ldquo;{testimonial.testimonial}&rdquo;
                           </blockquote>
 

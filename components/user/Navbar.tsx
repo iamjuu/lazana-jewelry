@@ -11,12 +11,12 @@ import { useCart } from '@/stores/useCart'
 // Navigation items array
 const navigationItems = [
   { href: '/', label: 'Home' },
-  { href: '/about', label: 'About Us' },
-  { href: '/services', label: 'Services' },
   { href: '/shop', label: 'Shop', hasDropdown: true },
+  { href: '/services', label: 'Services' },
+  { href: '/about', label: 'About Us' },
   // { href: '/events', label: 'Events' },
   // { href: '/blog', label: 'Blog' },
-  { href: '/book', label: 'Book' },
+  // { href: '/book', label: 'Book' },
 ]
 
 type Category = {
