@@ -2,7 +2,7 @@
 
 
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import toast from "react-hot-toast";
 
@@ -435,11 +435,9 @@ export default function EnquiriesPage() {
 
                     {paginatedEnquiries.map((enquiry) => (
 
-                      <>
+                      <React.Fragment key={enquiry._id}>
 
                         <tr
-
-                          key={enquiry._id}
 
                           className="border-b border-zinc-700 last:border-0 cursor-pointer hover:bg-zinc-900/50"
 
@@ -501,12 +499,38 @@ export default function EnquiriesPage() {
                             {(activeTab === "discovery" || activeTab === "private") && enquiry.bookedDate && enquiry.bookedTime ? (
                               <div className="text-xs">
                                 <div className="font-medium text-white">
-                                  {new Date(enquiry.bookedDate + 'T00:00:00').toLocaleDateString('en-US', {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                    timeZone: 'Asia/Singapore'
-                                  })}
+                                  {(() => {
+                                    try {
+                                      // Check if date is already in YYYY-MM-DD format
+                                      let dateStr = enquiry.bookedDate;
+                                      if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                                        // Already in correct format
+                                        const date = new Date(dateStr + 'T00:00:00');
+                                        if (!isNaN(date.getTime())) {
+                                          return date.toLocaleDateString('en-US', {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                            timeZone: 'Asia/Singapore'
+                                          });
+                                        }
+                                      } else {
+                                        // Try to parse as-is
+                                        const date = new Date(dateStr);
+                                        if (!isNaN(date.getTime())) {
+                                          return date.toLocaleDateString('en-US', {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                            timeZone: 'Asia/Singapore'
+                                          });
+                                        }
+                                      }
+                                    } catch (e) {
+                                      console.error("Error parsing date:", enquiry.bookedDate, e);
+                                    }
+                                    return "Invalid Date";
+                                  })()}
                                 </div>
                                 <div className="text-zinc-500 mt-1">
                                   {(() => {
@@ -772,7 +796,7 @@ export default function EnquiriesPage() {
 
                         )}
 
-                      </>
+                      </React.Fragment>
 
                     ))}
 

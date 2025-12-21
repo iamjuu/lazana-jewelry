@@ -119,8 +119,13 @@ export async function POST(req: NextRequest) {
 
       // Check for time overlap
       for (const existingSession of allSessions) {
-        const existingStart = existingSession.startTime.split(':').map(Number);
-        const existingEnd = existingSession.endTime.split(':').map(Number);
+        // Type guard: ensure session has startTime and endTime
+        if (!('startTime' in existingSession) || !('endTime' in existingSession) || 
+            !existingSession.startTime || !existingSession.endTime) {
+          continue; // Skip sessions without time info
+        }
+        const existingStart = (existingSession.startTime as string).split(':').map(Number);
+        const existingEnd = (existingSession.endTime as string).split(':').map(Number);
         const existingStartMinutes = existingStart[0] * 60 + existingStart[1];
         const existingEndMinutes = existingEnd[0] * 60 + existingEnd[1];
         const newStartMinutes = hours * 60 + minutes;
@@ -132,10 +137,12 @@ export async function POST(req: NextRequest) {
           (newEndMinutes > existingStartMinutes && newEndMinutes <= existingEndMinutes) ||
           (newStartMinutes <= existingStartMinutes && newEndMinutes >= existingEndMinutes)
         ) {
+          const sessionStartTime = existingSession.startTime as string;
+          const sessionEndTime = existingSession.endTime as string;
           return NextResponse.json(
             { 
               success: false, 
-              message: `Time conflict: A session already exists on ${date} from ${existingSession.startTime} to ${existingSession.endTime}. Please choose a different time.` 
+              message: `Time conflict: A session already exists on ${date} from ${sessionStartTime} to ${sessionEndTime}. Please choose a different time.` 
             },
             { status: 400 }
           );
@@ -234,8 +241,13 @@ export async function POST(req: NextRequest) {
 
       // Check for time overlap
       for (const existingSession of allSessions) {
-        const existingStart = existingSession.startTime.split(':').map(Number);
-        const existingEnd = existingSession.endTime.split(':').map(Number);
+        // Type guard: ensure session has startTime and endTime
+        if (!('startTime' in existingSession) || !('endTime' in existingSession) || 
+            !existingSession.startTime || !existingSession.endTime) {
+          continue; // Skip sessions without time info
+        }
+        const existingStart = (existingSession.startTime as string).split(':').map(Number);
+        const existingEnd = (existingSession.endTime as string).split(':').map(Number);
         const existingStartMinutes = existingStart[0] * 60 + existingStart[1];
         const existingEndMinutes = existingEnd[0] * 60 + existingEnd[1];
         const newStartMinutes = hours * 60 + minutes;
@@ -247,10 +259,12 @@ export async function POST(req: NextRequest) {
           (newEndMinutes > existingStartMinutes && newEndMinutes <= existingEndMinutes) ||
           (newStartMinutes <= existingStartMinutes && newEndMinutes >= existingEndMinutes)
         ) {
+          const sessionStartTime = existingSession.startTime as string;
+          const sessionEndTime = existingSession.endTime as string;
           return NextResponse.json(
             { 
               success: false, 
-              message: `Time conflict: A session already exists on ${date} from ${existingSession.startTime} to ${existingSession.endTime}. Please choose a different time.` 
+              message: `Time conflict: A session already exists on ${date} from ${sessionStartTime} to ${sessionEndTime}. Please choose a different time.` 
             },
             { status: 400 }
           );

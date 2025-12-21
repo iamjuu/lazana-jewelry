@@ -30,6 +30,13 @@ type OrderItem = {
   name: string;
   price: number;
   quantity: number;
+  isSet?: boolean;
+};
+
+type DeliveryCharges = {
+  method: string;
+  breakdown: string;
+  total: number;
 };
 
 type Order = {
@@ -40,6 +47,10 @@ type Order = {
   status: string;
   createdAt: string;
   paymentProvider?: string;
+  currentMessage?: string;
+  productTotal?: number;
+  deliveryCharges?: DeliveryCharges;
+  customerComments?: string;
 };
 
 type Booking = {

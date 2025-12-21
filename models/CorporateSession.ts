@@ -1,7 +1,6 @@
 import mongoose, { Schema, models, model, Document } from "mongoose";
 
 export interface CorporateSessionType extends Document {
-  _id: string;
   title?: string;
   description?: string;
   imageUrl?: string;

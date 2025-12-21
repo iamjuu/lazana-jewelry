@@ -111,25 +111,53 @@ const PrivateAppointmentPage = () => {
     return days
   }, [currentMonth, currentYear])
 
+  // Helper function to format date as YYYY-MM-DD without timezone conversion
+  const formatDateLocal = (year: number, month: number, day: number): string => {
+    const monthStr = String(month + 1).padStart(2, '0')
+    const dayStr = String(day).padStart(2, '0')
+    return `${year}-${monthStr}-${dayStr}`
+  }
+
   // Get available dates from slots (dates that have at least one available time)
   const availableDates = useMemo(() => {
     const dates = new Set<string>()
     availableSlots.forEach(slot => {
-      dates.add(slot.date)
+      // Trim and normalize date string to ensure exact matching
+      const normalizedDate = slot.date.trim()
+      dates.add(normalizedDate)
     })
     return dates
   }, [availableSlots])
+
+  // Get available months (months that have at least one available slot)
+  const availableMonths = useMemo(() => {
+    const months = new Set<string>()
+    availableSlots.forEach(slot => {
+      if (slot.date) {
+        const [year, month] = slot.date.trim().split('-')
+        months.add(`${year}-${month}`) // Format: YYYY-MM
+      }
+    })
+    return months
+  }, [availableSlots])
+
+  // Check if current month has available slots
+  const currentMonthHasSlots = useMemo(() => {
+    const currentMonthStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`
+    return availableMonths.has(currentMonthStr)
+  }, [currentMonth, currentYear, availableMonths])
 
   // Get available time slots for the selected date
   const timeSlots = useMemo(() => {
     if (!selectedDate) return []
     
-    const selectedDateStr = new Date(currentYear, currentMonth, selectedDate)
-      .toISOString()
-      .split('T')[0] // Format: YYYY-MM-DD
+    const selectedDateStr = formatDateLocal(currentYear, currentMonth, selectedDate)
     
     const slots = availableSlots
-      .filter(slot => slot.date === selectedDateStr && !slot.isBooked)
+      .filter(slot => {
+        const normalizedSlotDate = slot.date.trim()
+        return normalizedSlotDate === selectedDateStr && !slot.isBooked
+      })
       .map(slot => ({
         time: slot.time,
         available: true,
@@ -152,9 +180,7 @@ const PrivateAppointmentPage = () => {
   const isDateAvailable = (day: number, isCurrentMonth: boolean) => {
     if (!isCurrentMonth) return false
     
-    const dateStr = new Date(currentYear, currentMonth, day)
-      .toISOString()
-      .split('T')[0]
+    const dateStr = formatDateLocal(currentYear, currentMonth, day)
     
     return availableDates.has(dateStr)
   }
@@ -302,6 +328,58 @@ const PrivateAppointmentPage = () => {
                   </h3>
 
                   <div className=" border-2 border-[#E5E7EB] rounded-[16px] p-4">
+                    {/* Month Navigation */}
+                    <div className="flex items-center justify-between mb-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (currentMonth === 0) {
+                            setCurrentMonth(11)
+                            setCurrentYear(currentYear - 1)
+                          } else {
+                            setCurrentMonth(currentMonth - 1)
+                          }
+                          setSelectedDate(null)
+                          setSelectedTime(null)
+                        }}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        aria-label="Previous month"
+                      >
+                        <svg className="w-5 h-5 text-[#5B7C99]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      
+                      <div className="flex flex-col items-center">
+                        <h4 className="text-[18px] sm:text-[20px] font-semibold text-[#5B7C99]">
+                          {new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                        </h4>
+                        {!loadingSlots && !currentMonthHasSlots && (
+                          <span className="text-xs text-gray-500 mt-1">No available slots</span>
+                        )}
+                      </div>
+                      
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (currentMonth === 11) {
+                            setCurrentMonth(0)
+                            setCurrentYear(currentYear + 1)
+                          } else {
+                            setCurrentMonth(currentMonth + 1)
+                          }
+                          setSelectedDate(null)
+                          setSelectedTime(null)
+                        }}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        aria-label="Next month"
+                      >
+                        <svg className="w-5 h-5 text-[#5B7C99]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+                    
                     {/* Days of Week Header */}
                     <div className="grid grid-cols-7 gap-1 mb-2">
                       {daysOfWeek.map((day) => (
@@ -395,7 +473,7 @@ const PrivateAppointmentPage = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
                       {timeSlots.map((slot, index) => {
                         const isSelected = selectedTime === slot.time
                         
@@ -417,7 +495,14 @@ const PrivateAppointmentPage = () => {
                               }
                             `}
                           >
-                            {formatTime12Hour(slot.time)}
+                            <div className="flex flex-col items-center">
+                              <span>{formatTime12Hour(slot.time)}</span>
+                              {slot.price > 0 && (
+                                <span className="text-[14px] font-normal mt-1 opacity-90">
+                                  SGD ${slot.price.toFixed(2)}
+                                </span>
+                              )}
+                            </div>
                           </button>
                         )
                       })}
@@ -446,7 +531,7 @@ const PrivateAppointmentPage = () => {
                       </h2>
                       
                       <p className="text-[16px] text-gray-700 mb-6">
-                        Session Amount: <span className="text-[#D5B584] font-semibold text-[20px]">${bookingAmount.toFixed(2)}</span>
+                        Session Amount: <span className="text-[#D5B584] font-semibold text-[20px]">SGD ${bookingAmount.toFixed(2)}</span>
                       </p>
 
                       {/* Stripe Checkout Button */}

@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      if (privateSession.bookedSeats >= privateSession.totalSeats) {
+      if ((privateSession.bookedSeats ?? 0) >= (privateSession.totalSeats ?? 1)) {
         return NextResponse.json(
           { success: false, message: "Session is already fully booked" },
           { status: 400 }
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
                 name: privateSession.title || "Private Yoga Session",
                 description: privateSession.description || `Private Session on ${privateSession.date} at ${privateSession.startTime}`,
               },
-              unit_amount: Math.round(privateSession.price * 100), // Convert to smallest currency unit
+              unit_amount: Math.round((privateSession.price ?? 0) * 100), // Convert to smallest currency unit
             },
             quantity: 1,
           },
@@ -258,7 +258,7 @@ export async function POST(req: NextRequest) {
 
         if (discoverySession) {
           // Check if already booked
-          if (discoverySession.bookedSeats >= discoverySession.totalSeats) {
+          if ((discoverySession.bookedSeats ?? 0) >= (discoverySession.totalSeats ?? 1)) {
             console.log('Session already booked - rejecting enquiry');
             return NextResponse.json(
               { success: false, message: "This session is already booked" },
@@ -267,7 +267,7 @@ export async function POST(req: NextRequest) {
           }
 
           // Mark as booked
-          discoverySession.bookedSeats = 1;
+          discoverySession.bookedSeats = (discoverySession.bookedSeats ?? 0) + 1;
           const saved = await discoverySession.save();
           console.log('Session marked as booked successfully:', {
             id: saved._id,

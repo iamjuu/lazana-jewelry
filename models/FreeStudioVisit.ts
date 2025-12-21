@@ -1,7 +1,6 @@
 import mongoose, { Schema, models, model, Document } from "mongoose";
 
 export interface FreeStudioVisitType extends Document {
-  _id: string;
   title?: string;
   description?: string;
   imageUrl?: string;
@@ -30,4 +29,5 @@ if (models.FreeStudioVisit) {
 }
 
 export default model<FreeStudioVisitType>("FreeStudioVisit", FreeStudioVisitSchema);
+
 

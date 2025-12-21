@@ -134,8 +134,13 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 
         // Check for time overlaps
         for (const conflict of allConflicts) {
-          const conflictStart = conflict.startTime.split(':').map(Number);
-          const conflictEnd = conflict.endTime.split(':').map(Number);
+          // Type guard: ensure conflict has startTime and endTime
+          if (!('startTime' in conflict) || !('endTime' in conflict) || 
+              !conflict.startTime || !conflict.endTime) {
+            continue; // Skip conflicts without time info
+          }
+          const conflictStart = (conflict.startTime as string).split(':').map(Number);
+          const conflictEnd = (conflict.endTime as string).split(':').map(Number);
           const conflictStartMinutes = conflictStart[0] * 60 + conflictStart[1];
           const conflictEndMinutes = conflictEnd[0] * 60 + conflictEnd[1];
           const newStartMinutes = hours * 60 + minutes;
@@ -149,7 +154,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
             return NextResponse.json(
               {
                 success: false,
-                message: `Time conflict: A session already exists on ${checkDate} from ${conflict.startTime} to ${conflict.endTime}. Please choose a different time.`,
+                message: `Time conflict: A session already exists on ${checkDate} from ${conflict.startTime as string} to ${conflict.endTime as string}. Please choose a different time.`,
               },
               { status: 400 }
             );

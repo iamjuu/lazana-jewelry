@@ -443,6 +443,180 @@ export async function sendDiscoverySessionConfirmation(discoveryData: {
   }
 }
 
+// Send private session booking confirmation email to customer
+export async function sendPrivateSessionConfirmationToUser(bookingData: {
+  fullName: string;
+  email: string;
+  date: string;
+  time: string;
+  amount: number;
+}) {
+  const subject = "Private Session Booking Confirmed - Crystal Bowl Studio";
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
+        .content { padding: 30px 20px; background-color: #f9f9f9; }
+        .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
+        .appointment-details { background-color: #fff; border: 2px solid #D5B584; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e0e0e0; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { font-weight: bold; color: #5B7C99; }
+        .detail-value { color: #333; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>✨ Crystal Bowl Studio</h1>
+          <p style="margin: 0; font-size: 18px;">Private Session Booking</p>
+        </div>
+        <div class="content">
+          <div class="success-box">
+            <h2 style="margin-top: 0; color: #10b981;">✅ Payment Successful - Your Private Session is Confirmed!</h2>
+            <p style="font-size: 18px; margin: 10px 0;">Thank you for your payment. Your private session has been successfully booked!</p>
+          </div>
+          
+          <div class="appointment-details">
+            <h3 style="margin-top: 0; color: #5B7C99;">📅 Session Details</h3>
+            <div class="detail-row">
+              <span class="detail-label">Date:</span>
+              <span class="detail-value">${bookingData.date}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Time:</span>
+              <span class="detail-value">${bookingData.time}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Amount Paid:</span>
+              <span class="detail-value">SGD $${bookingData.amount.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <p style="margin-top: 20px; color: #666;">
+            We look forward to seeing you for your private session. If you have any questions, please don't hesitate to contact us.
+          </p>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    const result = await sendEmail(bookingData.email, subject, html);
+    console.log(`✅ Private session confirmation email sent successfully to ${bookingData.email}`);
+    return result;
+  } catch (error) {
+    console.error(`❌ Failed to send private session confirmation email to ${bookingData.email}:`, error);
+    throw error;
+  }
+}
+
+// Send private session booking notification to admin
+export async function sendPrivateSessionNotificationToAdmin(bookingData: {
+  fullName: string;
+  email: string;
+  phone: string;
+  date: string;
+  time: string;
+  amount: number;
+}) {
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+  
+  if (!adminEmail) {
+    throw new Error("Admin email not configured");
+  }
+
+  const subject = `New Private Session Booking - ${bookingData.fullName}`;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #1C3163; color: #fff; padding: 20px; text-align: center; }
+        .content { padding: 30px 20px; background-color: #f9f9f9; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; background-color: #fff; }
+        .info-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+        .info-table td:first-child { font-weight: bold; width: 200px; color: #1C3163; }
+        .session-badge { display: inline-block; padding: 6px 12px; border-radius: 5px; font-weight: bold; color: #fff; background-color: #3b82f6; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🔔 New Private Session Booking</h1>
+        </div>
+        <div class="content">
+          <h2>Payment received for private session booking</h2>
+          <p>A new private session has been booked and payment has been confirmed. Here are the details:</p>
+          
+          <table class="info-table">
+            <tr>
+              <td>Full Name</td>
+              <td>${bookingData.fullName}</td>
+            </tr>
+            <tr>
+              <td>Email</td>
+              <td><a href="mailto:${bookingData.email}">${bookingData.email}</a></td>
+            </tr>
+            <tr>
+              <td>Phone</td>
+              <td><a href="tel:${bookingData.phone}">${bookingData.phone}</a></td>
+            </tr>
+            <tr>
+              <td>Session Type</td>
+              <td><span class="session-badge">Private Session</span></td>
+            </tr>
+            <tr>
+              <td>Date</td>
+              <td>${bookingData.date}</td>
+            </tr>
+            <tr>
+              <td>Time</td>
+              <td>${bookingData.time}</td>
+            </tr>
+            <tr>
+              <td>Amount Paid</td>
+              <td>SGD $${bookingData.amount.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td>Status</td>
+              <td><strong style="color: #10b981;">Confirmed & Paid</strong></td>
+            </tr>
+          </table>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>This is an automated notification from your booking system.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    const result = await sendEmail(adminEmail, subject, html);
+    console.log(`✅ Private session admin notification email sent successfully to ${adminEmail}`);
+    return result;
+  } catch (error) {
+    console.error(`❌ Failed to send private session admin notification email to ${adminEmail}:`, error);
+    throw error;
+  }
+}
+
 // NEW: Send order placement notification to admin
 export async function sendOrderPlacementNotificationToAdmin(orderData: {
   orderId: string;

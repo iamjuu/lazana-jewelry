@@ -14,7 +14,6 @@ type Session = {
   imageUrl?: string;
   videoUrl?: string;
   sessionType?: "regular" | "corporate" | "private" | "discovery" | "freeStudioVisit";
-  duration?: number;
   format?: string;
   benefits?: string[];
   createdAt: string;
