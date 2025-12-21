@@ -396,6 +396,10 @@ const ProductDetailPage = () => {
 
               {/* Relative Product - Show after cart button if current product is NOT a relative product */}
               {relativeProduct && !product.relativeproduct && (
+                <>
+                <h1 className="text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[20px] font-medium mb-4">
+                Learn how to play the crystal bowls
+                </h1>
                 <div className="mb-8 border border-[#D5B584]/30 rounded-lg p-4 bg-white">
                   <Link href={`/shop/${relativeProduct._id}`} className="block">
                     <div className="flex items-center gap-4">
@@ -411,25 +415,26 @@ const ProductDetailPage = () => {
                         </div>
                       )}
                       <div className="flex-1">
-                        <h4 className="text-[#1C3163] text-[16px] font-medium mb-1">
+                        <h4 className="text-[#D5B584] text-[16px] font-medium mb-1">
                           {relativeProduct.name}
                         </h4>
-                        <p className="text-[#1C3163] text-[14px] mb-2">
+                        <p className="text-[#D5B584] text-[14px]">
                           {formatPrice(relativeProduct.price)}
                         </p>
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            router.push(`/shop/${relativeProduct._id}`);
-                          }}
-                          className="text-[#1C3163] border border-[#1C3163] px-4 py-2 rounded-md text-sm font-medium hover:bg-[#1C3163] hover:text-white transition-colors"
-                        >
-                          View Product
-                        </button>
                       </div>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          router.push(`/shop/${relativeProduct._id}`);
+                        }}
+                        className="bg-[#D5B584] hover:bg-[#C4A573] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shrink-0"
+                      >
+                        + Add
+                      </button>
                     </div>
                   </Link>
                 </div>
+                </>
               )}
 
               {/* Description Section - Accordion Style */}
@@ -565,7 +570,7 @@ const ProductDetailPage = () => {
               </div>
 
               {/* Product Information */}
-              <div className="bg-[#FEF9F5] border border-[#D5B584]/30 rounded-lg p-4 sm:p-6 space-y-3">
+              <div className=" border border-[#D5B584]/40 rounded-lg p-4 sm:p-6 space-y-3">
                 <div>
                   <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Return Policy</h4>
                   <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">No Returns unless it's broken</p>
