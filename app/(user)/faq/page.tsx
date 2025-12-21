@@ -65,9 +65,9 @@ const FAQPage = () => {
             <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
               FAQs
             </h2>
-            <p className="text-[#1C3163] text-[14px] sm:text-[16px] md:text-[18px] font-light max-w-md">
+            {/* <p className="text-[#1C3163] text-[14px] sm:text-[16px] md:text-[18px] font-light max-w-md">
               Lorem ipsum dolor sit amet consectetur. Vitae eu venenatis amet hendrerit elementum arcu tempor nisl.
-            </p>
+            </p> */}
           </div>
 
           {/* FAQ Items */}

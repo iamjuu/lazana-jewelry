@@ -55,13 +55,13 @@ const Footer = () => {
             {/* Row 2 */}
             <div className="grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4">
               <Link
-                href="/book-a-call/"
+                href="/book-a-session"
                 className="w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
               >
                 Book a Call
               </Link>
               <Link
-                href="/book-a-call/"
+                href="/book-a-session"
                 className="size-[44px] sm:size-[52px] rounded-xl sm:rounded-2xl bg-white text-[#1C3163] flex items-center justify-center hover:bg-white/90 transition-colors"
               >
                 <ArrowRight
@@ -124,104 +124,106 @@ const Footer = () => {
               <div>
                 <ul className="space-y-2">
                   <li>
-                    <a
+                    <Link
                       href="/"
                       className="text-black hover:text-[black] transition-colors"
                     >
                       Home
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
+                      href="/shop"
+                      className="text-black hover:text-[black] transition-colors"
+                    >
+                      Shop
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/services"
+                      className="text-black hover:text-[black] transition-colors"
+                    >
+                      Services
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       href="/about"
                       className="text-black hover:text-[black] transition-colors"
                     >
                       About Us
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
+                      href="/faq"
+                      className="text-black hover:text-[black] transition-colors"
+                    >
+                      FAQs
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <ul className="space-y-2">
+                  <li>
+                    <Link
+                      href="/events"
+                      className="text-black hover:text-[black] transition-colors"
+                    >
+                      Events
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       href="/blog"
                       className="text-black hover:text-[black] transition-colors"
                     >
                       Blog
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
-                      href="/event"
+                    <Link
+                      href="/book-a-session"
                       className="text-black hover:text-[black] transition-colors"
                     >
-                      Event
-                    </a>
+                      Book a Call
+                    </Link>
                   </li>
                   <li>
-                    <a
-                      href="/faq"
+                    <Link
+                      href="/shipping-and-delivery"
                       className="text-black hover:text-[black] transition-colors"
                     >
-                      Faq
-                    </a>
+                      Shipping & Delivery
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/returns-and-refund-policy"
+                      className="text-black hover:text-[black] transition-colors"
+                    >
+                      Returns & Refund Policy
+                    </Link>
                   </li>
                 </ul>
               </div>
               <div>
                 <ul className="space-y-2">
                   <li>
-                    <a
-                      href="#"
-                      className="text-black hover:text-[black] transition-colors"
-                    >
-                      Products
-                    </a>
-                  </li>
-
-                  {/* <li>
-                    <a
-                      href="#"
-                      className="text-black hover:text-[black] transition-colors"
-                    >
-                      Testimonials
-                    </a>
-                  </li> */}
-                  <li>
-                    <a
-                      href="#"
-                      className="text-black hover:text-[black] transition-colors"
-                    >
-                      Blog
-                    </a>
+                    <span className="text-black break-words">
+                      Based in Singapore
+                    </span>
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="mailto:mail@frankieyogini@gmail.com"
                       className="text-black hover:text-[black] transition-colors"
                     >
-                      Contact
+                      mail@frankieyogini@gmail.com
                     </a>
                   </li>
-                </ul>
-              </div>
-              <div>
-                <ul className="space-y-2">
-                  <li>
-                    <a
-                      href="#"
-                      className="text-black hover:text-[black] transition-colors break-words"
-                    >
-                      Based in Singapore{" "}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-black hover:text-[black] transition-colors "
-                    >
-                      mail@frankieyogini@gmail.com{" "}
-                    </a>
-                  </li>
-                
-                
                 </ul>
               </div>
             </div>

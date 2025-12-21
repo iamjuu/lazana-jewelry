@@ -15,6 +15,7 @@ type Product = {
   subcategory?: string | { _id: string; name: string; slug: string; category: string | { _id: string; name: string; slug: string } };
   imageUrl?: string[];
   videoUrl?: string | string[];
+  relativeproduct?: boolean;
 };
 
 export default function ProductsPage() {
@@ -22,13 +23,22 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [isUniversalProduct, setIsUniversalProduct] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const productsPerPage = 10;
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (page: number = 1) => {
     try {
-      const response = await fetch("/api/products");
+      setLoading(true);
+      // Fetch all products including universal products (relativeproduct: true)
+      const response = await fetch(`/api/products?includeRelative=true&page=${page}&limit=${productsPerPage}`);
       const data = await response.json();
       if (data.success) {
         setProducts(data.data);
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages || 1);
+          setCurrentPage(data.pagination.page || 1);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch products:", error);
@@ -38,12 +48,25 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    fetchProducts(currentPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
 
   const handleAddComplete = () => {
     setShowAddForm(false);
-    fetchProducts();
+    fetchProducts(currentPage);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   return (
@@ -91,7 +114,32 @@ export default function ProductsPage() {
         {loading ? (
           <div className="text-zinc-400">Loading products...</div>
         ) : (
-          <ProductList products={products} onRefresh={fetchProducts} />
+          <>
+            <ProductList products={products} onRefresh={() => fetchProducts(currentPage)} />
+            {totalPages > 1 && (
+              <div className="mt-6 flex items-center justify-between border-t border-zinc-700 pt-4">
+                <div className="text-sm text-zinc-400">
+                  Page {currentPage} of {totalPages}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                    className="rounded-md border border-zinc-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className="rounded-md border border-zinc-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

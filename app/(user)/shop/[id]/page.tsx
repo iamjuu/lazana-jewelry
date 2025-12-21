@@ -274,6 +274,33 @@ const ProductDetailPage = () => {
     toast.success("Added to cart!");
   };
 
+  // Handle Add Relative Product to Cart
+  const handleAddRelativeProductToCart = () => {
+    if (!relativeProduct) return;
+    
+    // Check if user is logged in
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      toast.error("Please login to add items to cart");
+      router.push("/login");
+      return;
+    }
+
+    // Get first image URL for cart
+    const imageUrl = relativeProduct.imageUrl && relativeProduct.imageUrl.length > 0
+      ? normalizeImageUrl(relativeProduct.imageUrl[0])
+      : "";
+
+    addItem({
+      id: relativeProduct._id,
+      name: relativeProduct.name,
+      price: relativeProduct.price, // Price in dollars
+      imageUrl: imageUrl,
+    });
+
+    toast.success("Added to cart!");
+  };
+
   // Handle Instant Buy - redirect to order confirmation
   const handleBuyNow = async () => {
     // Check if user is logged in
@@ -400,40 +427,43 @@ const ProductDetailPage = () => {
                 <h1 className="text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[20px] font-medium mb-4">
                 Learn how to play the crystal bowls
                 </h1>
+              
+                  <h1 className="text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[20px] font-medium mb-4">
+                    Learn how to play the crystal bowls
+                  </h1>
+                  <Link href={`/shop/${relativeProduct._id}`}>
                 <div className="mb-8 border border-[#D5B584]/30 rounded-lg p-4 bg-white">
-                  <Link href={`/shop/${relativeProduct._id}`} className="block">
-                    <div className="flex items-center gap-4">
-                      {relativeProduct.imageUrl && relativeProduct.imageUrl.length > 0 && (
-                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0">
-                          <Image
-                            src={normalizeImageUrl(relativeProduct.imageUrl[0])}
-                            alt={relativeProduct.name}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                          />
-                        </div>
-                      )}
-                      <div className="flex-1">
-                        <h4 className="text-[#D5B584] text-[16px] font-medium mb-1">
-                          {relativeProduct.name}
-                        </h4>
-                        <p className="text-[#D5B584] text-[14px]">
-                          {formatPrice(relativeProduct.price)}
-                        </p>
+                  <div className="flex items-center gap-4">
+                    {relativeProduct.imageUrl && relativeProduct.imageUrl.length > 0 && (
+                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0">
+                        <Image
+                          src={normalizeImageUrl(relativeProduct.imageUrl[0])}
+                          alt={relativeProduct.name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          router.push(`/shop/${relativeProduct._id}`);
-                        }}
-                        className="bg-[#D5B584] hover:bg-[#C4A573] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shrink-0"
-                      >
-                        + Add
-                      </button>
+                    )}
+                    <div className="flex-1">
+                      <h4 className="text-[#D5B584] text-[16px] font-medium mb-1">
+                        {relativeProduct.name}
+                      </h4>
+                      <p className="text-[#D5B584] text-[14px]">
+                        {formatPrice(relativeProduct.price)}
+                      </p>
                     </div>
-                  </Link>
+                    <button
+                      onClick={handleAddRelativeProductToCart}
+                      className="bg-[#D5B584] hover:bg-[#C4A573] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shrink-0"
+                    >
+                      + Add
+                    </button>
+                  </div>
                 </div>
+
+
+                </Link>
                 </>
               )}
 
@@ -512,6 +542,22 @@ const ProductDetailPage = () => {
                       <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mt-3">
                         All orders are carefully packaged to protect your bowls during transit. Delivery times vary by location, typically 7-14 business days for international orders.
                       </p>
+                      
+                      {/* Additional Information */}
+                      <div className="mt-6 space-y-4 pt-4 border-t border-[#D5B584]/30">
+                        <div>
+                          <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Return Policy</h4>
+                          <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">No Returns unless it&apos;s broken</p>
+                        </div>
+                        <div>
+                          <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Care Instructions</h4>
+                          <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">Wipe with soft cloth, avoid water contact</p>
+                        </div>
+                        <div>
+                          <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Includes Accessories</h4>
+                          <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">Rubber ring + suede mallet</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -570,7 +616,7 @@ const ProductDetailPage = () => {
               </div>
 
               {/* Product Information */}
-              <div className=" border border-[#D5B584]/40 rounded-lg p-4 sm:p-6 space-y-3">
+              {/* <div className=" border border-[#D5B584]/40 rounded-lg p-4 sm:p-6 space-y-3">
                 <div>
                   <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Return Policy</h4>
                   <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">No Returns unless it's broken</p>
@@ -583,7 +629,7 @@ const ProductDetailPage = () => {
                   <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Includes Accessories</h4>
                   <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">Rubber ring + suede mallet</p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 

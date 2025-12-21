@@ -29,9 +29,19 @@ const userRoutes = [
   "/events",
   "/blog",
   "/book",
+  "/book-a-call",
+  "/book-a-session",
   "/calendar",
   "/discoveryappointment",
   "/privateappointment",
+  "/faq",
+  "/order-confirmation",
+  "/payment",
+  "/form",
+  "/free-studio-visit",
+  "/corporate-session",
+  "/shipping-and-delivery",
+  "/returns-and-refund-policy",
 ];
 
 // Public routes (accessible by anyone)
@@ -53,7 +63,7 @@ export async function middleware(request: NextRequest) {
   const adminTokenCookie = request.cookies.get("adminToken");
   const adminToken = adminTokenCookie?.value;
   
-  const userTokenCookie = request.cookies.get("userToken");
+  const userTokenCookie = request.cookies.get("token"); // Regular users use "token" cookie
   const userToken = userTokenCookie?.value;
 
   // Check route types
@@ -68,7 +78,25 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 
-  // 2. Allow access to admin login/signup pages
+  // 1b. ADMIN trying to access root path "/" → Redirect to admin dashboard
+  if (adminToken && pathname === "/") {
+    console.log("🚫 Admin trying to access root, redirecting to dashboard");
+    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+  }
+
+  // 1c. ADMIN trying to access user login/signup pages → Redirect to admin dashboard
+  if (adminToken && (pathname.startsWith("/login") || pathname.startsWith("/signup") || pathname.startsWith("/register"))) {
+    console.log("🚫 Admin trying to access user auth pages, redirecting to dashboard");
+    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+  }
+
+  // 2. USER trying to access ADMIN LOGIN/SIGNUP pages → Redirect to home
+  if (userToken && isAdminAuthRoute) {
+    console.log("🚫 User trying to access admin login, redirecting to home");
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // 2b. Allow access to admin login/signup pages (if no user token)
   if (isAdminAuthRoute) {
     return NextResponse.next();
   }
@@ -95,8 +123,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. USER ROUTES and PUBLIC ROUTES - Allow access
-  if (isUserRoute || isPublicRoute || pathname === "/") {
+  // 4. USER ROUTES and PUBLIC ROUTES - Allow access (but not for admins - already handled above)
+  if (isUserRoute || isPublicRoute) {
+    return NextResponse.next();
+  }
+
+  // 5. Root path "/" - Allow access only if not admin (admin already redirected above)
+  if (pathname === "/") {
     return NextResponse.next();
   }
 

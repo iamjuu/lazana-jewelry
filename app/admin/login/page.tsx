@@ -11,12 +11,63 @@ function AdminLoginContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  // Check if admin is already logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      const adminToken = localStorage.getItem("adminToken");
+      if (!adminToken) {
+        setCheckingAuth(false);
+        return;
+      }
+
+      // Verify token by checking if we can access admin profile
+      // The API uses cookies, so credentials: "include" will send the cookie
+      try {
+        const response = await fetch("/api/admin/profile", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // If we get a valid response, redirect to dashboard
+          if (data.success) {
+            router.push("/admin/dashboard");
+            return;
+          }
+        }
+        
+        // Token/cookie is invalid, clear localStorage and show login
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminRole");
+        setCheckingAuth(false);
+      } catch {
+        // If API call fails, clear token and show login
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminRole");
+        setCheckingAuth(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   useEffect(() => {
     if (searchParams.get("registered") === "true") {
       setSuccess("Registration successful! Please login with your credentials.");
     }
   }, [searchParams]);
+
+  // Show loading state while checking authentication
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-900">
+        <div className="text-white">Checking authentication...</div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

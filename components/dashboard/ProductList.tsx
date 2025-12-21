@@ -14,6 +14,7 @@ type ProductListItem = {
   subcategory?: string | { _id: string; name: string; slug: string; category: string | { _id: string; name: string; slug: string } };
   imageUrl?: string[];
   videoUrl?: string | string[];
+  relativeproduct?: boolean;
 };
 
 type Props = {
@@ -99,7 +100,10 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
           </thead>
           <tbody>
             {products.map((product) => (
-              <tr key={product._id} className="border-b border-zinc-700 last:border-0">
+              <tr 
+                key={product._id} 
+                className={`border-b border-zinc-700 last:border-0 ${product.relativeproduct ? 'bg-blue-900/20' : ''}`}
+              >
                 {editingId === product._id ? (
                   <td colSpan={4} className="px-6 py-4">
                     <ProductForm
@@ -145,6 +149,11 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="font-medium text-white">{product.name}</p>
+                            {product.relativeproduct && (
+                              <span className="rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white" title="Universal Product">
+                                Universal
+                              </span>
+                            )}
                             {product.videoUrl && (
                               <span className="text-xs text-zinc-500" title="Has video">
                                 🎥
