@@ -50,22 +50,9 @@ const AboutPage = () => {
         <Navbar />
       </div>
       <div className="max-w-7xl border-b border-[#D5B584] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid pt-[30px] sm:pt-[40px] md:pt-[54px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {Data.map((item) => (
-            <div key={item.id} className="relative group overflow-hidden">
-              <ImageWithShimmer
-                src={item.image}
-                alt={`About ${item.id}`}
-                width={500}
-                height={500}
-              />
-              <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none"></div>
-            </div>
-          ))}
-        </div>
-
-        <div className="w-full py-[40px]  ">
-          <div className="md:w-[70%] w-full  ">
+        <div className="grid pt-[30px] sm:pt-[40px] md:pt-[54px] grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start pb-[40px]">
+          {/* Left Side - Content */}
+          <div className="w-full">
             <h1 className="">
               <span className="text-[#D5B584] italic text-[18px] sm:text-[22px] md:text-[30px] ">
                 Crystal Bowl Studio
@@ -114,6 +101,23 @@ const AboutPage = () => {
               <p className="text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] text-black"> Based in Singapore | Available for global retreats & corporate wellness</p>
             </div> */}
           </div>
+
+          {/* Right Side - Images */}
+          <div className="w-full">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+              {Data.map((item) => (
+                <div key={item.id} className="relative group overflow-hidden">
+                  <ImageWithShimmer
+                    src={item.image}
+                    alt={`About ${item.id}`}
+                    width={500}
+                    height={500}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none"></div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
       <div></div>
@@ -131,7 +135,7 @@ const AboutPage = () => {
                 inspired by ancient traditions & modern well-being. ✨ Find
                 Balance. Heal Through Yoga & Sound. Awaken Your True Self.
                 Discover the power of sound healing, yoga, and meditation to
-                restore harmony within. Whether you're seeking relaxation,
+                restore harmony within. Whether you&apos;re seeking relaxation,
                 stress relief, emotional release, or deep transformation,
                 Frankie guides you through immersive experiences that reconnect
                 you to your essence. Frankie is a certified yoga teacher

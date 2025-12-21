@@ -14,10 +14,9 @@ const navigationItems = [
   { href: '/about', label: 'About Us' },
   { href: '/services', label: 'Services' },
   { href: '/shop', label: 'Shop', hasDropdown: true },
-  { href: '/events', label: 'Events' },
-  { href: '/blog', label: 'Blog' },
+  // { href: '/events', label: 'Events' },
+  // { href: '/blog', label: 'Blog' },
   { href: '/book', label: 'Book' },
-  // { href: '/faq', label: 'FAQ' },
 ]
 
 type Category = {

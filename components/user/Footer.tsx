@@ -7,7 +7,8 @@ import {
   WhatsAppIcon,
   FacebookIcon,
   YouTubeIcon,
-  InstagramIcon
+  InstagramIcon,
+  LinkedIcon
 } from "@/public/assets";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,7 +27,7 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-8 md:gap-[64px] items-center text-center">
-          <h3 className="text-[black] italic leading-tight text-[26px] sm:text-[32px] md:text-[40px] lg:text-[48px]">
+          <h3 className="text-[#d5b584] italic leading-tight text-[26px] sm:text-[32px] md:text-[40px] lg:text-[48px]">
             Ready To Begin Your
             <br className="hidden sm:block" /> Healing Journey?
           </h3>
@@ -54,13 +55,13 @@ const Footer = () => {
             {/* Row 2 */}
             <div className="grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4">
               <Link
-                href="/discoveryappointment"
+                href="/book-a-call/"
                 className="w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
               >
-                Book a Discovery
+                Book a Call
               </Link>
               <Link
-                href="/discoveryappointment"
+                href="/book-a-call/"
                 className="size-[44px] sm:size-[52px] rounded-xl sm:rounded-2xl bg-white text-[#1C3163] flex items-center justify-center hover:bg-white/90 transition-colors"
               >
                 <ArrowRight
@@ -80,8 +81,37 @@ const Footer = () => {
         </div>
       </div>
 
+
+<div>
+<div className="max-w-6xl flex flex-col   md:flex-row py-[44px] mx-auto px-4 gap-8 md:gap-0">
+<div className="w-full  flex flex-col items-center justify-center">
+            <h2 className="text-[#d5b584] font-serif text-center text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] mb-3 sm:mb-4">
+              Join our mailing list
+            </h2>
+            <p className="text-[#d5b584] text-center text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px]">
+              Be the first to know about special offers, new collections and stay up to date with all our magic!
+            </p>
+            <form className="w-full max-w-[500px] flex flex-col sm:flex-row gap-3 sm:gap-0">
+              <input
+                type="email"
+                placeholder="Email"
+                className="flex-1 px-4 sm:px-5 py-3 sm:py-3.5 bg-white border border-[#d5b584]/30 rounded-xl sm:rounded-l-xl sm:rounded-r-none text-[#1C3163] placeholder:text-gray-400 focus:outline-none focus:border-[#d5b584] transition-colors text-[14px] sm:text-[15px]"
+              />
+              <button
+                type="submit"
+                className="px-6 sm:px-8 py-3 sm:py-3.5 bg-[#e8d4b8] text-[#d5b584] rounded-xl sm:rounded-l-none sm:rounded-r-xl font-medium uppercase tracking-wide hover:bg-[#e0c9a8] transition-colors text-[13px] sm:text-[14px] whitespace-nowrap"
+              >
+                Subscribe
+              </button>
+            </form>
+          </div>    
+  </div>
+</div>
+
+
       <div>
         <div className="max-w-6xl flex flex-col md:flex-row py-[44px] mx-auto px-4 gap-8 md:gap-0">
+          
           <div className="w-full md:w-[50%] flex justify-center md:justify-start">
             <Image
               src={FooterIcon3}
@@ -107,6 +137,22 @@ const Footer = () => {
                       className="text-black hover:text-[black] transition-colors"
                     >
                       About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/blog"
+                      className="text-black hover:text-[black] transition-colors"
+                    >
+                      Blog
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/event"
+                      className="text-black hover:text-[black] transition-colors"
+                    >
+                      Event
                     </a>
                   </li>
                   <li>
@@ -189,7 +235,7 @@ const Footer = () => {
               <div className="flex flex-col gap-4">
                 {/* Social Media Icons */}
                 <div className="flex gap-3">
-                  <a
+                  {/* <a
                     href="#"
                     className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"
                     aria-label="Facebook"
@@ -210,7 +256,7 @@ const Footer = () => {
                       alt="WhatsApp"
                       className="w-5 h-5 brightness-0"
                     />
-                  </a>
+                  </a> */}
                   <a
                     href="#"
                     className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"
@@ -230,6 +276,17 @@ const Footer = () => {
                     <Image
                       src={YouTubeIcon}
                       alt="YouTube"
+                      className="w-5 h-5 brightness-0"
+                    />
+                  </a>
+                  <a
+                    href="#"
+                    className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"
+                    aria-label="LinkedIn"
+                  >
+                    <Image
+                      src={LinkedIcon}
+                      alt="LinkedIn"
                       className="w-5 h-5 brightness-0"
                     />
                   </a>

@@ -21,29 +21,25 @@ const Icons = [
   {
     id: 1,
     image: PremiumQuality,
-    title: "Exquisite Purity",
-    para: "Each bowl is masterfully created from 99.9% pure clear quartz, harmonised with rare crystals and precious elements. This fusion produces a sound of remarkable depth and celestial resonance, inviting you into a higher realm of healing."
-  },
+    title: " Premium Craftsmanship",
+    para: "Each piece is precision-crafted, made from 100% pure clear quartz, our bowls produce quality sound and long-lasting resonance."  },
 
   {
     id: 2,
     image: UniqueToYou,
-    title: "Crafted for Your Soul",
-    para: "No two bowls are ever the same. Every piece can be attuned to your chakra, note, frequency, and design, allowing you to summon the bowl that mirrors your inner essence—your true energetic signature."
-  },
+    title: "Light Weight",
+    para:"Our bowls are light, durable, designed for travel-ready, portable anywhere, anytime in our protective cases"  },
 
   {
     id: 3,
     image: LightWeight,
-    title: "Gracefully Lightweight",
-    para: "Elegant yet enduring, our bowls are crafted to be light in the hand and effortless to carry. Paired with our luxury protective cases, they become the perfect companion for healers who travel between worlds."
-  },
+    title: "Made for You",
+    para: "Each bowl is unique and can be customised by chakra, note, frequency, colour, and design to make it uniquely yours."  },
   {
     id: 4,
     image: Intention,
-    title: "Intention Woven Within",
-    para: "Each bowl is imbued with its own sacred purpose and healing vibration, waiting to align with the energy of the healer who chooses it. These bowls do more than sound—they speak to your journey, your intention, your awakening."
-  }
+    title: "With Intention",
+    para:"Each Bowl is precisely tuned, intentionally crafted with it’s own energy, so you can match with your unique energy and purpose. "  }
 ];
 // Helper to convert base64 string to data URL if needed
 const normalizeImageUrl = (url: string): string => {
