@@ -507,19 +507,7 @@ const Index = () => {
                       key={testimonial.id}
                       className="min-w-full flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center"
                     >
-                      {/* Left Side - Profile Image */}
-                      {/* <div className="flex-shrink-0 mx-auto md:mx-0">
-                        <div className="rounded-2xl md:rounded-3xl overflow-hidden w-[140px] h-[180px] md:w-[180px] md:h-[220px] border-2 border-[#C7A97B]">
-                          <Image
-                            src={testimonial.image}
-                            alt={testimonial.name}
-                            width={180}
-                            height={220}
-                            className="object-cover w-full h-full"
-                          />
-                        </div>
-                      </div> */}
-
+                 
                       {/* Right Side - Testimonial Card */}
                       <div className="flex-1 w-full border rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[200px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
                         <div className="animate-fadeIn">
