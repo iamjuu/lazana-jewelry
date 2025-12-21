@@ -1,0 +1,155 @@
+'use client'
+
+import React, { useState } from 'react'
+import toast from 'react-hot-toast'
+import Navbar from '@/components/user/Navbar'
+import Footer from '@/components/user/Footer'
+
+const FreeStudioVisitPage = () => {
+  const [submitting, setSubmitting] = useState(false)
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phone: '',
+    email: '',
+    comment: ''
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmitting(true)
+
+    const sessionType = 'freeStudioVisit'
+    const services = 'Free Studio Visit'
+
+    try {
+      const response = await fetch('/api/enquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...formData, services, sessionType }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        toast.success('Thank you for submitting! We will contact you soon.')
+        // Reset form
+        setFormData({
+          fullName: '',
+          phone: '',
+          email: '',
+          comment: ''
+        })
+      } else {
+        toast.error(data.message || 'Failed to submit enquiry. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      toast.error('Failed to submit enquiry. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <Navbar />
+      <div className="w-full">
+        <section className="w-full px-4 md:px-0 py-[68px]">
+          <div className="max-w-4xl pb-[106px] mx-auto">
+            {/* Header */}
+            <div className="mb-8 md:mb-12">
+              <h1 className="text-[32px] sm:text-[36px] md:text-[40px] text-[#D5B584] font-light leading-tight mb-3">
+                Free Studio Visit
+              </h1>
+              <p className="text-[14px] sm:text-[15px] md:text-[16px] text-[#5B7C99] font-light leading-relaxed max-w-2xl">
+                Schedule a free visit to our studio and experience our crystal bowls in person. 
+                Fill out the form below and we&apos;ll get back to you to arrange your visit.
+              </p>
+            </div>
+
+            {/* Form */}
+            <div className="bg-white/50 rounded-lg p-6 md:p-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Full Name */}
+                <div>
+                  <input
+                    type="text"
+                    name="fullName"
+                    placeholder="Full Name"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                    required
+                  />
+                </div>
+
+                {/* Phone and Email */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                  <div>
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder="Phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Comment Section */}
+                <div className="pt-4">
+                  <textarea
+                    name="comment"
+                    placeholder="Write your comment here"
+                    value={formData.comment}
+                    onChange={handleChange}
+                    rows={6}
+                    className="w-full px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all resize-none"
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="bg-[#1C3163] text-white px-12 py-4 rounded-lg text-[16px] sm:text-[18px] font-medium hover:bg-[#2a4580] transition-colors duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {submitting ? 'Submitting...' : 'Submit'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      </div>
+      <Footer />
+    </div>
+  )
+}
+
+export default FreeStudioVisitPage
+
