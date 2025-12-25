@@ -627,6 +627,7 @@ export default function SessionsPage() {
         price: "",
         date: "",
         startTime: "",
+        featured: false,
       });
       setMediaType(null);
       setPreviewUrl("");
