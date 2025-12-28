@@ -843,7 +843,7 @@ const Index = () => {
 
                   return (
                     <div key={event._id} className="flex flex-col group">
-                      <Link href="/events">
+                      <Link href={`/events/${event._id}`}>
                         <div className="relative w-full aspect-[4/3]  overflow-hidden mb-0 group-hover:shadow-2xl transition-all duration-500">
                           <Image
                             src={imageUrl}

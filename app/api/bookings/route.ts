@@ -4,6 +4,9 @@ import Booking from "@/models/Booking";
 import DiscoverySession from "@/models/DiscoverySession";
 import PrivateSession from "@/models/PrivateSession";
 import CorporateSession from "@/models/CorporateSession";
+import Event from "@/models/Event";
+import SessionEnquiry from "@/models/SessionEnquiry";
+import User from "@/models/User";
 import { requireAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
@@ -16,12 +19,30 @@ export async function GET(req: NextRequest) {
     const sessionType = searchParams.get("sessionType");
     
     let query: any = { userId: user._id };
-    if (sessionType && ["discovery", "private", "corporate"].includes(sessionType)) {
-      query.sessionType = sessionType;
+    if (sessionType) {
+      // Handle comma-separated sessionTypes or single sessionType
+      if (sessionType.includes(",")) {
+        const types = sessionType.split(",").map(t => t.trim());
+        query.sessionType = { $in: types };
+      } else if (["discovery", "private", "corporate", "event"].includes(sessionType)) {
+        query.sessionType = sessionType;
+      }
     }
     
     const bookings = await Booking.find(query).sort({ createdAt: -1 }).lean();
-    return NextResponse.json({ success: true, data: bookings });
+    
+    // Populate event details for event bookings
+    const bookingsWithDetails = await Promise.all(
+      bookings.map(async (booking: any) => {
+        if (booking.sessionType === "event" && booking.sessionId) {
+          const event = await Event.findById(booking.sessionId).lean();
+          return { ...booking, event };
+        }
+        return booking;
+      })
+    );
+    
+    return NextResponse.json({ success: true, data: bookingsWithDetails });
   } catch (e: any) {
     const status = e?.message === "UNAUTHORIZED" ? 401 : 500;
     return NextResponse.json({ success: false, message: e?.message || "Server error" }, { status });
@@ -40,10 +61,26 @@ export async function POST(req: NextRequest) {
       slotId?: string; // For discovery/private slot reference
     };
     
-    if (!sessionId || !sessionType) {
+    if (!sessionType) {
       return NextResponse.json({ 
         success: false, 
-        message: "Session ID and type are required" 
+        message: "Session type is required" 
+      }, { status: 400 });
+    }
+    
+    // For private sessions, slotId is required instead of sessionId
+    if (sessionType === "private" && !slotId) {
+      return NextResponse.json({ 
+        success: false, 
+        message: "Slot ID is required for private session booking" 
+      }, { status: 400 });
+    }
+    
+    // For other session types, sessionId is required
+    if (sessionType !== "private" && !sessionId) {
+      return NextResponse.json({ 
+        success: false, 
+        message: "Session ID is required" 
       }, { status: 400 });
     }
     
@@ -54,7 +91,8 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
     
-    if (!phone || phone.trim() === "") {
+    // Phone is optional for private sessions (no payment flow)
+    if (sessionType !== "private" && (!phone || phone.trim() === "")) {
       return NextResponse.json({ 
         success: false, 
         message: "Phone number is required" 
@@ -84,11 +122,30 @@ export async function POST(req: NextRequest) {
       }
       amount = 0; // No payment
     } else if (sessionType === "private") {
-      // Private sessions should go through enquiry + payment flow
-      return NextResponse.json({ 
-        success: false, 
-        message: "Private sessions require payment. Please use the enquiry form first." 
-      }, { status: 400 });
+      // Private sessions: Direct booking without payment
+      // For private sessions, slotId IS the PrivateSession _id
+      session = await PrivateSession.findById(slotId);
+      
+      if (!session) {
+        return NextResponse.json({ 
+          success: false, 
+          message: "Private session not found" 
+        }, { status: 404 });
+      }
+      
+      // Check if session is already booked
+      if ((session.bookedSeats || 0) >= (session.totalSeats || 1)) {
+        return NextResponse.json({ 
+          success: false, 
+          message: "This session is already fully booked" 
+        }, { status: 400 });
+      }
+      
+      // Update session booked seats
+      session.bookedSeats = (session.bookedSeats || 0) + 1;
+      await session.save();
+      
+      amount = 0; // No payment required
     } else if (sessionType === "corporate") {
       // Corporate: enquiry only, no direct booking
       return NextResponse.json({ 
@@ -102,29 +159,89 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Update booked seats (only for discovery)
-    if (sessionType === "discovery") {
-      session.bookedSeats = 1;
-      await session.save();
-    }
-
-    // Create booking (only for discovery - auto-confirmed)
+    // Create booking (auto-confirmed for discovery and private - no payment required)
     const booking = await Booking.create({ 
       userId: user._id, 
-      sessionId, 
+      sessionId: sessionType === "private" ? session._id : sessionId, 
       sessionType, 
       seats: 1, 
       amount: 0, // No payment
-      status: "confirmed", // Auto-confirmed for discovery
+      status: "confirmed", // Auto-confirmed for discovery and private
       phone: phone?.trim(),
       comment: comment?.trim() || undefined,
       slotId: slotId || undefined, // Store slot reference if provided
     });
     
+    // For private sessions, also create a SessionEnquiry so it appears in admin dashboard
+    if (sessionType === "private") {
+      try {
+        // Fetch full user details to get email and name
+        const fullUser = await User.findById(user._id);
+        if (!fullUser) {
+          console.warn("User not found when creating SessionEnquiry");
+        } else {
+          // Format date to YYYY-MM-DD
+          let sessionDate = "";
+          if (session.date) {
+            const rawDate = session.date;
+            if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+              sessionDate = rawDate;
+            } else {
+              try {
+                const parsedDate = new Date(rawDate);
+                if (!isNaN(parsedDate.getTime())) {
+                  const year = parsedDate.getFullYear();
+                  const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+                  const day = String(parsedDate.getDate()).padStart(2, '0');
+                  sessionDate = `${year}-${month}-${day}`;
+                }
+              } catch {
+                sessionDate = rawDate;
+              }
+            }
+          }
+          
+          const sessionTime = session.startTime || "";
+          const customerName = fullUser.name || "Customer";
+          const customerEmail = fullUser.email || "";
+          const customerPhone = phone?.trim() || fullUser.phone || "N/A";
+          
+          // Check if enquiry already exists to avoid duplicates
+          const existingEnquiry = await SessionEnquiry.findOne({
+            sessionId: session._id.toString(),
+            sessionType: "private",
+            email: customerEmail,
+            bookedDate: sessionDate,
+          });
+          
+          if (!existingEnquiry) {
+            await SessionEnquiry.create({
+              fullName: customerName,
+              services: `Private Session - ${sessionDate} at ${sessionTime}`,
+              phone: customerPhone,
+              email: customerEmail,
+              comment: comment?.trim() || `Private Session booking - Direct booking (no payment required)`,
+              status: "pending", // Start as pending since admin needs to review
+              sessionType: "private",
+              sessionId: session._id.toString(),
+              bookedDate: sessionDate,
+              bookedTime: sessionTime,
+            });
+            console.log("✅ Created SessionEnquiry for private session booking");
+          } else {
+            console.log("SessionEnquiry already exists for this booking");
+          }
+        }
+      } catch (enquiryError: any) {
+        // Don't fail the booking if enquiry creation fails
+        console.error("❌ Error creating SessionEnquiry:", enquiryError);
+      }
+    }
+    
     return NextResponse.json({ 
       success: true, 
       data: booking,
-      requiresPayment: false, // No payment for discovery
+      requiresPayment: false, // No payment for discovery and private
     }, { status: 201 });
   } catch (e: any) {
     const status = e?.message === "UNAUTHORIZED" ? 401 : 400;

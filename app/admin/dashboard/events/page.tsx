@@ -12,6 +12,9 @@ type Event = {
   date: string;
   description: string;
   imageUrl?: string;
+  totalSeats?: number;
+  bookedSeats?: number;
+  price?: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -27,6 +30,8 @@ export default function EventsPage() {
     date: "",
     description: "",
     image: "" as string | File | null,
+    totalSeats: 1,
+    price: 0,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -185,6 +190,8 @@ export default function EventsPage() {
       date: event.date || "",
       description: event.description || "",
       image: event.imageUrl || "",
+      totalSeats: event.totalSeats || 1,
+      price: event.price || 0,
     });
     
     if (event.imageUrl) {
@@ -263,6 +270,8 @@ export default function EventsPage() {
         date: string;
         description: string;
         imageUrl?: string;
+        totalSeats: number;
+        price: number;
       } = {
         name: formData.name.trim(),
         title: formData.title.trim(),
@@ -271,6 +280,8 @@ export default function EventsPage() {
         time: formData.time.trim(),
         date: formData.date.trim(),
         description: formData.description.trim(),
+        totalSeats: Number(formData.totalSeats),
+        price: Number(formData.price),
       };
 
       if (formData.image) {
@@ -292,7 +303,7 @@ export default function EventsPage() {
       }
 
       setSuccess(`Event ${isEdit ? "updated" : "created"} successfully!`);
-      setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", image: "" });
+      setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", image: "", totalSeats: 1, price: 0 });
       setPreviewUrl("");
       setEditingId(null);
       
@@ -312,7 +323,7 @@ export default function EventsPage() {
 
   const handleCancel = () => {
     setShowAddForm(false);
-    setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", image: "" });
+    setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", image: "", totalSeats: 1, price: 0 });
     setPreviewUrl("");
     setEditingId(null);
     setError(null);
@@ -366,6 +377,8 @@ export default function EventsPage() {
                         <th className="px-6 py-3 font-medium">Date</th>
                         <th className="px-6 py-3 font-medium">Day</th>
                         <th className="px-6 py-3 font-medium">Time</th>
+                        <th className="px-6 py-3 font-medium">Slots</th>
+                        <th className="px-6 py-3 font-medium">Price</th>
                         <th className="px-6 py-3 font-medium">Actions</th>
                       </tr>
                     </thead>
@@ -407,6 +420,14 @@ export default function EventsPage() {
                           </td>
                           <td className="px-6 py-4 text-zinc-400">
                             {event.time || "N/A"}
+                          </td>
+                          <td className="px-6 py-4 text-zinc-400">
+                            {event.bookedSeats !== undefined && event.totalSeats !== undefined 
+                              ? `${event.bookedSeats}/${event.totalSeats}`
+                              : "N/A"}
+                          </td>
+                          <td className="px-6 py-4 text-zinc-400">
+                            {event.price !== undefined ? `SGD $${event.price.toFixed(2)}` : "N/A"}
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
@@ -550,6 +571,39 @@ export default function EventsPage() {
                   onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                   className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
                   placeholder="e.g., 07:00PM - 10:00PM"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="event-totalSeats" className="text-sm font-medium text-white">
+                  Total Slots <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="event-totalSeats"
+                  type="number"
+                  required
+                  min="1"
+                  value={formData.totalSeats}
+                  onChange={(e) => setFormData({ ...formData, totalSeats: parseInt(e.target.value) || 1 })}
+                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                  placeholder="Number of available slots"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="event-price" className="text-sm font-medium text-white">
+                  Price (SGD) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="event-price"
+                  type="number"
+                  required
+                  min="0"
+                  step="0.01"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                  placeholder="Price per booking"
                 />
               </div>
             </div>

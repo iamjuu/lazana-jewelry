@@ -58,9 +58,9 @@ const OrderSchema = new Schema<OrderType>(
       validate: {
         validator: function(v: string) {
           // For new values, validate; old invalid values will be cleaned by pre-save hook
-          return !v || ["pending", "paid", "cancelled"].includes(v);
+          return !v || ["pending", "paid", "cancelled", "failed"].includes(v);
         },
-        message: 'Invalid payment status. Must be one of: pending, paid, cancelled'
+        message: 'Invalid payment status. Must be one of: pending, paid, cancelled, failed'
       }
     }, // Payment status
     deliveryStatus: { type: String, enum: ["pending", "processing", "ready to ship", "shipped", "reached to your country", "on the way to delivery", "delivered"], default: "pending" }, // Delivery status
@@ -79,7 +79,7 @@ const OrderSchema = new Schema<OrderType>(
 
 // Pre-save hook to clean invalid status values from old data
 OrderSchema.pre('save', function(next) {
-  const validPaymentStatuses = ["pending", "paid", "cancelled"];
+  const validPaymentStatuses = ["pending", "paid", "cancelled", "failed"];
   
   // Clean invalid payment status in statusHistory
   if (this.statusHistory && Array.isArray(this.statusHistory)) {

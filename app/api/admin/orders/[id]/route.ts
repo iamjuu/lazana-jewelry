@@ -42,7 +42,7 @@ export async function PATCH(
 
     // Handle payment status update (status field)
     if (status !== undefined) {
-      const validPaymentStatuses = ["pending", "paid", "cancelled"];
+      const validPaymentStatuses = ["pending", "paid", "cancelled", "failed"];
       if (!validPaymentStatuses.includes(status)) {
         return NextResponse.json(
           { success: false, message: "Invalid payment status" },
@@ -98,6 +98,7 @@ export async function PATCH(
               price: item.price,
               isSet: item.isSet || false,
             })),
+            shippingAddress: order.shippingAddress,
             totalAmount: order.amount,
           });
           statusUpdate.emailSent = true;

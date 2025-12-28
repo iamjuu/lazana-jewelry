@@ -56,7 +56,7 @@ type Order = {
 type Booking = {
   _id: string;
   sessionId: string;
-  sessionType: "discovery" | "private" | "corporate";
+  sessionType: "discovery" | "private" | "corporate" | "event";
   seats: number;
   amount: number;
   status: string;
@@ -64,9 +64,16 @@ type Booking = {
   comment?: string;
   createdAt: string;
   updatedAt: string;
+  event?: {
+    _id: string;
+    title: string;
+    date: string;
+    time: string;
+    location: string;
+  };
 };
 
-type TabType = "profile" | "orders" | "bookings";
+type TabType = "profile" | "orders" | "bookings" | "bookedEvents";
 
 function ProfilePageContent() {
   const router = useRouter();
@@ -76,8 +83,10 @@ function ProfilePageContent() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [eventBookings, setEventBookings] = useState<Booking[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [bookingsLoading, setBookingsLoading] = useState(false);
+  const [eventBookingsLoading, setEventBookingsLoading] = useState(false);
   const [ordersPage, setOrdersPage] = useState(1);
   const [hasMoreOrders, setHasMoreOrders] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -96,7 +105,7 @@ function ProfilePageContent() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get("tab");
-    if (tabParam === "orders" || tabParam === "sessions" || tabParam === "bookings") {
+    if (tabParam === "orders" || tabParam === "sessions" || tabParam === "bookings" || tabParam === "bookedEvents") {
       setActiveTab(tabParam === "sessions" ? "bookings" : tabParam as TabType);
     }
   }, []);
@@ -114,6 +123,9 @@ function ProfilePageContent() {
     }
     if (activeTab === "bookings" && bookings.length === 0 && !bookingsLoading) {
       fetchBookings();
+    }
+    if (activeTab === "bookedEvents" && eventBookings.length === 0 && !eventBookingsLoading) {
+      fetchEventBookings();
     }
   }, [activeTab]);
 
@@ -208,13 +220,15 @@ function ProfilePageContent() {
 
     try {
       setBookingsLoading(true);
-      const response = await fetch("/api/bookings", {
+      const response = await fetch("/api/bookings?sessionType=discovery,private,corporate", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await response.json();
       if (data.success) {
-        setBookings(data.data || []);
+        // Filter out event bookings
+        const yogaBookings = (data.data || []).filter((b: Booking) => b.sessionType !== "event");
+        setBookings(yogaBookings);
       } else {
         toast.error(data.message || "Failed to fetch bookings");
       }
@@ -223,6 +237,30 @@ function ProfilePageContent() {
       toast.error("Something went wrong");
     } finally {
       setBookingsLoading(false);
+    }
+  };
+
+  const fetchEventBookings = async () => {
+    const token = localStorage.getItem("userToken");
+    if (!token) return;
+
+    try {
+      setEventBookingsLoading(true);
+      const response = await fetch("/api/bookings?sessionType=event", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setEventBookings(data.data || []);
+      } else {
+        toast.error(data.message || "Failed to fetch event bookings");
+      }
+    } catch (error) {
+      console.error("Error fetching event bookings:", error);
+      toast.error("Something went wrong");
+    } finally {
+      setEventBookingsLoading(false);
     }
   };
 
@@ -509,6 +547,19 @@ function ProfilePageContent() {
               >
                 <Calendar size={20} className="inline-block mr-2" />
                 Booked Yoga Sessions
+              </button>
+              <button
+                onClick={() => setActiveTab("bookedEvents")}
+                className={`
+                  flex-1 px-6 py-4 text-sm font-medium text-center border-b-2 transition-colors
+                  ${activeTab === "bookedEvents"
+                    ? "border-[#D5B584] text-[#D5B584] bg-[#FEF9F5]"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }
+                `}
+              >
+                <Calendar size={20} className="inline-block mr-2" />
+                Booked Events
               </button>
             </nav>
           </div>
@@ -822,6 +873,105 @@ function ProfilePageContent() {
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Amount:</span>
                                 <span className="text-[#1C3163] font-medium">${booking.amount.toFixed(2)}</span>
+                              </div>
+                            )}
+                            {booking.comment && (
+                              <div className="pt-3 border-t border-gray-200">
+                                <p className="text-sm text-gray-600 mb-1">Details:</p>
+                                <p className="text-[#1C3163]">{booking.comment}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Booked Events Tab */}
+            {activeTab === "bookedEvents" && (
+              <div>
+                <h2 className="text-2xl font-bold text-[#1C3163] mb-6 flex items-center gap-2">
+                  <Calendar size={24} />
+                  Booked Events
+                </h2>
+                {eventBookingsLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="w-8 h-8 border-4 border-[#D5B584]/30 border-t-[#D5B584] rounded-full animate-spin" />
+                  </div>
+                ) : eventBookings.length === 0 ? (
+                  <div className="bg-gray-50 rounded-lg p-12 text-center">
+                    <Calendar size={64} className="text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-[#1C3163] text-xl font-medium mb-2">No Event Bookings Yet</h3>
+                    <p className="text-gray-600 mb-6">You haven&apos;t booked any events yet.</p>
+                    <button
+                      onClick={() => router.push("/events")}
+                      className="bg-[#1C3163] text-white px-6 py-2 rounded-lg hover:bg-[#152747] transition-colors"
+                    >
+                      Browse Events
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {eventBookings.map((booking) => (
+                      <div key={booking._id} className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
+                        <div className="bg-white px-6 py-4 border-b border-gray-200">
+                          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                              {getStatusIcon(booking.status)}
+                              <div>
+                                <p className="text-sm text-gray-600">Booking ID</p>
+                                <p className="text-[#1C3163] font-medium">
+                                  #{booking._id.slice(-8).toUpperCase()}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex flex-col md:items-end gap-2">
+                              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(booking.status)}`}>
+                                {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                              </span>
+                              <p className="text-sm text-gray-600">
+                                {new Date(booking.createdAt).toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-6">
+                          <div className="space-y-3">
+                            {booking.event && (
+                              <>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Event:</span>
+                                  <span className="text-[#1C3163] font-medium">{booking.event.title}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Date:</span>
+                                  <span className="text-[#1C3163] font-medium">{booking.event.date}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Time:</span>
+                                  <span className="text-[#1C3163] font-medium">{booking.event.time}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-600">Location:</span>
+                                  <span className="text-[#1C3163] font-medium">{booking.event.location}</span>
+                                </div>
+                              </>
+                            )}
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Slots:</span>
+                              <span className="text-[#1C3163] font-medium">{booking.seats}</span>
+                            </div>
+                            {booking.amount > 0 && (
+                              <div className="flex justify-between pt-3 border-t border-gray-200">
+                                <span className="text-gray-600 font-medium">Total Amount:</span>
+                                <span className="text-[#1C3163] font-semibold">SGD ${booking.amount.toFixed(2)}</span>
                               </div>
                             )}
                             {booking.comment && (

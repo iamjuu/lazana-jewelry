@@ -13,7 +13,7 @@ const BookingSchema = new Schema<BookingType>(
     paymentProvider: { type: String, enum: ["stripe", "paypal", "bank_transfer"], required: false },
     paymentRef: { type: String, required: false },
     paymentStatus: { type: String, enum: ["pending", "paid", "failed"], default: "pending" },
-    sessionType: { type: String, enum: ["discovery", "private", "corporate"], required: true, index: true },
+    sessionType: { type: String, enum: ["discovery", "private", "corporate", "event"], required: true, index: true },
     slotId: { type: String, required: false },
   },
   { timestamps: true }

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-type PaymentStatus = "pending" | "paid" | "cancelled";
+type PaymentStatus = "pending" | "paid" | "cancelled" | "failed";
 type DeliveryStatus = "pending" | "processing" | "ready to ship" | "shipped" | "reached to your country" | "on the way to delivery" | "delivered";
 
 type OrderItem = {
@@ -66,6 +66,7 @@ export default function OrdersPage() {
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [deliveryMessage, setDeliveryMessage] = useState<string>("");
   const [customerMessage, setCustomerMessage] = useState<string>("");
+  const [updatingPaymentStatus, setUpdatingPaymentStatus] = useState<string | null>(null); // Track which payment status is being updated
   const [updatingDeliveryStatus, setUpdatingDeliveryStatus] = useState<string | null>(null); // Track which status is being updated
   const [clearingMessage, setClearingMessage] = useState<boolean>(false); // Track if message is being cleared
   const [stats, setStats] = useState({
@@ -73,6 +74,7 @@ export default function OrdersPage() {
     pending: 0,
     paid: 0,
     cancelled: 0,
+    failed: 0,
     totalRevenue: 0,
   });
 
@@ -128,6 +130,7 @@ export default function OrdersPage() {
           pending: ordersList.filter((o: Order) => o.status === "pending").length,
           paid: ordersList.filter((o: Order) => o.status === "paid").length,
           cancelled: ordersList.filter((o: Order) => o.status === "cancelled").length,
+          failed: ordersList.filter((o: Order) => o.status === "failed").length,
           totalRevenue: ordersList
             .filter((o: Order) => o.status === "paid")
             .reduce((sum: number, o: Order) => sum + o.amount, 0),
@@ -153,6 +156,7 @@ export default function OrdersPage() {
   };
 
   const updatePaymentStatus = async (orderId: string, newStatus: PaymentStatus, message?: string) => {
+    setUpdatingPaymentStatus(newStatus); // Set loading state
     try {
       const token = localStorage.getItem("adminToken");
       const response = await fetch(`/api/admin/orders/${orderId}`, {
@@ -178,6 +182,8 @@ export default function OrdersPage() {
     } catch (error) {
       console.error("Failed to update payment status:", error);
       toast.error("Failed to update payment status");
+    } finally {
+      setUpdatingPaymentStatus(null); // Clear loading state
     }
   };
 
@@ -287,6 +293,7 @@ export default function OrdersPage() {
       pending: { bg: "bg-yellow-100", text: "text-yellow-800", icon: Clock },
       paid: { bg: "bg-green-100", text: "text-green-800", icon: CheckCircle },
       cancelled: { bg: "bg-red-100", text: "text-red-800", icon: XCircle },
+      failed: { bg: "bg-red-100", text: "text-red-800", icon: XCircle },
     };
 
     const badge = badges[status];
@@ -412,7 +419,7 @@ export default function OrdersPage() {
               <Filter className="text-zinc-400" size={20} />
               <span className="text-white font-medium">Filter by Status:</span>
             </div>
-            {["all", "pending", "paid", "cancelled"].map((status) => (
+            {["all", "pending", "paid", "cancelled", "failed"].map((status) => (
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
@@ -739,21 +746,33 @@ export default function OrdersPage() {
                 <h3 className="text-lg font-semibold text-white mb-4">Update Payment Status</h3>
                 
                 <div className="flex flex-wrap gap-2">
-                  {(["pending", "paid", "cancelled"] as PaymentStatus[]).map(
+                  {(["pending", "paid", "cancelled", "failed"] as PaymentStatus[]).map(
                     (status) => (
                       <button
                         key={status}
                         onClick={() => {
                           updatePaymentStatus(selectedOrder._id, status);
                         }}
-                        disabled={selectedOrder.status === status}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          selectedOrder.status === status
+                        disabled={
+                          selectedOrder.status === status || 
+                          updatingPaymentStatus === status
+                        }
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                          selectedOrder.status === status || updatingPaymentStatus === status
                             ? "bg-zinc-700 text-zinc-500 cursor-not-allowed"
+                            : status === "failed" || status === "cancelled"
+                            ? "bg-red-600 hover:bg-red-700 text-white"
                             : "bg-blue-600 hover:bg-blue-700 text-white"
                         }`}
                       >
-                        Mark as {status.charAt(0).toUpperCase() + status.slice(1)}
+                        {updatingPaymentStatus === status ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                            <span>Updating...</span>
+                          </>
+                        ) : (
+                          <span>Mark as {status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                        )}
                       </button>
                     )
                   )}

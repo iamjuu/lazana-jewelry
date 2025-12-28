@@ -31,9 +31,8 @@ const PrivateAppointmentPage = () => {
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([])
   const [loadingSlots, setLoadingSlots] = useState(true)
   
-  // Payment state
+  // Booking state
   const [isLoading, setIsLoading] = useState(false)
-  const [bookingAmount, setBookingAmount] = useState<number | null>(null) // Will be set from selected slot
 
   // Fetch available slots
   useEffect(() => {
@@ -44,7 +43,10 @@ const PrivateAppointmentPage = () => {
         const data = await response.json()
         
         if (data.success) {
-          setAvailableSlots(data.data || [])
+          const slots = data.data || []
+          console.log('📅 Slots received from API:', slots.length)
+          console.log('📅 Slots data:', slots.map((s: any) => ({ id: s._id?.toString().slice(-8), date: s.date, time: s.time, isBooked: s.isBooked })))
+          setAvailableSlots(slots)
         } else {
           console.error('Failed to fetch slots:', data.message)
           toast.error('Failed to load available slots')
@@ -123,9 +125,25 @@ const PrivateAppointmentPage = () => {
     const dates = new Set<string>()
     availableSlots.forEach(slot => {
       // Trim and normalize date string to ensure exact matching
-      const normalizedDate = slot.date.trim()
-      dates.add(normalizedDate)
+      if (slot.date) {
+        let normalizedDate = slot.date.trim()
+        // If date doesn't match YYYY-MM-DD format, try to convert it
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(normalizedDate)) {
+          // Try parsing as Date and reformatting
+          const parsedDate = new Date(normalizedDate)
+          if (!isNaN(parsedDate.getTime())) {
+            const year = parsedDate.getFullYear()
+            const month = String(parsedDate.getMonth() + 1).padStart(2, '0')
+            const day = String(parsedDate.getDate()).padStart(2, '0')
+            normalizedDate = `${year}-${month}-${day}`
+          }
+        }
+        if (normalizedDate && /^\d{4}-\d{2}-\d{2}$/.test(normalizedDate)) {
+          dates.add(normalizedDate)
+        }
+      }
     })
+    console.log('📅 Available dates from slots:', Array.from(dates))
     return dates
   }, [availableSlots])
 
@@ -155,8 +173,10 @@ const PrivateAppointmentPage = () => {
     
     const slots = availableSlots
       .filter(slot => {
-        const normalizedSlotDate = slot.date.trim()
-        return normalizedSlotDate === selectedDateStr && !slot.isBooked
+        // Normalize both dates for comparison (remove any whitespace, ensure YYYY-MM-DD format)
+        const normalizedSlotDate = slot.date ? slot.date.trim() : ''
+        const normalizedSelectedDate = selectedDateStr.trim()
+        return normalizedSlotDate === normalizedSelectedDate && !slot.isBooked
       })
       .map(slot => ({
         time: slot.time,
@@ -215,12 +235,6 @@ const PrivateAppointmentPage = () => {
   const handleTimeClick = (time: string, available: boolean, price?: number) => {
     if (available) {
       setSelectedTime(time)
-      // Set the booking amount from the selected slot's price
-      if (price !== undefined && price > 0) {
-        setBookingAmount(price)
-      } else {
-        setBookingAmount(null)
-      }
       
       // Smooth scroll to form with animation after a short delay
       setTimeout(() => {
@@ -233,16 +247,10 @@ const PrivateAppointmentPage = () => {
     }
   }
 
-  const handleCheckout = async () => {
+  const handleBooking = async () => {
     // Check if date and time are selected
     if (!selectedDate || !selectedTime || !selectedSlotId) {
       toast.error('Please select both date and time')
-      return
-    }
-
-    // Check if booking amount is available
-    if (!bookingAmount || bookingAmount <= 0) {
-      toast.error('Invalid session price. Please select a different session.')
       return
     }
 
@@ -265,36 +273,44 @@ const PrivateAppointmentPage = () => {
         day: 'numeric'
       })
 
-      // Convert price to cents for Stripe (if price is in dollars, multiply by 100)
-      // Assuming price is stored in dollars in database, convert to cents
-      const amountInCents = Math.round(bookingAmount * 100)
-
-      // Create Stripe checkout session
-      const response = await fetch("/api/payment/create-private-checkout", {
+      // Book directly without payment
+      const response = await fetch("/api/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          sessionId: selectedSlotId,
+          sessionType: "private",
           slotId: selectedSlotId,
-          amount: amountInCents,
-          date: formattedDate,
-          time: selectedTime,
+          seats: 1,
         }),
       })
 
       const data = await response.json()
 
-      if (data.success && data.data?.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.data.url
+      if (data.success) {
+        toast.success("Session booked successfully!")
+        // Refresh slots to show updated availability
+        const slotsResponse = await fetch('/api/slots?sessionType=private')
+        const slotsData = await slotsResponse.json()
+        if (slotsData.success) {
+          setAvailableSlots(slotsData.data || [])
+        }
+        // Reset selections
+        setSelectedDate(null)
+        setSelectedTime(null)
+        // Redirect to success page or bookings page
+        setTimeout(() => {
+          router.push("/profile?tab=bookings")
+        }, 1500)
       } else {
-        toast.error(data.message || "Failed to create checkout session")
+        toast.error(data.message || "Failed to book session")
         setIsLoading(false)
       }
     } catch (error) {
-      console.error("Checkout error:", error)
+      console.error("Booking error:", error)
       toast.error("Something went wrong. Please try again.")
       setIsLoading(false)
     }
@@ -497,11 +513,6 @@ const PrivateAppointmentPage = () => {
                           >
                             <div className="flex flex-col items-center">
                               <span>{formatTime12Hour(slot.time)}</span>
-                              {slot.price > 0 && (
-                                <span className="text-[14px] font-normal mt-1 opacity-90">
-                                  SGD ${slot.price.toFixed(2)}
-                                </span>
-                              )}
                             </div>
                           </button>
                         )
@@ -522,24 +533,29 @@ const PrivateAppointmentPage = () => {
             <div className=''>
               <div className='rounded-[24px] p-6 md:p-8 lg:p-10 border shadow-lg bg-white/50'>
               
-                {/* Payment Section */}
-                {selectedDate && selectedTime && bookingAmount !== null && bookingAmount > 0 && (
+                {/* Booking Section */}
+                {selectedDate && selectedTime && (
                   <div className="">
                     <div className="bg-white/80 p-6 md:p-8 rounded-[20px]">
                       <h2 className="text-[28px] sm:text-[32px] md:text-[36px] text-[#D5B584] font-light mb-4">
-                        Make Your Payment
+                        Confirm Your Booking
                       </h2>
                       
-                      <p className="text-[16px] text-gray-700 mb-6">
-                        Session Amount: <span className="text-[#D5B584] font-semibold text-[20px]">SGD ${bookingAmount.toFixed(2)}</span>
-                      </p>
+                      <div className="mb-6 space-y-2">
+                        <p className="text-[16px] text-gray-700">
+                          <span className="font-semibold">Date:</span> {new Date(currentYear, currentMonth, selectedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </p>
+                        <p className="text-[16px] text-gray-700">
+                          <span className="font-semibold">Time:</span> {formatTime12Hour(selectedTime)}
+                        </p>
+                      </div>
 
-                      {/* Stripe Checkout Button */}
+                      {/* Book Button */}
                       <button
                         type="button"
-                        onClick={handleCheckout}
-                        disabled={isLoading || !bookingAmount || bookingAmount <= 0}
-                        className="w-full bg-[#635BFF] hover:bg-[#5347E6] text-white rounded-[12px] px-6 py-4 flex items-center justify-center gap-3 text-[18px] font-medium transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={handleBooking}
+                        disabled={isLoading}
+                        className="w-full bg-[#1C3163] hover:bg-[#1E40AF] text-white rounded-[12px] px-6 py-4 flex items-center justify-center gap-3 text-[18px] font-medium transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isLoading ? (
                           <>
@@ -547,22 +563,14 @@ const PrivateAppointmentPage = () => {
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                             </svg>
-                            Processing...
+                            Booking...
                           </>
                         ) : (
                           <>
-                            <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
-                              <rect width="20" height="24" fill="white" rx="2"/>
-                              <text x="10" y="16" textAnchor="middle" fill="#635BFF" fontSize="10" fontWeight="bold">S</text>
-                            </svg>
-                            Proceed to Payment
+                            ✓ Confirm Booking
                           </>
                         )}
                       </button>
-                      
-                      <p className="text-center text-sm text-gray-600 mt-4">
-                        🔒 Secure payment powered by Stripe
-                      </p>
                     </div>
                   </div>
                 )}

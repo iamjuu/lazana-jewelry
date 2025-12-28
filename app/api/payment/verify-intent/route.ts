@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Order from "@/models/Order";
+import Product from "@/models/Product";
 import { requireAuth } from "@/lib/auth";
 import Stripe from "stripe";
-import { sendOrderPlacementNotificationToAdmin } from "@/lib/email";
+import { 
+  sendOrderPlacementNotificationToAdmin,
+  sendUniversalProductOrderNotificationToAdmin,
+  sendUniversalProductOrderConfirmationToUser,
+  sendRegularProductOrderConfirmationToUser
+} from "@/lib/email";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2025-10-29.clover",
@@ -77,8 +83,12 @@ export async function POST(req: NextRequest) {
             );
           }
 
-          // Send email notification to admin (only after successful payment)
-          sendOrderPlacementNotificationToAdmin({
+          // Check if order contains universal products
+          const productIds = updatedOrder.items.map((item: any) => item.productId);
+          const products = await Product.find({ _id: { $in: productIds } }).lean();
+          const hasUniversalProduct = products.some((product: any) => product.relativeproduct === true);
+
+          const orderEmailData = {
             orderId: updatedOrder._id.toString(),
             customerName: updatedOrder.customerName,
             customerEmail: updatedOrder.customerEmail,
@@ -95,9 +105,29 @@ export async function POST(req: NextRequest) {
             shippingAddress: updatedOrder.shippingAddress,
             customerComments: updatedOrder.customerComments || "",
             createdAt: updatedOrder.createdAt.toISOString(),
-          }).catch((error) => {
-            console.error("Failed to send order placement email to admin:", error);
-          });
+          };
+
+          // Send email to user (universal product vs regular product)
+          if (hasUniversalProduct) {
+            sendUniversalProductOrderConfirmationToUser(orderEmailData).catch((error) => {
+              console.error("Failed to send universal product order confirmation email to user:", error);
+            });
+          } else {
+            sendRegularProductOrderConfirmationToUser(orderEmailData).catch((error) => {
+              console.error("Failed to send regular product order confirmation email to user:", error);
+            });
+          }
+
+          // Send email notification to admin (universal product vs regular product)
+          if (hasUniversalProduct) {
+            sendUniversalProductOrderNotificationToAdmin(orderEmailData).catch((error) => {
+              console.error("Failed to send universal product order notification email to admin:", error);
+            });
+          } else {
+            sendOrderPlacementNotificationToAdmin(orderEmailData).catch((error) => {
+              console.error("Failed to send order placement email to admin:", error);
+            });
+          }
 
           return NextResponse.json({ success: true, data: updatedOrder });
         } else if (intent.status === "processing") {
@@ -168,7 +198,12 @@ export async function POST(req: NextRequest) {
               );
             }
 
-            sendOrderPlacementNotificationToAdmin({
+            // Check if order contains universal products
+            const productIds = updatedOrder.items.map((item: any) => item.productId);
+            const products = await Product.find({ _id: { $in: productIds } }).lean();
+            const hasUniversalProduct = products.some((product: any) => product.relativeproduct === true);
+
+            const orderEmailData = {
               orderId: updatedOrder._id.toString(),
               customerName: updatedOrder.customerName,
               customerEmail: updatedOrder.customerEmail,
@@ -185,9 +220,29 @@ export async function POST(req: NextRequest) {
               shippingAddress: updatedOrder.shippingAddress,
               customerComments: updatedOrder.customerComments || "",
               createdAt: updatedOrder.createdAt.toISOString(),
-            }).catch((error) => {
-              console.error("Failed to send order placement email to admin:", error);
-            });
+            };
+
+            // Send email to user (universal product vs regular product)
+            if (hasUniversalProduct) {
+              sendUniversalProductOrderConfirmationToUser(orderEmailData).catch((error) => {
+                console.error("Failed to send universal product order confirmation email to user:", error);
+              });
+            } else {
+              sendRegularProductOrderConfirmationToUser(orderEmailData).catch((error) => {
+                console.error("Failed to send regular product order confirmation email to user:", error);
+              });
+            }
+
+            // Send email notification to admin (universal product vs regular product)
+            if (hasUniversalProduct) {
+              sendUniversalProductOrderNotificationToAdmin(orderEmailData).catch((error) => {
+                console.error("Failed to send universal product order notification email to admin:", error);
+              });
+            } else {
+              sendOrderPlacementNotificationToAdmin(orderEmailData).catch((error) => {
+                console.error("Failed to send order placement email to admin:", error);
+              });
+            }
 
             return NextResponse.json({ success: true, data: updatedOrder });
           }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
-import PastEvent from "@/models/PastEvent";
+import Event from "@/models/Event";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -9,17 +9,17 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     await connectDB();
     const { id } = await context.params;
     
-    const pastEvent = await PastEvent.findById(id).lean();
+    const event = await Event.findById(id).lean();
     
-    if (!pastEvent) {
+    if (!event) {
       return NextResponse.json(
-        { success: false, message: "Past event not found" },
+        { success: false, message: "Event not found" },
         { status: 404 }
       );
     }
     
     return NextResponse.json(
-      { success: true, data: pastEvent },
+      { success: true, data: event },
       { status: 200 }
     );
   } catch (e: any) {
@@ -29,7 +29,4 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     );
   }
 }
-
-
-
 

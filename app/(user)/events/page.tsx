@@ -256,9 +256,10 @@ const EventsPage = () => {
             ) : (
               <div className="">
                 {eventsData.slice(0, 3).map((event) => (
-                  <div
+                  <Link
                     key={event.id}
-                    className="flex py-[50px] border-b border-[#D5B584] flex-col lg:flex-row gap-8 lg:gap-12 hover:bg-white/10 transition-colors duration-300  px-4 -mx-4"
+                    href={`/events/${event.id}`}
+                    className="flex py-[50px] border-b border-[#D5B584] flex-col lg:flex-row gap-8 lg:gap-12 hover:bg-white/10 transition-colors duration-300  px-4 -mx-4 block"
                   >
                   {/* Date Section */}
                   <div className="lg:w-[150px] flex-shrink-0">
@@ -317,16 +318,16 @@ const EventsPage = () => {
                       </div>
 
                       {/* View Details Button */}
-                      <button className="flex items-center gap-2 text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-normal hover:gap-3 transition-all duration-300 group w-fit">
+                      <div className="flex items-center gap-2 text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-normal hover:gap-3 transition-all duration-300 group w-fit">
                         View Event Details
                         <ArrowRight
                           className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                           strokeWidth={1.5}
                         />
-                      </button>
+                      </div>
                     </div>
                   </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

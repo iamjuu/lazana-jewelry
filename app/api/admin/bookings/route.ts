@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Booking from "@/models/Booking";
+import Event from "@/models/Event";
 import User from "@/models/User";
 import CorporateSession from "@/models/CorporateSession";
 import PrivateSession from "@/models/PrivateSession";
@@ -13,80 +14,71 @@ export async function GET(req: NextRequest) {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
+    const sessionType = searchParams.get("sessionType");
+    const status = searchParams.get("status");
     const sessionId = searchParams.get("sessionId");
 
-    const query: any = {};
+    let query: any = {};
     if (sessionId) {
       query.sessionId = sessionId;
+    }
+    if (sessionType) {
+      query.sessionType = sessionType;
+    }
+    if (status && status !== "all") {
+      query.status = status;
     }
 
     const bookings = await Booking.find(query)
       .sort({ createdAt: -1 })
       .lean();
 
-    // Populate user and session information
+    // Populate event, session, and user details
     const bookingsWithDetails = await Promise.all(
-      bookings.map(async (booking) => {
-        const user = await User.findById(booking.userId).select("name email phone").lean();
-        
-        // Try to find session across all collections based on sessionType
-        let session = null;
-        if (booking.sessionType === "discovery") {
-          session = await DiscoverySession.findById(booking.sessionId).lean();
-        } else if (booking.sessionType === "private") {
-          session = await PrivateSession.findById(booking.sessionId).lean();
-        } else if (booking.sessionType === "corporate") {
-          session = await CorporateSession.findById(booking.sessionId).lean();
-        } else {
-          // If sessionType is not specified, try all collections
-          session = await DiscoverySession.findById(booking.sessionId).lean();
-          if (!session) session = await PrivateSession.findById(booking.sessionId).lean();
-          if (!session) session = await CorporateSession.findById(booking.sessionId).lean();
+      bookings.map(async (booking: any) => {
+        const result: any = { ...booking };
+
+        // Populate event details for event bookings
+        if (booking.sessionType === "event" && booking.sessionId) {
+          const event = await Event.findById(booking.sessionId).lean();
+          result.event = event;
         }
 
-        // Type guard to ensure user is a single document, not an array
-        const userDoc = user && !Array.isArray(user) ? user : null;
-        const sessionDoc = session && !Array.isArray(session) ? session : null;
+        // Populate session details for session bookings (backward compatibility)
+        if (booking.sessionType && booking.sessionType !== "event" && booking.sessionId) {
+          let session: any = null;
+          if (booking.sessionType === "discovery") {
+            session = await DiscoverySession.findById(booking.sessionId).lean();
+          } else if (booking.sessionType === "private") {
+            session = await PrivateSession.findById(booking.sessionId).lean();
+          } else if (booking.sessionType === "corporate") {
+            session = await CorporateSession.findById(booking.sessionId).lean();
+          }
+          result.session = session;
+        }
 
-        return {
-          _id: String(booking._id),
-          userId: String(booking.userId),
-          sessionId: String(booking.sessionId),
-          seats: booking.seats,
-          amount: booking.amount,
-          status: booking.status,
-          phone: booking.phone,
-          comment: booking.comment,
-          createdAt: booking.createdAt,
-          updatedAt: booking.updatedAt,
-          user: userDoc && 'name' in userDoc
-            ? {
-                name: String(userDoc.name),
-                email: String(userDoc.email),
-                phone: userDoc.phone ? String(userDoc.phone) : undefined,
-              }
-            : null,
-          session: sessionDoc && ('instructorName' in sessionDoc || 'instructor' in sessionDoc) && 'date' in sessionDoc && 'startTime' in sessionDoc
-            ? {
-                instructor: 'instructorName' in sessionDoc ? String((sessionDoc as any).instructorName) : String((sessionDoc as any).instructor),
-                date: String((sessionDoc as any).date),
-                startTime: String((sessionDoc as any).startTime),
-                endTime: (sessionDoc as any).endTime ? String((sessionDoc as any).endTime) : undefined,
-              }
-            : null,
-        };
+        // Populate user details
+        if (booking.userId) {
+          const user = await User.findById(booking.userId).lean() as { name?: string; email?: string } | null;
+          if (user && user.name && user.email) {
+            result.userName = user.name;
+            result.userEmail = user.email;
+          }
+        }
+
+        return result;
       })
     );
 
-    return NextResponse.json({
-      success: true,
-      data: bookingsWithDetails,
-    });
+    return NextResponse.json(
+      { success: true, data: bookingsWithDetails },
+      { status: 200 }
+    );
   } catch (e: any) {
     const status = e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
-    return NextResponse.json({ success: false, message: e?.message || "Server error" }, { status });
+    return NextResponse.json(
+      { success: false, message: e?.message || "Server error" },
+      { status }
+    );
   }
 }
-
-
-

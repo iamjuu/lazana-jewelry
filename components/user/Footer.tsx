@@ -13,8 +13,55 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUp } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success(data.message || "Successfully subscribed to our newsletter!");
+        setEmail("");
+      } else {
+        toast.error(data.message || "Failed to subscribe. Please try again.");
+      }
+    } catch (error) {
+      console.error("Subscription error:", error);
+      toast.error("Failed to subscribe. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="w-full py-[40px] md:py-[68px] bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2]">
       <div className="max-w-6xl border-b pb-[64px] border-black items-stretch flex flex-col md:flex-row justify-between mx-auto px-4 gap-6 md:gap-6">
@@ -91,17 +138,22 @@ const Footer = () => {
             <p className="text-[#d5b584] text-center text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px]">
               Be the first to know about special offers, new collections and stay up to date with all our magic!
             </p>
-            <form className="w-full max-w-[500px] flex flex-col sm:flex-row gap-3 sm:gap-0">
+            <form onSubmit={handleSubscribe} className="w-full max-w-[500px] flex flex-col sm:flex-row gap-3 sm:gap-0">
               <input
                 type="email"
                 placeholder="Email"
-                className="flex-1 px-4 sm:px-5 py-3 sm:py-3.5 bg-white border border-[#d5b584]/30 rounded-xl sm:rounded-l-xl sm:rounded-r-none text-[#1C3163] placeholder:text-gray-400 focus:outline-none focus:border-[#d5b584] transition-colors text-[14px] sm:text-[15px]"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                required
+                className="flex-1 px-4 sm:px-5 py-3 sm:py-3.5 bg-white border border-[#d5b584]/30 rounded-xl sm:rounded-l-xl sm:rounded-r-none text-[#1C3163] placeholder:text-gray-400 focus:outline-none focus:border-[#d5b584] transition-colors text-[14px] sm:text-[15px] disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 type="submit"
-                className="px-6 sm:px-8 py-3 sm:py-3.5 bg-[#e8d4b8] text-[#d5b584] rounded-xl sm:rounded-l-none sm:rounded-r-xl font-medium uppercase tracking-wide hover:bg-[#e0c9a8] transition-colors text-[13px] sm:text-[14px] whitespace-nowrap"
+                disabled={loading}
+                className="px-6 sm:px-8 py-3 sm:py-3.5 bg-[#e8d4b8] text-[#d5b584] rounded-xl sm:rounded-l-none sm:rounded-r-xl font-medium uppercase tracking-wide hover:bg-[#e0c9a8] transition-colors text-[13px] sm:text-[14px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Subscribe
+                {loading ? "Subscribing..." : "Subscribe"}
               </button>
             </form>
           </div>    

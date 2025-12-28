@@ -130,8 +130,11 @@ export default function SessionsPage() {
   // Handle date selection
   const handleDateSelect = (day: number, isCurrentMonth: boolean) => {
     if (!isCurrentMonth) return;
-    const selectedDate = new Date(currentYear, currentMonth, day);
-    const dateStr = selectedDate.toISOString().split('T')[0];
+    // Format date as YYYY-MM-DD without timezone conversion
+    const year = currentYear;
+    const month = String(currentMonth + 1).padStart(2, '0');
+    const dayStr = String(day).padStart(2, '0');
+    const dateStr = `${year}-${month}-${dayStr}`;
     setFormData({ ...formData, date: dateStr });
     setShowCalendar(false);
   };
@@ -429,6 +432,33 @@ export default function SessionsPage() {
   const handleEdit = (session: Session) => {
     setEditingId(session._id);
     setShowAddForm(true);
+    
+    // Format date to YYYY-MM-DD if it exists
+    let formattedDate = "";
+    if ((session as any).date) {
+      const dateValue = (session as any).date;
+      if (typeof dateValue === 'string') {
+        // If it's already a string, use it (should be YYYY-MM-DD)
+        formattedDate = dateValue.trim();
+        // If it's not in YYYY-MM-DD format, try to convert
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(formattedDate)) {
+          const parsedDate = new Date(dateValue);
+          if (!isNaN(parsedDate.getTime())) {
+            const year = parsedDate.getFullYear();
+            const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+            const day = String(parsedDate.getDate()).padStart(2, '0');
+            formattedDate = `${year}-${month}-${day}`;
+          }
+        }
+      } else if (dateValue instanceof Date) {
+        // If it's a Date object, convert to YYYY-MM-DD
+        const year = dateValue.getFullYear();
+        const month = String(dateValue.getMonth() + 1).padStart(2, '0');
+        const day = String(dateValue.getDate()).padStart(2, '0');
+        formattedDate = `${year}-${month}-${day}`;
+      }
+    }
+    
     setFormData({
       title: session.title || "",
       description: session.description || "",
@@ -439,7 +469,7 @@ export default function SessionsPage() {
       instructorName: (session as any).instructorName || "",
       duration: (session as any).duration?.toString() || "",
       price: (session as any).price?.toString() || "",
-      date: (session as any).date || "",
+      date: formattedDate,
       startTime: (session as any).startTime || "",
       featured: session.featured || false,
     });
@@ -558,12 +588,18 @@ export default function SessionsPage() {
       if (activeTab === "discovery" || activeTab === "private") {
         requestBody.instructorName = formData.instructorName.trim();
         requestBody.duration = Number(formData.duration);
-        requestBody.date = formData.date;
-        requestBody.startTime = formData.startTime;
+        // Ensure date is in YYYY-MM-DD format
+        if (formData.date) {
+          requestBody.date = formData.date.trim();
+        }
+        // Ensure startTime is in HH:MM format
+        if (formData.startTime) {
+          requestBody.startTime = formData.startTime.trim();
+        }
       }
 
       if (activeTab === "private") {
-        requestBody.price = Number(formData.price);
+        // Price removed - private sessions no longer require payment
       }
 
       // Add featured field for private and corporate sessions
@@ -1100,25 +1136,6 @@ export default function SessionsPage() {
               </div>
             )}
 
-            {/* Price - For Private Only */}
-            {activeTab === "private" && (
-              <div className="space-y-1">
-                <label htmlFor="price" className="text-sm font-medium text-white">
-                  Price ($) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="price"
-                  type="number"
-                  required={activeTab === "private"}
-                  min="0"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-                  placeholder="Enter price in dollars"
-                />
-              </div>
-            )}
 
             {/* Featured - For Private and Corporate Only */}
             {(activeTab === "private" || activeTab === "corporate") && (
@@ -1148,12 +1165,17 @@ export default function SessionsPage() {
                     id="date"
                     type="text"
                     required={activeTab === "discovery" || activeTab === "private"}
-                    value={formData.date ? new Date(formData.date + 'T00:00:00').toLocaleDateString('en-US', { 
-                      month: '2-digit', 
-                      day: '2-digit', 
-                      year: 'numeric',
-                      timeZone: 'Asia/Singapore'
-                    }) : ""}
+                    value={formData.date ? (() => {
+                      // Parse date string (YYYY-MM-DD) and format for display
+                      const dateParts = formData.date.split('-');
+                      if (dateParts.length === 3) {
+                        const year = dateParts[0];
+                        const month = dateParts[1];
+                        const day = dateParts[2];
+                        return `${month}/${day}/${year}`;
+                      }
+                      return formData.date;
+                    })() : ""}
                     readOnly
                     onClick={() => setShowCalendar(!showCalendar)}
                     placeholder="mm/dd/yyyy"

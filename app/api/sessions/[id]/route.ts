@@ -89,6 +89,17 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       return NextResponse.json({ success: false, message: "Session not found" }, { status: 404 });
     }
 
+    // Add date and startTime to updateData if they exist (even if empty string, to allow clearing)
+    if (date !== undefined && date !== null) {
+      updateData.date = String(date).trim();
+    }
+    if (startTime !== undefined && startTime !== null) {
+      updateData.startTime = String(startTime).trim();
+    }
+    if (duration !== undefined && duration !== null) {
+      updateData.duration = Number(duration);
+    }
+
     // If updating date/time for discovery or private, check for conflicts
     if ((sessionType === "discovery" || sessionType === "private") && (date || startTime || duration)) {
       const checkDate = date || existingSession.date;

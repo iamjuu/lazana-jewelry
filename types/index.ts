@@ -92,7 +92,7 @@ export interface OrderItem {
   isSet?: boolean; // To calculate delivery charges
 }
 
-export type OrderStatus = "pending" | "paid" | "cancelled"; // Payment status only
+export type OrderStatus = "pending" | "paid" | "cancelled" | "failed"; // Payment status only
 
 export type DeliveryStatus = "pending" | "processing" | "ready to ship" | "shipped" | "reached to your country" | "on the way to delivery" | "delivered";
 
@@ -253,7 +253,7 @@ export interface Booking extends WithTimestamps {
   paymentProvider?: "stripe" | "paypal" | "bank_transfer";
   paymentRef?: string;
   paymentStatus?: "pending" | "paid" | "failed";
-  sessionType?: "discovery" | "private" | "corporate";
+  sessionType?: "discovery" | "private" | "corporate" | "event";
   slotId?: string;
 }
 

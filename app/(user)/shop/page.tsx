@@ -329,29 +329,33 @@ const ShopPage = () => {
                 </p>
               </div>
               
-              {/* Top Bar with HIDE FILTERS and Sort */}
-              <div className="flex justify-between items-center bg-gray-100 p-2 mb-4">
+            </div>
+            
+            {/* Main Content Layout */}
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+              {/* Left Side Icons - Filter and Sort */}
+              <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
+                {/* Filter Icon Button */}
                 <button 
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 text-sm font-medium text-[#1C3163] hover:opacity-80 transition-opacity"
+                  className="p-2 lg:p-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                  aria-label={showFilters ? "Hide Filters" : "Show Filters"}
                 >
-                  <Image src={FliterIcon} alt="filter" className="w-4 h-4" />
-                  {showFilters ? "HIDE FILTERS" : "SHOW FILTERS"}
+                  <Image src={FliterIcon} alt="filter" className="w-5 h-5 lg:w-6 lg:h-6" />
                 </button>
 
-                {/* Sort Dropdown */}
+                {/* Sort Icon Button with Dropdown */}
                 <div className="relative" ref={sortDropdownRef}>
                   <button
                     onClick={() => setShowSortDropdown(!showSortDropdown)}
-                    className="flex items-center gap-2 text-sm font-medium text-[#1C3163] hover:opacity-80 transition-opacity"
+                    className="p-2 lg:p-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                    aria-label="Sort Products"
                   >
-                    <Image src={SortIcon} alt="sort" className="w-4 h-4" />
-                    {getSortLabel()}
-                    <ChevronDown className={`w-4 h-4 transition-transform ${showSortDropdown ? 'rotate-180' : ''}`} />
+                    <Image src={SortIcon} alt="sort" className="w-5 h-5 lg:w-6 lg:h-6" />
                   </button>
                   
                   {showSortDropdown && (
-                    <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[220px]">
+                    <div className="absolute left-0 lg:left-full lg:top-0 top-full mt-2 lg:mt-0 lg:ml-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[220px]">
                       <button
                         onClick={() => handleSortChange("featured", "asc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
@@ -404,10 +408,7 @@ const ShopPage = () => {
                   )}
                 </div>
               </div>
-            </div>
-            
-            {/* Main Content Layout */}
-            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+
               {/* Filter Sidebar - Left */}
               {showFilters && (
                 <div className="w-full lg:w-64 shrink-0 bg-white rounded-lg p-6 shadow-lg">

@@ -9,12 +9,30 @@ export async function POST(req: NextRequest) {
     await connectDB();
     
     const body = await req.json();
-    const { name, title, location, day, time, date, description, imageUrl } = body;
+    const { name, title, location, day, time, date, description, imageUrl, totalSeats, price } = body;
 
     // Validation
     if (!name || !title || !location || !day || !time || !date || !description) {
       return NextResponse.json(
         { success: false, message: "Name, title, location, day, time, date, and description are required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate slots and price (use defaults if not provided for backward compatibility)
+    const seats = totalSeats !== undefined && totalSeats !== null ? Number(totalSeats) : 1;
+    const eventPrice = price !== undefined && price !== null ? Number(price) : 0;
+    
+    if (seats <= 0) {
+      return NextResponse.json(
+        { success: false, message: "Total seats must be greater than 0" },
+        { status: 400 }
+      );
+    }
+
+    if (eventPrice < 0) {
+      return NextResponse.json(
+        { success: false, message: "Price must be 0 or greater" },
         { status: 400 }
       );
     }
@@ -28,6 +46,9 @@ export async function POST(req: NextRequest) {
       date: String(date).trim(),
       description: String(description).trim(),
       imageUrl: imageUrl ? String(imageUrl).trim() : undefined,
+      totalSeats: seats,
+      bookedSeats: 0,
+      price: eventPrice,
     });
 
     return NextResponse.json(

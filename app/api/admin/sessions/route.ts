@@ -203,12 +203,6 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-      if (!price || price <= 0) {
-        return NextResponse.json(
-          { success: false, message: "Price is required for private sessions" },
-          { status: 400 }
-        );
-      }
       if (!date) {
         return NextResponse.json(
           { success: false, message: "Date is required" },
@@ -295,13 +289,27 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // Ensure date is in YYYY-MM-DD format
+      let formattedDate = String(date).trim();
+      // Validate and normalize date format
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(formattedDate)) {
+        // Try to parse and reformat
+        const parsedDate = new Date(formattedDate);
+        if (!isNaN(parsedDate.getTime())) {
+          const year = parsedDate.getFullYear();
+          const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+          const day = String(parsedDate.getDate()).padStart(2, '0');
+          formattedDate = `${year}-${month}-${day}`;
+        }
+      }
+      
       session = await PrivateSession.create({
         title: String(title).trim(),
         description: String(description).trim(),
         instructorName: String(instructorName).trim(),
         duration: Number(duration),
-        price: Number(price),
-        date: String(date).trim(),
+        price: 0, // No payment required for private sessions
+        date: formattedDate,
         startTime: String(startTime).trim(),
         endTime,
         totalSeats: 1, // One-on-one

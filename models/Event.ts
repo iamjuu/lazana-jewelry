@@ -9,6 +9,9 @@ export interface EventType {
   date: string;
   description: string;
   imageUrl?: string;
+  totalSeats: number; // Total available slots
+  bookedSeats: number; // Number of booked slots
+  price: number; // Price per slot/booking
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -23,11 +26,19 @@ const EventSchema = new Schema<EventType>(
     date: { type: String, required: true },
     description: { type: String, required: true },
     imageUrl: { type: String },
+    totalSeats: { type: Number, required: true, default: 1 },
+    bookedSeats: { type: Number, required: true, default: 0 },
+    price: { type: Number, required: true, default: 0 },
   },
   { timestamps: true }
 );
 
-export default (models.Event as mongoose.Model<EventType>) || model<EventType>("Event", EventSchema);
+// Delete the cached model if it exists to ensure fresh schema
+if (models.Event) {
+  delete models.Event;
+}
+
+export default model<EventType>("Event", EventSchema);
 
 
 

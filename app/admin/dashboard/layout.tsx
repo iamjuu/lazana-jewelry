@@ -21,6 +21,7 @@ const navItems = [
   { label: "Users", href: "/admin/dashboard/users" },
   { label: "Blogs", href: "/admin/dashboard/blogs" },
   { label: "Events", href: "/admin/dashboard/events" },
+  { label: "Events Booking", href: "/admin/dashboard/event-bookings" },
   { label: "Past Events", href: "/admin/dashboard/past-events" },
   { label: "Settings", href: "/admin/dashboard/settings" },
 ];
