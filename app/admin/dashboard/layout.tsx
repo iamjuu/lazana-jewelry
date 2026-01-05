@@ -23,6 +23,7 @@ const navItems = [
   { label: "Events", href: "/admin/dashboard/events" },
   { label: "Events Booking", href: "/admin/dashboard/event-bookings" },
   { label: "Past Events", href: "/admin/dashboard/past-events" },
+  { label: "Coupon Management", href: "/admin/dashboard/coupons" },
   { label: "Settings", href: "/admin/dashboard/settings" },
 ];
 

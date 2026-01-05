@@ -1,8 +1,21 @@
 import nodemailer from "nodemailer";
 
 // Base email sending function using nodemailer
-async function sendEmail(to: string, subject: string, html: string) {
-  const transporter = nodemailer.createTransport({
+// Note: transporter is created once and reused to avoid connection issues
+let transporter: nodemailer.Transporter | null = null;
+
+function getTransporter(): nodemailer.Transporter {
+  // Validate email configuration
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    throw new Error("Email configuration missing: EMAIL_USER and EMAIL_PASS must be set in environment variables");
+  }
+
+  // Reuse transporter if already created
+  if (transporter) {
+    return transporter;
+  }
+
+  transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST || "smtp.gmail.com",
     port: parseInt(process.env.EMAIL_PORT || "587"),
     secure: process.env.EMAIL_SECURE === "true", // true for 465, false for other ports
@@ -10,8 +23,18 @@ async function sendEmail(to: string, subject: string, html: string) {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    // Add connection pooling and retry options
+    pool: true,
+    maxConnections: 1,
+    maxMessages: 5,
+    rateDelta: 1000,
+    rateLimit: 5,
   });
 
+  return transporter;
+}
+
+async function sendEmail(to: string, subject: string, html: string) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
@@ -20,11 +43,27 @@ async function sendEmail(to: string, subject: string, html: string) {
   };
 
   try {
+    const transporter = getTransporter();
     const info = await transporter.sendMail(mailOptions);
-    console.log(`Email sent successfully to ${to}:`, info.messageId);
+    console.log(`✅ Email sent successfully to ${to}:`, info.messageId);
     return info;
-  } catch (error) {
-    console.error(`Failed to send email to ${to}:`, error);
+  } catch (error: any) {
+    console.error(`❌ Failed to send email to ${to}:`, error.message);
+    
+    if (error.code === "EAUTH") {
+      // Reset transporter on auth error to force reconnection
+      transporter = null;
+      
+      console.error("💡 Gmail Authentication Error - Common fixes:");
+      console.error("   1. Check if App Password was revoked by Google");
+      console.error("   2. Generate a NEW App Password at: https://myaccount.google.com/apppasswords");
+      console.error("   3. Update EMAIL_PASS in .env.local with the new 16-character password");
+      console.error("   4. Ensure 2FA is enabled on your Google account");
+      console.error("   5. Check Google Security: https://myaccount.google.com/security");
+      console.error("   6. Look for 'Recent security activity' - Google may have blocked access");
+      console.error("   7. Restart your development server after updating credentials");
+    }
+    
     throw error;
   }
 }
@@ -574,6 +613,7 @@ export async function sendDiscoverySessionConfirmation(data: {
   selectedDate?: string;
   selectedTime?: string;
   email?: string;
+  userName?: string;
 }) {
   if (!data.email) return;
 
@@ -601,8 +641,10 @@ export async function sendDiscoverySessionConfirmation(data: {
         <div class="content">
           <div class="success-box">
             <h2 style="margin-top: 0; color: #10b981;">✅ Your Discovery Session is Booked!</h2>
-            <p>Date: <strong>${data.selectedDate || "To be confirmed"}</strong></p>
-            <p>Time: <strong>${data.selectedTime || "To be confirmed"}</strong></p>
+            <p>Dear ${data.userName || "Customer"},</p>
+            <p>Your discovery session has been confirmed:</p>
+            <p><strong>Date:</strong> ${data.selectedDate || "To be confirmed"}</p>
+            <p><strong>Time:</strong> ${data.selectedTime || "To be confirmed"}</p>
             <p>We look forward to meeting you!</p>
           </div>
         </div>
@@ -624,13 +666,96 @@ export async function sendDiscoverySessionConfirmation(data: {
   }
 }
 
+// Send discovery session notification email to admin
+export async function sendDiscoverySessionNotificationToAdmin(data: {
+  userName: string;
+  userEmail: string;
+  userPhone: string;
+  selectedDate: string;
+  selectedTime: string;
+  amount: number;
+}) {
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+  
+  if (!adminEmail) {
+    throw new Error("Admin email not configured");
+  }
+
+  const subject = `New Discovery Session Booking - ${data.userName}`;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #1C3163; color: #fff; padding: 20px; text-align: center; }
+        .content { padding: 30px 20px; background-color: #f9f9f9; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; background-color: #fff; }
+        .info-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+        .info-table td:first-child { font-weight: bold; width: 200px; color: #1C3163; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>New Discovery Session Booking</h1>
+        </div>
+        <div class="content">
+          <p>A new discovery session has been booked:</p>
+          <table class="info-table">
+            <tr>
+              <td>Customer Name:</td>
+              <td>${data.userName}</td>
+            </tr>
+            <tr>
+              <td>Email:</td>
+              <td>${data.userEmail}</td>
+            </tr>
+            <tr>
+              <td>Phone:</td>
+              <td>${data.userPhone}</td>
+            </tr>
+            <tr>
+              <td>Date:</td>
+              <td>${data.selectedDate}</td>
+            </tr>
+            <tr>
+              <td>Time:</td>
+              <td>${data.selectedTime}</td>
+            </tr>
+            <tr>
+              <td>Amount Paid:</td>
+              <td>S$${data.amount.toFixed(2)}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    const result = await sendEmail(adminEmail, subject, html);
+    console.log(`✅ Discovery session notification email sent to admin`);
+    return result;
+  } catch (error) {
+    console.error(`❌ Failed to send discovery session notification email to admin:`, error);
+    throw error;
+  }
+}
+
 // Send private session confirmation email to user
 export async function sendPrivateSessionConfirmationToUser(data: {
   fullName: string;
   email: string;
   date: string;
   time: string;
-  amount: number;
 }) {
   const subject = "Private Session Confirmed - Crystal Bowl Studio";
   const html = `
@@ -660,7 +785,6 @@ export async function sendPrivateSessionConfirmationToUser(data: {
             <p>Your private session has been confirmed:</p>
             <p><strong>Date:</strong> ${data.date}</p>
             <p><strong>Time:</strong> ${data.time}</p>
-            <p><strong>Amount Paid:</strong> SGD $${data.amount.toFixed(2)}</p>
             <p>We look forward to seeing you!</p>
           </div>
         </div>
@@ -689,7 +813,6 @@ export async function sendPrivateSessionNotificationToAdmin(data: {
   phone: string;
   date: string;
   time: string;
-  amount: number;
 }) {
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
   
@@ -742,14 +865,15 @@ export async function sendPrivateSessionNotificationToAdmin(data: {
               <td>Time</td>
               <td>${data.time}</td>
             </tr>
-            <tr>
-              <td>Amount</td>
-              <td style="font-weight: bold; color: #10b981;">SGD $${data.amount.toFixed(2)}</td>
-            </tr>
           </table>
+
+          <p style="margin-top: 30px;">
+            Log in to the admin panel to manage this booking.
+          </p>
         </div>
         <div class="footer">
           <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>This is an automated notification from your booking system.</p>
         </div>
       </div>
     </body>

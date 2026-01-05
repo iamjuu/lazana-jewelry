@@ -598,6 +598,16 @@ export default function SessionsPage() {
         }
       }
 
+      if (activeTab === "discovery") {
+        // Discovery sessions now require payment
+        if (!formData.price || parseFloat(formData.price) < 0) {
+          setError("Price is required for discovery sessions and must be 0 or greater");
+          setLoading(false);
+          return;
+        }
+        requestBody.price = parseFloat(formData.price);
+      }
+
       if (activeTab === "private") {
         // Price removed - private sessions no longer require payment
       }
@@ -809,6 +819,9 @@ export default function SessionsPage() {
                           <>
                             <th className="px-6 py-3 font-medium">Date & Time</th>
                             <th className="px-6 py-3 font-medium">Instructor</th>
+                            {activeTab === "discovery" && (
+                              <th className="px-6 py-3 font-medium">Price</th>
+                            )}
                           </>
                         ) : (
                           <th className="px-6 py-3 font-medium">Description</th>
@@ -888,6 +901,13 @@ export default function SessionsPage() {
                                   <span className="text-zinc-500 text-xs">Not set</span>
                                 )}
                               </td>
+                              {activeTab === "discovery" && (
+                                <td className="px-6 py-4">
+                                  <p className="text-xs text-white font-medium">
+                                    ${(session as any).price?.toFixed(2) || '0.00'}
+                                  </p>
+                                </td>
+                              )}
                             </>
                           ) : (
                             <td className="px-6 py-4">
@@ -1136,6 +1156,29 @@ export default function SessionsPage() {
               </div>
             )}
 
+            {/* Price - For Discovery Sessions Only */}
+            {activeTab === "discovery" && (
+              <div className="space-y-1">
+                <label htmlFor="price" className="text-sm font-medium text-white">
+                  Price (SGD) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="price"
+                  type="number"
+                  required
+                  min="0"
+                  step="0.01"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                  placeholder="Enter price (e.g., 50.00)"
+                />
+                <p className="text-xs text-zinc-400 mt-1">
+                  Discovery sessions now require payment. Enter the price in SGD.
+                </p>
+              </div>
+            )}
+
 
             {/* Featured - For Private and Corporate Only */}
             {(activeTab === "private" || activeTab === "corporate") && (
@@ -1158,13 +1201,14 @@ export default function SessionsPage() {
             {(activeTab === "discovery" || activeTab === "private") && (
               <div className="space-y-1 relative">
                 <label htmlFor="date" className="text-sm font-medium text-white">
-                  Date <span className="text-red-500">*</span>
+                  Date <span className="text-red-500">{!editingId ? "*" : ""}</span>
+                  {editingId && <span className="text-xs text-zinc-400 ml-2">(Cannot be changed after creation)</span>}
                 </label>
                 <div className="relative">
                   <input
                     id="date"
                     type="text"
-                    required={activeTab === "discovery" || activeTab === "private"}
+                    required={activeTab === "discovery" || activeTab === "private" && !editingId}
                     value={formData.date ? (() => {
                       // Parse date string (YYYY-MM-DD) and format for display
                       const dateParts = formData.date.split('-');
@@ -1177,17 +1221,22 @@ export default function SessionsPage() {
                       return formData.date;
                     })() : ""}
                     readOnly
-                    onClick={() => setShowCalendar(!showCalendar)}
+                    onClick={() => !editingId && setShowCalendar(!showCalendar)}
                     placeholder="mm/dd/yyyy"
-                    className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 pr-10 text-sm text-white focus:border-white focus:outline-none cursor-pointer"
+                    disabled={!!editingId}
+                    className={`w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 pr-10 text-sm text-white focus:border-white focus:outline-none ${
+                      editingId ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                    }`}
                   />
                   <Calendar 
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 pointer-events-none" 
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none ${
+                      editingId ? 'text-zinc-600' : 'text-zinc-400'
+                    }`}
                   />
                 </div>
                 
-                {/* Calendar Picker */}
-                {showCalendar && (
+                {/* Calendar Picker - Only show when not editing */}
+                {showCalendar && !editingId && (
                   <div 
                     ref={calendarRef}
                     className="absolute z-50 mt-2 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl p-4 w-80"
@@ -1272,29 +1321,35 @@ export default function SessionsPage() {
             {(activeTab === "discovery" || activeTab === "private") && (
               <div className="space-y-1 relative">
                 <label htmlFor="start-time" className="text-sm font-medium text-white">
-                  Start Time <span className="text-red-500">*</span>
+                  Start Time <span className="text-red-500">{!editingId ? "*" : ""}</span>
+                  {editingId && <span className="text-xs text-zinc-400 ml-2">(Cannot be changed after creation)</span>}
                 </label>
                 <div className="relative">
                   <input
                     id="start-time"
                     type="text"
-                    required={activeTab === "discovery" || activeTab === "private"}
+                    required={activeTab === "discovery" || activeTab === "private" && !editingId}
                     value={formData.startTime ? (() => {
                       const { hour, minute, amPm } = convertTo12Hour(formData.startTime);
                       return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${amPm}`;
                     })() : ""}
                     readOnly
-                    onClick={() => setShowTimePicker(!showTimePicker)}
+                    onClick={() => !editingId && setShowTimePicker(!showTimePicker)}
                     placeholder="--:-- --"
-                    className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 pr-10 text-sm text-white focus:border-white focus:outline-none cursor-pointer"
+                    disabled={!!editingId}
+                    className={`w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 pr-10 text-sm text-white focus:border-white focus:outline-none ${
+                      editingId ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                    }`}
                   />
                   <Clock 
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 pointer-events-none" 
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none ${
+                      editingId ? 'text-zinc-600' : 'text-zinc-400'
+                    }`}
                   />
                 </div>
 
-                {/* Time Picker */}
-                {showTimePicker && (
+                {/* Time Picker - Only show when not editing */}
+                {showTimePicker && !editingId && (
                   <div 
                     ref={timePickerRef}
                     className="absolute z-50 mt-2 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl p-4 w-64"

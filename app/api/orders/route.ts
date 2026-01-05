@@ -21,12 +21,28 @@ export async function GET(req: NextRequest) {
       .limit(limit)
       .lean();
     
+    // Populate product images for each order item
+    const enrichedOrders = await Promise.all(orders.map(async (order: any) => {
+      const enrichedItems = await Promise.all(order.items.map(async (item: any) => {
+        const product = await Product.findById(item.productId).lean();
+        return {
+          ...item,
+          imageUrl: product?.imageUrl || [],
+        };
+      }));
+      
+      return {
+        ...order,
+        items: enrichedItems,
+      };
+    }));
+    
     // Get total count for pagination
     const total = await Order.countDocuments({ userId: user._id });
     
     return NextResponse.json({ 
       success: true, 
-      data: orders,
+      data: enrichedOrders,
       pagination: {
         page,
         limit,

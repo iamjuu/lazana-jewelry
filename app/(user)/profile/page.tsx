@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 import toast from "react-hot-toast";
-import { User, Mail, Phone, MapPin, LogOut, Save, Package, Calendar } from "lucide-react";
+import { User, Mail, Phone, MapPin, LogOut, Save, Package, Calendar, Ticket, CheckCircle, Clock, XCircle, Truck } from "lucide-react";
 import Image from "next/image";
 import ProtectedRoute from "@/components/user/ProtectedRoute";
-import { CheckCircle, Clock, XCircle, Truck } from "lucide-react";
 
 type UserProfile = {
   _id: string;
@@ -31,6 +30,7 @@ type OrderItem = {
   price: number;
   quantity: number;
   isSet?: boolean;
+  imageUrl?: string[];
 };
 
 type DeliveryCharges = {
@@ -51,6 +51,9 @@ type Order = {
   productTotal?: number;
   deliveryCharges?: DeliveryCharges;
   customerComments?: string;
+  couponCode?: string;
+  couponId?: string;
+  discountAmount?: number;
 };
 
 type Booking = {
@@ -64,6 +67,9 @@ type Booking = {
   comment?: string;
   createdAt: string;
   updatedAt: string;
+  couponCode?: string;
+  couponId?: string;
+  discountAmount?: number;
   event?: {
     _id: string;
     title: string;
@@ -699,7 +705,15 @@ function ProfilePageContent() {
                             <div className="flex items-center gap-4">
                               {getStatusIcon(order.status)}
                               <div>
-                                <p className="text-sm text-gray-600">Order ID</p>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="text-sm text-gray-600">Order ID</p>
+                                  {order.couponCode && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
+                                      <Ticket size={12} />
+                                      Coupon Applied
+                                    </span>
+                                  )}
+                                </div>
                                 <p className="text-[#1C3163] font-medium">
                                   #{order._id.slice(-8).toUpperCase()}
                                 </p>
@@ -739,7 +753,21 @@ function ProfilePageContent() {
 
                           <div className="space-y-4 mb-4">
                             {order.items.map((item, index) => (
-                              <div key={index} className="flex justify-between items-start">
+                              <div key={index} className="flex gap-4 items-start">
+                                {/* Product Image */}
+                                {item.imageUrl && item.imageUrl.length > 0 && (
+                                  <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-md overflow-hidden flex-shrink-0 border border-gray-200">
+                                    <Image
+                                      src={item.imageUrl[0].startsWith("data:image") 
+                                        ? item.imageUrl[0] 
+                                        : `data:image/jpeg;base64,${item.imageUrl[0]}`}
+                                      alt={item.name}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
                                 <div className="flex-1">
                                   <p className="text-[#1C3163] font-medium">{item.name}</p>
                                   <p className="text-sm text-gray-600">
@@ -773,6 +801,21 @@ function ProfilePageContent() {
                                   </p>
                                 )}
                               </>
+                            )}
+                            {order.discountAmount && order.discountAmount > 0 && (
+                              <div className="flex justify-between items-center text-sm">
+                                <div className="flex items-center gap-2">
+                                  <p className="text-gray-600">Discount</p>
+                                  {order.couponCode && (
+                                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                                      Coupon Applied: {order.couponCode}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-green-600 font-medium">
+                                  -${order.discountAmount.toFixed(2)}
+                                </p>
+                              </div>
                             )}
                             <div className="flex justify-between items-center pt-2 border-t border-gray-300">
                               <p className="text-[#1C3163] font-semibold text-lg">Total Amount (SGD)</p>
@@ -922,7 +965,15 @@ function ProfilePageContent() {
                             <div className="flex items-center gap-4">
                               {getStatusIcon(booking.status)}
                               <div>
-                                <p className="text-sm text-gray-600">Booking ID</p>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="text-sm text-gray-600">Booking ID</p>
+                                  {booking.couponCode && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
+                                      <Ticket size={12} />
+                                      Coupon Applied
+                                    </span>
+                                  )}
+                                </div>
                                 <p className="text-[#1C3163] font-medium">
                                   #{booking._id.slice(-8).toUpperCase()}
                                 </p>
@@ -968,6 +1019,21 @@ function ProfilePageContent() {
                               <span className="text-gray-600">Slots:</span>
                               <span className="text-[#1C3163] font-medium">{booking.seats}</span>
                             </div>
+                            {booking.discountAmount && booking.discountAmount > 0 && (
+                              <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-200">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-gray-600">Discount</span>
+                                  {booking.couponCode && (
+                                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                                      {booking.couponCode}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-green-600 font-medium">
+                                  -SGD ${booking.discountAmount.toFixed(2)}
+                                </span>
+                              </div>
+                            )}
                             {booking.amount > 0 && (
                               <div className="flex justify-between pt-3 border-t border-gray-200">
                                 <span className="text-gray-600 font-medium">Total Amount:</span>

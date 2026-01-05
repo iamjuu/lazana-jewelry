@@ -15,6 +15,9 @@ const BookingSchema = new Schema<BookingType>(
     paymentStatus: { type: String, enum: ["pending", "paid", "failed"], default: "pending" },
     sessionType: { type: String, enum: ["discovery", "private", "corporate", "event"], required: true, index: true },
     slotId: { type: String, required: false },
+    couponCode: { type: String, required: false },
+    couponId: { type: String, required: false },
+    discountAmount: { type: Number, required: false },
   },
   { timestamps: true }
 );

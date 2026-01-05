@@ -20,3 +20,5 @@ if (models.Subscriber) {
 
 export default model<SubscriberType>("Subscriber", SubscriberSchema);
 
+
+

@@ -259,7 +259,6 @@ export async function POST(req: NextRequest) {
         email: customerEmail,
         date: sessionDate,
         time: sessionTime,
-        amount: bookingAmount,
       }).catch((error) => {
         console.error("Failed to send private session confirmation email to customer:", error);
       });
@@ -272,7 +271,6 @@ export async function POST(req: NextRequest) {
       phone: customerPhone,
       date: sessionDate,
       time: sessionTime,
-      amount: bookingAmount,
     }).catch((error) => {
       console.error("Failed to send private session notification email to admin:", error);
     });

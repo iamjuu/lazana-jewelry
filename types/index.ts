@@ -134,7 +134,7 @@ export interface Order extends WithTimestamps {
   items: OrderItem[];
   productTotal: number; // Total product cost
   deliveryCharges: DeliveryCharges;
-  amount: number; // productTotal + deliveryCharges.total
+  amount: number; // productTotal + deliveryCharges.total - discountAmount
   currency: string; // SGD
   status: OrderStatus; // Payment status (pending, paid, cancelled)
   deliveryStatus: DeliveryStatus; // Delivery status (pending, processing, ready to ship, shipped, reached to your country, on the way to delivery, delivered)
@@ -147,6 +147,9 @@ export interface Order extends WithTimestamps {
   shippingAddress: ShippingAddress;
   customerEmail: string;
   customerName: string;
+  couponCode?: string; // Coupon code used
+  couponId?: string; // Coupon document ID
+  discountAmount?: number; // Discount amount applied
 }
 
 export interface CorporateSession extends WithTimestamps {
@@ -255,6 +258,9 @@ export interface Booking extends WithTimestamps {
   paymentStatus?: "pending" | "paid" | "failed";
   sessionType?: "discovery" | "private" | "corporate" | "event";
   slotId?: string;
+  couponCode?: string; // Coupon code used
+  couponId?: string; // Coupon document ID
+  discountAmount?: number; // Discount amount applied
 }
 
 export type CartItem = {

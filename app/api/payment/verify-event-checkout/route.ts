@@ -5,6 +5,8 @@ import connectDB from "@/lib/mongodb";
 import Booking from "@/models/Booking";
 import Event from "@/models/Event";
 import User from "@/models/User";
+import EventCoupon from "@/models/EventCoupon";
+import mongoose from "mongoose";
 import { sendEventBookingConfirmationToUser, sendEventBookingNotificationToAdmin } from "@/lib/email";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
@@ -57,6 +59,9 @@ export async function POST(req: NextRequest) {
 
     const eventId = metadata.eventId;
     const quantity = metadata.quantity ? parseInt(metadata.quantity) : 1;
+    const couponCode = metadata.couponCode || null;
+    const couponId = metadata.couponId || null;
+    const discountAmount = metadata.discountAmount ? parseFloat(metadata.discountAmount) : 0;
 
     // Fetch event
     const event = await Event.findById(eventId);
@@ -89,7 +94,7 @@ export async function POST(req: NextRequest) {
       booking = existingBooking;
     } else {
       // Create booking
-      booking = await Booking.create({
+      const bookingData: any = {
         userId: authUser._id,
         sessionId: eventId,
         sessionType: "event",
@@ -101,7 +106,52 @@ export async function POST(req: NextRequest) {
         paymentStatus: "paid",
         phone: user.phone || "N/A",
         comment: `Event: ${event.title} - ${event.date} at ${event.time} (${quantity} slot${quantity > 1 ? 's' : ''})`,
-      });
+      };
+
+      // Add coupon information if applicable
+      if (couponCode && couponId) {
+        bookingData.couponCode = couponCode;
+        bookingData.couponId = couponId;
+        bookingData.discountAmount = discountAmount;
+      }
+
+      booking = await Booking.create(bookingData);
+
+      // Record coupon usage if coupon was applied
+      if (couponId && couponCode) {
+        try {
+          const coupon = await EventCoupon.findById(couponId);
+          if (coupon) {
+            // Increment total usage count
+            coupon.usedCount = (coupon.usedCount || 0) + 1;
+            
+            // Update per-user usage
+            if (!coupon.userUsage) {
+              coupon.userUsage = [];
+            }
+            
+            const userUsageIndex = coupon.userUsage.findIndex(
+              (usage: any) => String(usage.userId) === String(authUser._id)
+            );
+            
+            if (userUsageIndex >= 0) {
+              coupon.userUsage[userUsageIndex].count = (coupon.userUsage[userUsageIndex].count || 0) + 1;
+              coupon.userUsage[userUsageIndex].lastUsedAt = new Date();
+            } else {
+              coupon.userUsage.push({
+                userId: new mongoose.Types.ObjectId(authUser._id),
+                count: 1,
+                lastUsedAt: new Date(),
+              });
+            }
+            
+            await coupon.save();
+          }
+        } catch (error) {
+          console.error("Error recording coupon usage:", error);
+          // Don't fail the booking if coupon recording fails
+        }
+      }
 
       // Update event booked seats
       event.bookedSeats = (event.bookedSeats || 0) + quantity;

@@ -73,6 +73,9 @@ const OrderSchema = new Schema<OrderType>(
     shippingAddress: { type: ShippingAddressSchema, required: true },
     customerEmail: { type: String, required: true },
     customerName: { type: String, required: true },
+    couponCode: { type: String },
+    couponId: { type: String },
+    discountAmount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

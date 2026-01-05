@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import connectDB from "@/lib/mongodb";
 import Event from "@/models/Event";
 import User from "@/models/User";
+import { validateEventCoupon } from "@/lib/coupon-validation";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2025-10-29.clover",
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
     const user = await User.findById(authUser._id).lean() as { email?: string } | null;
 
     const body = await req.json();
-    const { eventId, quantity = 1 } = body;
+    const { eventId, quantity = 1, couponCode, couponId, discountAmount = 0 } = body;
 
     if (!eventId) {
       return NextResponse.json(
@@ -59,6 +60,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate coupon if provided
+    let finalDiscountAmount = 0;
+    if (couponCode && couponId) {
+      const totalPrice = (event.price || 0) * quantity;
+      const validation = await validateEventCoupon(
+        couponCode,
+        String(authUser._id),
+        eventId,
+        totalPrice
+      );
+
+      if (!validation.valid || validation.coupon?._id?.toString() !== couponId) {
+        return NextResponse.json(
+          { success: false, message: validation.message || "Invalid coupon code" },
+          { status: 400 }
+        );
+      }
+
+      // Use the validated discount amount
+      finalDiscountAmount = validation.discountAmount || 0;
+    }
+
     // Get base URL
     let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
     if (!baseUrl) {
@@ -73,31 +96,50 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const amount = Math.round((event.price || 0) * 100); // Convert to cents
+    const baseAmount = Math.round((event.price || 0) * 100); // Convert to cents
+    const discountAmountCents = Math.round(finalDiscountAmount * 100); // Convert discount to cents
+    const totalAmount = Math.max(1, baseAmount * quantity - discountAmountCents); // Ensure minimum 1 cent
 
-    if (amount <= 0) {
+    if (baseAmount <= 0) {
       return NextResponse.json(
         { success: false, message: "Invalid event price" },
         { status: 400 }
       );
     }
 
+    if (totalAmount <= 0) {
+      return NextResponse.json(
+        { success: false, message: "Discount amount cannot exceed total price" },
+        { status: 400 }
+      );
+    }
+
+    // Build line items
+    // If discount is applied, adjust the unit price to reflect the discount per item
+    const discountedUnitAmount = discountAmountCents > 0 
+      ? Math.max(1, Math.round((baseAmount * quantity - discountAmountCents) / quantity))
+      : baseAmount;
+
+    const lineItems: any[] = [
+      {
+        price_data: {
+          currency: "sgd",
+          product_data: {
+            name: event.title,
+            description: discountAmountCents > 0 
+              ? `${event.date} at ${event.time} - ${event.location}${couponCode ? ` (Discount: ${couponCode})` : ''}`
+              : `${event.date} at ${event.time} - ${event.location}`,
+          },
+          unit_amount: discountedUnitAmount,
+        },
+        quantity: quantity,
+      },
+    ];
+
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "sgd",
-            product_data: {
-              name: event.title,
-              description: `${event.date} at ${event.time} - ${event.location}`,
-            },
-            unit_amount: amount,
-          },
-          quantity: quantity,
-        },
-      ],
+      line_items: lineItems,
       mode: "payment",
       success_url: `${baseUrl}/events/${eventId}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/events/${eventId}`,
@@ -106,6 +148,9 @@ export async function POST(req: NextRequest) {
         eventId: eventId,
         sessionType: "event",
         quantity: String(quantity),
+        ...(couponCode && { couponCode }),
+        ...(couponId && { couponId }),
+        ...(finalDiscountAmount > 0 && { discountAmount: String(finalDiscountAmount) }),
       },
       customer_email: user?.email || undefined,
     });

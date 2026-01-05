@@ -74,6 +74,13 @@ function OrderConfirmationContent() {
     country: "",
     comments: "",
   });
+  
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState("");
 
   useEffect(() => {
     fetchUser();
@@ -253,7 +260,67 @@ function OrderConfirmationContent() {
 
   const productTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const deliveryCharges = calculateDeliveryCharges();
-  const totalAmount = productTotal + deliveryCharges.total;
+  const totalAmount = Math.max(0, productTotal + deliveryCharges.total - discountAmount);
+
+  // Validate and apply coupon
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    if (!user) {
+      toast.error("Please login to use coupon");
+      return;
+    }
+
+    setValidatingCoupon(true);
+    setCouponError("");
+
+    try {
+      const response = await fetch("/api/coupons/validate-product", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+        body: JSON.stringify({
+          couponCode: couponCode.trim().toUpperCase(),
+          items: items.map((item) => ({
+            productId: item._id,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setAppliedCoupon(data.data.coupon);
+        setDiscountAmount(data.data.discountAmount);
+        toast.success(`Coupon applied! ${data.data.discountPercent}% off`);
+      } else {
+        setCouponError(data.message || "Invalid coupon code");
+        setAppliedCoupon(null);
+        setDiscountAmount(0);
+      }
+    } catch (error: any) {
+      console.error("Coupon validation error:", error);
+      setCouponError("Failed to validate coupon. Please try again.");
+      setAppliedCoupon(null);
+      setDiscountAmount(0);
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  // Remove coupon
+  const handleRemoveCoupon = () => {
+    setCouponCode("");
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+    setCouponError("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -289,6 +356,9 @@ function OrderConfirmationContent() {
           amount: totalAmount,
           shippingAddress: formData,
           customerComments: formData.comments,
+          couponCode: appliedCoupon ? couponCode.trim().toUpperCase() : undefined,
+          couponId: appliedCoupon?._id,
+          discountAmount: discountAmount > 0 ? discountAmount : undefined,
         }),
       });
 
@@ -487,6 +557,59 @@ function OrderConfirmationContent() {
                 />
               </div>
 
+              {/* Coupon Code Section */}
+              <div>
+                <label className="block text-sm font-medium text-[#1C3163] mb-1">
+                  Coupon Code (Optional)
+                </label>
+                {!appliedCoupon ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value.toUpperCase());
+                        setCouponError("");
+                      }}
+                      placeholder="Enter coupon code"
+                      className="flex-1 px-4 py-2 border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1C3163]"
+                      disabled={validatingCoupon}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      disabled={validatingCoupon || !couponCode.trim()}
+                      className="px-6 py-2 bg-[#D5B584] text-white rounded-md font-medium hover:bg-[#C4A574] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {validatingCoupon ? "Validating..." : "Apply"}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-green-800">
+                          Coupon Applied: {appliedCoupon.couponName || couponCode}
+                        </p>
+                        <p className="text-xs text-green-600 mt-1">
+                          {appliedCoupon.discountPercent}% off - Saved ${discountAmount.toFixed(2)}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {couponError && (
+                  <p className="mt-1 text-sm text-red-600">{couponError}</p>
+                )}
+              </div>
+
               <button
                 type="submit"
                 disabled={submitting}
@@ -542,6 +665,13 @@ function OrderConfirmationContent() {
               <div className="text-xs text-zinc-500 italic pl-4">
                 {deliveryCharges.breakdown}
               </div>
+
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>Discount ({appliedCoupon?.discountPercent}%):</span>
+                  <span className="font-medium">-${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
 
               <div className="border-t border-zinc-200 pt-2 mt-2">
                 <div className="flex justify-between text-lg font-semibold">

@@ -207,7 +207,7 @@ const DiscoveryAppointmentPage = () => {
     const selectedDateStr = formatDateLocal(currentYear, currentMonth, selectedDate)
     
     const slots = availableSlots
-      .filter(slot => slot.date === selectedDateStr)
+      .filter(slot => slot.date === selectedDateStr && !slot.isBooked)
       .map(slot => ({
         time: slot.time,
         available: true,
@@ -217,6 +217,13 @@ const DiscoveryAppointmentPage = () => {
     
     return slots
   }, [selectedDate, availableSlots, currentMonth, currentYear])
+
+  // Get selected slot ID
+  const selectedSlotId = useMemo(() => {
+    if (!selectedTime) return null
+    const slot = timeSlots.find(s => s.time === selectedTime)
+    return slot?._id || null
+  }, [selectedTime, timeSlots])
 
   // Check if a date has available slots
   const isDateAvailable = (day: number, isCurrentMonth: boolean) => {
@@ -306,10 +313,15 @@ const DiscoveryAppointmentPage = () => {
     e.preventDefault()
     
     // Validate calendar selection (REQUIRED)
-    console.log('Form submit - selectedDate:', selectedDate, 'selectedTime:', selectedTime)
+    if (!selectedDate || !selectedTime || !selectedSlotId) {
+      toast.error('Please select both date and time before proceeding to payment')
+      return
+    }
     
-    if (!selectedDate || !selectedTime) {
-      toast.error('Please select both date and time before submitting')
+    // Check if user is logged in
+    const token = localStorage.getItem("userToken")
+    if (!token) {
+      toast.error("Please login to book a discovery session")
       return
     }
     
@@ -319,78 +331,33 @@ const DiscoveryAppointmentPage = () => {
       return
     }
     
-    // Bowl Discovery Form fields are OPTIONAL
-    
     setIsSubmitting(true)
     
     try {
-      // Format the selected date
-      const selectedDateObj = new Date(currentYear, currentMonth, selectedDate)
-      const formattedDate = selectedDateObj.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-      
-      // Also get date in YYYY-MM-DD format for API
-      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`
-      
-      // Prepare discovery form data (only include if provided)
-      const discoveryData = {
-        selectedDate: formattedDate,
-        selectedDateISO: dateStr, // ISO format for API
-        selectedTime,
-        hasCrystalBowls: hasCrystalBowls || 'Not specified',
-        notesAndAlchemies: notesAndAlchemies || 'Not provided',
-        experienceLevel: experienceLevel.length > 0 ? experienceLevel : ['Not specified'],
-        mainIntention: mainIntention.length > 0 ? mainIntention : ['Not specified'],
-        soundOrEnergy: soundOrEnergy || 'Not provided'
-      }
-      
-      // Prepare enquiry data using user data from database
-      const enquiryData = {
-        fullName: userData.name,
-        email: userData.email,
-        phone: userData.phone,
-        services: `Discovery Session - ${formattedDate} at ${selectedTime}`,
-        sessionType: 'discovery',
-        comment: JSON.stringify(discoveryData)
-      }
-      
-      console.log('Submitting enquiry:', enquiryData)
-      
-      // Submit to API
-      const response = await fetch('/api/enquiries', {
-        method: 'POST',
+      // Create Stripe checkout session for discovery session
+      const response = await fetch("/api/payment/create-discovery-checkout", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(enquiryData),
+        body: JSON.stringify({
+          sessionId: selectedSlotId,
+        }),
       })
-      
+
       const data = await response.json()
-      console.log('API response:', data)
-      
-      if (data.success) {
-        toast.success('Discovery appointment submitted successfully! We will contact you soon.')
-        // Reset form (keep user data as it comes from database)
-        setSelectedDate(null)
-        setSelectedTime(null)
-        setHasCrystalBowls(null)
-        setNotesAndAlchemies('')
-        setExperienceLevel([])
-        setMainIntention([])
-        setSoundOrEnergy('')
-        
-        // Scroll to top smoothly
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+
+      if (data.success && data.data?.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.data.url
       } else {
-        toast.error(data.message || 'Failed to submit appointment. Please try again.')
+        toast.error(data.message || "Failed to initiate payment. Please try again.")
+        setIsSubmitting(false)
       }
     } catch (error) {
-      console.error('Error submitting form:', error)
-      toast.error('Failed to submit appointment. Please try again.')
-    } finally {
+      console.error("Error creating checkout session:", error)
+      toast.error("Something went wrong. Please try again.")
       setIsSubmitting(false)
     }
   }
@@ -774,7 +741,7 @@ const DiscoveryAppointmentPage = () => {
                   disabled={isSubmitting || !selectedDate || !selectedTime || !userData}
                   className="bg-[#D5B584] text-white px-12 py-4 rounded-lg text-[16px] sm:text-[18px] font-medium hover:bg-[#C4A574] transition-colors duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Submitting...' : !selectedDate || !selectedTime ? 'Select Date & Time First' : !userData ? 'Loading user data...' : 'Confirm Appointment'}
+                  {isSubmitting ? 'Redirecting to Payment...' : !selectedDate || !selectedTime ? 'Select Date & Time First' : !userData ? 'Loading user data...' : 'Proceed to Payment'}
                 </button>
               </div>
             </form>

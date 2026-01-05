@@ -8,6 +8,7 @@ import Event from "@/models/Event";
 import SessionEnquiry from "@/models/SessionEnquiry";
 import User from "@/models/User";
 import { requireAuth } from "@/lib/auth";
+import { sendPrivateSessionConfirmationToUser, sendPrivateSessionNotificationToAdmin } from "@/lib/email";
 
 export async function GET(req: NextRequest) {
   try {
@@ -159,20 +160,21 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Create booking (auto-confirmed for discovery and private - no payment required)
+    // Create booking (auto-confirmed for private - no payment required)
+    // Discovery sessions now go through payment flow (handled by verify-discovery-checkout)
     const booking = await Booking.create({ 
       userId: user._id, 
       sessionId: sessionType === "private" ? session._id : sessionId, 
       sessionType, 
       seats: 1, 
-      amount: 0, // No payment
-      status: "confirmed", // Auto-confirmed for discovery and private
+      amount: 0, // No payment for private sessions
+      status: "confirmed", // Auto-confirmed for private sessions
       phone: phone?.trim(),
       comment: comment?.trim() || undefined,
       slotId: slotId || undefined, // Store slot reference if provided
     });
     
-    // For private sessions, also create a SessionEnquiry so it appears in admin dashboard
+    // For private sessions, also create a SessionEnquiry and send emails
     if (sessionType === "private") {
       try {
         // Fetch full user details to get email and name
@@ -180,12 +182,24 @@ export async function POST(req: NextRequest) {
         if (!fullUser) {
           console.warn("User not found when creating SessionEnquiry");
         } else {
-          // Format date to YYYY-MM-DD
+          // Format date to YYYY-MM-DD and readable format
           let sessionDate = "";
+          let sessionDateReadable = "";
           if (session.date) {
             const rawDate = session.date;
             if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
               sessionDate = rawDate;
+              // Convert to readable format (e.g., "January 1, 2024")
+              try {
+                const dateObj = new Date(rawDate + 'T00:00:00');
+                sessionDateReadable = dateObj.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                });
+              } catch {
+                sessionDateReadable = rawDate;
+              }
             } else {
               try {
                 const parsedDate = new Date(rawDate);
@@ -194,9 +208,18 @@ export async function POST(req: NextRequest) {
                   const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
                   const day = String(parsedDate.getDate()).padStart(2, '0');
                   sessionDate = `${year}-${month}-${day}`;
+                  sessionDateReadable = parsedDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  });
+                } else {
+                  sessionDate = rawDate;
+                  sessionDateReadable = rawDate;
                 }
               } catch {
                 sessionDate = rawDate;
+                sessionDateReadable = rawDate;
               }
             }
           }
@@ -205,6 +228,7 @@ export async function POST(req: NextRequest) {
           const customerName = fullUser.name || "Customer";
           const customerEmail = fullUser.email || "";
           const customerPhone = phone?.trim() || fullUser.phone || "N/A";
+          const bookingAmount = session.price || 0; // Use session price if available
           
           // Check if enquiry already exists to avoid duplicates
           const existingEnquiry = await SessionEnquiry.findOne({
@@ -231,17 +255,40 @@ export async function POST(req: NextRequest) {
           } else {
             console.log("SessionEnquiry already exists for this booking");
           }
+
+          // Send confirmation email to user
+          if (customerEmail) {
+            sendPrivateSessionConfirmationToUser({
+              fullName: customerName,
+              email: customerEmail,
+              date: sessionDateReadable || sessionDate,
+              time: sessionTime,
+            }).catch((error) => {
+              console.error("Failed to send private session confirmation email to user:", error);
+            });
+          }
+
+          // Send notification email to admin
+          sendPrivateSessionNotificationToAdmin({
+            fullName: customerName,
+            email: customerEmail,
+            phone: customerPhone,
+            date: sessionDateReadable || sessionDate,
+            time: sessionTime,
+          }).catch((error) => {
+            console.error("Failed to send private session notification email to admin:", error);
+          });
         }
       } catch (enquiryError: any) {
-        // Don't fail the booking if enquiry creation fails
-        console.error("❌ Error creating SessionEnquiry:", enquiryError);
+        // Don't fail the booking if enquiry creation or email sending fails
+        console.error("❌ Error creating SessionEnquiry or sending emails:", enquiryError);
       }
     }
     
     return NextResponse.json({ 
       success: true, 
       data: booking,
-      requiresPayment: false, // No payment for discovery and private
+      requiresPayment: false, // No payment for private sessions
     }, { status: 201 });
   } catch (e: any) {
     const status = e?.message === "UNAUTHORIZED" ? 401 : 400;

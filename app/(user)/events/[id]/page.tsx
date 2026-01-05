@@ -35,6 +35,15 @@ const EventDetailPage = () => {
   const [loading, setLoading] = useState(true)
   const [bookingLoading, setBookingLoading] = useState(false)
   const [quantity, setQuantity] = useState(1)
+  const [couponCode, setCouponCode] = useState("")
+  const [couponLoading, setCouponLoading] = useState(false)
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discountPercent: number;
+    discountAmount: number;
+    couponId: string;
+  } | null>(null)
+  const [couponError, setCouponError] = useState("")
 
   // Helper function to get image URL
   const getImageUrl = (imageUrl?: string): string => {
@@ -112,6 +121,9 @@ const EventDetailPage = () => {
         body: JSON.stringify({
           eventId: event._id,
           quantity: quantity,
+          couponCode: appliedCoupon?.code,
+          couponId: appliedCoupon?.couponId,
+          discountAmount: appliedCoupon?.discountAmount,
         }),
       });
 
@@ -136,7 +148,70 @@ const EventDetailPage = () => {
     const availableSlots = (event.totalSeats || 0) - (event.bookedSeats || 0);
     if (newQuantity >= 1 && newQuantity <= availableSlots) {
       setQuantity(newQuantity);
+      // Re-validate coupon with new quantity if coupon is applied
+      if (appliedCoupon) {
+        applyCoupon(appliedCoupon.code, newQuantity);
+      }
     }
+  };
+
+  const applyCoupon = async (code: string, qty: number = quantity) => {
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      toast.error("Please login to use coupon");
+      return;
+    }
+
+    if (!code.trim()) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    setCouponLoading(true);
+    setCouponError("");
+
+    try {
+      const response = await fetch("/api/coupons/validate-event", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          couponCode: code.trim().toUpperCase(),
+          eventId: event?._id,
+          quantity: qty,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        setAppliedCoupon({
+          code: code.trim().toUpperCase(),
+          discountPercent: data.data.discountPercent,
+          discountAmount: data.data.discountAmount,
+          couponId: data.data.coupon._id,
+        });
+        setCouponCode("");
+        toast.success(data.data.coupon?.couponName || "Coupon applied successfully!");
+      } else {
+        setCouponError(data.message || "Invalid coupon code");
+        setAppliedCoupon(null);
+      }
+    } catch (error) {
+      console.error("Coupon validation error:", error);
+      setCouponError("Failed to validate coupon. Please try again.");
+      setAppliedCoupon(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
   };
 
   if (loading) {
@@ -299,15 +374,84 @@ const EventDetailPage = () => {
                         </div>
                       </div>
 
-                      {/* Total Price */}
+                      {/* Coupon Code Input */}
+                      <div className="space-y-2">
+                        <label className="text-[#1C3163] text-[14px] md:text-[16px] font-medium">
+                          Coupon Code (Optional):
+                        </label>
+                        {appliedCoupon ? (
+                          <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div className="flex-1">
+                              <p className="text-green-700 text-sm font-medium">
+                                {appliedCoupon.code} - {appliedCoupon.discountPercent}% off applied
+                              </p>
+                              <p className="text-green-600 text-xs">
+                                You saved SGD ${appliedCoupon.discountAmount.toFixed(2)}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={removeCoupon}
+                              className="text-green-700 hover:text-green-800 text-sm font-medium underline"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={couponCode}
+                              onChange={(e) => {
+                                setCouponCode(e.target.value.toUpperCase());
+                                setCouponError("");
+                              }}
+                              placeholder="Enter coupon code"
+                              className="flex-1 rounded-lg border border-[#1C3163] px-4 py-2 text-[#1C3163] focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                              disabled={couponLoading}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => applyCoupon(couponCode)}
+                              disabled={couponLoading || !couponCode.trim()}
+                              className="px-4 py-2 bg-[#1C3163] text-white rounded-lg font-medium hover:bg-[#2a4a7a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {couponLoading ? "..." : "Apply"}
+                            </button>
+                          </div>
+                        )}
+                        {couponError && (
+                          <p className="text-red-600 text-sm">{couponError}</p>
+                        )}
+                      </div>
+
+                      {/* Price Breakdown */}
                       {price > 0 && (
-                        <div className="flex items-center justify-between pt-2 border-t border-[#D5B584]/30">
-                          <span className="text-[#1C3163] text-[16px] md:text-[18px] font-medium">
-                            Total:
-                          </span>
-                          <span className="text-[#D5B584] text-[20px] md:text-[24px] font-semibold">
-                            SGD ${(price * quantity).toFixed(2)}
-                          </span>
+                        <div className="space-y-2 pt-2 border-t border-[#D5B584]/30">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-[#1C3163]">
+                              Subtotal ({quantity} slot{quantity > 1 ? 's' : ''}):
+                            </span>
+                            <span className="text-[#1C3163] font-medium">
+                              SGD ${(price * quantity).toFixed(2)}
+                            </span>
+                          </div>
+                          {appliedCoupon && (
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-green-600">Discount ({appliedCoupon.code}):</span>
+                              <span className="text-green-600 font-medium">
+                                -SGD ${appliedCoupon.discountAmount.toFixed(2)}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between pt-2 border-t border-[#D5B584]/30">
+                            <span className="text-[#1C3163] text-[16px] md:text-[18px] font-medium">
+                              Total:
+                            </span>
+                            <span className="text-[#D5B584] text-[20px] md:text-[24px] font-semibold">
+                              SGD ${Math.max(0, (price * quantity) - (appliedCoupon?.discountAmount || 0)).toFixed(2)}
+                            </span>
+                          </div>
                         </div>
                       )}
 

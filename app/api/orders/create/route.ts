@@ -26,6 +26,9 @@ export async function POST(req: NextRequest) {
       amount,
       shippingAddress,
       customerComments,
+      couponCode,
+      couponId,
+      discountAmount,
     } = body;
 
     // Validation
@@ -71,6 +74,9 @@ export async function POST(req: NextRequest) {
       shippingAddress,
       customerEmail: user.email,
       customerName: shippingAddress.fullName,
+      couponCode: couponCode || undefined,
+      couponId: couponId || undefined,
+      discountAmount: discountAmount || 0,
     });
 
     // NOTE: Email will be sent AFTER successful payment, not here

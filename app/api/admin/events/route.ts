@@ -3,6 +3,26 @@ import connectDB from "@/lib/mongodb";
 import Event from "@/models/Event";
 import { requireAdmin } from "@/lib/auth";
 
+// GET - Fetch all events
+export async function GET(req: NextRequest) {
+  try {
+    await requireAdmin(req);
+    await connectDB();
+
+    const events = await Event.find()
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return NextResponse.json({ success: true, data: events }, { status: 200 });
+  } catch (e: any) {
+    const status = e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
+    return NextResponse.json(
+      { success: false, message: e?.message || "Server error" },
+      { status }
+    );
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin(req);
@@ -63,32 +83,6 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-export async function GET(req: NextRequest) {
-  try {
-    await requireAdmin(req);
-    await connectDB();
-    
-    const events = await Event.find().sort({ createdAt: -1 });
-    
-    return NextResponse.json(
-      { success: true, data: events },
-      { status: 200 }
-    );
-  } catch (e: any) {
-    const status = e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
-    return NextResponse.json(
-      { success: false, message: e?.message || "Server error" },
-      { status }
-    );
-  }
-}
-
-
-
-
-
-
 
 
 

@@ -10,6 +10,7 @@ import {
   sendUniversalProductOrderConfirmationToUser,
   sendRegularProductOrderConfirmationToUser
 } from "@/lib/email";
+import { recordCouponUsage } from "@/lib/coupon-validation";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2025-10-29.clover",
@@ -81,6 +82,21 @@ export async function POST(req: NextRequest) {
               { success: false, message: "Failed to update order" },
               { status: 500 }
             );
+          }
+
+          // Record coupon usage if coupon was used (only after successful payment)
+          if (updatedOrder.couponId && updatedOrder.couponCode) {
+            try {
+              await recordCouponUsage(
+                updatedOrder.couponId,
+                "product",
+                updatedOrder.userId
+              );
+              console.log(`✅ Coupon usage recorded for coupon ${updatedOrder.couponCode}`);
+            } catch (couponError: any) {
+              // Log error but don't fail the payment verification
+              console.error("❌ Failed to record coupon usage:", couponError);
+            }
           }
 
           // Check if order contains universal products
