@@ -2,7 +2,7 @@ import React from 'react';
 import Link from "next/link";
 import Image from 'next/image';
 import { ArrowRight } from "lucide-react";
-import { PremiumQuality, UniqueToYou, LightWeight, Intention } from "@/public/assets";
+import { PremiumQuality, UniqueToYou, LightWeight, Intention, NewBowl } from "@/public/assets";
 
 type Category = {
   _id: string;
@@ -32,7 +32,7 @@ const Icons = [
 
   {
     id: 3,
-    image: LightWeight,
+    image: NewBowl,
     title: "Made for You",
     para: "Each bowl is unique and can be customised by chakra, note, frequency, colour, and design to make it uniquely yours."  },
   {

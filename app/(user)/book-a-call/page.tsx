@@ -39,12 +39,13 @@ const BookACallPage = () => {
                   45 minutes
                 </p>
                 <p className="text-[#1C3163] text-sm md:text-base font-light leading-relaxed">
-                  This is for you if you want to come and visit the Alchemy Sound Studio in Person in Munich. We are so happy to welcome you.
+                  This is for you if you want to come and visit the Alchemy
+                  Sound Studio in Person in Munich. We are so happy to welcome
+                  you.
                 </p>
               </div>
 
-
-<hr className="border-b  opacity-25 border-gray-50" />
+              <hr className="border-b  opacity-25 border-gray-50" />
               {/* Online Discovery Call Option */}
               <div className=" backdrop-blur-sm p-6 md:p-8 ">
                 <h3 className="text-[#1C3163] text-xl md:text-2xl font-semibold mb-2">
@@ -54,11 +55,11 @@ const BookACallPage = () => {
                   30 minutes
                 </p>
                 <p className="text-[#1C3163] text-sm md:text-base font-light leading-relaxed">
-                  This is a 30 Min free Alchemy Bowl Discovery Call for you. We meet on zoom.
+                  This is a 30 Min free Alchemy Bowl Discovery Call for you. We
+                  meet on zoom.
                 </p>
               </div>
             </div>
-
           </div>
         </section>
       </div>

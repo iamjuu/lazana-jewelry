@@ -43,6 +43,8 @@ const Navbar = () => {
   const shopHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const offeringHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
+  const [isMobileOfferingOpen, setIsMobileOfferingOpen] = useState(false)
+  const [isMobileShopOpen, setIsMobileShopOpen] = useState(false)
 
   // Fetch categories from API
   useEffect(() => {
@@ -456,30 +458,134 @@ const Navbar = () => {
           </div>
         </div>
 
+        {/* Mobile Menu Backdrop - Blurs content behind */}
+        <div 
+          className={`lg:hidden fixed inset-0 backdrop-blur-sm transition-all duration-300 z-40 ${
+            isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+
         {/* Mobile Menu Dropdown */}
         <div 
-          className={`lg:hidden bg-black/15 backdrop-blur-sm overflow-hidden transition-all duration-150 ease-in-out ${
-            isMobileMenuOpen ? 'max-h-[500px] opacity-100 mt-6' : 'max-h-0 opacity-0'
+          className={`lg:hidden absolute left-4 right-4 top-full bg-black/80 backdrop-blur-md overflow-hidden transition-all duration-300 ease-in-out rounded-lg z-50 ${
+            isMobileMenuOpen ? 'max-h-[600px] opacity-100 mt-2' : 'max-h-0 opacity-0 pointer-events-none'
           }`}
         >
-          <div className="flex flex-col gap-4 py-4 px-2">
-            {navigationItems.map((item) => (
-              <Link 
-                key={item.href}
-                href={item.href} 
-                onClick={(e) => handleNavigation(e, item.href)}
-                className={`group relative text-[#D5B584] hover:text-white transition-all duration-150 text-base font-normal py-2 px-4 hover:bg-white/5 rounded hover:translate-x-2 overflow-hidden ${
-                  pathname === item.href || (item.href === '/shop' && pathname.startsWith('/shop')) || (item.href === '/services' && (pathname.startsWith('/services') || pathname.startsWith('/events'))) ? 'bg-white/10 text-white font-semibold translate-x-2' : ''
-                }`}
-              >
-                <span className="relative z-10">{item.label}</span>
-              </Link>
-            ))}
+          <div className="flex flex-col gap-2 py-4 px-2">
+            {navigationItems.map((item) => {
+              // Handle Shop with sub-menu in mobile (categories from backend)
+              if (item.hasDropdown) {
+                return (
+                  <div key={item.href} className="flex flex-col">
+                    <button 
+                      onClick={() => setIsMobileShopOpen(!isMobileShopOpen)}
+                      className={`group relative text-white hover:text-[#D5B584] transition-all duration-150 text-base font-normal py-2 px-4 hover:bg-white/10 rounded flex items-center justify-between ${
+                        pathname.startsWith('/shop') ? 'bg-white/15 text-[#D5B584] font-semibold' : ''
+                      }`}
+                    >
+                      <span className="relative z-10">{item.label}</span>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        strokeWidth={2} 
+                        stroke="currentColor" 
+                        className={`w-4 h-4 transition-transform duration-150 ${isMobileShopOpen ? 'rotate-180' : ''}`}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      </svg>
+                    </button>
+                    {/* Shop Sub-menu - Categories from backend */}
+                    <div className={`overflow-hidden transition-all duration-150 ${isMobileShopOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <Link 
+                        href="/shop?category=all"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="block text-white/80 hover:text-[#D5B584] transition-all duration-150 text-sm font-normal py-2 px-8 hover:bg-white/10 rounded"
+                      >
+                        All Products
+                      </Link>
+                      {categories.slice(0, 8).map((category) => (
+                        <Link 
+                          key={category._id}
+                          href={`/shop?category=${category.slug}`}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-white/80 hover:text-[#D5B584] transition-all duration-150 text-sm font-normal py-2 px-8 hover:bg-white/10 rounded"
+                        >
+                          {category.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )
+              }
+
+              // Handle Offering with sub-menu in mobile
+              if (item.hasOfferingDropdown) {
+                return (
+                  <div key={item.href} className="flex flex-col">
+                    <button 
+                      onClick={() => setIsMobileOfferingOpen(!isMobileOfferingOpen)}
+                      className={`group relative text-white hover:text-[#D5B584] transition-all duration-150 text-base font-normal py-2 px-4 hover:bg-white/10 rounded flex items-center justify-between ${
+                        pathname.startsWith('/services') || pathname.startsWith('/events') ? 'bg-white/15 text-[#D5B584] font-semibold' : ''
+                      }`}
+                    >
+                      <span className="relative z-10">{item.label}</span>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        strokeWidth={2} 
+                        stroke="currentColor" 
+                        className={`w-4 h-4 transition-transform duration-150 ${isMobileOfferingOpen ? 'rotate-180' : ''}`}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      </svg>
+                    </button>
+                    {/* Sub-menu */}
+                    <div className={`overflow-hidden transition-all duration-150 ${isMobileOfferingOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <Link 
+                        href="/events" 
+                        onClick={(e) => handleNavigation(e, '/events')}
+                        className={`block text-white/80 hover:text-[#D5B584] transition-all duration-150 text-sm font-normal py-2 px-8 hover:bg-white/10 rounded ${
+                          pathname === '/events' ? 'bg-white/15 text-[#D5B584] font-semibold' : ''
+                        }`}
+                      >
+                        Events
+                      </Link>
+                      <Link 
+                        href="/services" 
+                        onClick={(e) => handleNavigation(e, '/services')}
+                        className={`block text-white/80 hover:text-[#D5B584] transition-all duration-150 text-sm font-normal py-2 px-8 hover:bg-white/10 rounded ${
+                          pathname === '/services' ? 'bg-white/15 text-[#D5B584] font-semibold' : ''
+                        }`}
+                      >
+                        Services
+                      </Link>
+                    </div>
+                  </div>
+                )
+              }
+              
+              // Regular navigation items
+              return (
+                <Link 
+                  key={item.href}
+                  href={item.href} 
+                  onClick={(e) => handleNavigation(e, item.href)}
+                  className={`group relative text-white hover:text-[#D5B584] transition-all duration-150 text-base font-normal py-2 px-4 hover:bg-white/10 rounded hover:translate-x-2 overflow-hidden ${
+                    pathname === item.href ? 'bg-white/15 text-[#D5B584] font-semibold translate-x-2' : ''
+                  }`}
+                >
+                  <span className="relative z-10">{item.label}</span>
+                </Link>
+              )
+            })}
             <Link 
               href="/book-a-session" 
               onClick={(e) => handleNavigation(e, '/book-a-session')}
-              className={`group relative text-[#D5B584] hover:text-white transition-all duration-150 text-base font-normal py-2 px-4 hover:bg-white/5 rounded hover:translate-x-2 overflow-hidden ${
-                pathname === '/book-a-session' ? 'bg-white/10 text-white font-semibold translate-x-2' : ''
+              className={`group relative text-white hover:text-[#D5B584] transition-all duration-150 text-base font-normal py-2 px-4 hover:bg-white/10 rounded hover:translate-x-2 overflow-hidden ${
+                pathname === '/book-a-session' ? 'bg-white/15 text-[#D5B584] font-semibold translate-x-2' : ''
               }`}
             >
               <span className="relative z-10">Book a Call</span>

@@ -10,6 +10,7 @@ export { default as RightArrow } from './images/landing/right arrow.svg';
 export { default as Bucket1 } from './images/landing/bucket1.svg';
 export { default as Bucket2 } from './images/landing/bucket2.svg';
 export { default as Bucket3 } from './images/landing/bucket3.svg';
+export { default as NewBowl } from './images/landing/newbown.png';
 
 // Yoga Images (first 3)
 export { default as Yoga1 } from './images/landing/yoga1.svg';
