@@ -80,20 +80,20 @@ const AboutSectionComponent = () => {
 
             {/* Right side - Abstract Graphics */}
             <div className="relative w-full lg:w-[35%] xl:w-[40%] flex flex-row sm:flex-row  gap-2 ">
-              <div className=" lg:max-w-none">
+              <div className="w-full h-full lg:max-w-none">
                 <Image
                   src={AboutNew1}
                   alt="about"
-                  className="w-full h-auto object-contain"
+                  className="w-full h-full max-h-[400px] lg:max-h-[500px] object-contain"
                 />
               </div>
-              <div className=" lg:max-w-none">
+              {/* <div className=" lg:max-w-none">
                 <Image
                   src={AboutNew2}
                   alt="about"
                   className="w-full h-auto object-contain"
                 />
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="">

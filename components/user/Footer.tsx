@@ -74,7 +74,7 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-8 md:gap-[64px] items-center text-center">
-          <h3 className="text-[#d5b584] italic leading-tight text-[26px] sm:text-[32px] md:text-[40px] lg:text-[48px]">
+          <h3 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] italic">
             Ready To Begin Your
             <br className="hidden sm:block" /> Healing Journey?
           </h3>
@@ -132,10 +132,10 @@ const Footer = () => {
 <div>
 <div className="max-w-6xl flex flex-col   md:flex-row py-[44px] mx-auto px-4 gap-8 md:gap-0">
 <div className="w-full  flex flex-col items-center justify-center">
-            <h2 className="text-[#d5b584] font-serif text-center text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] mb-3 sm:mb-4">
+            <h2 className="text-black font-[400] text-center text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] mb-3 sm:mb-4">
               Join our mailing list
             </h2>
-            <p className="text-[#d5b584] text-center text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px]">
+            <p className="text-black text-center  font-[300] text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px]">
               Be the first to know about special offers, new collections and stay up to date with all our magic!
             </p>
             <form onSubmit={handleSubscribe} className="w-full max-w-[500px] flex flex-col sm:flex-row gap-3 sm:gap-0">

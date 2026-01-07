@@ -27,14 +27,8 @@ const ShippingAndDeliveryPage = () => {
               </h3>
               <div className="space-y-4 text-[#1C3163] text-[14px] sm:text-[16px] md:text-[18px] font-light leading-relaxed">
                 <p>
-                  We ship internationally to all countries worldwide, except:
+                  We ship internationally to all countries worldwide, except Switzerland, Africa, South America, India.
                 </p>
-                <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li>Switzerland</li>
-                  <li>Africa</li>
-                  <li>South America</li>
-                  <li>India</li>
-                </ul>
               </div>
             </div>
 

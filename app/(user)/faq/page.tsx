@@ -1,11 +1,12 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 import { Plus, Minus } from "lucide-react";
 
 const FAQPage = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(2); // Third item open by default
+  const [openIndex, setOpenIndex] = useState<number | null>(-1); // Third item open by default
 
   const faqs = [
     {
@@ -31,7 +32,15 @@ const FAQPage = () => {
     {
       id: 5,
       question: "Can you help me choose my bowls?",
-      answer: "Of course! We're here to help you find the perfect crystal bowls for your practice. You can reach out to us through our contact form, email, or during checkout. We'll guide you through selecting the right size, note, chakra alignment, and frequency based on your healing intentions and practice needs."
+      answer: (
+        <>
+          Of course! We&apos;re here to help you find the perfect crystal bowls for your practice. You can reach out to us through our contact form, email, or during checkout. We&apos;ll guide you through selecting the right size, note, chakra alignment, and frequency based on your healing intentions and practice needs. Or you can book a discovery call with me for 
+          <Link href="/book-a-session" className="text-[#1C3163] pl-2 underline hover:opacity-80 transition-opacity">
+             free here
+          </Link>
+          .
+        </>
+      )
     },
     {
       id: 6,
@@ -41,7 +50,7 @@ const FAQPage = () => {
     {
       id: 7,
       question: "What are your bowls made from?",
-      answer: "Our bowls are crafted from 99.9% pure clear quartz crystal, which is known for its powerful healing properties and exceptional sound quality. Each bowl is carefully infused with other crystals and precious elements to enhance its unique energy and resonance. This premium material ensures durability, clarity of sound, and powerful healing frequencies."
+      answer: "Our bowls are crafted from 99.9% pure crystal quartz, sourced from North Carolina, which is known for its healing properties and premium sound quality. Some bowls are carefully infused with other crystals and precious elements to enhance its unique energy and resonance. This premium material ensures durability, clarity and harmony of sound, and powerful healing frequencies. "
     },
     {
       id: 8,
@@ -95,9 +104,9 @@ const FAQPage = () => {
                   
                   {isOpen && (
                     <div className="pb-6 md:pb-8 animate-fadeIn">
-                      <p className="text-[#1C3163] text-[12px] sm:text-[14px] md:text-[16px] font-light leading-relaxed pr-12 sm:pr-16">
+                      <div className="text-[#1C3163] text-[12px] sm:text-[14px] md:text-[16px] font-light leading-relaxed pr-12 sm:pr-16">
                         {faq.answer}
-                      </p>
+                      </div>
                     </div>
                   )}
                 </div>
