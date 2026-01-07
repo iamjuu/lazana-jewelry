@@ -44,6 +44,7 @@ const Navbar = () => {
   const offeringHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
   const [isMobileOfferingOpen, setIsMobileOfferingOpen] = useState(false)
+  const [isMobileShopOpen, setIsMobileShopOpen] = useState(false)
 
   // Fetch categories from API
   useEffect(() => {
@@ -473,6 +474,52 @@ const Navbar = () => {
         >
           <div className="flex flex-col gap-2 py-4 px-2">
             {navigationItems.map((item) => {
+              // Handle Shop with sub-menu in mobile (categories from backend)
+              if (item.hasDropdown) {
+                return (
+                  <div key={item.href} className="flex flex-col">
+                    <button 
+                      onClick={() => setIsMobileShopOpen(!isMobileShopOpen)}
+                      className={`group relative text-white hover:text-[#D5B584] transition-all duration-150 text-base font-normal py-2 px-4 hover:bg-white/10 rounded flex items-center justify-between ${
+                        pathname.startsWith('/shop') ? 'bg-white/15 text-[#D5B584] font-semibold' : ''
+                      }`}
+                    >
+                      <span className="relative z-10">{item.label}</span>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        strokeWidth={2} 
+                        stroke="currentColor" 
+                        className={`w-4 h-4 transition-transform duration-150 ${isMobileShopOpen ? 'rotate-180' : ''}`}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      </svg>
+                    </button>
+                    {/* Shop Sub-menu - Categories from backend */}
+                    <div className={`overflow-hidden transition-all duration-150 ${isMobileShopOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <Link 
+                        href="/shop?category=all"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="block text-white/80 hover:text-[#D5B584] transition-all duration-150 text-sm font-normal py-2 px-8 hover:bg-white/10 rounded"
+                      >
+                        All Products
+                      </Link>
+                      {categories.slice(0, 8).map((category) => (
+                        <Link 
+                          key={category._id}
+                          href={`/shop?category=${category.slug}`}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-white/80 hover:text-[#D5B584] transition-all duration-150 text-sm font-normal py-2 px-8 hover:bg-white/10 rounded"
+                        >
+                          {category.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )
+              }
+
               // Handle Offering with sub-menu in mobile
               if (item.hasOfferingDropdown) {
                 return (
@@ -527,7 +574,7 @@ const Navbar = () => {
                   href={item.href} 
                   onClick={(e) => handleNavigation(e, item.href)}
                   className={`group relative text-white hover:text-[#D5B584] transition-all duration-150 text-base font-normal py-2 px-4 hover:bg-white/10 rounded hover:translate-x-2 overflow-hidden ${
-                    pathname === item.href || (item.href === '/shop' && pathname.startsWith('/shop')) ? 'bg-white/15 text-[#D5B584] font-semibold translate-x-2' : ''
+                    pathname === item.href ? 'bg-white/15 text-[#D5B584] font-semibold translate-x-2' : ''
                   }`}
                 >
                   <span className="relative z-10">{item.label}</span>

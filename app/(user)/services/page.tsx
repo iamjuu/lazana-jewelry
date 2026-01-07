@@ -240,7 +240,7 @@ const ServicesPage = () => {
                 
                       <div
                         key={item._id}
-                        className="min-w-[calc(33.333%-0.5rem)] sm:min-w-[calc(33.333%-0.667rem)]"
+                        className="min-w-full md:min-w-[calc(33.333%-0.667rem)]"
                       >
                         <div className="relative   group overflow-hidden rounded-[20px] h-[400px] sm:h-[450px] md:h-[640px] w-full">
                           {item.imageUrl ? (
@@ -256,8 +256,8 @@ const ServicesPage = () => {
                               <span className="text-[#D5B584] text-lg">No Image</span>
                             </div>
                           )}
-                          {/* Default Overlay with Title and Button */}
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 sm:p-5 md:p-6 group-hover:opacity-0 transition-opacity duration-300">
+                          {/* Default Overlay with Title and Button - always visible on mobile, hides on hover for desktop */}
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 sm:p-5 md:p-6 md:group-hover:opacity-0 transition-opacity duration-300">
                             <h3 className="text-white text-[16px] sm:text-[18px] md:text-[20px] font-normal mb-3 leading-snug">
                               {item.title || "Corporate Session"}
                             </h3>
@@ -284,8 +284,8 @@ const ServicesPage = () => {
                             </button>
                           </div>
 
-                          {/* Hover Overlay with Details */}
-                          <div className="absolute inset-0 bg-black/70 p-6 sm:p-8 md:p-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between overflow-y-auto">
+                          {/* Hover Overlay with Details - hidden on mobile, visible on hover for desktop */}
+                          <div className="absolute inset-0 bg-black/70 p-6 sm:p-8 md:p-10 opacity-0 md:group-hover:opacity-100 pointer-events-none md:group-hover:pointer-events-auto transition-opacity duration-300 hidden md:flex flex-col justify-between overflow-y-auto">
                             <div className="space-y-4 sm:space-y-5 md:space-y-6">
                               {item.description && (
                                 <div>
@@ -447,7 +447,7 @@ const ServicesPage = () => {
                     {privateSessions.map((item) => (
                       <div
                         key={item._id}
-                        className="min-w-[calc(33.333%-0.5rem)] sm:min-w-[calc(33.333%-0.667rem)]"
+                        className="min-w-full md:min-w-[calc(33.333%-0.667rem)]"
                       >
                         <div className="relative group overflow-hidden rounded-[20px] h-[400px] sm:h-[450px] md:h-[640px] w-full">
                           {item.imageUrl ? (
@@ -463,13 +463,13 @@ const ServicesPage = () => {
                               <span className="text-[#D5B584] text-lg">No Image</span>
                             </div>
                           )}
-                          {/* Default Overlay with Title and Button */}
-                          <div className="absolute bottom-0 left-0 right-0 to-transparent p-4 sm:p-5 md:p-6 group-hover:opacity-0 transition-opacity duration-300">
+                          {/* Default Overlay with Title and Button - always visible on mobile, hides on hover for desktop */}
+                          <div className="absolute bottom-0 left-0 right-0 to-transparent p-4 sm:p-5 md:p-6 md:group-hover:opacity-0 transition-opacity duration-300">
                             <h3 className="text-white text-[16px] sm:text-[18px] md:text-[20px] font-normal mb-3 leading-snug">
                               {item.title || "Private Session"}
                             </h3>
                             <button 
-                              onClick={() => router.push('/calendar?type=private')}
+                              onClick={() => router.push(isLoggedIn ? '/privateappointment' : '/login')}
                               className="flex items-center gap-2 text-white text-[14px] sm:text-[15px] font-light hover:gap-3 transition-all duration-300"
                             >
                               Book Now
@@ -491,8 +491,8 @@ const ServicesPage = () => {
                             </button>
                           </div>
 
-                          {/* Hover Overlay with Details */}
-                          <div className="absolute inset-0 bg-black/40 p-6 sm:p-8 md:p-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between overflow-y-auto">
+                          {/* Hover Overlay with Details - hidden on mobile, visible on hover for desktop */}
+                          <div className="absolute inset-0 bg-black/40 p-6 sm:p-8 md:p-10 opacity-0 md:group-hover:opacity-100 pointer-events-none md:group-hover:pointer-events-auto transition-opacity duration-300 hidden md:flex flex-col justify-between overflow-y-auto">
                             <div className="space-y-4 sm:space-y-5 md:space-y-6">
                               {item.description && (
                                 <div>
