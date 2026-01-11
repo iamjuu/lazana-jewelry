@@ -129,8 +129,8 @@ export default function SignupPage() {
       
       // Store token in localStorage
       if (data.data?.token) {
-        localStorage.setItem("userToken", data.data.token);
-        localStorage.setItem("userRole", "user");
+        sessionStorage.setItem("userToken", data.data.token);
+        sessionStorage.setItem("userRole", "user");
       }
 
       // Redirect to home

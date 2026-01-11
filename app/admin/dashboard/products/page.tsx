@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Search } from "lucide-react";
 import ProductForm from "@/components/dashboard/ProductForm";
 import ProductList from "@/components/dashboard/ProductList";
 
@@ -8,6 +9,7 @@ type Product = {
   _id: string;
   name: string;
   price: number;
+  discount?: number;
   createdAt: string;
   description?: string;
   shortDescription?: string;
@@ -25,13 +27,22 @@ export default function ProductsPage() {
   const [isUniversalProduct, setIsUniversalProduct] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const productsPerPage = 10;
 
-  const fetchProducts = async (page: number = 1) => {
+  const fetchProducts = async (page: number = 1, search: string = "") => {
     try {
       setLoading(true);
-      // Fetch all products including universal products (relativeproduct: true)
-      const response = await fetch(`/api/products?includeRelative=true&page=${page}&limit=${productsPerPage}`);
+      // Build query parameters
+      const params = new URLSearchParams();
+      params.append("includeRelative", "true");
+      params.append("page", page.toString());
+      params.append("limit", productsPerPage.toString());
+      if (search.trim()) {
+        params.append("search", search.trim());
+      }
+      
+      const response = await fetch(`/api/products?${params.toString()}`);
       const data = await response.json();
       if (data.success) {
         setProducts(data.data);
@@ -48,9 +59,13 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
-    fetchProducts(currentPage);
+    setCurrentPage(1); // Reset to page 1 when search changes
+  }, [searchQuery]);
+
+  useEffect(() => {
+    fetchProducts(currentPage, searchQuery);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   const handleAddComplete = () => {
     setShowAddForm(false);
@@ -97,6 +112,22 @@ export default function ProductsPage() {
             </div>
           )}
         </div>
+
+        {/* Search */}
+        {!showAddForm && (
+          <div className="mb-6">
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={20} />
+              <input
+                type="text"
+                placeholder="Search products by name, description..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        )}
 
         {showAddForm && (
           <div className="mb-8">

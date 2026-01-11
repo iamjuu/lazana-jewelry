@@ -21,12 +21,16 @@ export default function CategoriesPage() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState({ 
     name: "", 
-    image: "" as string | File | null,
+    image: "",
     isFeatured: false 
   });
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [featuredCount, setFeaturedCount] = useState(0);
+  
+  // S3 upload states
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const fetchCategories = async () => {
     try {
@@ -76,83 +80,74 @@ export default function CategoriesPage() {
     return imageUrl;
   };
 
-  const compressImageToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = Math.round((height * MAX_WIDTH) / width);
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = Math.round((width * MAX_HEIGHT) / height);
-              height = MAX_HEIGHT;
-            }
-          }
-
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-
-          if (!ctx) {
-            reject(new Error("Could not get canvas context"));
-            return;
-          }
-
-          ctx.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                reject(new Error("Failed to create blob"));
-                return;
-              }
-
-              const reader2 = new FileReader();
-              reader2.onloadend = () => {
-                const base64String = reader2.result as string;
-                resolve(base64String);
-              };
-              reader2.onerror = () => reject(new Error("Failed to read blob"));
-              reader2.readAsDataURL(blob);
-            },
-            "image/webp",
-            0.8
-          );
-        };
-        img.onerror = () => reject(new Error("Failed to load image"));
-        img.src = e.target?.result as string;
-      };
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleImageUpload = async (file: File | null) => {
+  // Handle image selection (don't upload yet)
+  const handleImageSelect = (file: File | null) => {
     if (!file) {
-      setFormData({ ...formData, image: "" });
-      setPreviewUrl("");
+      setSelectedImageFile(null);
       return;
     }
+    setSelectedImageFile(file);
+  };
+
+  // Upload image to S3
+  const handleUploadImageToS3 = async () => {
+    if (!selectedImageFile) return;
+
+    setUploadingImage(true);
 
     try {
-      const base64String = await compressImageToBase64(file);
-      setFormData({ ...formData, image: base64String });
-      setPreviewUrl(base64String);
-    } catch (error) {
-      console.error("Error compressing image:", error);
-      toast.error("Failed to process image");
+      // Delete old image if replacing
+      if (formData.image) {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.image }),
+        });
+      }
+
+      // Upload new image to S3
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", selectedImageFile);
+      uploadFormData.append("folder", "images");
+
+      const response = await fetch("/api/upload/s3", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image to S3");
+      }
+
+      const { url } = await response.json();
+
+      setFormData({ ...formData, image: url });
+      setPreviewUrl(url);
+      setSelectedImageFile(null);
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      toast.error("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
     }
+  };
+
+  // Remove uploaded image
+  const handleRemoveImage = async () => {
+    if (formData.image) {
+      try {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.image }),
+        });
+      } catch (err) {
+        console.error("Error deleting image:", err);
+      }
+    }
+    setFormData({ ...formData, image: "" });
+    setPreviewUrl("");
+    setSelectedImageFile(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -358,10 +353,37 @@ export default function CategoriesPage() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageUpload(e.target.files?.[0] || null)}
+                  onChange={(e) => handleImageSelect(e.target.files?.[0] || null)}
                   className="w-full px-4 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-white"
                 />
-                {previewUrl && (
+                
+                {/* Pending file with upload button */}
+                {selectedImageFile && !formData.image && (
+                  <div className="bg-zinc-700 border border-zinc-600 rounded-md p-3 mt-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
+                        <p className="text-xs text-zinc-400 mt-1">
+                          Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleUploadImageToS3}
+                        disabled={uploadingImage}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
+                      >
+                        {uploadingImage ? "Uploading..." : "Upload"}
+                      </button>
+                    </div>
+                    {!uploadingImage && (
+                      <p className="text-xs text-yellow-500 mt-2">⚠️ Click "Upload" to save this image</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Uploaded image preview */}
+                {previewUrl && formData.image && (
                   <div className="mt-4 relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
                     <img
                       src={previewUrl}
@@ -372,21 +394,17 @@ export default function CategoriesPage() {
                         e.currentTarget.style.display = "none";
                       }}
                     />
-                    {editingCategory && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFormData({ ...formData, image: "" });
-                          setPreviewUrl("");
-                        }}
-                        className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
-                      >
-                        Remove
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                      title="Remove image"
+                    >
+                      ×
+                    </button>
                   </div>
                 )}
-                {editingCategory && editingCategory.imageUrl && !previewUrl && (
+                {editingCategory && editingCategory.imageUrl && !previewUrl && !formData.image && (
                   <div className="mt-2 text-sm text-zinc-400">
                     Current image will be preserved. Upload a new image to replace it.
                   </div>

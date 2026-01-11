@@ -23,6 +23,19 @@ export async function POST(req: NextRequest) {
       sessionType,
       sessionId, // For private sessions - the PrivateSession ID
       userId, // Optional - if user is logged in
+      // Corporate session specific fields
+      companyName,
+      jobTitle,
+      workEmail,
+      cityCountry,
+      industry,
+      companySize,
+      enquiryTypes,
+      preferredDates,
+      preferredLocation,
+      estimatedParticipants,
+      preferredDuration,
+      sessionObjectives,
     } = body;
 
     // For discovery appointments, user info fields are optional
@@ -370,10 +383,23 @@ export async function POST(req: NextRequest) {
         fullName: fullName || "Corporate Enquiry",
         services: services || "Corporate Session",
         phone: phone || "N/A",
-        email: email || "corporate@example.com",
+        email: email || workEmail || "corporate@example.com",
         comment: comment || "",
         status: "pending",
         sessionType: "corporate",
+        // Corporate session specific fields
+        companyName: companyName || "",
+        jobTitle: jobTitle || "",
+        workEmail: workEmail || email || "",
+        cityCountry: cityCountry || "",
+        industry: industry || "",
+        companySize: companySize || "",
+        enquiryTypes: Array.isArray(enquiryTypes) ? enquiryTypes : [],
+        preferredDates: preferredDates || "",
+        preferredLocation: preferredLocation || "",
+        estimatedParticipants: estimatedParticipants ? Number(estimatedParticipants) : undefined,
+        preferredDuration: preferredDuration || "",
+        sessionObjectives: Array.isArray(sessionObjectives) ? sessionObjectives : [],
       });
 
       // Send regular confirmation to user for corporate sessions

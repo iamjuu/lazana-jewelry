@@ -44,7 +44,7 @@ const DiscoveryAppointmentPage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem('userToken') || localStorage.getItem('token')
+        const token = sessionStorage.getItem('userToken') || sessionStorage.getItem('token')
         const response = await fetch('/api/auth/me', {
           credentials: 'include',
           headers: token ? {
@@ -319,7 +319,7 @@ const DiscoveryAppointmentPage = () => {
     }
     
     // Check if user is logged in
-    const token = localStorage.getItem("userToken")
+    const token = sessionStorage.getItem("userToken")
     if (!token) {
       toast.error("Please login to book a discovery session")
       return

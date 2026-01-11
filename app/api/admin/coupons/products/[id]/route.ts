@@ -50,7 +50,9 @@ export async function PATCH(
     const {
       couponCode,
       couponName,
+      discountType,
       discountPercent,
+      discountAmount,
       expiryDate,
       excludedCategories,
       excludedProducts,
@@ -92,6 +94,16 @@ export async function PATCH(
       updateData.couponName = couponName.trim();
     }
 
+    if (discountType !== undefined) {
+      if (discountType !== "percentage" && discountType !== "amount") {
+        return NextResponse.json(
+          { success: false, message: "Invalid discount type. Must be 'percentage' or 'amount'" },
+          { status: 400 }
+        );
+      }
+      updateData.discountType = discountType;
+    }
+
     if (discountPercent !== undefined) {
       if (discountPercent < 0 || discountPercent > 100) {
         return NextResponse.json(
@@ -100,6 +112,16 @@ export async function PATCH(
         );
       }
       updateData.discountPercent = Number(discountPercent);
+    }
+
+    if (discountAmount !== undefined) {
+      if (discountAmount < 0) {
+        return NextResponse.json(
+          { success: false, message: "Discount amount must be greater than 0" },
+          { status: 400 }
+        );
+      }
+      updateData.discountAmount = Number(discountAmount);
     }
 
     if (expiryDate !== undefined) {

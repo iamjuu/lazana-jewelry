@@ -19,8 +19,8 @@ export default function AdminLogoutButton() {
         console.error("Logout error:", error);
       } finally {
         // Clear all admin auth data from localStorage
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminRole");
+        sessionStorage.removeItem("adminToken");
+        sessionStorage.removeItem("adminRole");
         localStorage.removeItem("user");
         
         // Redirect to admin login page

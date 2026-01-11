@@ -12,6 +12,19 @@ export interface SessionEnquiryType {
   sessionId?: string; // Reference to DiscoverySession or PrivateSession
   bookedDate?: string; // Date of the booked session (YYYY-MM-DD)
   bookedTime?: string; // Time of the booked session (HH:mm)
+  // Corporate session specific fields
+  companyName?: string;
+  jobTitle?: string;
+  workEmail?: string;
+  cityCountry?: string;
+  industry?: string;
+  companySize?: string;
+  enquiryTypes?: string[]; // Array of selected enquiry types
+  preferredDates?: string;
+  preferredLocation?: string;
+  estimatedParticipants?: number;
+  preferredDuration?: string;
+  sessionObjectives?: string[]; // Array of selected objectives
   createdAt: Date;
   updatedAt: Date;
 }
@@ -36,6 +49,19 @@ const SessionEnquirySchema = new Schema<SessionEnquiryType>(
     sessionId: { type: String }, // Reference to session
     bookedDate: { type: String }, // Date of booked session
     bookedTime: { type: String }, // Time of booked session
+    // Corporate session specific fields
+    companyName: { type: String },
+    jobTitle: { type: String },
+    workEmail: { type: String },
+    cityCountry: { type: String },
+    industry: { type: String },
+    companySize: { type: String },
+    enquiryTypes: { type: [String] }, // Array of selected enquiry types
+    preferredDates: { type: String },
+    preferredLocation: { type: String },
+    estimatedParticipants: { type: Number },
+    preferredDuration: { type: String },
+    sessionObjectives: { type: [String] }, // Array of selected objectives
   },
   { timestamps: true }
 );

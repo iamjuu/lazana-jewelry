@@ -10,7 +10,7 @@ import { BookNow } from '@/public/assets'
 const BookPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     if (typeof window !== "undefined") {
-      return !!localStorage.getItem("userToken")
+      return !!sessionStorage.getItem("userToken")
     }
     return false
   })

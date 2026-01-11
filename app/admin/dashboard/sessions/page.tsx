@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 type TabType = "discovery" | "private" | "corporate" | "freeStudioVisit";
 type MediaType = "image" | "video" | null;
@@ -35,8 +35,8 @@ export default function SessionsPage() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    image: "" as string | File | null,
-    video: "" as string | File | null,
+    image: "",
+    video: "",
     format: "",
     benefits: [""],
     instructorName: "",
@@ -54,6 +54,10 @@ export default function SessionsPage() {
   const [sessionsLoading, setSessionsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalSessions, setTotalSessions] = useState<number>(0);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -63,6 +67,12 @@ export default function SessionsPage() {
   const [selectedHour, setSelectedHour] = useState<number>(9);
   const [selectedMinute, setSelectedMinute] = useState<number>(0);
   const [selectedAmPm, setSelectedAmPm] = useState<"AM" | "PM">("AM");
+  
+  // S3 upload states
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [selectedVideoFile, setSelectedVideoFile] = useState<File | null>(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
 
   // Helper function to convert 12-hour to 24-hour format
   const convertTo24Hour = (hour: number, minute: number, amPm: "AM" | "PM"): string => {
@@ -181,14 +191,23 @@ export default function SessionsPage() {
   const fetchSessions = async () => {
     try {
       setSessionsLoading(true);
-      const response = await fetch("/api/sessions");
+      const params = new URLSearchParams();
+      params.append("page", currentPage.toString());
+      params.append("limit", "10");
+      params.append("type", activeTab); // Filter by active tab
+      if (searchQuery.trim()) {
+        params.append("search", searchQuery.trim());
+      }
+      
+      const response = await fetch(`/api/admin/sessions?${params.toString()}`);
       const data = await response.json();
-      console.log("Sessions API response:", data); // Debug log
       if (data.success && data.data) {
-        console.log("Sessions loaded:", data.data.length); // Debug log
         setSessions(data.data);
+        if (data.pagination) {
+          setTotalPages(data.pagination.pages || 1);
+          setTotalSessions(data.pagination.total || 0);
+        }
       } else {
-        console.error("Failed to fetch sessions:", data.message || "Unknown error");
         setSessions([]);
       }
     } catch (error) {
@@ -200,38 +219,15 @@ export default function SessionsPage() {
   };
 
   useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when tab or search changes
+  }, [activeTab, searchQuery]);
+
+  useEffect(() => {
     fetchSessions();
-  }, []);
+  }, [activeTab, currentPage, searchQuery]);
 
-  // Filter sessions by active tab
-  const getFilteredSessions = () => {
-    if (sessions.length === 0) return [];
-    
-    let filtered: Session[] = [];
-    if (activeTab === "discovery") {
-      // Show sessions with no sessionType, "regular", "discovery", or undefined sessionType
-      filtered = sessions.filter((s) => {
-        return !s.sessionType || 
-               s.sessionType === "regular" || 
-               s.sessionType === "discovery" ||
-               s.sessionType === undefined;
-      });
-    } else if (activeTab === "private") {
-      filtered = sessions.filter((s) => s.sessionType === "private");
-    } else if (activeTab === "corporate") {
-      filtered = sessions.filter((s) => s.sessionType === "corporate");
-    } else if (activeTab === "freeStudioVisit") {
-      filtered = sessions.filter((s) => s.sessionType === "freeStudioVisit");
-    }
-    
-    console.log(`Filtered sessions for ${activeTab}:`, filtered.length, "out of", sessions.length);
-    console.log("All sessions:", sessions);
-    console.log("Filtered sessions:", filtered);
-    
-    return filtered;
-  };
-
-  const filteredSessions = getFilteredSessions();
+  // Sessions are already filtered by API based on activeTab, no need to filter again
+  const filteredSessions = sessions;
 
   // Normalize image URL for display
   const getImageUrl = (session: Session) => {
@@ -272,139 +268,148 @@ export default function SessionsPage() {
     setPreviewUrl("");
   };
 
-  const compressImageToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = Math.round((height * MAX_WIDTH) / width);
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = Math.round((width * MAX_HEIGHT) / height);
-              height = MAX_HEIGHT;
-            }
-          }
-
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-
-          if (!ctx) {
-            reject(new Error("Could not get canvas context"));
-            return;
-          }
-
-          ctx.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                reject(new Error("Failed to create blob"));
-                return;
-              }
-
-              const reader2 = new FileReader();
-              reader2.onloadend = () => {
-                const base64String = reader2.result as string;
-                resolve(base64String);
-              };
-              reader2.onerror = () => reject(new Error("Failed to read blob"));
-              reader2.readAsDataURL(blob);
-            },
-            "image/webp",
-            0.8
-          );
-        };
-        img.onerror = () => reject(new Error("Failed to load image"));
-        img.src = e.target?.result as string;
-      };
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleImageUpload = async (file: File | null) => {
+  // ====================
+  // IMAGE UPLOAD (S3)
+  // ====================
+  const handleImageSelect = (file: File | null) => {
     if (!file) {
-      setFormData({ ...formData, image: "" });
-      setPreviewUrl("");
+      setSelectedImageFile(null);
       return;
     }
-
-    try {
-      const base64String = await compressImageToBase64(file);
-      setFormData({ ...formData, image: base64String });
-      setPreviewUrl(base64String);
-    } catch (error) {
-      console.error("Error compressing image:", error);
-      setError("Failed to process image");
-    }
-  };
-
-  const handleVideoUpload = (file: File | null) => {
-    if (!file) {
-      setFormData({ ...formData, video: "" });
-      setPreviewUrl("");
-      return;
-    }
-
-    // Check file size (limit to 20MB for base64 encoding to avoid memory issues)
-    const MAX_SIZE = 20 * 1024 * 1024; // 20MB
-    if (file.size > MAX_SIZE) {
-      setError(`Video file is too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum size is 20MB. Please use a video URL instead (YouTube, Vimeo, etc.).`);
-      setFormData({ ...formData, video: "" });
-      setPreviewUrl("");
-      return;
-    }
-
+    setSelectedImageFile(file);
     setError(null);
-    const reader = new FileReader();
-    
-    reader.onload = (e) => {
-      try {
-        const videoUrl = e.target?.result as string;
-        if (videoUrl) {
-          setFormData({ ...formData, video: videoUrl });
-          setPreviewUrl(videoUrl);
-        } else {
-          setError("Failed to read video file. The file may be corrupted.");
-        }
-      } catch (error) {
-        console.error("Error processing video:", error);
-        setError("Failed to process video file. Please try a smaller file or use a video URL.");
-      }
-    };
-    
-    reader.onerror = () => {
-      setError("Failed to read video file. The file may be too large or corrupted. Please use a video URL instead.");
-      setFormData({ ...formData, video: "" });
-      setPreviewUrl("");
-    };
-    
-    reader.onabort = () => {
-      setError("Video upload was cancelled.");
-      setFormData({ ...formData, video: "" });
-      setPreviewUrl("");
-    };
+  };
+
+  const handleUploadImageToS3 = async () => {
+    if (!selectedImageFile) return;
+
+    setUploadingImage(true);
+    setError(null);
 
     try {
-      reader.readAsDataURL(file);
-    } catch (error) {
-      console.error("Error reading video file:", error);
-      setError("Failed to read video file. Please use a video URL instead for large files.");
-      setFormData({ ...formData, video: "" });
-      setPreviewUrl("");
+      // Delete old image if replacing
+      if (formData.image) {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.image }),
+        });
+      }
+
+      // Upload new image to S3
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", selectedImageFile);
+      uploadFormData.append("folder", "images");
+
+      const response = await fetch("/api/upload/s3", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image to S3");
+      }
+
+      const { url } = await response.json();
+
+      setFormData({ ...formData, image: url });
+      setPreviewUrl(url);
+      setSelectedImageFile(null);
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      setError("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
     }
+  };
+
+  const handleRemoveImage = async () => {
+    if (formData.image) {
+      try {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.image }),
+        });
+      } catch (err) {
+        console.error("Error deleting image:", err);
+      }
+    }
+    setFormData({ ...formData, image: "" });
+    setPreviewUrl("");
+    setSelectedImageFile(null);
+  };
+
+  // ====================
+  // VIDEO UPLOAD (S3)
+  // ====================
+  const handleVideoSelect = (file: File | null) => {
+    if (!file) {
+      setSelectedVideoFile(null);
+      return;
+    }
+    setSelectedVideoFile(file);
+    setError(null);
+  };
+
+  const handleUploadVideoToS3 = async () => {
+    if (!selectedVideoFile) return;
+
+    setUploadingVideo(true);
+    setError(null);
+
+    try {
+      // Delete old video if replacing
+      if (formData.video) {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.video }),
+        });
+      }
+
+      // Upload new video to S3
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", selectedVideoFile);
+      uploadFormData.append("folder", "videos");
+
+      const response = await fetch("/api/upload/s3", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload video to S3");
+      }
+
+      const { url } = await response.json();
+
+      setFormData({ ...formData, video: url });
+      setPreviewUrl(url);
+      setSelectedVideoFile(null);
+    } catch (err) {
+      console.error("Error uploading video:", err);
+      setError("Failed to upload video");
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
+
+  const handleRemoveVideo = async () => {
+    if (formData.video) {
+      try {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.video }),
+        });
+      } catch (err) {
+        console.error("Error deleting video:", err);
+      }
+    }
+    setFormData({ ...formData, video: "" });
+    setPreviewUrl("");
+    setSelectedVideoFile(null);
   };
 
   const handleVideoUrlChange = (url: string) => {
@@ -765,28 +770,34 @@ export default function SessionsPage() {
           </nav>
         </div>
 
-        {/* Stats */}
-        <div className="mb-6">
-          <div className="text-xs text-zinc-500">
-            Total Sessions: {sessions.length} | Showing: {filteredSessions.length} for {activeTab}
-          </div>
-        </div>
-
-
-        {/* Add Button and Debug Info */}
+        {/* Add Button and Search */}
         {!showAddForm && (
-          <div className="mb-6 flex items-center justify-between">
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
-            >
-              Add {tabs.find(t => t.id === activeTab)?.label}
-            </button>
-            {sessions.length > 0 && (
-              <div className="text-xs text-zinc-500">
-                Total: {sessions.length} sessions | Showing: {filteredSessions.length} for {activeTab}
-              </div>
-            )}
+          <div className="mb-6 space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+              >
+                Add {tabs.find(t => t.id === activeTab)?.label}
+              </button>
+              {totalSessions > 0 && (
+                <div className="text-sm text-zinc-400">
+                  Total {tabs.find(t => t.id === activeTab)?.label}: {totalSessions}
+                </div>
+              )}
+            </div>
+            
+            {/* Search */}
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={20} />
+              <input
+                type="text"
+                placeholder="Search sessions by title, description, instructor..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
         )}
 
@@ -944,6 +955,62 @@ export default function SessionsPage() {
                 </div>
               </div>
             )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="bg-zinc-800 rounded-lg p-4 border border-zinc-700 mt-6">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-zinc-400">
+                    Showing page {currentPage} of {totalPages} ({totalSessions} total {tabs.find(t => t.id === activeTab)?.label.toLowerCase()})
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      <ChevronLeft size={16} />
+                      Previous
+                    </button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                              currentPage === pageNum
+                                ? "bg-blue-600 text-white"
+                                : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="px-4 py-2 bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      Next
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -1035,16 +1102,51 @@ export default function SessionsPage() {
                   id="session-image"
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageUpload(e.target.files?.[0] || null)}
+                  onChange={(e) => handleImageSelect(e.target.files?.[0] || null)}
                   className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
                 />
-                {previewUrl && (
+                
+                {/* Pending file with upload button */}
+                {selectedImageFile && !formData.image && (
+                  <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mt-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
+                        <p className="text-xs text-zinc-400 mt-1">
+                          Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleUploadImageToS3}
+                        disabled={uploadingImage}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
+                      >
+                        {uploadingImage ? "Uploading..." : "Upload"}
+                      </button>
+                    </div>
+                    {!uploadingImage && (
+                      <p className="text-xs text-yellow-500 mt-2">⚠️ Click "Upload" to save this image</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Uploaded image */}
+                {previewUrl && formData.image && (
                   <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900 mt-2">
                     <img
                       src={previewUrl}
                       alt="Preview"
                       className="w-full h-full object-contain"
                     />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                      title="Remove image"
+                    >
+                      ×
+                    </button>
                   </div>
                 )}
               </div>
@@ -1055,33 +1157,51 @@ export default function SessionsPage() {
                 <label htmlFor="session-video" className="text-sm font-medium text-white">
                   Video <span className="text-red-500">*</span>
                 </label>
-                <p className="text-xs text-zinc-400 mb-2">
-                  Upload a video file (max 20MB) or enter a video URL (YouTube, Vimeo, etc.). For larger files, use a video URL.
-                </p>
                 <input
                   id="session-video-file"
                   type="file"
                   accept="video/*"
-                  onChange={(e) => handleVideoUpload(e.target.files?.[0] || null)}
+                  onChange={(e) => handleVideoSelect(e.target.files?.[0] || null)}
                   className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none mb-2"
                 />
-                <input
-                  id="session-video-url"
-                  type="text"
-                  value={typeof formData.video === "string" && !formData.video.startsWith("data:") ? formData.video : ""}
-                  onChange={(e) => handleVideoUrlChange(e.target.value)}
-                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-                  placeholder="Or enter video URL (e.g., https://youtube.com/watch?v=...)"
-                />
-                {previewUrl && (
-                  <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900 mt-2">
-                    {previewUrl.startsWith("data:") ? (
-                      <video src={previewUrl} controls className="w-full h-full object-contain" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-zinc-400">
-                        Video URL: {previewUrl}
+                
+                {/* Pending file with upload button */}
+                {selectedVideoFile && !formData.video && (
+                  <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mt-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <p className="text-sm text-white font-medium">🎥 {selectedVideoFile.name}</p>
+                        <p className="text-xs text-zinc-400 mt-1">
+                          Size: {(selectedVideoFile.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
                       </div>
+                      <button
+                        type="button"
+                        onClick={handleUploadVideoToS3}
+                        disabled={uploadingVideo}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
+                      >
+                        {uploadingVideo ? "Uploading..." : "Upload"}
+                      </button>
+                    </div>
+                    {!uploadingVideo && (
+                      <p className="text-xs text-yellow-500 mt-2">⚠️ Click "Upload" to save this video</p>
                     )}
+                  </div>
+                )}
+
+                {/* Uploaded video */}
+                {previewUrl && formData.video && (
+                  <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900 mt-2">
+                    <video src={previewUrl} controls className="w-full h-full object-contain" />
+                    <button
+                      type="button"
+                      onClick={handleRemoveVideo}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                      title="Remove video"
+                    >
+                      ×
+                    </button>
                   </div>
                 )}
               </div>
@@ -1150,6 +1270,7 @@ export default function SessionsPage() {
                   <option value="">Select Duration</option>
                   <option value="30">30 minutes</option>
                   <option value="60">1 hour (60 minutes)</option>
+                  <option value="75">75 minutes</option>
                   <option value="90">1.5 hours (90 minutes)</option>
                   <option value="120">2 hours (120 minutes)</option>
                 </select>
@@ -1201,14 +1322,15 @@ export default function SessionsPage() {
             {(activeTab === "discovery" || activeTab === "private") && (
               <div className="space-y-1 relative">
                 <label htmlFor="date" className="text-sm font-medium text-white">
-                  Date <span className="text-red-500">{!editingId ? "*" : ""}</span>
+                  Date <span className="text-red-500">{activeTab === "discovery" && !editingId ? "*" : ""}</span>
                   {editingId && <span className="text-xs text-zinc-400 ml-2">(Cannot be changed after creation)</span>}
+                  {activeTab === "private" && <span className="text-xs text-zinc-400 ml-2">(Optional)</span>}
                 </label>
                 <div className="relative">
                   <input
                     id="date"
                     type="text"
-                    required={activeTab === "discovery" || activeTab === "private" && !editingId}
+                    required={activeTab === "discovery" && !editingId}
                     value={formData.date ? (() => {
                       // Parse date string (YYYY-MM-DD) and format for display
                       const dateParts = formData.date.split('-');
@@ -1321,14 +1443,15 @@ export default function SessionsPage() {
             {(activeTab === "discovery" || activeTab === "private") && (
               <div className="space-y-1 relative">
                 <label htmlFor="start-time" className="text-sm font-medium text-white">
-                  Start Time <span className="text-red-500">{!editingId ? "*" : ""}</span>
+                  Start Time <span className="text-red-500">{activeTab === "discovery" && !editingId ? "*" : ""}</span>
                   {editingId && <span className="text-xs text-zinc-400 ml-2">(Cannot be changed after creation)</span>}
+                  {activeTab === "private" && <span className="text-xs text-zinc-400 ml-2">(Optional)</span>}
                 </label>
                 <div className="relative">
                   <input
                     id="start-time"
                     type="text"
-                    required={activeTab === "discovery" || activeTab === "private" && !editingId}
+                    required={activeTab === "discovery" && !editingId}
                     value={formData.startTime ? (() => {
                       const { hour, minute, amPm } = convertTo12Hour(formData.startTime);
                       return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${amPm}`;

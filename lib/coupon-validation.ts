@@ -8,6 +8,8 @@ export interface CouponValidationResult {
   message?: string;
   coupon?: any;
   discountAmount?: number;
+  eligibleProductIds?: string[]; // Product IDs that are eligible for the coupon
+  eligibleTotalPrice?: number; // Total price of eligible products only
 }
 
 /**
@@ -51,29 +53,10 @@ export async function validateProductCoupon(
       };
     }
 
-    // Check if any product in cart is explicitly excluded by product ID
-    if (coupon.excludedProducts && coupon.excludedProducts.length > 0) {
-      const excludedProductIds = coupon.excludedProducts.map((prod: any) => prod._id.toString());
-      const hasExcludedProduct = productIdsInCart.some(id => excludedProductIds.includes(id));
-      if (hasExcludedProduct) {
-        return {
-          valid: false,
-          message: "Coupon code not available for this product",
-        };
-      }
-    }
-
-    // Check if any product in cart belongs to an excluded category
-    if (coupon.excludedCategories && coupon.excludedCategories.length > 0) {
-      const excludedCategoryIds = coupon.excludedCategories.map((cat: any) => cat._id.toString());
-      const hasExcludedCategory = productCategoryIdsInCart.some(id => excludedCategoryIds.includes(id));
-      if (hasExcludedCategory) {
-        return {
-          valid: false,
-          message: "Coupon code not available for this product",
-        };
-      }
-    }
+    // Note: We no longer reject if ANY product is excluded
+    // Instead, we'll let the API determine eligible products and calculate discount only on those
+    // The validation here just checks if the coupon itself is valid (not expired, within limits, etc.)
+    // The actual product eligibility filtering happens in the API route
 
     // Check total usage limit
     if (coupon.usageLimit && coupon.usedCount && coupon.usedCount >= coupon.usageLimit) {
@@ -100,14 +83,29 @@ export async function validateProductCoupon(
       }
     }
 
-    // Calculate discount amount
-    const discountAmount = (totalPrice * coupon.discountPercent) / 100;
+    // Calculate discount amount based on discount type
+    let discountAmount = 0;
+    let message = "";
+    
+    if (coupon.discountType === "percentage" && coupon.discountPercent) {
+      discountAmount = (totalPrice * coupon.discountPercent) / 100;
+      message = `Coupon applied: ${coupon.discountPercent}% off`;
+    } else if (coupon.discountType === "amount" && coupon.discountAmount) {
+      // For fixed amount, ensure discount doesn't exceed total price
+      discountAmount = Math.min(coupon.discountAmount, totalPrice);
+      message = `Coupon applied: SGD ${coupon.discountAmount} off`;
+    } else {
+      return {
+        valid: false,
+        message: "Invalid coupon configuration",
+      };
+    }
 
     return {
       valid: true,
       coupon: coupon,
       discountAmount,
-      message: `Coupon applied: ${coupon.discountPercent}% off`,
+      message,
     };
   } catch (error: any) {
     console.error("Error validating product coupon:", error);
@@ -194,14 +192,29 @@ export async function validateEventCoupon(
       }
     }
 
-    // Calculate discount amount
-    const discountAmount = (eventPrice * coupon.discountPercent) / 100;
+    // Calculate discount amount based on discount type
+    let discountAmount = 0;
+    let message = "";
+    
+    if (coupon.discountType === "percentage" && coupon.discountPercent) {
+      discountAmount = (eventPrice * coupon.discountPercent) / 100;
+      message = `Coupon applied: ${coupon.discountPercent}% off`;
+    } else if (coupon.discountType === "amount" && coupon.discountAmount) {
+      // For fixed amount, ensure discount doesn't exceed event price
+      discountAmount = Math.min(coupon.discountAmount, eventPrice);
+      message = `Coupon applied: SGD ${coupon.discountAmount} off`;
+    } else {
+      return {
+        valid: false,
+        message: "Invalid coupon configuration",
+      };
+    }
 
     return {
       valid: true,
       coupon: coupon.toObject(),
       discountAmount,
-      message: `Coupon applied: ${coupon.discountPercent}% off`,
+      message,
     };
   } catch (error: any) {
     console.error("Error validating event coupon:", error);

@@ -7,6 +7,7 @@ type ProductListItem = {
   _id: string;
   name: string;
   price: number;
+  discount?: number;
   createdAt: string;
   description?: string;
   shortDescription?: string;
@@ -115,6 +116,7 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
                         category: product.category,
                         subcategory: product.subcategory,
                         price: product.price.toString(),
+                        discount: (product as any).discount,
                         imageUrl: product.imageUrl || [],
                         videoUrl: product.videoUrl,
                         isSet: (product as any).isSet,
@@ -166,7 +168,12 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-medium text-white">{formatCurrency(product.price)}</td>
+                    <td className="px-6 py-4 font-medium text-white">
+                      {product.discount && product.discount > 0 
+                        ? formatCurrency(product.price - product.discount)
+                        : formatCurrency(product.price)
+                      }
+                    </td>
                     <td className="px-6 py-4 text-zinc-400">
                       {new Date(product.createdAt).toLocaleDateString(undefined, {
                         year: "numeric",

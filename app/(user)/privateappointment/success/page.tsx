@@ -27,7 +27,7 @@ const SuccessPageContent = () => {
 
   const verifyAndCreateBooking = async () => {
     try {
-      const token = localStorage.getItem("userToken");
+      const token = sessionStorage.getItem("userToken");
       if (!token) {
         toast.error("Please login to continue");
         router.push("/login");

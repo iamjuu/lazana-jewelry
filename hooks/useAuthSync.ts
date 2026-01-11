@@ -9,7 +9,7 @@ export function useAuthSync() {
 
   useEffect(() => {
     // Check authentication on mount
-    const token = typeof window !== "undefined" ? localStorage.getItem("userToken") : null;
+    const token = typeof window !== "undefined" ? sessionStorage.getItem("userToken") : null;
     if (!token) {
       clearCart();
     }

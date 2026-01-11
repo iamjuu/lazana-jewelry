@@ -12,7 +12,10 @@ import {
   MapPin,
   Calendar,
   Eye,
-  Filter
+  Filter,
+  Search,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -63,6 +66,10 @@ export default function OrdersPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalOrders, setTotalOrders] = useState<number>(0);
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [deliveryMessage, setDeliveryMessage] = useState<string>("");
   const [customerMessage, setCustomerMessage] = useState<string>("");
@@ -79,17 +86,31 @@ export default function OrdersPage() {
   });
 
   useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when filter changes
+  }, [statusFilter, searchQuery]);
+
+  useEffect(() => {
     fetchOrders();
-  }, [statusFilter]);
+  }, [statusFilter, currentPage, searchQuery]);
 
   const fetchOrders = async () => {
     try {
       setError(null);
       setLoading(true);
-      const token = localStorage.getItem("adminToken");
-      const url = statusFilter === "all" 
-        ? "/api/admin/orders" 
-        : `/api/admin/orders?status=${statusFilter}`;
+      const token = sessionStorage.getItem("adminToken");
+      
+      // Build query parameters
+      const params = new URLSearchParams();
+      params.append("page", currentPage.toString());
+      params.append("limit", "10"); // 10 per page
+      if (statusFilter !== "all") {
+        params.append("status", statusFilter);
+      }
+      if (searchQuery.trim()) {
+        params.append("search", searchQuery.trim());
+      }
+      
+      const url = `/api/admin/orders?${params.toString()}`;
       
       const response = await fetch(url, {
         headers: {
@@ -124,9 +145,16 @@ export default function OrdersPage() {
         setOrders(ordersList);
         setError(null);
         
-        // Calculate stats
+        // Update pagination
+        if (data.data?.pagination) {
+          setTotalPages(data.data.pagination.pages || 1);
+          setTotalOrders(data.data.pagination.total || 0);
+        }
+        
+        // Calculate stats from current page (for display purposes)
+        // Note: For accurate stats, you might want a separate stats API
         const stats = {
-          total: ordersList.length,
+          total: data.data?.pagination?.total || ordersList.length,
           pending: ordersList.filter((o: Order) => o.status === "pending").length,
           paid: ordersList.filter((o: Order) => o.status === "paid").length,
           cancelled: ordersList.filter((o: Order) => o.status === "cancelled").length,
@@ -158,7 +186,7 @@ export default function OrdersPage() {
   const updatePaymentStatus = async (orderId: string, newStatus: PaymentStatus, message?: string) => {
     setUpdatingPaymentStatus(newStatus); // Set loading state
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = sessionStorage.getItem("adminToken");
       const response = await fetch(`/api/admin/orders/${orderId}`, {
         method: "PATCH",
         headers: {
@@ -190,7 +218,7 @@ export default function OrdersPage() {
   const updateDeliveryStatus = async (orderId: string, newDeliveryStatus: DeliveryStatus, message?: string) => {
     setUpdatingDeliveryStatus(newDeliveryStatus); // Set loading state
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = sessionStorage.getItem("adminToken");
       const response = await fetch(`/api/admin/orders/${orderId}`, {
         method: "PATCH",
         headers: {
@@ -226,7 +254,7 @@ export default function OrdersPage() {
 
   const updateCustomerMessage = async (orderId: string, message: string) => {
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = sessionStorage.getItem("adminToken");
       const response = await fetch(`/api/admin/orders/${orderId}`, {
         method: "PATCH",
         headers: {
@@ -257,7 +285,7 @@ export default function OrdersPage() {
   const clearCustomerMessage = async (orderId: string) => {
     setClearingMessage(true); // Start loading state
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = sessionStorage.getItem("adminToken");
       const response = await fetch(`/api/admin/orders/${orderId}`, {
         method: "PATCH",
         headers: {
@@ -412,26 +440,43 @@ export default function OrdersPage() {
           </div>
         </div>
 
-        {/* Filters */}
+        {/* Filters and Search */}
         <div className="bg-zinc-800 rounded-lg p-4 mb-6 border border-zinc-700">
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Filter className="text-zinc-400" size={20} />
-              <span className="text-white font-medium">Filter by Status:</span>
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Search */}
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={20} />
+                <input
+                  type="text"
+                  placeholder="Search by customer name, email, payment ref, or product..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-zinc-900 border border-zinc-600 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
-            {["all", "pending", "paid", "cancelled", "failed"].map((status) => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  statusFilter === status
-                    ? "bg-blue-600 text-white"
-                    : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
-                }`}
-              >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-              </button>
-            ))}
+            
+            {/* Status Filter */}
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Filter className="text-zinc-400" size={20} />
+                <span className="text-white font-medium">Status:</span>
+              </div>
+              {["all", "pending", "paid", "cancelled", "failed"].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setStatusFilter(status)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    statusFilter === status
+                      ? "bg-blue-600 text-white"
+                      : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+                  }`}
+                >
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -581,6 +626,62 @@ export default function OrdersPage() {
             </table>
           </div>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="bg-zinc-800 rounded-lg p-4 border border-zinc-700 mt-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-zinc-400">
+                Showing page {currentPage} of {totalPages} ({totalOrders} total orders)
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <ChevronLeft size={16} />
+                  Previous
+                </button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                          currentPage === pageNum
+                            ? "bg-blue-600 text-white"
+                            : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  Next
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Order Details Modal */}
@@ -637,11 +738,14 @@ export default function OrdersPage() {
                     Shipping Address
                   </h3>
                   <div className="text-sm text-zinc-300 space-y-1">
-                    {selectedOrder.shippingAddress.line1 && (
-                      <p>{selectedOrder.shippingAddress.line1}</p>
+                    {selectedOrder.shippingAddress.fullName && (
+                      <p className="font-medium text-white">{selectedOrder.shippingAddress.fullName}</p>
                     )}
-                    {selectedOrder.shippingAddress.line2 && (
-                      <p>{selectedOrder.shippingAddress.line2}</p>
+                    {selectedOrder.shippingAddress.phone && (
+                      <p className="text-zinc-400">Phone: {selectedOrder.shippingAddress.phone}</p>
+                    )}
+                    {selectedOrder.shippingAddress.street && (
+                      <p>{selectedOrder.shippingAddress.street}</p>
                     )}
                     <p>
                       {[

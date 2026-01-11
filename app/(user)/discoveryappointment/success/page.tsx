@@ -24,7 +24,7 @@ function DiscoveryBookingSuccessContent() {
       }
 
       try {
-        const token = localStorage.getItem('userToken')
+        const token = sessionStorage.getItem('userToken')
         if (!token) {
           toast.error('Please login')
           router.push('/login')

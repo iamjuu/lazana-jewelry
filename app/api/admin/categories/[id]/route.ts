@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
 import { requireAdmin } from "@/lib/auth";
+import mongoose from "mongoose";
 
 // DELETE /api/admin/categories/[id] - Delete category
 export async function DELETE(
@@ -24,7 +25,12 @@ export async function DELETE(
       );
     }
     
-    const productsWithCategory = await Product.countDocuments({ category: category.name });
+    // Check products by ObjectId (current schema expects ObjectId)
+    // Query directly by ObjectId to avoid type casting errors
+    const categoryId = new mongoose.Types.ObjectId(id);
+    const productsWithCategory = await Product.countDocuments({
+      category: categoryId
+    });
     
     if (productsWithCategory > 0) {
       return NextResponse.json(
@@ -117,13 +123,10 @@ export async function PUT(
       );
     }
     
-    // Update products that use the old category name
-    if (oldCategory.name !== capitalizedName) {
-      await Product.updateMany(
-        { category: oldCategory.name },
-        { $set: { category: capitalizedName } }
-      );
-    }
+    // Note: Products reference categories by ObjectId, not name
+    // When category name changes, ObjectId stays the same, so no product update needed
+    // If there's legacy string-based category data, it would need separate migration
+    // Removing product update logic to avoid schema mismatch
     
     // Build update object - ALWAYS explicitly set all fields
     const updateData: any = { 

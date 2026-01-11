@@ -3,7 +3,9 @@ import mongoose, { Schema, models, model } from "mongoose";
 export interface ProductCouponType {
   couponCode: string; // Coupon code (can be reused if previous coupon with same code is expired)
   couponName: string; // Display name for the coupon
-  discountPercent: number; // Discount percentage (e.g., 10 for 10%)
+  discountType: "percentage" | "amount"; // Discount type: percentage or fixed amount
+  discountPercent?: number; // Discount percentage (e.g., 10 for 10%) - required if discountType is "percentage"
+  discountAmount?: number; // Fixed discount amount (e.g., 50 for SGD 50) - required if discountType is "amount"
   expiryDate: Date; // Expiry date
   excludedCategories?: mongoose.Types.ObjectId[]; // Categories to exclude (products in these categories won't be eligible)
   excludedProducts?: mongoose.Types.ObjectId[]; // Products to exclude (these specific products won't be eligible)
@@ -34,11 +36,26 @@ const ProductCouponSchema = new Schema<ProductCouponType>(
       required: true,
       trim: true,
     },
+    discountType: {
+      type: String,
+      required: true,
+      enum: ["percentage", "amount"],
+      default: "percentage",
+    },
     discountPercent: {
       type: Number,
-      required: true,
+      required: function(this: ProductCouponType) {
+        return this.discountType === "percentage";
+      },
       min: 0,
       max: 100,
+    },
+    discountAmount: {
+      type: Number,
+      required: function(this: ProductCouponType) {
+        return this.discountType === "amount";
+      },
+      min: 0,
     },
     expiryDate: {
       type: Date,

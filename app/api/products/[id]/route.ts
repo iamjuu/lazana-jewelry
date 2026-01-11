@@ -22,7 +22,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     }
     
     const { id } = await context.params;
-    const product = await Product.findById(id)
+    const product = await Product.findOne({ _id: id, deleted: { $ne: true } })
       .populate('category', 'name slug')
       .populate('subcategory', 'name slug category')
       .lean();

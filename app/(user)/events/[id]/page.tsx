@@ -1,13 +1,11 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import Navbar from '@/components/user/Navbar'
 import Footer from '@/components/user/Footer'
-import { About1 } from '@/public/assets'
-import { ArrowLeft } from 'lucide-react'
+import { Calendar, Clock, MapPin, ArrowLeft } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 type ApiEvent = {
@@ -81,7 +79,7 @@ const EventDetailPage = () => {
 
   const handleBooking = async () => {
     // Check if user is logged in
-    const token = localStorage.getItem("userToken");
+    const token = sessionStorage.getItem("userToken");
     if (!token) {
       toast.error("Please login to book this event");
       router.push("/login");
@@ -156,14 +154,14 @@ const EventDetailPage = () => {
   };
 
   const applyCoupon = async (code: string, qty: number = quantity) => {
-    const token = localStorage.getItem("userToken");
+    const token = sessionStorage.getItem("userToken");
     if (!token) {
       toast.error("Please login to use coupon");
       return;
     }
 
     if (!code.trim()) {
-      setCouponError("Please enter a coupon code");
+      setCouponError("Invalid coupon");
       return;
     }
 
@@ -196,12 +194,12 @@ const EventDetailPage = () => {
         setCouponCode("");
         toast.success(data.data.coupon?.couponName || "Coupon applied successfully!");
       } else {
-        setCouponError(data.message || "Invalid coupon code");
+        setCouponError("Invalid coupon");
         setAppliedCoupon(null);
       }
     } catch (error) {
       console.error("Coupon validation error:", error);
-      setCouponError("Failed to validate coupon. Please try again.");
+      setCouponError("Invalid coupon");
       setAppliedCoupon(null);
     } finally {
       setCouponLoading(false);
@@ -266,206 +264,186 @@ const EventDetailPage = () => {
       <Navbar />
       
       <div className="w-full py-[40px] md:py-[68px]">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
           <Link 
             href="/events"
-            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-8 transition-colors text-[14px] md:text-[16px]"
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Events</span>
+            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+            <span>Back to All Events</span>
           </Link>
 
-          {/* Event Header */}
-          <div className="mb-8 md:mb-12">
-            {/* Title - Centered */}
-            <h1 className="text-[#D5B584] text-[32px] sm:text-[36px] md:text-[40px] lg:text-[48px] font-normal mb-6 leading-tight text-center">
-              {event.title}
-            </h1>
-            
-            {/* Date and Time Details - Right Aligned */}
-            <div className="flex justify-end">
-              <div className="space-y-2 text-right">
-                <p className="text-[#1C3163] text-[16px] md:text-[18px] font-normal">
-                  {event.location}
-                </p>
-                <p className="text-[#1C3163] text-[16px] md:text-[18px] font-light">
-                  {formattedDate}
-                </p>
-                <p className="text-[#1C3163] text-[16px] md:text-[18px] font-light">
-                  {event.day} {event.time}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Image */}
-          {imageUrl && (
-            <div className="mb-8 md:mb-12">
-              <div className="relative w-full aspect-[5/2] rounded-2xl overflow-hidden">
-                <img
-                  src={imageUrl}
-                  alt={event.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Content with Description and Booking */}
-          <div className="space-y-8 md:space-y-12">
-            {/* Description */}
-            <div className="prose prose-lg max-w-none">
-              <div className="text-[#6B5D4F] text-[16px] md:text-[18px] font-light leading-relaxed whitespace-pre-line">
-                {event.description}
-              </div>
+          {/* Top Section: Image and Booking Info Side by Side */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-16 mb-12">
+            {/* Left Column - Main Image */}
+            <div className="order-1">
+              {imageUrl && (
+                <div className="w-full aspect-[4/3] lg:aspect-auto lg:h-[450px] overflow-hidden ">
+                  <img
+                    src={imageUrl}
+                    alt={event.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Booking Section */}
-            <div className="border-t border-[#D5B584]/30 pt-8">
-              <div className="max-w-md mx-auto">
-                <div className="bg-white/50 rounded-lg p-6 md:p-8 space-y-6">
-                  <div className="text-center">
-                    <p className="text-[#1C3163] text-[18px] md:text-[20px] font-medium mb-2">
-                      {isFullyBooked ? "Event Fully Booked" : `Available Slots: ${availableSlots}`}
+            {/* Right Column - Event Info & Booking */}
+            <div className="order-2">
+              <div className="space-y-2 mt-4">
+                {/* Event Title */}
+                <h1 className="text-[#1C3163] text-[22px] md:text-[24px] lg:text-[26px] font-light leading-tight">
+                  {event.title}
+                </h1>
+
+                {/* Event Details */}
+                <div className="space-y-1.5 text-[#1C3163] text-[13px] md:text-[14px]">
+                  <p className="font-normal">{event.day}, {formattedDate}</p>
+                  <p className="font-light">{event.time}</p>
+                  <p className="font-light">{event.location}</p>
+                </div>
+
+                {/* Booking Card */}
+                {isFullyBooked ? (
+                  <div className="bg-white/50 rounded-lg p-4 text-center mt-4">
+                    <p className="text-[#6B5D4F] text-[14px] font-light">
+                      This event has reached its capacity. Please check back for future events.
                     </p>
-                    {price > 0 && (
-                      <p className="text-[#D5B584] text-[24px] md:text-[28px] font-semibold">
-                        SGD ${price.toFixed(2)} <span className="text-[16px] font-normal text-[#6B5D4F]">per slot</span>
-                      </p>
-                    )}
                   </div>
-
-                  {isFullyBooked ? (
-                    <div className="text-center">
-                      <p className="text-[#6B5D4F] text-[14px] md:text-[16px]">
-                        This event has reached its capacity. Please check back for future events.
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Quantity Selector */}
-                      <div className="flex items-center justify-between">
-                        <label className="text-[#1C3163] text-[14px] md:text-[16px] font-medium">
-                          Number of Slots:
-                        </label>
-                        <div className="flex items-center border border-[#1C3163] rounded-lg overflow-hidden">
-                          <button
-                            type="button"
-                            onClick={() => handleQuantityChange(quantity - 1)}
-                            disabled={quantity <= 1}
-                            className="px-3 py-2 hover:bg-[#1C3163] hover:text-white transition-colors text-[#1C3163] font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1C3163]"
-                            aria-label="Decrease quantity"
-                          >
-                            −
-                          </button>
-                          <span className="px-4 py-2 border-x border-[#1C3163] text-[#1C3163] font-medium min-w-[50px] text-center">
-                            {quantity}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleQuantityChange(quantity + 1)}
-                            disabled={quantity >= availableSlots}
-                            className="px-3 py-2 hover:bg-[#1C3163] hover:text-white transition-colors text-[#1C3163] font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1C3163]"
-                            aria-label="Increase quantity"
-                          >
-                            +
-                          </button>
-                        </div>
+                ) : (
+                  <div className="space-y-4 mt-4">
+                    {/* Price */}
+                    {price > 0 && (
+                      <div className="pb-2">
+                        <p className="text-[#1C3163] text-[20px] md:text-[22px] font-light">
+                          SGD {price.toFixed(2)}
+                        </p>
                       </div>
+                    )}
 
-                      {/* Coupon Code Input */}
-                      <div className="space-y-2">
-                        <label className="text-[#1C3163] text-[14px] md:text-[16px] font-medium">
-                          Coupon Code (Optional):
-                        </label>
-                        {appliedCoupon ? (
-                          <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                            <div className="flex-1">
-                              <p className="text-green-700 text-sm font-medium">
-                                {appliedCoupon.code} - {appliedCoupon.discountPercent}% off applied
+                    {/* Quantity Selector */}
+                    <div className="flex items-center border border-[#1C3163] w-fit">
+                      <button
+                        type="button"
+                        onClick={() => handleQuantityChange(quantity - 1)}
+                        disabled={quantity <= 1}
+                        className="w-10 h-10 flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors text-[#1C3163] text-[18px] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1C3163]"
+                        aria-label="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span className="px-4 border-x border-[#1C3163] h-10 flex items-center justify-center text-[#1C3163] text-[16px] font-medium min-w-[50px]">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleQuantityChange(quantity + 1)}
+                        disabled={quantity >= availableSlots}
+                        className="w-10 h-10 flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors text-[#1C3163] text-[18px] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1C3163]"
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Coupon Code */}
+                    <div className="space-y-1.5">
+                      {appliedCoupon ? (
+                        <div className="p-2.5 bg-green-50 border border-green-200 rounded">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-green-700 text-[12px] font-medium">
+                                {appliedCoupon.code} - {appliedCoupon.discountPercent || 'Fixed'} off
                               </p>
-                              <p className="text-green-600 text-xs">
-                                You saved SGD ${appliedCoupon.discountAmount.toFixed(2)}
+                              <p className="text-green-600 text-[11px]">
+                                Save ${appliedCoupon.discountAmount.toFixed(2)}
                               </p>
                             </div>
                             <button
                               type="button"
                               onClick={removeCoupon}
-                              className="text-green-700 hover:text-green-800 text-sm font-medium underline"
+                              className="text-green-700 text-[11px] underline"
                             >
                               Remove
                             </button>
                           </div>
-                        ) : (
-                          <div className="flex gap-2">
-                            <input
-                              type="text"
-                              value={couponCode}
-                              onChange={(e) => {
-                                setCouponCode(e.target.value.toUpperCase());
-                                setCouponError("");
-                              }}
-                              placeholder="Enter coupon code"
-                              className="flex-1 rounded-lg border border-[#1C3163] px-4 py-2 text-[#1C3163] focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
-                              disabled={couponLoading}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => applyCoupon(couponCode)}
-                              disabled={couponLoading || !couponCode.trim()}
-                              className="px-4 py-2 bg-[#1C3163] text-white rounded-lg font-medium hover:bg-[#2a4a7a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {couponLoading ? "..." : "Apply"}
-                            </button>
-                          </div>
-                        )}
-                        {couponError && (
-                          <p className="text-red-600 text-sm">{couponError}</p>
-                        )}
-                      </div>
-
-                      {/* Price Breakdown */}
-                      {price > 0 && (
-                        <div className="space-y-2 pt-2 border-t border-[#D5B584]/30">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-[#1C3163]">
-                              Subtotal ({quantity} slot{quantity > 1 ? 's' : ''}):
-                            </span>
-                            <span className="text-[#1C3163] font-medium">
-                              SGD ${(price * quantity).toFixed(2)}
-                            </span>
-                          </div>
-                          {appliedCoupon && (
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-green-600">Discount ({appliedCoupon.code}):</span>
-                              <span className="text-green-600 font-medium">
-                                -SGD ${appliedCoupon.discountAmount.toFixed(2)}
-                              </span>
-                            </div>
-                          )}
-                          <div className="flex items-center justify-between pt-2 border-t border-[#D5B584]/30">
-                            <span className="text-[#1C3163] text-[16px] md:text-[18px] font-medium">
-                              Total:
-                            </span>
-                            <span className="text-[#D5B584] text-[20px] md:text-[24px] font-semibold">
-                              SGD ${Math.max(0, (price * quantity) - (appliedCoupon?.discountAmount || 0)).toFixed(2)}
-                            </span>
-                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={couponCode}
+                            onChange={(e) => {
+                              setCouponCode(e.target.value.toUpperCase());
+                              setCouponError("");
+                            }}
+                            placeholder="Coupon code"
+                            className="flex-1 border border-[#1C3163] px-3 py-2 text-[13px] text-[#1C3163] focus:border-[#D5B584] focus:ring-1 focus:ring-[#D5B584] outline-none transition-all"
+                            disabled={couponLoading}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => applyCoupon(couponCode)}
+                            disabled={couponLoading || !couponCode.trim()}
+                            className={`px-4 py-2 text-white text-[13px] font-medium transition-all ${
+                              couponCode.trim() && !couponLoading
+                                ? "bg-[#1C3163] hover:bg-[#2a4a7a] shadow-md"
+                                : "bg-[#1C3163]/50 opacity-50 cursor-not-allowed"
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                          >
+                            {couponLoading ? "..." : "Apply"}
+                          </button>
                         </div>
                       )}
+                      {couponError && (
+                        <p className="text-red-600 text-[11px]">Invalid coupon</p>
+                      )}
+                    </div>
 
-                      <button
-                        onClick={handleBooking}
-                        disabled={bookingLoading}
-                        className="w-full bg-[#1C3163] text-white px-6 py-3 rounded-lg font-medium text-[16px] md:text-[18px] hover:bg-[#2a4a7a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {bookingLoading ? "Processing..." : "Reserve Your Spot"}
-                      </button>
-                    </>
-                  )}
-                </div>
+                    {/* Price Summary */}
+                    {price > 0 && appliedCoupon && (
+                      <div className="space-y-1 text-[13px] pt-2 border-t border-[#1C3163]/10">
+                        <div className="flex justify-between">
+                          <span className="text-[#6B5D4F]">Subtotal:</span>
+                          <span className="text-[#1C3163]">${(price * quantity).toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-green-600">Discount:</span>
+                          <span className="text-green-600">-${appliedCoupon.discountAmount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between pt-2 border-t border-[#1C3163]/10">
+                          <span className="text-[#1C3163] font-medium">Total:</span>
+                          <span className="text-[#1C3163] font-medium">
+                            ${Math.max(0, (price * quantity) - appliedCoupon.discountAmount).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Reserve Button */}
+                    <button
+                      onClick={handleBooking}
+                      disabled={bookingLoading}
+                      className="w-full bg-[#8B6F47] text-white px-6 py-2.5 text-[13px] md:text-[14px] font-medium uppercase tracking-wider hover:bg-[#7a5f3d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {bookingLoading ? "Processing..." : "Reserve Your Spot"}
+                    </button>
+
+                    {/* Availability Info */}
+                    <p className="text-[#6B5D4F] text-[12px] font-light">
+                      {availableSlots} spot{availableSlots !== 1 ? 's' : ''} remaining
+                    </p>
+                  </div>
+                )}
               </div>
+            </div>
+          </div>
+
+          {/* Description Section - Full Width Below Image */}
+          <div className="max-w-4xl">
+            <div className="text-[#1C3163] text-[15px] md:text-[16px] font-light leading-[1.75] whitespace-pre-line">
+              {event.description}
             </div>
           </div>
         </div>

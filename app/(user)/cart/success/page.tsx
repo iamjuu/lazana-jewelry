@@ -26,7 +26,7 @@ function SuccessContent() {
     // Verify the payment and create order
     const verifyPayment = async () => {
       try {
-        const token = localStorage.getItem("userToken");
+        const token = sessionStorage.getItem("userToken");
         console.log("🔍 Starting payment verification with session:", sessionId);
         console.log("🔑 Token:", token ? "Present" : "Missing");
         

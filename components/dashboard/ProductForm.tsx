@@ -23,6 +23,7 @@
       category?: string | { _id: string; name: string; slug: string };
       subcategory?: string | { _id: string; name: string; slug: string; category: string | Category };
       price?: string;
+      discount?: number;
       imageUrl?: string[];
       videoUrl?: string | string[];
       isSet?: boolean;
@@ -32,7 +33,7 @@
       tuning?: string;
       octave?: '3rd octave' | '4th octave';
       size?: string;
-      weight?: 'less than 1kg' | 'less than 6kg' | 'between 1-3kg' | '3-5kg';
+      weight?: 'less than 1kg' | 'less than 6kg' | 'between 1-3kg' | '3-5kg' | 'greater than 6kg';
     };
     onComplete?: () => void;
     onCancel?: () => void;
@@ -60,6 +61,7 @@
         ? String(initialData.subcategory._id) 
         : (initialData?.subcategory ? String(initialData.subcategory) : ""),
       price: initialData?.price || "",
+      discount: initialData?.discount ? String(initialData.discount) : "",
       images: initialData?.imageUrl || [] as string[],
       videos: Array.isArray(initialData?.videoUrl) 
         ? initialData.videoUrl 
@@ -137,11 +139,11 @@
       return existing.map(normalizeImageUrl);
     });
 
-    // Track number of image fields to show (max 3)
-    const MAX_IMAGES = 3;
+    // Track number of image fields to show (max 7)
+    const MAX_IMAGES = 7;
     const [imageFieldCount, setImageFieldCount] = useState(() => {
       const existing = initialData?.imageUrl || [];
-      return Math.max(1, Math.min(MAX_IMAGES, existing.length)); // At least 1 field, max 3
+      return Math.max(1, Math.min(MAX_IMAGES, existing.length)); // At least 1 field, max 7
     });
 
     // Helper to normalize video URL
@@ -171,6 +173,10 @@
           : [];
       return existing.map(normalizeVideoUrl);
     });
+
+    // Track pending video files (not yet uploaded)
+    const [pendingVideoFiles, setPendingVideoFiles] = useState<(File | null)[]>([]);
+    const [uploadingVideoIndex, setUploadingVideoIndex] = useState<number | null>(null);
 
     // Helper function to compress and convert image to base64
     const compressImageToBase64 = (file: File): Promise<string> => {
@@ -280,32 +286,87 @@
       }
     };
 
-    const handleVideoUpload = (index: number, file: File | null) => {
+    const handleVideoSelect = (index: number, file: File | null) => {
       if (!file) {
-        const newVideos = [...uploadedVideos];
-        const newFormVideos = [...formData.videos];
-        newVideos.splice(index, 1);
-        newFormVideos.splice(index, 1);
-        setUploadedVideos(newVideos);
-        setFormData({ ...formData, videos: newFormVideos });
+        // Remove file selection
+        const newPendingFiles = [...pendingVideoFiles];
+        newPendingFiles[index] = null;
+        setPendingVideoFiles(newPendingFiles);
         
-        // If removing the last video and there are multiple fields, reduce field count
-        if (index === videoFieldCount - 1 && videoFieldCount > 0) {
-          setVideoFieldCount(videoFieldCount - 1);
+        // Reset the file input element
+        const fileInput = document.getElementById(`product-video-file-${index}`) as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
         }
         return;
       }
 
-      // Check file size (limit to 50MB for base64 encoding)
-      const MAX_SIZE = 50 * 1024 * 1024; // 50MB
+      // Check file size (limit to 100MB)
+      const MAX_SIZE = 100 * 1024 * 1024; // 100MB
       if (file.size > MAX_SIZE) {
-        alert("Video file is too large. Maximum size is 50MB. Consider using a video URL instead.");
+        alert("Video file is too large. Maximum size is 100MB.");
         return;
       }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
+      // Store the file (don't upload yet)
+      const newPendingFiles = [...pendingVideoFiles];
+      while (newPendingFiles.length <= index) {
+        newPendingFiles.push(null);
+      }
+      newPendingFiles[index] = file;
+      setPendingVideoFiles(newPendingFiles);
+    };
+
+    const handleVideoUpload = async (index: number) => {
+      const file = pendingVideoFiles[index];
+      
+      if (!file) {
+        alert("Please select a video file first");
+        return;
+      }
+
+      try {
+        setUploadingVideoIndex(index);
+        console.log(`[Video Upload] Starting upload for video ${index + 1}, size: ${file.size} bytes`);
+        
+        // If there's an existing video at this index, delete it from S3 first
+        const existingVideoUrl = uploadedVideos[index];
+        if (existingVideoUrl && existingVideoUrl.startsWith('https://')) {
+          try {
+            console.log(`[Video Upload] Deleting old video: ${existingVideoUrl}`);
+            const deleteResponse = await fetch('/api/upload/s3/delete', {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url: existingVideoUrl }),
+            });
+            
+            if (deleteResponse.ok) {
+              console.log(`✓ Old video deleted from S3`);
+            }
+          } catch (deleteError) {
+            console.error('[Video Upload] Failed to delete old video:', deleteError);
+            // Continue with upload even if delete fails
+          }
+        }
+        
+        // Upload new video to S3 using FormData
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', file);
+        uploadFormData.append('folder', 'videos');
+        
+        const response = await fetch('/api/upload/s3', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload video to S3');
+        }
+
+        const result = await response.json();
+        console.log(`[Video Upload] Success! S3 URL: ${result.url}`);
+
+        // Update state with S3 URL
         const newVideos = [...uploadedVideos];
         const newFormVideos = [...formData.videos];
         
@@ -314,16 +375,67 @@
           newFormVideos.push("");
         }
         
-        newVideos[index] = base64String;
-        newFormVideos[index] = base64String;
+        newVideos[index] = result.url;
+        newFormVideos[index] = result.url;
         
         setUploadedVideos(newVideos);
         setFormData({ ...formData, videos: newFormVideos });
-      };
-      reader.onerror = () => {
-        alert("Failed to read video file. Please try again.");
-      };
-      reader.readAsDataURL(file);
+        
+        // Clear pending file
+        const newPendingFiles = [...pendingVideoFiles];
+        newPendingFiles[index] = null;
+        setPendingVideoFiles(newPendingFiles);
+        
+        alert('Video uploaded successfully!');
+      } catch (error) {
+        console.error('[Video Upload] Error:', error);
+        alert('Failed to upload video. Please try again.');
+      } finally {
+        setUploadingVideoIndex(null);
+      }
+    };
+
+    const handleVideoRemove = async (index: number) => {
+      const videoUrl = uploadedVideos[index];
+      
+      // If it's an S3 URL, delete from S3
+      if (videoUrl && videoUrl.startsWith('https://')) {
+        try {
+          console.log(`[Video Remove] Deleting video from S3: ${videoUrl}`);
+          const response = await fetch('/api/upload/s3/delete', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: videoUrl }),
+          });
+          
+          if (response.ok) {
+            console.log(`✓ Video deleted from S3`);
+          } else {
+            console.error('[Video Remove] Failed to delete from S3');
+          }
+        } catch (error) {
+          console.error('[Video Remove] Error deleting from S3:', error);
+          // Continue with removal from state even if S3 delete fails
+        }
+      }
+      
+      // Remove from state
+      const newVideos = [...uploadedVideos];
+      const newFormVideos = [...formData.videos];
+      newVideos.splice(index, 1);
+      newFormVideos.splice(index, 1);
+      setUploadedVideos(newVideos);
+      setFormData({ ...formData, videos: newFormVideos });
+      
+      // Clear pending file too
+      const newPendingFiles = [...pendingVideoFiles];
+      newPendingFiles.splice(index, 1);
+      setPendingVideoFiles(newPendingFiles);
+      
+      // If removing the last video and there are multiple fields, reduce field count
+      if (index === videoFieldCount - 1 && videoFieldCount > 0) {
+        setVideoFieldCount(videoFieldCount - 1);
+      }
     };
 
     const handleAddVideoField = () => {
@@ -429,8 +541,9 @@
             category: isUniversalProduct ? undefined : (formData.category || undefined),
             subcategory: isUniversalProduct ? undefined : (formData.subcategory || undefined),
             price: priceValue,
+            discount: formData.discount ? parseFloat(formData.discount) : undefined,
             imageUrl: formData.images,
-            videoUrl: formData.videos.length > 0 ? formData.videos : undefined,
+            videoUrl: formData.videos.filter(v => v && v.trim() !== ""), // Filter out empty strings and always send array (even if empty)
             isSet: isUniversalProduct ? undefined : (formData.isSet || undefined),
             numberOfSets: isUniversalProduct ? undefined : (formData.isSet && formData.numberOfSets ? parseInt(formData.numberOfSets) : undefined),
             newAddition: isUniversalProduct ? undefined : (formData.newAddition || undefined),
@@ -599,6 +712,25 @@
           </p>
         </div>
 
+        <div className="space-y-1">
+          <label htmlFor="product-discount" className="text-sm font-medium text-white">
+            Discount ($) <span className="text-zinc-400">(Optional)</span>
+          </label>
+          <input
+            id="product-discount"
+            type="number"
+            step="0.01"
+            min="0"
+            value={formData.discount}
+            onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
+            className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+            placeholder="0.00"
+          />
+          <p className="text-xs text-zinc-400">
+            Optional discount amount. Final price will be: Price - Discount
+          </p>
+        </div>
+
         {!isUniversalProduct && (
           <>
             <div className="space-y-1">
@@ -729,7 +861,7 @@
               <select
                 id="product-weight"
                 value={formData.weight}
-                onChange={(e) => setFormData({ ...formData, weight: e.target.value as 'less than 1kg' | 'less than 6kg' | 'between 1-3kg' | '3-5kg' })}
+                onChange={(e) => setFormData({ ...formData, weight: e.target.value as 'less than 1kg' | 'less than 6kg' | 'between 1-3kg' | '3-5kg' | 'greater than 6kg' })}
                 className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
               >
                 <option value="">Select weight category (optional)</option>
@@ -737,6 +869,7 @@
                 <option value="less than 6kg">Less than 6kg</option>
                 <option value="between 1-3kg">Between 1-3kg</option>
                 <option value="3-5kg">3-5kg</option>
+                <option value="greater than 6kg">Greater than 6kg</option>
               </select>
             </div>
           </>
@@ -820,16 +953,46 @@
                 >
                   Video {index + 1}
                 </label>
-                <input
-                  id={`product-video-file-${index}`}
-                  type="file"
-                  accept="video/*"
-                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0] || null;
-                    handleVideoUpload(index, file);
-                  }}
-                />
+                <div className="flex gap-2">
+                  <input
+                    id={`product-video-file-${index}`}
+                    type="file"
+                    accept="video/*"
+                    className="flex-1 rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      handleVideoSelect(index, file);
+                    }}
+                  />
+                  {pendingVideoFiles[index] && !uploadedVideos[index] && (
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleVideoSelect(index, null)}
+                        disabled={uploadingVideoIndex === index}
+                        className="px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                        title="Remove selection"
+                      >
+                        Remove
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleVideoUpload(index)}
+                        disabled={uploadingVideoIndex === index}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                      >
+                        {uploadingVideoIndex === index ? (
+                          <span className="flex items-center gap-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            Uploading...
+                          </span>
+                        ) : (
+                          'Upload'
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <input
                   id={`product-video-url-${index}`}
                   type="text"
@@ -840,6 +1003,21 @@
                   className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
                   placeholder="Or enter video URL (e.g., https://youtube.com/watch?v=...)"
                 />
+                {/* Show pending file preview */}
+                {pendingVideoFiles[index] && !uploadedVideos[index] && (
+                  <div className="p-3 bg-zinc-800 rounded-md border border-zinc-600">
+                    <p className="text-sm text-zinc-300">
+                      📁 Selected: <span className="text-white">{pendingVideoFiles[index]?.name}</span>
+                    </p>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      Size: {((pendingVideoFiles[index]?.size || 0) / (1024 * 1024)).toFixed(2)} MB
+                    </p>
+                    <p className="text-xs text-yellow-400 mt-1">
+                      ⚠️ Click "Upload" button to upload this video
+                    </p>
+                  </div>
+                )}
+                {/* Show uploaded video */}
                 {uploadedVideos[index] && (
                   <div className="relative w-full rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
                     {uploadedVideos[index].startsWith("data:video") ? (
@@ -852,12 +1030,13 @@
                       </video>
                     ) : uploadedVideos[index].startsWith("http://") || uploadedVideos[index].startsWith("https://") ? (
                       <div className="p-4 text-sm text-zinc-400">
-                        Video URL: <span className="text-white break-all">{uploadedVideos[index]}</span>
+                        <p className="mb-2">✅ Video uploaded successfully!</p>
+                        <p className="text-xs text-green-400 break-all">URL: {uploadedVideos[index]}</p>
                       </div>
                     ) : null}
                     <button
                       type="button"
-                      onClick={() => handleVideoUpload(index, null)}
+                      onClick={() => handleVideoRemove(index)}
                       className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 z-10"
                       title="Remove video"
                     >

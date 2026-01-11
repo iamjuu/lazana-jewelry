@@ -9,7 +9,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check if admin is logged in
-    const adminToken = localStorage.getItem("adminToken");
+    const adminToken = sessionStorage.getItem("adminToken");
     
     // Public routes that admins can access
     const publicRoutes = ["/login", "/signup", "/register", "/verify-email", "/resend-verification"];

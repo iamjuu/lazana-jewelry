@@ -46,6 +46,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Save shipping address to user profile
+    try {
+      user.address = {
+        street: shippingAddress.street || "",
+        city: shippingAddress.city || "",
+        state: shippingAddress.state || "",
+        zipCode: shippingAddress.postalCode || "",
+        country: shippingAddress.country || "",
+      };
+      await user.save();
+      console.log(`✅ Shipping address saved to user profile for user ${user._id}`);
+    } catch (addressError) {
+      // Log error but don't fail order creation
+      console.error("Failed to save address to user profile:", addressError);
+    }
+
     // Create order
     const order = await Order.create({
       userId: user._id.toString(),

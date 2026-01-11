@@ -26,7 +26,9 @@ type ProductCoupon = {
   _id: string;
   couponCode: string;
   couponName: string;
-  discountPercent: number;
+  discountType: "percentage" | "amount";
+  discountPercent?: number;
+  discountAmount?: number;
   expiryDate: string;
   excludedCategories?: Category[];
   excludedProducts?: Product[];
@@ -42,7 +44,9 @@ type EventCoupon = {
   _id: string;
   couponCode: string;
   couponName: string;
-  discountPercent: number;
+  discountType: "percentage" | "amount";
+  discountPercent?: number;
+  discountAmount?: number;
   expiryDate: string;
   excludedEvents?: Event[];
   usageLimit?: number | null;
@@ -70,7 +74,9 @@ export default function CouponsPage() {
   const [formData, setFormData] = useState({
     couponCode: "",
     couponName: "",
+    discountType: "percentage" as "percentage" | "amount",
     discountPercent: "",
+    discountAmount: "",
     expiryDate: "",
     excludedCategories: [] as string[],
     excludedProducts: [] as string[],
@@ -207,15 +213,33 @@ export default function CouponsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.couponCode || !formData.couponName || !formData.discountPercent || !formData.expiryDate) {
+    // Validate required fields
+    if (!formData.couponCode || !formData.couponName || !formData.expiryDate) {
       toast.error("Please fill in all required fields");
       return;
     }
 
-    const discount = parseFloat(formData.discountPercent);
-    if (isNaN(discount) || discount < 0 || discount > 100) {
-      toast.error("Discount must be between 0 and 100");
-      return;
+    // Validate discount based on type
+    if (formData.discountType === "percentage") {
+      if (!formData.discountPercent) {
+        toast.error("Please enter discount percentage");
+        return;
+      }
+      const discount = parseFloat(formData.discountPercent);
+      if (isNaN(discount) || discount < 0 || discount > 100) {
+        toast.error("Discount percentage must be between 0 and 100");
+        return;
+      }
+    } else {
+      if (!formData.discountAmount) {
+        toast.error("Please enter discount amount");
+        return;
+      }
+      const amount = parseFloat(formData.discountAmount);
+      if (isNaN(amount) || amount < 0) {
+        toast.error("Discount amount must be greater than 0");
+        return;
+      }
     }
 
     try {
@@ -223,26 +247,32 @@ export default function CouponsPage() {
         ? "/api/admin/coupons/products"
         : "/api/admin/coupons/events";
       
+      const baseBody = {
+        couponCode: formData.couponCode,
+        couponName: formData.couponName,
+        discountType: formData.discountType,
+        expiryDate: formData.expiryDate,
+        usageLimit: formData.usageLimit ? parseInt(formData.usageLimit) : null,
+        isActive: formData.isActive,
+      };
+
+      // Add discount value based on type
+      if (formData.discountType === "percentage") {
+        (baseBody as any).discountPercent = parseFloat(formData.discountPercent);
+      } else {
+        (baseBody as any).discountAmount = parseFloat(formData.discountAmount);
+      }
+      
       const body = activeTab === "product"
         ? {
-            couponCode: formData.couponCode,
-            couponName: formData.couponName,
-            discountPercent: discount,
-            expiryDate: formData.expiryDate,
+            ...baseBody,
             excludedCategories: formData.excludedCategories,
             excludedProducts: formData.excludedProducts,
-            usageLimit: formData.usageLimit ? parseInt(formData.usageLimit) : null,
             perUserLimit: formData.perUserLimit ? parseInt(formData.perUserLimit) : null,
-            isActive: formData.isActive,
           }
         : {
-            couponCode: formData.couponCode,
-            couponName: formData.couponName,
-            discountPercent: discount,
-            expiryDate: formData.expiryDate,
+            ...baseBody,
             excludedEvents: formData.excludedEvents,
-            usageLimit: formData.usageLimit ? parseInt(formData.usageLimit) : null,
-            isActive: formData.isActive,
           };
 
       const response = await fetch(url, {
@@ -310,7 +340,9 @@ export default function CouponsPage() {
     setFormData({
       couponCode: "",
       couponName: "",
+      discountType: "percentage",
       discountPercent: "",
+      discountAmount: "",
       expiryDate: "",
       excludedCategories: [],
       excludedProducts: [],
@@ -399,7 +431,9 @@ export default function CouponsPage() {
       type: "product" | "event";
       couponCode: string;
       couponName: string;
-      discountPercent: number;
+      discountType: "percentage" | "amount";
+      discountPercent?: number;
+      discountAmount?: number;
       expiryDate: string;
       excludedCategories?: Category[];
       excludedEvents?: Event[];
@@ -590,22 +624,64 @@ export default function CouponsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
-                  Discount % *
+                  Discount Type *
                 </label>
-                <input
-                  type="number"
+                <select
                   required
-                  min="0"
-                  max="100"
-                  step="0.01"
-                  value={formData.discountPercent}
+                  value={formData.discountType}
                   onChange={(e) =>
-                    setFormData({ ...formData, discountPercent: e.target.value })
+                    setFormData({ 
+                      ...formData, 
+                      discountType: e.target.value as "percentage" | "amount",
+                      discountPercent: "",
+                      discountAmount: "",
+                    })
                   }
                   className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-white"
-                  placeholder="10"
-                />
+                >
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="amount">Fixed Amount (SGD)</option>
+                </select>
               </div>
+
+              {formData.discountType === "percentage" ? (
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Discount Percentage * (0-100%)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    value={formData.discountPercent}
+                    onChange={(e) =>
+                      setFormData({ ...formData, discountPercent: e.target.value })
+                    }
+                    className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-white"
+                    placeholder="10"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Discount Amount * (SGD)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    step="0.01"
+                    value={formData.discountAmount}
+                    onChange={(e) =>
+                      setFormData({ ...formData, discountAmount: e.target.value })
+                    }
+                    className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-white"
+                    placeholder="50"
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
@@ -837,7 +913,12 @@ export default function CouponsPage() {
                     )}
                     <td className="px-4 py-3 text-white font-mono">{coupon.couponCode}</td>
                     <td className="px-4 py-3 text-white">{coupon.couponName}</td>
-                    <td className="px-4 py-3 text-white">{coupon.discountPercent}%</td>
+                    <td className="px-4 py-3 text-white">
+                      {coupon.discountType === "percentage" 
+                        ? `${coupon.discountPercent || 0}%`
+                        : `SGD ${coupon.discountAmount || 0}`
+                      }
+                    </td>
                     <td className={`px-4 py-3 ${expired ? "text-red-400" : "text-white"}`}>
                       {formatDate(coupon.expiryDate)}
                       {expired && " (Expired)"}

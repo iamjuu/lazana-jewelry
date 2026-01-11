@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 type PastEvent = {
   _id: string;
@@ -18,6 +19,15 @@ type PastEvent = {
   updatedAt: string;
 };
 
+// Generate hour options (1-12)
+const HOUR_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
+
+// Generate minute options (00, 15, 30, 45)
+const MINUTE_OPTIONS = ['00', '15', '30', '45'];
+
+// Period options
+const PERIOD_OPTIONS = ['AM', 'PM'];
+
 export default function PastEventsPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -28,10 +38,16 @@ export default function PastEventsPage() {
     time: "",
     date: "",
     description: "",
-    thumbnailImage: "" as string | File | null,
+    thumbnailImage: "",
     photos: [] as string[],
     videos: [] as string[],
   });
+  const [startHour, setStartHour] = useState("");
+  const [startMinute, setStartMinute] = useState("");
+  const [startPeriod, setStartPeriod] = useState("AM");
+  const [endHour, setEndHour] = useState("");
+  const [endMinute, setEndMinute] = useState("");
+  const [endPeriod, setEndPeriod] = useState("AM");
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
@@ -42,15 +58,38 @@ export default function PastEventsPage() {
   const [pastEventsLoading, setPastEventsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalPastEvents, setTotalPastEvents] = useState<number>(0);
+  
+  // S3 upload states
+  const [selectedThumbnailFile, setSelectedThumbnailFile] = useState<File | null>(null);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const [selectedPhotoFiles, setSelectedPhotoFiles] = useState<(File | null)[]>([null, null, null, null, null, null]);
+  const [uploadingPhotos, setUploadingPhotos] = useState<boolean[]>([false, false, false, false, false, false]);
+  const [selectedVideoFiles, setSelectedVideoFiles] = useState<(File | null)[]>([null, null]);
+  const [uploadingVideos, setUploadingVideos] = useState<boolean[]>([false, false]);
 
   // Fetch past events
   const fetchPastEvents = async () => {
     try {
       setPastEventsLoading(true);
-      const response = await fetch("/api/admin/past-events");
+      const params = new URLSearchParams();
+      params.append("page", currentPage.toString());
+      params.append("limit", "10");
+      if (searchQuery.trim()) {
+        params.append("search", searchQuery.trim());
+      }
+      
+      const response = await fetch(`/api/admin/past-events?${params.toString()}`);
       const data = await response.json();
       if (data.success && data.data) {
         setPastEvents(data.data);
+        if (data.pagination) {
+          setTotalPages(data.pagination.pages || 1);
+          setTotalPastEvents(data.pagination.total || 0);
+        }
       } else {
         setPastEvents([]);
       }
@@ -63,8 +102,12 @@ export default function PastEventsPage() {
   };
 
   useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when search changes
+  }, [searchQuery]);
+
+  useEffect(() => {
     fetchPastEvents();
-  }, []);
+  }, [currentPage, searchQuery]);
 
   // Normalize image URL for display
   const getImageUrl = (url: string) => {
@@ -98,135 +141,293 @@ export default function PastEventsPage() {
     }
   };
 
-  const compressImageToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = Math.round((height * MAX_WIDTH) / width);
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = Math.round((width * MAX_HEIGHT) / height);
-              height = MAX_HEIGHT;
-            }
-          }
-
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-
-          if (!ctx) {
-            reject(new Error("Could not get canvas context"));
-            return;
-          }
-
-          ctx.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                reject(new Error("Failed to create blob"));
-                return;
-              }
-
-              const reader2 = new FileReader();
-              reader2.onloadend = () => {
-                const base64String = reader2.result as string;
-                resolve(base64String);
-              };
-              reader2.onerror = () => reject(new Error("Failed to read blob"));
-              reader2.readAsDataURL(blob);
-            },
-            "image/webp",
-            0.8
-          );
-        };
-        img.onerror = () => reject(new Error("Failed to load image"));
-        img.src = e.target?.result as string;
-      };
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleThumbnailUpload = async (file: File | null) => {
+  // ====================
+  // THUMBNAIL UPLOAD (S3)
+  // ====================
+  const handleThumbnailSelect = (file: File | null) => {
     if (!file) {
-      setFormData({ ...formData, thumbnailImage: "" });
-      setThumbnailPreview("");
+      setSelectedThumbnailFile(null);
       return;
     }
+    setSelectedThumbnailFile(file);
+    setError(null);
+  };
+
+  const handleUploadThumbnailToS3 = async () => {
+    if (!selectedThumbnailFile) return;
+
+    setUploadingThumbnail(true);
+    setError(null);
 
     try {
-      const base64String = await compressImageToBase64(file);
-      setFormData({ ...formData, thumbnailImage: base64String });
-      setThumbnailPreview(base64String);
-    } catch (error) {
-      console.error("Error compressing image:", error);
-      setError("Failed to process thumbnail image");
+      // Delete old thumbnail if replacing
+      if (formData.thumbnailImage) {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.thumbnailImage }),
+        });
+      }
+
+      // Upload new thumbnail to S3
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", selectedThumbnailFile);
+      uploadFormData.append("folder", "images");
+
+      const response = await fetch("/api/upload/s3", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload thumbnail to S3");
+      }
+
+      const { url } = await response.json();
+
+      setFormData({ ...formData, thumbnailImage: url });
+      setThumbnailPreview(url);
+      setSelectedThumbnailFile(null);
+    } catch (err) {
+      console.error("Error uploading thumbnail:", err);
+      setError("Failed to upload thumbnail");
+    } finally {
+      setUploadingThumbnail(false);
     }
   };
 
-  const handlePhotoUpload = async (file: File | null, index?: number) => {
+  const handleRemoveThumbnail = async () => {
+    if (formData.thumbnailImage) {
+      try {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.thumbnailImage }),
+        });
+      } catch (err) {
+        console.error("Error deleting thumbnail:", err);
+      }
+    }
+    setFormData({ ...formData, thumbnailImage: "" });
+    setThumbnailPreview("");
+    setSelectedThumbnailFile(null);
+  };
+
+  // ====================
+  // PHOTOS UPLOAD (S3) - Max 6
+  // ====================
+  const handlePhotoSelect = (file: File | null, index: number) => {
+    if (!file) return;
+    const newFiles = [...selectedPhotoFiles];
+    newFiles[index] = file;
+    setSelectedPhotoFiles(newFiles);
+    setError(null);
+  };
+
+  const handleUploadPhotoToS3 = async (index: number) => {
+    const file = selectedPhotoFiles[index];
     if (!file) return;
 
-    if (formData.photos.length >= 6) {
-      setError("Maximum 6 photos allowed");
-      return;
-    }
+    const newUploadingPhotos = [...uploadingPhotos];
+    newUploadingPhotos[index] = true;
+    setUploadingPhotos(newUploadingPhotos);
+    setError(null);
 
     try {
-      const base64String = await compressImageToBase64(file);
-      const newPhotos = index !== undefined && formData.photos[index]
-        ? formData.photos.map((p, i) => i === index ? base64String : p)
-        : [...formData.photos, base64String];
-      
+      // Delete old photo if replacing
+      if (formData.photos[index]) {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.photos[index] }),
+        });
+      }
+
+      // Upload new photo to S3
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", file);
+      uploadFormData.append("folder", "images");
+
+      const response = await fetch("/api/upload/s3", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to upload photo ${index + 1} to S3`);
+      }
+
+      const { url } = await response.json();
+
+      const newPhotos = [...formData.photos];
+      newPhotos[index] = url;
       setFormData({ ...formData, photos: newPhotos });
       setPhotoPreviews(newPhotos);
-    } catch (error) {
-      console.error("Error compressing photo:", error);
-      setError("Failed to process photo");
+
+      // Clear selected file
+      const newFiles = [...selectedPhotoFiles];
+      newFiles[index] = null;
+      setSelectedPhotoFiles(newFiles);
+    } catch (err) {
+      console.error(`Error uploading photo ${index + 1}:`, err);
+      setError(`Failed to upload photo ${index + 1}`);
+    } finally {
+      const newUploadingPhotos = [...uploadingPhotos];
+      newUploadingPhotos[index] = false;
+      setUploadingPhotos(newUploadingPhotos);
     }
   };
 
-  const handlePhotoRemove = (index: number) => {
-    const newPhotos = formData.photos.filter((_, i) => i !== index);
-    setFormData({ ...formData, photos: newPhotos });
-    setPhotoPreviews(newPhotos);
+  const handleRemovePhoto = async (index: number) => {
+    if (formData.photos[index]) {
+      try {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.photos[index] }),
+        });
+      } catch (err) {
+        console.error(`Error deleting photo ${index + 1}:`, err);
+      }
+    }
+
+    const newPhotos = [...formData.photos];
+    newPhotos[index] = "";
+    setFormData({ ...formData, photos: newPhotos.filter(p => p !== "") });
+    setPhotoPreviews(newPhotos.filter(p => p !== ""));
+
+    const newFiles = [...selectedPhotoFiles];
+    newFiles[index] = null;
+    setSelectedPhotoFiles(newFiles);
   };
 
-  const handleVideoAdd = (url: string) => {
-    if (formData.videos.length >= 2) {
-      setError("Maximum 2 videos allowed");
-      return;
+  // ====================
+  // VIDEOS UPLOAD (S3) - Max 2
+  // ====================
+  const handleVideoSelect = (file: File | null, index: number) => {
+    if (!file) return;
+    const newFiles = [...selectedVideoFiles];
+    newFiles[index] = file;
+    setSelectedVideoFiles(newFiles);
+    setError(null);
+  };
+
+  const handleUnselectVideo = (index: number) => {
+    const newFiles = [...selectedVideoFiles];
+    newFiles[index] = null;
+    setSelectedVideoFiles(newFiles);
+    setError(null);
+  };
+
+  const handleUploadVideoToS3 = async (index: number) => {
+    const file = selectedVideoFiles[index];
+    if (!file) return;
+
+    const newUploadingVideos = [...uploadingVideos];
+    newUploadingVideos[index] = true;
+    setUploadingVideos(newUploadingVideos);
+    setError(null);
+
+    try {
+      // Delete old video if replacing
+      if (formData.videos[index]) {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.videos[index] }),
+        });
+      }
+
+      // Upload new video to S3
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", file);
+      uploadFormData.append("folder", "videos");
+
+      const response = await fetch("/api/upload/s3", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to upload video ${index + 1} to S3`);
+      }
+
+      const { url } = await response.json();
+
+      const newVideos = [...formData.videos];
+      newVideos[index] = url;
+      setFormData({ ...formData, videos: newVideos });
+      setVideoPreviews(newVideos);
+
+      // Clear selected file
+      const newFiles = [...selectedVideoFiles];
+      newFiles[index] = null;
+      setSelectedVideoFiles(newFiles);
+    } catch (err) {
+      console.error(`Error uploading video ${index + 1}:`, err);
+      setError(`Failed to upload video ${index + 1}`);
+    } finally {
+      const newUploadingVideos = [...uploadingVideos];
+      newUploadingVideos[index] = false;
+      setUploadingVideos(newUploadingVideos);
     }
-    if (!url.trim()) return;
+  };
+
+  const handleRemoveVideo = async (index: number) => {
+    if (formData.videos[index]) {
+      try {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.videos[index] }),
+        });
+      } catch (err) {
+        console.error(`Error deleting video ${index + 1}:`, err);
+      }
+    }
+
+    const newVideos = [...formData.videos];
+    newVideos[index] = "";
+    setFormData({ ...formData, videos: newVideos.filter(v => v !== "") });
+    setVideoPreviews(newVideos.filter(v => v !== ""));
+
+    const newFiles = [...selectedVideoFiles];
+    newFiles[index] = null;
+    setSelectedVideoFiles(newFiles);
+  };
+
+  // Parse time string to extract hours, minutes, and periods
+  const parseTimeRange = (timeString: string) => {
+    if (!timeString) {
+      return {
+        startHour: "", startMinute: "", startPeriod: "AM",
+        endHour: "", endMinute: "", endPeriod: "AM"
+      };
+    }
     
-    const newVideos = [...formData.videos, url.trim()];
-    setFormData({ ...formData, videos: newVideos });
-    setVideoPreviews(newVideos);
-  };
-
-  const handleVideoRemove = (index: number) => {
-    const newVideos = formData.videos.filter((_, i) => i !== index);
-    setFormData({ ...formData, videos: newVideos });
-    setVideoPreviews(newVideos);
+    const match = timeString.match(/(\d+):(\d+)\s*(AM|PM)\s*-\s*(\d+):(\d+)\s*(AM|PM)/i);
+    if (match) {
+      return {
+        startHour: match[1],
+        startMinute: match[2],
+        startPeriod: match[3].toUpperCase(),
+        endHour: match[4],
+        endMinute: match[5],
+        endPeriod: match[6].toUpperCase()
+      };
+    }
+    
+    return {
+      startHour: "", startMinute: "", startPeriod: "AM",
+      endHour: "", endMinute: "", endPeriod: "AM"
+    };
   };
 
   // Handle edit button click
   const handleEdit = (pastEvent: PastEvent) => {
     setEditingId(pastEvent._id);
     setShowAddForm(true);
+    const timeRange = parseTimeRange(pastEvent.time || "");
     setFormData({
       name: pastEvent.name || "",
       title: pastEvent.title || "",
@@ -239,6 +440,12 @@ export default function PastEventsPage() {
       photos: pastEvent.photos || [],
       videos: pastEvent.videos || [],
     });
+    setStartHour(timeRange.startHour);
+    setStartMinute(timeRange.startMinute);
+    setStartPeriod(timeRange.startPeriod);
+    setEndHour(timeRange.endHour);
+    setEndMinute(timeRange.endMinute);
+    setEndPeriod(timeRange.endPeriod);
     
     setThumbnailPreview(pastEvent.thumbnailImage ? getImageUrl(pastEvent.thumbnailImage) : "");
     setPhotoPreviews(pastEvent.photos?.map(p => getImageUrl(p)) || []);
@@ -278,11 +485,14 @@ export default function PastEventsPage() {
       return;
     }
 
-    if (!formData.time.trim()) {
-      setError("Time is required");
+    if (!startHour || !startMinute || !endHour || !endMinute) {
+      setError("Both start time and end time (hours and minutes) are required");
       setLoading(false);
       return;
     }
+
+    // Combine start and end time into a single string
+    const timeRange = `${startHour}:${startMinute} ${startPeriod} - ${endHour}:${endMinute} ${endPeriod}`;
 
     if (!formData.date.trim()) {
       setError("Date is required");
@@ -325,7 +535,7 @@ export default function PastEventsPage() {
         title: formData.title.trim(),
         location: formData.location.trim(),
         day: formData.day.trim(),
-        time: formData.time.trim(),
+        time: timeRange,
         date: formData.date.trim(),
         description: formData.description.trim(),
         thumbnailImage: typeof formData.thumbnailImage === "string" ? formData.thumbnailImage : "",
@@ -349,6 +559,12 @@ export default function PastEventsPage() {
 
       setSuccess(`Past event ${isEdit ? "updated" : "created"} successfully!`);
       setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", thumbnailImage: "", photos: [], videos: [] });
+      setStartHour("");
+      setStartMinute("");
+      setStartPeriod("AM");
+      setEndHour("");
+      setEndMinute("");
+      setEndPeriod("AM");
       setThumbnailPreview("");
       setPhotoPreviews([]);
       setVideoPreviews([]);
@@ -371,6 +587,12 @@ export default function PastEventsPage() {
   const handleCancel = () => {
     setShowAddForm(false);
     setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", thumbnailImage: "", photos: [], videos: [] });
+    setStartHour("");
+    setStartMinute("00");
+    setStartPeriod("AM");
+    setEndHour("");
+    setEndMinute("00");
+    setEndPeriod("AM");
     setThumbnailPreview("");
     setPhotoPreviews([]);
     setVideoPreviews([]);
@@ -384,20 +606,34 @@ export default function PastEventsPage() {
       <div className="mx-auto max-w-7xl">
         <h1 className="text-3xl font-bold text-white mb-6">Past Events Management</h1>
 
-        {/* Add Button */}
+        {/* Add Button and Search */}
         {!showAddForm && (
-          <div className="mb-6 flex items-center justify-between">
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
-            >
-              Add Past Event
-            </button>
-            {pastEvents.length > 0 && (
-              <div className="text-sm text-zinc-400">
-                Total Past Events: {pastEvents.length}
-              </div>
-            )}
+          <div className="mb-6 space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+              >
+                Add Past Event
+              </button>
+              {totalPastEvents > 0 && (
+                <div className="text-sm text-zinc-400">
+                  Total Past Events: {totalPastEvents}
+                </div>
+              )}
+            </div>
+            
+            {/* Search */}
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={20} />
+              <input
+                type="text"
+                placeholder="Search past events by name, title, description, location..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
         )}
 
@@ -481,6 +717,62 @@ export default function PastEventsPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="bg-zinc-800 rounded-lg p-4 border border-zinc-700 mt-6">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-zinc-400">
+                    Showing page {currentPage} of {totalPages} ({totalPastEvents} total past events)
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      <ChevronLeft size={16} />
+                      Previous
+                    </button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                              currentPage === pageNum
+                                ? "bg-blue-600 text-white"
+                                : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="px-4 py-2 bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      Next
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -591,18 +883,103 @@ export default function PastEventsPage() {
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="past-event-time" className="text-sm font-medium text-white">
+                <label className="text-sm font-medium text-white">
                   Time <span className="text-red-500">*</span>
                 </label>
-                <input
-                  id="past-event-time"
-                  type="text"
-                  required
-                  value={formData.time}
-                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-                  placeholder="e.g., 07:00PM - 10:00PM"
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Start Time */}
+                  <div>
+                    <label className="text-xs text-zinc-400 block mb-1">
+                      Start Time
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        id="past-event-start-hour"
+                        required
+                        value={startHour}
+                        onChange={(e) => setStartHour(e.target.value)}
+                        className="flex-1 rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        <option value="">Hour</option>
+                        {HOUR_OPTIONS.map((hour) => (
+                          <option key={hour} value={hour}>
+                            {hour}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="past-event-start-minute"
+                        value={startMinute}
+                        onChange={(e) => setStartMinute(e.target.value)}
+                        className="flex-1 rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        {MINUTE_OPTIONS.map((minute) => (
+                          <option key={minute} value={minute.toString().padStart(2, '0')}>
+                            {minute.toString().padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="past-event-start-period"
+                        value={startPeriod}
+                        onChange={(e) => setStartPeriod(e.target.value)}
+                        className="flex-1 rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        {PERIOD_OPTIONS.map((period) => (
+                          <option key={period} value={period}>
+                            {period}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  {/* End Time */}
+                  <div>
+                    <label className="text-xs text-zinc-400 block mb-1">
+                      End Time
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        id="past-event-end-hour"
+                        required
+                        value={endHour}
+                        onChange={(e) => setEndHour(e.target.value)}
+                        className="flex-1 rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        <option value="">Hour</option>
+                        {HOUR_OPTIONS.map((hour) => (
+                          <option key={hour} value={hour}>
+                            {hour}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="past-event-end-minute"
+                        value={endMinute}
+                        onChange={(e) => setEndMinute(e.target.value)}
+                        className="flex-1 rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        {MINUTE_OPTIONS.map((minute) => (
+                          <option key={minute} value={minute.toString().padStart(2, '0')}>
+                            {minute.toString().padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="past-event-end-period"
+                        value={endPeriod}
+                        onChange={(e) => setEndPeriod(e.target.value)}
+                        className="flex-1 rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        {PERIOD_OPTIONS.map((period) => (
+                          <option key={period} value={period}>
+                            {period}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -630,16 +1007,51 @@ export default function PastEventsPage() {
                 id="past-event-thumbnail"
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleThumbnailUpload(e.target.files?.[0] || null)}
+                onChange={(e) => handleThumbnailSelect(e.target.files?.[0] || null)}
                 className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
               />
-              {thumbnailPreview && (
+              
+              {/* Pending file with upload button */}
+              {selectedThumbnailFile && !formData.thumbnailImage && (
+                <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mt-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <p className="text-sm text-white font-medium">📁 {selectedThumbnailFile.name}</p>
+                      <p className="text-xs text-zinc-400 mt-1">
+                        Size: {(selectedThumbnailFile.size / (1024 * 1024)).toFixed(2)} MB
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleUploadThumbnailToS3}
+                      disabled={uploadingThumbnail}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
+                    >
+                      {uploadingThumbnail ? "Uploading..." : "Upload"}
+                    </button>
+                  </div>
+                  {!uploadingThumbnail && (
+                    <p className="text-xs text-yellow-500 mt-2">⚠️ Click "Upload" to save this image</p>
+                  )}
+                </div>
+              )}
+
+              {/* Uploaded thumbnail */}
+              {thumbnailPreview && formData.thumbnailImage && (
                 <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900 mt-2">
                   <img
                     src={thumbnailPreview}
                     alt="Thumbnail Preview"
                     className="w-full h-full object-contain"
                   />
+                  <button
+                    type="button"
+                    onClick={handleRemoveThumbnail}
+                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                    title="Remove thumbnail"
+                  >
+                    ×
+                  </button>
                 </div>
               )}
             </div>
@@ -649,94 +1061,142 @@ export default function PastEventsPage() {
               <label className="text-sm font-medium text-white">
                 Photos (Optional, Maximum 6)
               </label>
-              {formData.photos.length < 6 && (
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handlePhotoUpload(e.target.files?.[0] || null)}
-                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-                />
-              )}
-              {formData.photos.length >= 6 && (
-                <p className="text-xs text-zinc-400">Maximum 6 photos reached</p>
-              )}
-              {photoPreviews.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-                  {photoPreviews.map((preview, index) => (
-                    <div key={index} className="relative">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[0, 1, 2, 3, 4, 5].map((index) => (
+                  <div key={index} className="space-y-2">
+                    <label className="text-xs text-zinc-400">Photo {index + 1}</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handlePhotoSelect(e.target.files?.[0] || null, index)}
+                      disabled={!!formData.photos[index]}
+                      className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none disabled:opacity-50"
+                    />
+                    
+                    {/* Pending file with upload button */}
+                    {selectedPhotoFiles[index] && !formData.photos[index] && (
+                      <div className="bg-zinc-800 border border-zinc-600 rounded-md p-2">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-white font-medium truncate">📁 {selectedPhotoFiles[index]!.name}</p>
+                            <p className="text-xs text-zinc-400">
+                              {(selectedPhotoFiles[index]!.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleUploadPhotoToS3(index)}
+                            disabled={uploadingPhotos[index]}
+                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-xs font-medium rounded transition-colors"
+                          >
+                            {uploadingPhotos[index] ? "Uploading..." : "Upload"}
+                          </button>
+                        </div>
+                        {!uploadingPhotos[index] && (
+                          <p className="text-xs text-yellow-500 mt-1">⚠️ Click "Upload"</p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Uploaded photo */}
+                    {formData.photos[index] && (
                       <div className="relative w-full h-32 rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
                         <img
-                          src={preview}
+                          src={formData.photos[index]}
                           alt={`Photo ${index + 1}`}
                           className="w-full h-full object-contain"
                         />
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePhoto(index)}
+                          className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center transition-colors"
+                          title="Remove photo"
+                        >
+                          ×
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => handlePhotoRemove(index)}
-                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Videos (Optional, Max 2) */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-white">
-                Videos (Optional, Maximum 2) - Enter video URLs
+                Videos (Optional, Maximum 2)
               </label>
-              {formData.videos.length < 2 && (
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Enter video URL"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleVideoAdd(e.currentTarget.value);
-                        e.currentTarget.value = "";
-                      }
-                    }}
-                    className="flex-1 rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                      if (input?.value) {
-                        handleVideoAdd(input.value);
-                        input.value = "";
-                      }
-                    }}
-                    className="rounded-md border border-zinc-600 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
-                  >
-                    Add
-                  </button>
-                </div>
-              )}
-              {formData.videos.length >= 2 && (
-                <p className="text-xs text-zinc-400">Maximum 2 videos reached</p>
-              )}
-              {videoPreviews.length > 0 && (
-                <div className="space-y-2 mt-2">
-                  {videoPreviews.map((video, index) => (
-                    <div key={index} className="flex items-center gap-2 p-2 rounded-md border border-zinc-600 bg-zinc-900">
-                      <span className="flex-1 text-sm text-white truncate">{video}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleVideoRemove(index)}
-                        className="bg-red-600 text-white rounded px-2 py-1 text-xs hover:bg-red-700"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[0, 1].map((index) => (
+                  <div key={index} className="space-y-2">
+                    <label className="text-xs text-zinc-400">Video {index + 1}</label>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={(e) => handleVideoSelect(e.target.files?.[0] || null, index)}
+                      disabled={!!formData.videos[index]}
+                      className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none disabled:opacity-50"
+                    />
+                    
+                    {/* Pending file with upload button */}
+                    {selectedVideoFiles[index] && !formData.videos[index] && (
+                      <div className="bg-zinc-800 border border-zinc-600 rounded-md p-2">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-white font-medium truncate">🎥 {selectedVideoFiles[index]!.name}</p>
+                            <p className="text-xs text-zinc-400">
+                              {(selectedVideoFiles[index]!.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleUnselectVideo(index)}
+                              disabled={uploadingVideos[index]}
+                              className="px-3 py-1 bg-zinc-600 hover:bg-zinc-700 disabled:bg-zinc-800 disabled:opacity-50 text-white text-xs font-medium rounded transition-colors"
+                              title="Remove selection"
+                            >
+                              Remove
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleUploadVideoToS3(index)}
+                              disabled={uploadingVideos[index]}
+                              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-xs font-medium rounded transition-colors"
+                            >
+                              {uploadingVideos[index] ? "Uploading..." : "Upload"}
+                            </button>
+                          </div>
+                        </div>
+                        {!uploadingVideos[index] && (
+                          <p className="text-xs text-yellow-500 mt-1">⚠️ Click "Upload"</p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Uploaded video */}
+                    {formData.videos[index] && (
+                      <div className="relative w-full h-32 rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
+                        <video
+                          src={formData.videos[index]}
+                          className="w-full h-full object-contain"
+                          controls
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveVideo(index)}
+                          className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center transition-colors"
+                          title="Remove video"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="flex gap-3">
@@ -761,6 +1221,8 @@ export default function PastEventsPage() {
     </div>
   );
 }
+
+
 
 
 

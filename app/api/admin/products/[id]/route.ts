@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { requireAdmin } from "@/lib/auth";
 import mongoose from "mongoose";
+import { uploadToS3, deleteFromS3, extractS3Key } from "@/lib/aws-s3";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -13,7 +14,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     
     const { id } = await context.params;
     const body = await req.json();
-    const { name, shortDescription, description, category, subcategory, price, imageUrl, videoUrl, isSet, numberOfSets, newAddition, featured, tuning, octave, size, weight } = body;
+    const { name, shortDescription, description, category, subcategory, price, discount, imageUrl, videoUrl, isSet, numberOfSets, newAddition, featured, tuning, octave, size, weight } = body;
 
     // Validation
     if (name !== undefined && !name) {
@@ -33,6 +34,13 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     if (imageUrl !== undefined && (!Array.isArray(imageUrl) || imageUrl.length === 0)) {
       return NextResponse.json(
         { success: false, message: "At least one image is required" },
+        { status: 400 }
+      );
+    }
+
+    if (imageUrl !== undefined && imageUrl.length > 7) {
+      return NextResponse.json(
+        { success: false, message: "Maximum 7 images allowed" },
         { status: 400 }
       );
     }
@@ -87,16 +95,118 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       }
       updateData.price = roundedPrice;
     }
-    if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
-    if (videoUrl !== undefined) {
-      // Handle videoUrl - can be string or array
-      if (Array.isArray(videoUrl)) {
-        updateData.videoUrl = videoUrl.filter(v => v && String(v).trim()).map(v => String(v).trim());
-      } else if (videoUrl) {
-        updateData.videoUrl = [String(videoUrl).trim()];
+    if (discount !== undefined) {
+      if (discount === null || discount === "") {
+        // Remove discount if explicitly set to null/empty
+        updateData.discount = undefined;
       } else {
-        updateData.videoUrl = [];
+        const discountNum = typeof discount === 'number' ? discount : parseFloat(String(discount));
+        if (!isNaN(discountNum)) {
+          if (discountNum < 0) {
+            return NextResponse.json(
+              { success: false, message: "Discount cannot be negative" },
+              { status: 400 }
+            );
+          }
+          // Get current price (either from update or existing product)
+          const currentPrice = updateData.price !== undefined 
+            ? updateData.price 
+            : (await Product.findById(id).select('price').lean())?.price;
+          
+          if (currentPrice && discountNum >= currentPrice) {
+            return NextResponse.json(
+              { success: false, message: "Discount cannot be greater than or equal to price" },
+              { status: 400 }
+            );
+          }
+          updateData.discount = Math.round(discountNum * 100) / 100; // Round to 2 decimal places
+        }
       }
+    }
+    if (imageUrl !== undefined) {
+      // Upload images to S3 and get URLs
+      console.log("Uploading images to S3 for update...");
+      const s3ImageUrls: string[] = [];
+      
+      for (let i = 0; i < imageUrl.length; i++) {
+        const image = imageUrl[i];
+        
+        // Skip if already an S3 URL
+        if (typeof image === 'string' && image.startsWith('https://')) {
+          s3ImageUrls.push(image);
+          continue;
+        }
+
+        // Upload image to S3 (will be converted to WebP)
+        try {
+          const filename = `product-${id}-${Date.now()}-${i + 1}.webp`;
+          const result = await uploadToS3(image, filename, 'images');
+          s3ImageUrls.push(result.url);
+          console.log(`✓ Uploaded image ${i + 1} to S3 as WebP: ${result.url}`);
+        } catch (uploadError) {
+          console.error(`Failed to upload image ${i + 1}:`, uploadError);
+          return NextResponse.json(
+            { success: false, message: `Failed to upload image ${i + 1} to S3` },
+            { status: 500 }
+          );
+        }
+      }
+      
+      updateData.imageUrl = s3ImageUrls;
+    }
+    if (videoUrl !== undefined) {
+      // Fetch existing product to get old video URLs
+      const existingProduct = await Product.findById(id).select('videoUrl').lean();
+      const oldVideos = existingProduct?.videoUrl ? (Array.isArray(existingProduct.videoUrl) ? existingProduct.videoUrl : [existingProduct.videoUrl]) : [];
+
+      // Handle videoUrl - upload to S3 if base64
+      const videoArray = Array.isArray(videoUrl) ? videoUrl : (videoUrl ? [videoUrl] : []);
+      const s3VideoUrls: string[] = [];
+
+      for (let i = 0; i < videoArray.length; i++) {
+        const video = videoArray[i];
+        const videoStr = String(video).trim();
+        
+        if (!videoStr) continue;
+
+        // Skip if already an S3/external URL
+        if (videoStr.startsWith('https://') || videoStr.startsWith('http://')) {
+          s3VideoUrls.push(videoStr);
+          continue;
+        }
+
+        // Upload base64 video to S3
+        try {
+          const filename = `product-video-${id}-${Date.now()}-${i + 1}.mp4`;
+          const result = await uploadToS3(videoStr, filename, 'videos');
+          s3VideoUrls.push(result.url);
+          console.log(`Uploaded video ${i + 1} to S3: ${result.url}`);
+        } catch (uploadError) {
+          console.error(`Failed to upload video ${i + 1}:`, uploadError);
+          // Continue with other videos
+        }
+      }
+
+      // Delete old videos from S3 that are no longer in the new list
+      const videosToDelete = oldVideos.filter(oldVideo => {
+        if (!oldVideo || !oldVideo.startsWith('https://')) return false;
+        return !s3VideoUrls.includes(oldVideo);
+      });
+
+      for (const videoToDelete of videosToDelete) {
+        try {
+          const s3Key = extractS3Key(videoToDelete);
+          if (s3Key) {
+            await deleteFromS3(s3Key);
+            console.log(`✓ Deleted old video from S3: ${s3Key}`);
+          }
+        } catch (deleteError) {
+          console.error(`Failed to delete old video ${videoToDelete}:`, deleteError);
+          // Continue even if deletion fails
+        }
+      }
+
+      updateData.videoUrl = s3VideoUrls.length > 0 ? s3VideoUrls : [];
     }
     if (isSet !== undefined) {
       updateData.isSet = Boolean(isSet);
@@ -178,14 +288,57 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     await connectDB();
     
     const { id } = await context.params;
-    const deleted = await Product.findByIdAndDelete(id);
     
-    if (!deleted) {
+    // Fetch the product first to get image and video URLs
+    const product = await Product.findById(id);
+    
+    if (!product) {
       return NextResponse.json(
         { success: false, message: "Product not found" },
         { status: 404 }
       );
     }
+
+    // Delete images from S3
+    if (product.imageUrl && Array.isArray(product.imageUrl)) {
+      for (const imageUrl of product.imageUrl) {
+        if (imageUrl && typeof imageUrl === 'string' && imageUrl.startsWith('https://')) {
+          try {
+            const s3Key = extractS3Key(imageUrl);
+            if (s3Key) {
+              await deleteFromS3(s3Key);
+              console.log(`✓ Deleted image from S3: ${s3Key}`);
+            }
+          } catch (deleteError) {
+            console.error(`Failed to delete image ${imageUrl}:`, deleteError);
+            // Continue even if deletion fails
+          }
+        }
+      }
+    }
+
+    // Delete videos from S3
+    if (product.videoUrl) {
+      const videosArray = Array.isArray(product.videoUrl) ? product.videoUrl : [product.videoUrl];
+      for (const videoUrl of videosArray) {
+        if (videoUrl && typeof videoUrl === 'string' && (videoUrl.startsWith('https://') || videoUrl.startsWith('http://'))) {
+          try {
+            const s3Key = extractS3Key(videoUrl);
+            if (s3Key) {
+              await deleteFromS3(s3Key);
+              console.log(`✓ Deleted video from S3: ${s3Key}`);
+            }
+          } catch (deleteError) {
+            console.error(`Failed to delete video ${videoUrl}:`, deleteError);
+            // Continue even if deletion fails
+          }
+        }
+      }
+    }
+
+    // Soft delete: Set deleted flag to true instead of actually deleting
+    product.deleted = true;
+    await product.save();
 
     return NextResponse.json({ success: true });
   } catch (e: any) {

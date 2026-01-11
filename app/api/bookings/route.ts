@@ -15,9 +15,12 @@ export async function GET(req: NextRequest) {
     const user = await requireAuth(req);
     await connectDB();
     
-    // Fetch all bookings for user, optionally filter by sessionType
+    // Fetch bookings for user, optionally filter by sessionType, with pagination
     const { searchParams } = new URL(req.url);
     const sessionType = searchParams.get("sessionType");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "5");
+    const skip = (page - 1) * limit;
     
     let query: any = { userId: user._id };
     if (sessionType) {
@@ -30,7 +33,10 @@ export async function GET(req: NextRequest) {
       }
     }
     
-    const bookings = await Booking.find(query).sort({ createdAt: -1 }).lean();
+    // Get total count for pagination
+    const total = await Booking.countDocuments(query);
+    
+    const bookings = await Booking.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean();
     
     // Populate event details for event bookings
     const bookingsWithDetails = await Promise.all(
@@ -43,7 +49,17 @@ export async function GET(req: NextRequest) {
       })
     );
     
-    return NextResponse.json({ success: true, data: bookingsWithDetails });
+    return NextResponse.json({ 
+      success: true, 
+      data: bookingsWithDetails,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasMore: skip + bookings.length < total,
+      }
+    });
   } catch (e: any) {
     const status = e?.message === "UNAUTHORIZED" ? 401 : 500;
     return NextResponse.json({ success: false, message: e?.message || "Server error" }, { status });
@@ -53,13 +69,26 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const user = await requireAuth(req);
-    const { sessionId, sessionType, seats, phone, comment, slotId } = (await req.json()) as { 
+    const { sessionId, sessionType, seats, phone, comment, slotId, 
+      companyName, jobTitle, workEmail, industry, companySize, 
+      preferredDates, preferredLocation, preferredDuration, sessionObjectives 
+    } = (await req.json()) as { 
       sessionId?: string;
       sessionType?: "discovery" | "private" | "corporate";
       seats?: number; 
       phone?: string; 
       comment?: string;
       slotId?: string; // For discovery/private slot reference
+      // Optional corporate-related fields
+      companyName?: string;
+      jobTitle?: string;
+      workEmail?: string;
+      industry?: string;
+      companySize?: string;
+      preferredDates?: string;
+      preferredLocation?: string;
+      preferredDuration?: string;
+      sessionObjectives?: string[];
     };
     
     if (!sessionType) {
@@ -134,15 +163,8 @@ export async function POST(req: NextRequest) {
         }, { status: 404 });
       }
       
-      // Check if session is already booked
-      if ((session.bookedSeats || 0) >= (session.totalSeats || 1)) {
-        return NextResponse.json({ 
-          success: false, 
-          message: "This session is already fully booked" 
-        }, { status: 400 });
-      }
-      
-      // Update session booked seats
+      // REMOVED: Booking limit check - allow unlimited bookings for private sessions
+      // Just increment booked seats counter for tracking purposes (not used for limiting)
       session.bookedSeats = (session.bookedSeats || 0) + 1;
       await session.save();
       
@@ -250,6 +272,16 @@ export async function POST(req: NextRequest) {
               sessionId: session._id.toString(),
               bookedDate: sessionDate,
               bookedTime: sessionTime,
+              // Optional corporate-related fields
+              companyName: companyName || undefined,
+              jobTitle: jobTitle || undefined,
+              workEmail: workEmail || undefined,
+              industry: industry || undefined,
+              companySize: companySize || undefined,
+              preferredDates: preferredDates || undefined,
+              preferredLocation: preferredLocation || undefined,
+              preferredDuration: preferredDuration || undefined,
+              sessionObjectives: Array.isArray(sessionObjectives) && sessionObjectives.length > 0 ? sessionObjectives : undefined,
             });
             console.log("✅ Created SessionEnquiry for private session booking");
           } else {
@@ -261,8 +293,19 @@ export async function POST(req: NextRequest) {
             sendPrivateSessionConfirmationToUser({
               fullName: customerName,
               email: customerEmail,
-              date: sessionDateReadable || sessionDate,
-              time: sessionTime,
+              sessionTitle: session.title || undefined,
+              date: sessionDate ? (sessionDateReadable || sessionDate) : undefined,
+              time: sessionTime || undefined,
+              preferredDates: preferredDates || undefined,
+              preferredLocation: preferredLocation || undefined,
+              preferredDuration: preferredDuration || undefined,
+              companyName: companyName || undefined,
+              jobTitle: jobTitle || undefined,
+              workEmail: workEmail || undefined,
+              industry: industry || undefined,
+              companySize: companySize || undefined,
+              sessionObjectives: Array.isArray(sessionObjectives) && sessionObjectives.length > 0 ? sessionObjectives : undefined,
+              comment: comment?.trim() || undefined,
             }).catch((error) => {
               console.error("Failed to send private session confirmation email to user:", error);
             });
@@ -273,8 +316,19 @@ export async function POST(req: NextRequest) {
             fullName: customerName,
             email: customerEmail,
             phone: customerPhone,
-            date: sessionDateReadable || sessionDate,
-            time: sessionTime,
+            sessionTitle: session.title || undefined,
+            date: (sessionDate && (sessionDateReadable || sessionDate)) ? (sessionDateReadable || sessionDate) : undefined,
+            time: sessionTime || undefined,
+            preferredDates: preferredDates || undefined,
+            preferredLocation: preferredLocation || undefined,
+            preferredDuration: preferredDuration || undefined,
+            companyName: companyName || undefined,
+            jobTitle: jobTitle || undefined,
+            workEmail: workEmail || undefined,
+            industry: industry || undefined,
+            companySize: companySize || undefined,
+            sessionObjectives: Array.isArray(sessionObjectives) && sessionObjectives.length > 0 ? sessionObjectives : undefined,
+            comment: comment?.trim() || undefined,
           }).catch((error) => {
             console.error("Failed to send private session notification email to admin:", error);
           });

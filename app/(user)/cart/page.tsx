@@ -11,15 +11,57 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/user/ProtectedRoute";
 
+type ProductDetails = {
+  _id: string;
+  originalPrice?: number;
+  hasDiscount: boolean;
+  discount?: number;
+};
+
 const CartPageContent = () => {
   const router = useRouter();
   const { items, removeItem, increment, decrement, subtotal, totalQuantity, clearCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [productDetails, setProductDetails] = useState<Map<string, ProductDetails>>(new Map());
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Fetch product details to get original prices
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      const detailsMap = new Map<string, ProductDetails>();
+      
+      for (const item of items) {
+        try {
+          const response = await fetch(`/api/products/${item.id}`);
+          const data = await response.json();
+          
+          if (data.success && data.data) {
+            const product = data.data;
+            const hasDiscount = product.discount && product.discount > 0;
+            
+            detailsMap.set(item.id, {
+              _id: product._id,
+              originalPrice: product.price,
+              hasDiscount: hasDiscount,
+              discount: product.discount || 0,
+            });
+          }
+        } catch (error) {
+          console.error(`Failed to fetch product ${item.id}:`, error);
+        }
+      }
+      
+      setProductDetails(detailsMap);
+    };
+
+    if (items.length > 0) {
+      fetchProductDetails();
+    }
+  }, [items]);
 
   // Calculate totals (prices are stored in rupees/dollars)
   const itemsSubtotal = subtotal();
@@ -32,7 +74,7 @@ const CartPageContent = () => {
     }
 
     // Check if user is logged in
-    const token = localStorage.getItem("userToken");
+    const token = sessionStorage.getItem("userToken");
     if (!token) {
       toast.error("Please login to proceed to checkout");
       router.push("/login");
@@ -147,9 +189,22 @@ const CartPageContent = () => {
                           </button>
                         </div>
 
-                        <p className="text-[#2C3E50] text-lg md:text-xl font-semibold mb-3">
-                          ${item.price.toLocaleString("en-US")}
-                        </p>
+                        <div className="mb-3">
+                          {productDetails.get(item.id)?.hasDiscount ? (
+                            <div className="flex items-center gap-2">
+                              <p className="text-[#2C3E50] text-lg md:text-xl font-semibold">
+                                ${item.price.toLocaleString("en-US")}
+                              </p>
+                              <p className="text-gray-400 text-sm md:text-base line-through">
+                                ${productDetails.get(item.id)?.originalPrice?.toLocaleString("en-US")}
+                              </p>
+                            </div>
+                          ) : (
+                            <p className="text-[#2C3E50] text-lg md:text-xl font-semibold">
+                              ${item.price.toLocaleString("en-US")}
+                            </p>
+                          )}
+                        </div>
 
                         {/* Quantity Controls */}
                         <div className="flex items-center gap-3">

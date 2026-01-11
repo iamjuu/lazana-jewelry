@@ -66,7 +66,9 @@ export interface Product extends WithTimestamps {
   relativeproduct?: boolean; // Checkbox field (true/false)
   octave?: '3rd octave' | '4th octave'; // Dropdown: 3rd octave or 4th octave
   size?: string; // Size like "7-8 inch", "8 inch"
-  weight?: 'less than 1kg' | 'less than 6kg' | 'between 1-3kg' | '3-5kg'; // Weight category
+  weight?: 'less than 1kg' | 'less than 6kg' | 'between 1-3kg' | '3-5kg' | 'greater than 6kg'; // Weight category
+  deleted?: boolean; // Soft delete flag
+  discount?: number; // Discount amount (optional)
 }
 
 export interface Category extends WithTimestamps {
@@ -90,6 +92,7 @@ export interface OrderItem {
   price: number;
   quantity: number;
   isSet?: boolean; // To calculate delivery charges
+  imageUrl?: string; // Product image URL for display in emails and order details
 }
 
 export type OrderStatus = "pending" | "paid" | "cancelled" | "failed"; // Payment status only

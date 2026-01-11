@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import PastEvent from "@/models/PastEvent";
 import { requireAdmin } from "@/lib/auth";
+import { uploadToS3 } from "@/lib/aws-s3";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -47,6 +48,70 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       );
     }
 
+    // Upload thumbnail to S3 (convert to WebP)
+    let s3ThumbnailUrl: string;
+    try {
+      const thumbnailStr = String(thumbnailImage).trim();
+      if (thumbnailStr.startsWith('https://')) {
+        s3ThumbnailUrl = thumbnailStr;
+      } else {
+        const filename = `past-event-thumbnail-${id}-${Date.now()}.webp`;
+        const result = await uploadToS3(thumbnailStr, filename, 'images');
+        s3ThumbnailUrl = result.url;
+        console.log(`✓ Updated past event thumbnail as WebP: ${result.url}`);
+      }
+    } catch (uploadError) {
+      console.error('Failed to upload thumbnail:', uploadError);
+      return NextResponse.json(
+        { success: false, message: 'Failed to upload thumbnail to S3' },
+        { status: 500 }
+      );
+    }
+
+    // Upload photos to S3 (convert to WebP)
+    const s3PhotoUrls: string[] = [];
+    for (let i = 0; i < photosArray.length; i++) {
+      const photo = photosArray[i];
+      try {
+        if (photo.startsWith('https://')) {
+          s3PhotoUrls.push(photo);
+        } else {
+          const filename = `past-event-photo-${id}-${Date.now()}-${i + 1}.webp`;
+          const result = await uploadToS3(photo, filename, 'images');
+          s3PhotoUrls.push(result.url);
+          console.log(`✓ Updated past event photo ${i + 1} as WebP: ${result.url}`);
+        }
+      } catch (uploadError) {
+        console.error(`Failed to upload photo ${i + 1}:`, uploadError);
+        return NextResponse.json(
+          { success: false, message: `Failed to upload photo ${i + 1} to S3` },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Upload videos to S3
+    const s3VideoUrls: string[] = [];
+    for (let i = 0; i < videosArray.length; i++) {
+      const video = videosArray[i];
+      try {
+        if (video.startsWith('https://') || video.startsWith('http://')) {
+          s3VideoUrls.push(video);
+        } else {
+          const filename = `past-event-video-${id}-${Date.now()}-${i + 1}.mp4`;
+          const result = await uploadToS3(video, filename, 'videos');
+          s3VideoUrls.push(result.url);
+          console.log(`✓ Updated past event video ${i + 1}: ${result.url}`);
+        }
+      } catch (uploadError) {
+        console.error(`Failed to upload video ${i + 1}:`, uploadError);
+        return NextResponse.json(
+          { success: false, message: `Failed to upload video ${i + 1} to S3` },
+          { status: 500 }
+        );
+      }
+    }
+
     const updated = await PastEvent.findByIdAndUpdate(
       id,
       {
@@ -57,9 +122,9 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
         time: String(time).trim(),
         date: String(date).trim(),
         description: String(description).trim(),
-        thumbnailImage: String(thumbnailImage).trim(),
-        photos: photosArray,
-        videos: videosArray,
+        thumbnailImage: s3ThumbnailUrl,
+        photos: s3PhotoUrls,
+        videos: s3VideoUrls,
       },
       { new: true }
     );
@@ -105,6 +170,8 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     );
   }
 }
+
+
 
 
 

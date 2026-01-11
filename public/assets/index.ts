@@ -77,3 +77,7 @@ export {default as LinkedIcon} from './icon/linked.svg'
 
 export {default as AboutNew1 } from './images/landing/aboutnew1.jpg'
 export {default as AboutNew2 } from './images/landing/aboutnew2.jpg'
+
+// About Page New Images
+export {default as AboutIMG6097} from './images/about/IMG_6097.jpeg'
+export {default as AboutCrystal} from './images/about/crystal.jpg'

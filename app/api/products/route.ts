@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
     const excludeImages = searchParams.get("excludeImages") === "true";
     const categoryParam = searchParams.get("category");
     const includeRelative = searchParams.get("includeRelative") === "true";
+    const search = searchParams.get("search") || "";
     
     // Filter parameters
     const featured = searchParams.get("featured");
@@ -95,6 +96,18 @@ export async function GET(req: NextRequest) {
     // Only show regular products unless explicitly requested via includeRelative parameter
     if (!includeRelative) {
       query.relativeproduct = { $ne: true };
+    }
+
+    // Exclude deleted products
+    query.deleted = { $ne: true };
+
+    // Add search functionality
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { shortDescription: { $regex: search, $options: "i" } },
+      ];
     }
 
     // Build sort object

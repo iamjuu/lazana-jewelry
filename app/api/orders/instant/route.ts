@@ -19,23 +19,27 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    // Get product
-    const product = await Product.findById(productId).lean();
+    // Get product (exclude deleted products)
+    const product = await Product.findOne({ _id: productId, deleted: { $ne: true } }).lean();
     if (!product) {
       return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
     }
 
+    // Calculate actual price (price - discount)
+    const hasDiscount = product.discount && product.discount > 0;
+    const actualPrice = hasDiscount && product.discount ? product.price - product.discount : product.price;
+    
     // Create order
     const orderItems = [
       {
         productId: String(product._id),
         name: product.name,
-        price: product.price,
+        price: actualPrice, // Use discounted price
         quantity,
       },
     ];
 
-    const amount = product.price * quantity;
+    const amount = actualPrice * quantity;
 
     const order = await Order.create({
       userId: user._id,

@@ -41,14 +41,18 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    // Get product details
-    const product = await Product.findById(productId).lean();
+    // Get product details (exclude deleted products)
+    const product = await Product.findOne({ _id: productId, deleted: { $ne: true } }).lean();
     if (!product) {
       return NextResponse.json(
         { success: false, message: "Product not found" },
         { status: 404 }
       );
     }
+
+    // Calculate actual price (price - discount)
+    const hasDiscount = product.discount && product.discount > 0;
+    const actualPrice = hasDiscount && product.discount ? product.price - product.discount : product.price;
 
     // Get first image URL for Stripe - only use HTTP/HTTPS URLs under 2048 chars
     const imageUrl = product.imageUrl && product.imageUrl.length > 0 
@@ -72,7 +76,7 @@ export async function POST(req: NextRequest) {
             description: product.description,
             images: validImageUrl ? [validImageUrl] : [],
           },
-          unit_amount: Math.round(product.price * 100), // Convert to smallest currency unit (cents)
+          unit_amount: Math.round(actualPrice * 100), // Convert to smallest currency unit (cents) using discounted price
         },
         quantity: quantity,
       }],
@@ -84,7 +88,7 @@ export async function POST(req: NextRequest) {
         items: JSON.stringify([{
           productId: product._id.toString(), // Changed from 'id' to 'productId' to match Order model
           name: product.name,
-          price: product.price,
+          price: actualPrice, // Use discounted price
           quantity: quantity,
         }]),
         instantBuy: "true",

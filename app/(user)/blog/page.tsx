@@ -5,8 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Navbar from '@/components/user/Navbar'
 import Footer from '@/components/user/Footer'
-import { About1, About2 } from '@/public/assets'
-import { ArrowRight, MoreVertical } from 'lucide-react'
+import { About1 } from '@/public/assets'
 
 type ApiBlog = {
   _id: string;
@@ -18,51 +17,9 @@ type ApiBlog = {
   updatedAt: string;
 };
 
-type DisplayBlog = {
-  id: string;
-  image: string | typeof About1;
-  title: string;
-  description: string;
-  author: string;
-  createdAt: string;
-};
-
 const BlogPage = () => {
-  const [blogsData, setBlogsData] = useState<DisplayBlog[]>([]);
+  const [blogsData, setBlogsData] = useState<ApiBlog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const blogsPerPage = 10;
-
-  // Helper function to get image URL
-  const getImageUrl = (imageUrl?: string): string | typeof About1 => {
-    if (!imageUrl) return About1;
-    if (imageUrl.startsWith("data:image")) return imageUrl;
-    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return imageUrl;
-    return `data:image/jpeg;base64,${imageUrl}`;
-  };
-
-  // Helper function to truncate description
-  const truncateDescription = (text: string, maxLength: number = 150): string => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + "...";
-  };
-
-  // Calculate pagination
-  const totalPages = Math.ceil(blogsData.length / blogsPerPage);
-  const startIndex = (currentPage - 1) * blogsPerPage;
-  const endIndex = startIndex + blogsPerPage;
-  const currentBlogs = blogsData.slice(startIndex, endIndex);
-  const hasMorePages = currentPage < totalPages;
-
-  const handleSeeMore = () => {
-    setCurrentPage(prev => prev + 1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleBack = () => {
-    setCurrentPage(prev => Math.max(1, prev - 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   // Fetch blogs from API
   const fetchBlogs = async () => {
@@ -72,19 +29,7 @@ const BlogPage = () => {
       const data = await response.json();
       
       if (data.success && data.data) {
-        const apiBlogs: ApiBlog[] = data.data;
-        
-        // Transform API blogs to display format
-        const transformedBlogs: DisplayBlog[] = apiBlogs.map((blog) => ({
-          id: blog._id,
-          image: getImageUrl(blog.imageUrl),
-          title: blog.title,
-          description: blog.description,
-          author: blog.name || "Francesca Wong",
-          createdAt: blog.createdAt
-        }));
-
-        setBlogsData(transformedBlogs);
+        setBlogsData(data.data);
       } else {
         setBlogsData([]);
       }
@@ -98,26 +43,50 @@ const BlogPage = () => {
 
   useEffect(() => {
     fetchBlogs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Helper function to get image URL
+  const getImageUrl = (imageUrl?: string): string | typeof About1 => {
+    if (!imageUrl) return About1;
+    if (imageUrl.startsWith("data:image")) return imageUrl;
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return imageUrl;
+    return `data:image/jpeg;base64,${imageUrl}`;
+  };
+
+  // Get excerpt from description (first ~150 characters)
+  const getExcerpt = (text: string, maxLength: number = 150): string => {
+    if (text.length <= maxLength) return text;
+    const truncated = text.substring(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(' ');
+    return lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated;
+  };
 
   return (
     <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
       <Navbar />
       <div className="w-full">
-        <section className="w-full px-4 md:px-8 py-[68px]">
-          <div className="max-w-5xl mx-auto">
-            {/* Header Section */}
-            <div className="flex  items-center md:mb-12 mb-8 gap-[50px]">
-                <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
-                  Blog
-                </h2>
-                <p className="text-[#1C3163] text-[14px] sm:text-[16px] md:text-[18px] font-light">
-            Resonances that ground, stabilize, and root you in the wisdom of nature.
-                </p>
-              </div>
+        {/* Hero/Header Image with Centered Text */}
+        <div className="relative w-full h-[300px] md:h-[400px] lg:h-[450px] overflow-hidden mt-[15px]">
+          {/* Background Image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: 'url(https://images.unsplash.com/photo-1511497584788-876760111969?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80)'
+            }}
+          />
+          {/* Gradient Overlay */}
+          {/* <div className="absolute inset-0 bg-gradient-to-br from-[#D5B584]/80 via-[#FEC1A2]/70 to-[#FDECE2]/80"></div> */}
+          {/* Content */}
+          <div className="relative z-10 h-full flex items-center justify-center">
+            <h1 className="text-white text-5xl md:text-6xl lg:text-7xl font-normal text-center drop-shadow-lg">
+              Blog
+            </h1>
+          </div>
+        </div>
 
-            {/* Blog List */}
+        <section className="w-full px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+          <div className="max-w-6xl mx-auto">
+            {/* Blog Grid */}
             {loading ? (
               <div className="text-center py-12 text-[#1C3163]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
@@ -126,102 +95,65 @@ const BlogPage = () => {
             ) : blogsData.length === 0 ? (
               <div className="text-center py-12 text-[#1C3163]">No blogs available</div>
             ) : (
-              <>
-                {/* Blog Cards - Vertical List Layout */}
-                <div>
-                  {currentBlogs.map((blog) => {
-                    // Calculate read time (approximate: 200 words per minute)
-                    const words = blog.description.split(/\s+/).length;
-                    const readTime = Math.ceil(words / 200);
-                    const createdDate = new Date(blog.createdAt).toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric' 
-                    });
-                    
-                    return (
-                      <Link key={blog.id} href={`/blog/${blog.id}`}>
-                        <div className="bg-white w-full rounded-lg flex flex-col md:flex-row gap-6 md:gap-8 group cursor-pointer hover:shadow-lg transition-shadow duration-300 p-4 md:p-6 mb-6 md:mb-8">
-                          {/* Left Side - Blog Image */}
-                          <div className="w-full md:w-[40%] lg:w-[35%] flex-shrink-0">
-                            <div className="relative w-full aspect-[16/10] rounded-lg overflow-hidden">
-                              {typeof blog.image === "string" ? (
-                                <img
-                                  src={blog.image}
-                                  alt={blog.title}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <Image
-                                  src={blog.image}
-                                  alt={blog.title}
-                                  fill
-                                  className="object-cover"
-                                />
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Right Side - Blog Content */}
-                          <div className="flex-1 flex flex-col justify-between">
-                            <div>
-                              {/* Author Info */}
-                              <div className="flex items-center gap-3 mb-3">
-                                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                                  <Image
-                                    src={About2}
-                                    alt="Author"
-                                    width={32}
-                                    height={32}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-600 text-[13px] md:text-[14px]">
-                                  <span>{createdDate}</span>
-                                  <span>•</span>
-                                  <span>{readTime} min read</span>
-                                </div>
-                                <div className="ml-auto">
-                                  <MoreVertical className="w-5 h-5 text-gray-400" />
-                                </div>
-                              </div>
-
-                              {/* Blog Title */}
-                              <h2 className="text-[#1C3163] text-[20px] md:text-[24px] lg:text-[26px] font-semibold mb-3 leading-tight group-hover:text-[#D5B584] transition-colors duration-300">
-                                {blog.title}
-                              </h2>
-                              
-                              {/* Blog Description */}
-                              <p className="text-[#6B5D4F] text-[14px] md:text-[15px] lg:text-[16px] font-light leading-relaxed">
-                                {truncateDescription(blog.description, 150)}
-                              </p>
-                            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+                {blogsData.map((blog) => {
+                  const imageUrl = getImageUrl(blog.imageUrl);
+                  const excerpt = getExcerpt(blog.description);
+                  
+                  return (
+                    <article key={blog._id} className="flex flex-col">
+                      <Link href={`/blog/${blog._id}`} className="group flex flex-col h-full">
+                        {/* Blog Image - Smaller Height */}
+                        <div className="w-full mb-4 overflow-hidden flex-shrink-0">
+                          <div className="relative w-full aspect-[5/6] overflow-hidden w-[500px] h-[250px]  ">
+                            {typeof imageUrl === "string" ? (
+                              <img
+                                src={imageUrl}
+                                alt={blog.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                            ) : (
+                              <Image
+                                src={imageUrl}
+                                alt={blog.title}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                            )}
                           </div>
                         </div>
-                      </Link>
-                    );
-                  })}
-                </div>
 
-                {/* Pagination */}
-                <div className="flex items-center justify-center gap-4 mt-8">
-                  {currentPage > 1 && (
-                    <button
-                      onClick={handleBack}
-                      className="px-6 py-3 bg-white text-[#1C3163] border border-[#1C3163] rounded-lg hover:bg-[#1C3163] hover:text-white transition-colors duration-300 font-medium"
-                    >
-                      Back
-                    </button>
-                  )}
-                  {hasMorePages && (
-                    <button
-                      onClick={handleSeeMore}
-                      className="px-6 py-3 bg-[#1C3163] text-white rounded-lg hover:bg-[#D5B584] transition-colors duration-300 font-medium"
-                    >
-                      See More
-                    </button>
-                  )}
-                </div>
-              </>
+                        {/* Blog Content */}
+                        <div className="flex flex-col flex-1">
+                          {/* Title */}
+                          <h2 className="text-[#1C3163] text-xl md:text-2xl font-bold mb-3 leading-tight group-hover:text-[#D5B584] transition-colors duration-200">
+                            {blog.title}
+                          </h2>
+
+                          {/* Description with Read More aligned to right */}
+                          <div className="flex items-start justify-between gap-2 ">
+                            <p className="text-[#1C3163] text-sm md:text-base leading-relaxed flex-1">
+                              {excerpt}
+                            </p>
+                          
+                          </div>
+                       
+                        </div>
+                      </Link>
+                      <div className='flex justify-start'>
+                      <Link 
+                              href={`/blog/${blog._id}`}
+                              className="underline hover:text-[#D5B584] transition-colors duration-200 whitespace-nowrap flex-shrink-0"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Read More
+                            </Link>
+                      </div>
+                      
+                    </article>
+                  );
+                })}
+              </div>
             )}
           </div>
         </section>

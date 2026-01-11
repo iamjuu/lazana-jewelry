@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 type Event = {
   _id: string;
@@ -19,6 +20,15 @@ type Event = {
   updatedAt: string;
 };
 
+// Generate hour options (1-12)
+const HOUR_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
+
+// Generate minute options (00, 15, 30, 45)
+const MINUTE_OPTIONS = ['00', '15', '30', '45'];
+
+// Period options
+const PERIOD_OPTIONS = ['AM', 'PM'];
+
 export default function EventsPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -29,10 +39,16 @@ export default function EventsPage() {
     time: "",
     date: "",
     description: "",
-    image: "" as string | File | null,
+    image: "",
     totalSeats: 1,
     price: 0,
   });
+  const [startHour, setStartHour] = useState("");
+  const [startMinute, setStartMinute] = useState("");
+  const [startPeriod, setStartPeriod] = useState("AM");
+  const [endHour, setEndHour] = useState("");
+  const [endMinute, setEndMinute] = useState("");
+  const [endPeriod, setEndPeriod] = useState("AM");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -41,15 +57,34 @@ export default function EventsPage() {
   const [eventsLoading, setEventsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalEvents, setTotalEvents] = useState<number>(0);
+  
+  // S3 upload states
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Fetch events
   const fetchEvents = async () => {
     try {
       setEventsLoading(true);
-      const response = await fetch("/api/admin/events");
+      const params = new URLSearchParams();
+      params.append("page", currentPage.toString());
+      params.append("limit", "10");
+      if (searchQuery.trim()) {
+        params.append("search", searchQuery.trim());
+      }
+      
+      const response = await fetch(`/api/admin/events?${params.toString()}`);
       const data = await response.json();
       if (data.success && data.data) {
         setEvents(data.data);
+        if (data.pagination) {
+          setTotalPages(data.pagination.pages || 1);
+          setTotalEvents(data.pagination.total || 0);
+        }
       } else {
         setEvents([]);
       }
@@ -62,8 +97,12 @@ export default function EventsPage() {
   };
 
   useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when search changes
+  }, [searchQuery]);
+
+  useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [currentPage, searchQuery]);
 
   // Normalize image URL for display
   const getImageUrl = (event: Event) => {
@@ -98,89 +137,110 @@ export default function EventsPage() {
     }
   };
 
-  const compressImageToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = Math.round((height * MAX_WIDTH) / width);
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = Math.round((width * MAX_HEIGHT) / height);
-              height = MAX_HEIGHT;
-            }
-          }
-
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-
-          if (!ctx) {
-            reject(new Error("Could not get canvas context"));
-            return;
-          }
-
-          ctx.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                reject(new Error("Failed to create blob"));
-                return;
-              }
-
-              const reader2 = new FileReader();
-              reader2.onloadend = () => {
-                const base64String = reader2.result as string;
-                resolve(base64String);
-              };
-              reader2.onerror = () => reject(new Error("Failed to read blob"));
-              reader2.readAsDataURL(blob);
-            },
-            "image/webp",
-            0.8
-          );
-        };
-        img.onerror = () => reject(new Error("Failed to load image"));
-        img.src = e.target?.result as string;
-      };
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleImageUpload = async (file: File | null) => {
+  // Handle image selection (don't upload yet)
+  const handleImageSelect = (file: File | null) => {
     if (!file) {
-      setFormData({ ...formData, image: "" });
-      setPreviewUrl("");
+      setSelectedImageFile(null);
       return;
     }
+    setSelectedImageFile(file);
+    setError(null);
+  };
+
+  // Upload image to S3
+  const handleUploadImageToS3 = async () => {
+    if (!selectedImageFile) return;
+
+    setUploadingImage(true);
+    setError(null);
 
     try {
-      const base64String = await compressImageToBase64(file);
-      setFormData({ ...formData, image: base64String });
-      setPreviewUrl(base64String);
-    } catch (error) {
-      console.error("Error compressing image:", error);
-      setError("Failed to process image");
+      // Delete old image if replacing
+      if (formData.image) {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.image }),
+        });
+      }
+
+      // Upload new image to S3
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", selectedImageFile);
+      uploadFormData.append("folder", "images");
+
+      const response = await fetch("/api/upload/s3", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image to S3");
+      }
+
+      const { url } = await response.json();
+
+      setFormData({ ...formData, image: url });
+      setPreviewUrl(url);
+      setSelectedImageFile(null);
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      setError("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
     }
+  };
+
+  // Remove uploaded image
+  const handleRemoveImage = async () => {
+    if (formData.image) {
+      try {
+        await fetch("/api/upload/s3/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: formData.image }),
+        });
+      } catch (err) {
+        console.error("Error deleting image:", err);
+      }
+    }
+    setFormData({ ...formData, image: "" });
+    setPreviewUrl("");
+    setSelectedImageFile(null);
+  };
+
+  // Parse time string to extract hours, minutes, and periods
+  const parseTimeRange = (timeString: string) => {
+    if (!timeString) {
+      return {
+        startHour: "", startMinute: "", startPeriod: "AM",
+        endHour: "", endMinute: "", endPeriod: "AM"
+      };
+    }
+    
+    const match = timeString.match(/(\d+):(\d+)\s*(AM|PM)\s*-\s*(\d+):(\d+)\s*(AM|PM)/i);
+    if (match) {
+      return {
+        startHour: match[1],
+        startMinute: match[2],
+        startPeriod: match[3].toUpperCase(),
+        endHour: match[4],
+        endMinute: match[5],
+        endPeriod: match[6].toUpperCase()
+      };
+    }
+    
+    return {
+      startHour: "", startMinute: "", startPeriod: "AM",
+      endHour: "", endMinute: "", endPeriod: "AM"
+    };
   };
 
   // Handle edit button click
   const handleEdit = (event: Event) => {
     setEditingId(event._id);
     setShowAddForm(true);
+    const timeRange = parseTimeRange(event.time || "");
     setFormData({
       name: event.name || "",
       title: event.title || "",
@@ -193,6 +253,12 @@ export default function EventsPage() {
       totalSeats: event.totalSeats || 1,
       price: event.price || 0,
     });
+    setStartHour(timeRange.startHour);
+    setStartMinute(timeRange.startMinute);
+    setStartPeriod(timeRange.startPeriod);
+    setEndHour(timeRange.endHour);
+    setEndMinute(timeRange.endMinute);
+    setEndPeriod(timeRange.endPeriod);
     
     if (event.imageUrl) {
       setPreviewUrl(getImageUrl(event));
@@ -234,11 +300,14 @@ export default function EventsPage() {
       return;
     }
 
-    if (!formData.time.trim()) {
-      setError("Time is required");
+    if (!startHour || !startMinute || !endHour || !endMinute) {
+      setError("Both start time and end time (hours and minutes) are required");
       setLoading(false);
       return;
     }
+
+    // Combine start and end time into a single string
+    const timeRange = `${startHour}:${startMinute} ${startPeriod} - ${endHour}:${endMinute} ${endPeriod}`;
 
     if (!formData.date.trim()) {
       setError("Date is required");
@@ -277,7 +346,7 @@ export default function EventsPage() {
         title: formData.title.trim(),
         location: formData.location.trim(),
         day: formData.day.trim(),
-        time: formData.time.trim(),
+        time: timeRange,
         date: formData.date.trim(),
         description: formData.description.trim(),
         totalSeats: Number(formData.totalSeats),
@@ -304,6 +373,12 @@ export default function EventsPage() {
 
       setSuccess(`Event ${isEdit ? "updated" : "created"} successfully!`);
       setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", image: "", totalSeats: 1, price: 0 });
+      setStartHour("");
+      setStartMinute("");
+      setStartPeriod("AM");
+      setEndHour("");
+      setEndMinute("");
+      setEndPeriod("AM");
       setPreviewUrl("");
       setEditingId(null);
       
@@ -324,10 +399,17 @@ export default function EventsPage() {
   const handleCancel = () => {
     setShowAddForm(false);
     setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", image: "", totalSeats: 1, price: 0 });
+    setStartHour("");
+    setStartMinute("");
+    setStartPeriod("AM");
+    setEndHour("");
+    setEndMinute("");
+    setEndPeriod("AM");
     setPreviewUrl("");
     setEditingId(null);
     setError(null);
     setSuccess(null);
+    setSelectedImageFile(null);
   };
 
   return (
@@ -335,20 +417,34 @@ export default function EventsPage() {
       <div className="mx-auto max-w-7xl">
         <h1 className="text-3xl font-bold text-white mb-6">Events Management</h1>
 
-        {/* Add Button */}
+        {/* Add Button and Search */}
         {!showAddForm && (
-          <div className="mb-6 flex items-center justify-between">
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
-            >
-              Add Event
-            </button>
-            {events.length > 0 && (
-              <div className="text-sm text-zinc-400">
-                Total Events: {events.length}
-              </div>
-            )}
+          <div className="mb-6 space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+              >
+                Add Event
+              </button>
+              {totalEvents > 0 && (
+                <div className="text-sm text-zinc-400">
+                  Total Events: {totalEvents}
+                </div>
+              )}
+            </div>
+            
+            {/* Search */}
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={20} />
+              <input
+                type="text"
+                placeholder="Search events by name, title, description, location..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
         )}
 
@@ -450,6 +546,62 @@ export default function EventsPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="bg-zinc-800 rounded-lg p-4 border border-zinc-700 mt-6">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-zinc-400">
+                    Showing page {currentPage} of {totalPages} ({totalEvents} total events)
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      <ChevronLeft size={16} />
+                      Previous
+                    </button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                              currentPage === pageNum
+                                ? "bg-blue-600 text-white"
+                                : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="px-4 py-2 bg-zinc-700 text-white rounded-lg text-sm font-medium transition-colors hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      Next
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -560,18 +712,103 @@ export default function EventsPage() {
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="event-time" className="text-sm font-medium text-white">
+                <label className="text-sm font-medium text-white">
                   Time <span className="text-red-500">*</span>
                 </label>
-                <input
-                  id="event-time"
-                  type="text"
-                  required
-                  value={formData.time}
-                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-                  placeholder="e.g., 07:00PM - 10:00PM"
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Start Time */}
+                  <div className="space-y-2">
+                    <label className="text-xs text-zinc-400 block">
+                      Start Time
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <select
+                        id="event-start-hour"
+                        required
+                        value={startHour}
+                        onChange={(e) => setStartHour(e.target.value)}
+                        className="rounded-md border border-zinc-600 bg-zinc-900 px-2 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        <option value="">Hour</option>
+                        {HOUR_OPTIONS.map((hour) => (
+                          <option key={hour} value={hour}>
+                            {hour}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="event-start-minute"
+                        required
+                        value={startMinute}
+                        onChange={(e) => setStartMinute(e.target.value)}
+                        className="rounded-md border border-zinc-600 bg-zinc-900 px-2 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        <option value="">Min</option>
+                        {MINUTE_OPTIONS.map((min) => (
+                          <option key={min} value={min}>
+                            {min.toString().padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="event-start-period"
+                        required
+                        value={startPeriod}
+                        onChange={(e) => setStartPeriod(e.target.value)}
+                        className="rounded-md border border-zinc-600 bg-zinc-900 px-2 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                      </select>
+                    </div>
+                  </div>
+                  {/* End Time */}
+                  <div className="space-y-2">
+                    <label className="text-xs text-zinc-400 block">
+                      End Time
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <select
+                        id="event-end-hour"
+                        required
+                        value={endHour}
+                        onChange={(e) => setEndHour(e.target.value)}
+                        className="rounded-md border border-zinc-600 bg-zinc-900 px-2 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        <option value="">Hour</option>
+                        {HOUR_OPTIONS.map((hour) => (
+                          <option key={hour} value={hour}>
+                            {hour}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="event-end-minute"
+                        required
+                        value={endMinute}
+                        onChange={(e) => setEndMinute(e.target.value)}
+                        className="rounded-md border border-zinc-600 bg-zinc-900 px-2 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        <option value="">Min</option>
+                        {MINUTE_OPTIONS.map((min) => (
+                          <option key={min} value={min}>
+                            {min.toString().padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="event-end-period"
+                        required
+                        value={endPeriod}
+                        onChange={(e) => setEndPeriod(e.target.value)}
+                        className="rounded-md border border-zinc-600 bg-zinc-900 px-2 py-2 text-sm text-white focus:border-white focus:outline-none"
+                      >
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-1">
@@ -616,16 +853,51 @@ export default function EventsPage() {
                 id="event-image"
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleImageUpload(e.target.files?.[0] || null)}
+                onChange={(e) => handleImageSelect(e.target.files?.[0] || null)}
                 className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
               />
-              {previewUrl && (
+              
+              {/* Pending file preview with upload button */}
+              {selectedImageFile && !formData.image && (
+                <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mt-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
+                      <p className="text-xs text-zinc-400 mt-1">
+                        Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleUploadImageToS3}
+                      disabled={uploadingImage}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
+                    >
+                      {uploadingImage ? "Uploading..." : "Upload"}
+                    </button>
+                  </div>
+                  {!uploadingImage && (
+                    <p className="text-xs text-yellow-500 mt-2">⚠️ Click "Upload" to save this image</p>
+                  )}
+                </div>
+              )}
+
+              {/* Uploaded image preview */}
+              {previewUrl && formData.image && (
                 <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900 mt-2">
                   <img
                     src={previewUrl}
                     alt="Preview"
                     className="w-full h-full object-contain"
                   />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                    title="Remove image"
+                  >
+                    ×
+                  </button>
                 </div>
               )}
             </div>

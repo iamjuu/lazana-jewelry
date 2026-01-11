@@ -93,7 +93,7 @@ function OrderConfirmationContent() {
 
   const fetchUser = async () => {
     try {
-      const token = localStorage.getItem("userToken");
+      const token = sessionStorage.getItem("userToken");
       if (!token) return;
 
       const response = await fetch("/api/auth/me", {
@@ -145,18 +145,34 @@ function OrderConfirmationContent() {
     }
   };
 
+  // Helper function to normalize image URL
+  const normalizeImageUrl = (url: string): string => {
+    if (!url) return "";
+    if (url.startsWith("data:image")) return url;
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
+    return `data:image/jpeg;base64,${url}`;
+  };
+
   const fetchProduct = async (id: string) => {
     try {
       const response = await fetch(`/api/products/${id}`);
       const data = await response.json();
       if (data.success) {
+        const hasDiscount = data.data.discount && data.data.discount > 0;
+        const actualPrice = hasDiscount ? data.data.price - data.data.discount : data.data.price;
+        
+        // Normalize image URLs - ensure they're in the correct format
+        const imageUrls = Array.isArray(data.data.imageUrl) && data.data.imageUrl.length > 0
+          ? data.data.imageUrl.map((url: string) => normalizeImageUrl(url))
+          : [];
+        
         setItems([
           {
             _id: data.data._id,
             name: data.data.name,
-            price: data.data.price,
+            price: actualPrice, // Use discounted price
             quantity: quantity,
-            imageUrl: data.data.imageUrl,
+            imageUrl: imageUrls, // Normalized image URLs
             isSet: data.data.isSet || false,
             numberOfSets: data.data.numberOfSets || 0,
             relativeproduct: data.data.relativeproduct || false,
@@ -179,10 +195,12 @@ function OrderConfirmationContent() {
         const response = await fetch(`/api/products/${cartItem.id}`);
         const data = await response.json();
         if (data.success) {
+          const hasDiscount = data.data.discount && data.data.discount > 0;
+          const actualPrice = hasDiscount ? data.data.price - data.data.discount : data.data.price;
           return {
             _id: data.data._id,
             name: data.data.name,
-            price: data.data.price,
+            price: actualPrice, // Use discounted price
             quantity: cartItem.quantity,
             imageUrl: Array.isArray(data.data.imageUrl) ? data.data.imageUrl : [],
             isSet: data.data.isSet || false,
@@ -265,7 +283,7 @@ function OrderConfirmationContent() {
   // Validate and apply coupon
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
-      setCouponError("Please enter a coupon code");
+      setCouponError("Invalid coupon");
       return;
     }
 
@@ -282,7 +300,7 @@ function OrderConfirmationContent() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          Authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
         },
         body: JSON.stringify({
           couponCode: couponCode.trim().toUpperCase(),
@@ -298,15 +316,16 @@ function OrderConfirmationContent() {
       if (data.success) {
         setAppliedCoupon(data.data.coupon);
         setDiscountAmount(data.data.discountAmount);
-        toast.success(`Coupon applied! ${data.data.discountPercent}% off`);
+        setCouponError("");
+        toast.success(`Coupon applied! Saved $${data.data.discountAmount.toFixed(2)}`);
       } else {
-        setCouponError(data.message || "Invalid coupon code");
+        setCouponError(data.message || "Coupon code not available for this product");
         setAppliedCoupon(null);
         setDiscountAmount(0);
       }
     } catch (error: any) {
       console.error("Coupon validation error:", error);
-      setCouponError("Failed to validate coupon. Please try again.");
+      setCouponError("Coupon code not available for this product");
       setAppliedCoupon(null);
       setDiscountAmount(0);
     } finally {
@@ -350,6 +369,7 @@ function OrderConfirmationContent() {
             price: item.price,
             quantity: item.quantity,
             isSet: item.isSet,
+            imageUrl: item.imageUrl && item.imageUrl.length > 0 ? item.imageUrl[0] : undefined, // Include first product image
           })),
           productTotal,
           deliveryCharges,
@@ -563,26 +583,35 @@ function OrderConfirmationContent() {
                   Coupon Code (Optional)
                 </label>
                 {!appliedCoupon ? (
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={couponCode}
-                      onChange={(e) => {
-                        setCouponCode(e.target.value.toUpperCase());
-                        setCouponError("");
-                      }}
-                      placeholder="Enter coupon code"
-                      className="flex-1 px-4 py-2 border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1C3163]"
-                      disabled={validatingCoupon}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleApplyCoupon}
-                      disabled={validatingCoupon || !couponCode.trim()}
-                      className="px-6 py-2 bg-[#D5B584] text-white rounded-md font-medium hover:bg-[#C4A574] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {validatingCoupon ? "Validating..." : "Apply"}
-                    </button>
+                  <div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={couponCode}
+                        onChange={(e) => {
+                          setCouponCode(e.target.value.toUpperCase());
+                          setCouponError("");
+                        }}
+                        placeholder="Enter coupon code"
+                        className="flex-1 px-4 py-2 border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1C3163]"
+                        disabled={validatingCoupon}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        disabled={validatingCoupon || !couponCode.trim()}
+                        className={`px-6 py-2 rounded-md font-medium transition-all ${
+                          couponCode.trim() && !validatingCoupon
+                            ? "bg-[#1C3163] text-white hover:bg-[#152747] shadow-md"
+                            : "bg-[#D5B584] text-white hover:bg-[#C4A574] opacity-50 cursor-not-allowed"
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {validatingCoupon ? "Validating..." : "Apply"}
+                      </button>
+                    </div>
+                    {couponError && (
+                      <p className="mt-1 text-sm text-red-600">{couponError}</p>
+                    )}
                   </div>
                 ) : (
                   <div className="p-3 bg-green-50 border border-green-200 rounded-md">
@@ -605,9 +634,6 @@ function OrderConfirmationContent() {
                     </div>
                   </div>
                 )}
-                {couponError && (
-                  <p className="mt-1 text-sm text-red-600">{couponError}</p>
-                )}
               </div>
 
               <button
@@ -627,10 +653,10 @@ function OrderConfirmationContent() {
             <div className="space-y-4 mb-6">
               {items.map((item) => (
                 <div key={item._id} className="flex gap-4">
-                  {item.imageUrl && item.imageUrl[0] && (
+                  {item.imageUrl && item.imageUrl.length > 0 && item.imageUrl[0] && (
                     <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
                       <Image
-                        src={item.imageUrl[0].startsWith("data:") ? item.imageUrl[0] : `data:image/jpeg;base64,${item.imageUrl[0]}`}
+                        src={item.imageUrl[0]}
                         alt={item.name}
                         fill
                         className="object-cover"

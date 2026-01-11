@@ -18,6 +18,7 @@ type Product = {
   _id: string;
   name: string;
   price: number;
+  discount?: number;
   createdAt: string;
   description?: string;
   category?: string | { _id: string; name: string; slug: string };
@@ -272,12 +273,16 @@ const ShopPage = () => {
     e.stopPropagation();
     
     // Check if user is logged in
-    const token = localStorage.getItem("userToken");
+    const token = sessionStorage.getItem("userToken");
     if (!token) {
       toast.error("Please login to add items to cart");
       router.push("/login");
       return;
     }
+
+    // Calculate discounted price if applicable
+    const hasDiscount = item.discount && item.discount > 0;
+    const discountedPrice = hasDiscount && item.discount ? item.price - item.discount : item.price;
 
     // Get first image URL for cart
     const imageUrl = item.imageUrl && item.imageUrl.length > 0 
@@ -287,7 +292,7 @@ const ShopPage = () => {
     addItem({
       id: item._id,
       name: item.name,
-      price: item.price, // Price in rupees/dollars
+      price: discountedPrice, // Use discounted price
       imageUrl: imageUrl,
     });
 
@@ -322,11 +327,11 @@ const ShopPage = () => {
                 <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
                   {categoryName}
                 </h2>
-                <p className="text-[#1C3163] text-[14px] sm:text-[16px] md:text-[18px] font-light">
+                {/* <p className="text-[#1C3163] text-[14px] sm:text-[16px] md:text-[18px] font-light">
                   {categoryName === "All Products" 
                     ? "Private Sessions & Corporate Wellness"
                     : "Browse our collection"}
-                </p>
+                </p> */}
               </div>
               
             </div>
@@ -352,8 +357,8 @@ const ShopPage = () => {
                     aria-label="Sort Products"
                   >
                     <Image src={SortIcon} alt="sort" className="w-5 h-5 lg:w-6 lg:h-6" />
-                  </button>
-                  
+                </button>
+
                   {showSortDropdown && (
                     <div className="absolute left-0 lg:left-full lg:top-0 top-full mt-2 lg:mt-0 lg:ml-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[220px]">
                       <button
@@ -403,14 +408,14 @@ const ShopPage = () => {
                         }`}
                       >
                         PRICE, HIGH TO LOW
-                      </button>
+                </button>
                     </div>
                   )}
-                </div>
               </div>
-
+            </div>
+            
               {/* Filter Sidebar - Left */}
-              {showFilters && (
+            {showFilters && (
                 <div className="w-full lg:w-64 shrink-0 bg-white rounded-lg p-6 shadow-lg">
                   <div className="space-y-6">
                     {/* All Collections Heading */}
@@ -420,20 +425,20 @@ const ShopPage = () => {
                     </div>
                     
                     {/* Filter Options */}
-                    <div className="space-y-3">
+                  <div className="space-y-3">
                       {/* Weight Options */}
                       <div className="space-y-2 pt-2">
                         <h4 className="text-sm font-medium text-[#1C3163]">Weight</h4>
-                        {["less than 1kg", "less than 6kg", "between 1-3kg", "3-5kg"].map((weight) => (
+                        {["less than 1kg", "less than 6kg", "between 1-3kg", "3-5kg", "greater than 6kg"].map((weight) => (
                           <label key={weight} className="flex items-center justify-between cursor-pointer py-1">
                             <span className="text-sm text-[#1C3163]">{weight}</span>
-                            <input
-                              type="checkbox"
+                      <input
+                        type="checkbox"
                               checked={filters.weight === weight}
                               onChange={(e) => setFilters({ ...filters, weight: e.target.checked ? weight : "" })}
-                              className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
-                            />
-                          </label>
+                        className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
+                      />
+                    </label>
                         ))}
                       </div>
                       
@@ -443,16 +448,16 @@ const ShopPage = () => {
                         {["3rd octave", "4th octave"].map((octave) => (
                           <label key={octave} className="flex items-center justify-between cursor-pointer py-1">
                             <span className="text-sm text-[#1C3163]">{octave}</span>
-                            <input
-                              type="checkbox"
+                      <input
+                        type="checkbox"
                               checked={filters.octave === octave}
                               onChange={(e) => setFilters({ ...filters, octave: e.target.checked ? octave : "" })}
-                              className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
-                            />
-                          </label>
+                        className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
+                      />
+                    </label>
                         ))}
-                      </div>
-                      
+                  </div>
+                  
                       {/* Size Options */}
                       <div className="space-y-2 pt-2">
                         <h4 className="text-sm font-medium text-[#1C3163]">Size</h4>
@@ -467,8 +472,8 @@ const ShopPage = () => {
                             />
                           </label>
                         ))}
-                      </div>
-                      
+                  </div>
+                  
                       {/* Tuning Options */}
                       <div className="space-y-2 pt-2">
                         <h4 className="text-sm font-medium text-[#1C3163]">Tuning</h4>
@@ -483,12 +488,12 @@ const ShopPage = () => {
                             />
                           </label>
                         ))}
-                      </div>
-                    </div>
                   </div>
                 </div>
-              )}
-              
+                </div>
+              </div>
+            )}
+            
               {/* Products Grid - Right */}
               <div className="flex-1">
               {loading ? (
@@ -517,7 +522,11 @@ const ShopPage = () => {
                       }
                       return `$${rounded.toFixed(2)}`;
                     };
-                    const priceInRupees = formatPrice(item.price);
+                    const hasDiscount = item.discount && item.discount > 0;
+                    const originalPrice = item.price;
+                    const discountedPrice = hasDiscount && item.discount ? item.price - item.discount : item.price;
+                    const displayPrice = formatPrice(discountedPrice);
+                    const displayOriginalPrice = formatPrice(originalPrice);
                     
                     return (
                       <Link 
@@ -545,18 +554,25 @@ const ShopPage = () => {
                             />
                           )}
                         </div>
-                        <div className="items-end justify-between flex ">
-                          <div className="w-full">
-                            <p className="pt-4 sm:pt-6 md:pt-[28px] text-[14px] sm:text-[16px] md:text-[18px]">
+                        <div className="pt-4 sm:pt-6 md:pt-[28px] flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[14px] sm:text-[16px] md:text-[18px] line-clamp-2 min-h-[2.5em] mb-3 sm:mb-4 md:mb-[18px]  text-[#6B5D4F] font-light">
                               {item.name}
                             </p>
-                            <p className="pt-3 sm:pt-4 md:pt-[18px] text-[10px] sm:text-[11px] md:text-[12px]">
-                              {priceInRupees}
-                            </p>
+                            <div className="text-[10px] sm:text-[11px] md:text-[12px] ">
+                              {hasDiscount ? (
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[#6B5D4F] font-light line-through text-[18px]">{displayOriginalPrice}</span>
+                                  <span className="text-[#6B5D4F] font-light text-[18px]">{displayPrice} USD</span>
+                                </div>
+                              ) : (
+                                <span className="text-[#6B5D4F] font-light text-[18px]">{displayPrice} USD</span>
+                              )}
+                            </div>
                           </div>
                           <button
                             onClick={(e) => handleAddToCart(e, item)}
-                            className="border rounded-full p-1 hover:bg-[#1C3163] hover:text-white transition-colors cursor-pointer"
+                            className="border rounded-full p-1 hover:bg-[#1C3163] hover:text-white transition-colors cursor-pointer flex-shrink-0"
                             aria-label="Add to cart"
                           >
                             <Plus size={16} />

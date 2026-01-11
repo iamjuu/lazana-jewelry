@@ -35,7 +35,9 @@ export async function POST(req: NextRequest) {
     const {
       couponCode,
       couponName,
+      discountType = "percentage",
       discountPercent,
+      discountAmount,
       expiryDate,
       excludedEvents = [],
       usageLimit,
@@ -44,16 +46,43 @@ export async function POST(req: NextRequest) {
     } = body;
 
     // Validation
-    if (!couponCode || !couponName || discountPercent === undefined || !expiryDate) {
+    if (!couponCode || !couponName || !expiryDate) {
       return NextResponse.json(
         { success: false, message: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    if (discountPercent < 0 || discountPercent > 100) {
+    // Validate discount based on type
+    if (discountType === "percentage") {
+      if (discountPercent === undefined || discountPercent === null) {
+        return NextResponse.json(
+          { success: false, message: "Discount percentage is required" },
+          { status: 400 }
+        );
+      }
+      if (discountPercent < 0 || discountPercent > 100) {
+        return NextResponse.json(
+          { success: false, message: "Discount percentage must be between 0 and 100" },
+          { status: 400 }
+        );
+      }
+    } else if (discountType === "amount") {
+      if (discountAmount === undefined || discountAmount === null) {
+        return NextResponse.json(
+          { success: false, message: "Discount amount is required" },
+          { status: 400 }
+        );
+      }
+      if (discountAmount < 0) {
+        return NextResponse.json(
+          { success: false, message: "Discount amount must be greater than 0" },
+          { status: 400 }
+        );
+      }
+    } else {
       return NextResponse.json(
-        { success: false, message: "Discount percentage must be between 0 and 100" },
+        { success: false, message: "Invalid discount type. Must be 'percentage' or 'amount'" },
         { status: 400 }
       );
     }
@@ -82,10 +111,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Create coupon
-    const coupon = await EventCoupon.create({
+    const couponData: any = {
       couponCode: normalizedCode,
       couponName: couponName.trim(),
-      discountPercent: Number(discountPercent),
+      discountType: discountType,
       expiryDate: new Date(expiryDate),
       excludedEvents: excludedEvents || [],
       usageLimit: usageLimit ? Number(usageLimit) : null,
@@ -93,7 +122,16 @@ export async function POST(req: NextRequest) {
       usedCount: 0,
       userUsage: [],
       isActive: Boolean(isActive),
-    });
+    };
+
+    // Add discount value based on type
+    if (discountType === "percentage") {
+      couponData.discountPercent = Number(discountPercent);
+    } else {
+      couponData.discountAmount = Number(discountAmount);
+    }
+
+    const coupon = await EventCoupon.create(couponData);
 
     const populatedCoupon = await EventCoupon.findById(coupon._id)
       .populate("excludedEvents", "title name")

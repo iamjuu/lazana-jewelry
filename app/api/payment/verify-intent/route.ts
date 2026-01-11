@@ -99,50 +99,159 @@ export async function POST(req: NextRequest) {
             }
           }
 
-          // Check if order contains universal products
+          // Check if order contains universal products and regular products
           const productIds = updatedOrder.items.map((item: any) => item.productId);
           const products = await Product.find({ _id: { $in: productIds } }).lean();
-          const hasUniversalProduct = products.some((product: any) => product.relativeproduct === true);
+          
+          // Create a map of productId to product for quick lookup
+          const productMap = new Map(products.map((p: any) => [p._id.toString(), p]));
+          
+          // Separate items into universal and regular products
+          const universalItems: any[] = [];
+          const regularItems: any[] = [];
+          
+          updatedOrder.items.forEach((item: any) => {
+            const product = productMap.get(item.productId);
+            if (product && product.relativeproduct === true) {
+              universalItems.push(item);
+            } else {
+              regularItems.push(item);
+            }
+          });
+          
+          const hasUniversalProduct = universalItems.length > 0;
+          const hasRegularProduct = regularItems.length > 0;
 
-          const orderEmailData = {
-            orderId: updatedOrder._id.toString(),
-            customerName: updatedOrder.customerName,
-            customerEmail: updatedOrder.customerEmail,
-            items: updatedOrder.items.map((item: any) => ({
-              name: item.name,
-              quantity: item.quantity,
-              price: item.price,
-              isSet: item.isSet,
-            })),
-            productTotal: updatedOrder.productTotal,
-            deliveryMethod: updatedOrder.deliveryCharges?.method || "",
-            deliveryCharges: updatedOrder.deliveryCharges?.total || 0,
-            totalAmount: updatedOrder.amount,
-            shippingAddress: updatedOrder.shippingAddress,
-            customerComments: updatedOrder.customerComments || "",
-            createdAt: updatedOrder.createdAt.toISOString(),
+          // Helper function to calculate totals for a subset of items
+          const calculateTotals = (items: any[]) => {
+            const itemProductTotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+            // For universal products, delivery charges are 0, but for regular products we need to calculate
+            // For now, we'll use a proportional split based on product total, or we can recalculate delivery
+            // Let's use the full delivery charges for regular products if they exist, 0 for universal
+            let itemDeliveryCharges = 0;
+            if (items.length > 0 && !hasUniversalProduct) {
+              itemDeliveryCharges = updatedOrder.deliveryCharges?.total || 0;
+            }
+            const itemTotal = itemProductTotal + itemDeliveryCharges;
+            return { itemProductTotal, itemDeliveryCharges, itemTotal };
           };
 
-          // Send email to user (universal product vs regular product)
-          if (hasUniversalProduct) {
-            sendUniversalProductOrderConfirmationToUser(orderEmailData).catch((error) => {
-              console.error("Failed to send universal product order confirmation email to user:", error);
-            });
-          } else {
-            sendRegularProductOrderConfirmationToUser(orderEmailData).catch((error) => {
+          // Send emails based on what products are in the order
+          if (hasUniversalProduct && hasRegularProduct) {
+            // Order has both - send separate emails for each type
+            
+            // Calculate totals for regular products
+            const regularTotals = calculateTotals(regularItems);
+            
+            // Regular product email data
+            const regularOrderEmailData = {
+              orderId: updatedOrder._id.toString(),
+              customerName: updatedOrder.customerName,
+              customerEmail: updatedOrder.customerEmail,
+              userId: updatedOrder.userId,
+              items: regularItems.map((item: any) => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price,
+                isSet: item.isSet,
+                imageUrl: item.imageUrl || undefined,
+              })),
+              productTotal: regularTotals.itemProductTotal,
+              deliveryMethod: updatedOrder.deliveryCharges?.method || "",
+              deliveryCharges: regularTotals.itemDeliveryCharges,
+              totalAmount: regularTotals.itemTotal,
+              shippingAddress: updatedOrder.shippingAddress,
+              customerComments: updatedOrder.customerComments || "",
+              couponCode: updatedOrder.couponCode,
+              discountAmount: 0, // Coupon applies to entire order, so we'll show it only in one email
+              createdAt: updatedOrder.createdAt.toISOString(),
+            };
+
+            // Universal product email data
+            const universalOrderEmailData = {
+              orderId: updatedOrder._id.toString(),
+              customerName: updatedOrder.customerName,
+              customerEmail: updatedOrder.customerEmail,
+              userId: updatedOrder.userId,
+              items: universalItems.map((item: any) => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price,
+                isSet: item.isSet,
+                imageUrl: item.imageUrl || undefined,
+              })),
+              productTotal: calculateTotals(universalItems).itemProductTotal,
+              deliveryMethod: "",
+              deliveryCharges: 0,
+              totalAmount: calculateTotals(universalItems).itemProductTotal,
+              shippingAddress: updatedOrder.shippingAddress,
+              customerComments: updatedOrder.customerComments || "",
+              couponCode: updatedOrder.couponCode,
+              discountAmount: updatedOrder.discountAmount || 0, // Show coupon discount in universal email
+              createdAt: updatedOrder.createdAt.toISOString(),
+            };
+
+            // Send both emails to user
+            sendRegularProductOrderConfirmationToUser(regularOrderEmailData).catch((error) => {
               console.error("Failed to send regular product order confirmation email to user:", error);
             });
-          }
+            sendUniversalProductOrderConfirmationToUser(universalOrderEmailData).catch((error) => {
+              console.error("Failed to send universal product order confirmation email to user:", error);
+            });
 
-          // Send email notification to admin (universal product vs regular product)
-          if (hasUniversalProduct) {
-            sendUniversalProductOrderNotificationToAdmin(orderEmailData).catch((error) => {
+            // Send both emails to admin
+            sendOrderPlacementNotificationToAdmin(regularOrderEmailData).catch((error) => {
+              console.error("Failed to send regular product order notification email to admin:", error);
+            });
+            sendUniversalProductOrderNotificationToAdmin(universalOrderEmailData).catch((error) => {
               console.error("Failed to send universal product order notification email to admin:", error);
             });
           } else {
-            sendOrderPlacementNotificationToAdmin(orderEmailData).catch((error) => {
-              console.error("Failed to send order placement email to admin:", error);
-            });
+            // Order has only one type - send single email
+            const orderEmailData = {
+              orderId: updatedOrder._id.toString(),
+              customerName: updatedOrder.customerName,
+              customerEmail: updatedOrder.customerEmail,
+              userId: updatedOrder.userId,
+              items: updatedOrder.items.map((item: any) => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price,
+                isSet: item.isSet,
+                imageUrl: item.imageUrl || undefined,
+              })),
+              productTotal: updatedOrder.productTotal,
+              deliveryMethod: updatedOrder.deliveryCharges?.method || "",
+              deliveryCharges: updatedOrder.deliveryCharges?.total || 0,
+              totalAmount: updatedOrder.amount,
+              shippingAddress: updatedOrder.shippingAddress,
+              customerComments: updatedOrder.customerComments || "",
+              couponCode: updatedOrder.couponCode,
+              discountAmount: updatedOrder.discountAmount || 0,
+              createdAt: updatedOrder.createdAt.toISOString(),
+            };
+
+            // Send email to user
+            if (hasUniversalProduct) {
+              sendUniversalProductOrderConfirmationToUser(orderEmailData).catch((error) => {
+                console.error("Failed to send universal product order confirmation email to user:", error);
+              });
+            } else {
+              sendRegularProductOrderConfirmationToUser(orderEmailData).catch((error) => {
+                console.error("Failed to send regular product order confirmation email to user:", error);
+              });
+            }
+
+            // Send email notification to admin
+            if (hasUniversalProduct) {
+              sendUniversalProductOrderNotificationToAdmin(orderEmailData).catch((error) => {
+                console.error("Failed to send universal product order notification email to admin:", error);
+              });
+            } else {
+              sendOrderPlacementNotificationToAdmin(orderEmailData).catch((error) => {
+                console.error("Failed to send order placement email to admin:", error);
+              });
+            }
           }
 
           return NextResponse.json({ success: true, data: updatedOrder });
@@ -214,50 +323,156 @@ export async function POST(req: NextRequest) {
               );
             }
 
-            // Check if order contains universal products
+            // Check if order contains universal products and regular products
             const productIds = updatedOrder.items.map((item: any) => item.productId);
             const products = await Product.find({ _id: { $in: productIds } }).lean();
-            const hasUniversalProduct = products.some((product: any) => product.relativeproduct === true);
+            
+            // Create a map of productId to product for quick lookup
+            const productMap2 = new Map(products.map((p: any) => [p._id.toString(), p]));
+            
+            // Separate items into universal and regular products
+            const universalItems2: any[] = [];
+            const regularItems2: any[] = [];
+            
+            updatedOrder.items.forEach((item: any) => {
+              const product = productMap2.get(item.productId);
+              if (product && product.relativeproduct === true) {
+                universalItems2.push(item);
+              } else {
+                regularItems2.push(item);
+              }
+            });
+            
+            const hasUniversalProduct2 = universalItems2.length > 0;
+            const hasRegularProduct2 = regularItems2.length > 0;
 
-            const orderEmailData = {
-              orderId: updatedOrder._id.toString(),
-              customerName: updatedOrder.customerName,
-              customerEmail: updatedOrder.customerEmail,
-              items: updatedOrder.items.map((item: any) => ({
-                name: item.name,
-                quantity: item.quantity,
-                price: item.price,
-                isSet: item.isSet,
-              })),
-              productTotal: updatedOrder.productTotal,
-              deliveryMethod: updatedOrder.deliveryCharges?.method || "",
-              deliveryCharges: updatedOrder.deliveryCharges?.total || 0,
-              totalAmount: updatedOrder.amount,
-              shippingAddress: updatedOrder.shippingAddress,
-              customerComments: updatedOrder.customerComments || "",
-              createdAt: updatedOrder.createdAt.toISOString(),
+            // Helper function to calculate totals for a subset of items
+            const calculateTotals2 = (items: any[]) => {
+              const itemProductTotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+              let itemDeliveryCharges = 0;
+              if (items.length > 0 && !hasUniversalProduct2) {
+                itemDeliveryCharges = updatedOrder.deliveryCharges?.total || 0;
+              }
+              const itemTotal = itemProductTotal + itemDeliveryCharges;
+              return { itemProductTotal, itemDeliveryCharges, itemTotal };
             };
 
-            // Send email to user (universal product vs regular product)
-            if (hasUniversalProduct) {
-              sendUniversalProductOrderConfirmationToUser(orderEmailData).catch((error) => {
-                console.error("Failed to send universal product order confirmation email to user:", error);
-              });
-            } else {
-              sendRegularProductOrderConfirmationToUser(orderEmailData).catch((error) => {
+            // Send emails based on what products are in the order
+            if (hasUniversalProduct2 && hasRegularProduct2) {
+              // Order has both - send separate emails for each type
+              
+              // Calculate totals for regular products
+              const regularTotals2 = calculateTotals2(regularItems2);
+              
+              // Regular product email data
+              const regularOrderEmailData2 = {
+                orderId: updatedOrder._id.toString(),
+                customerName: updatedOrder.customerName,
+                customerEmail: updatedOrder.customerEmail,
+                userId: updatedOrder.userId,
+                items: regularItems2.map((item: any) => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                  isSet: item.isSet,
+                  imageUrl: item.imageUrl || undefined,
+                })),
+                productTotal: regularTotals2.itemProductTotal,
+                deliveryMethod: updatedOrder.deliveryCharges?.method || "",
+                deliveryCharges: regularTotals2.itemDeliveryCharges,
+                totalAmount: regularTotals2.itemTotal,
+                shippingAddress: updatedOrder.shippingAddress,
+                customerComments: updatedOrder.customerComments || "",
+                couponCode: updatedOrder.couponCode,
+                discountAmount: 0,
+                createdAt: updatedOrder.createdAt.toISOString(),
+              };
+
+              // Universal product email data
+              const universalOrderEmailData2 = {
+                orderId: updatedOrder._id.toString(),
+                customerName: updatedOrder.customerName,
+                customerEmail: updatedOrder.customerEmail,
+                userId: updatedOrder.userId,
+                items: universalItems2.map((item: any) => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                  isSet: item.isSet,
+                  imageUrl: item.imageUrl || undefined,
+                })),
+                productTotal: calculateTotals2(universalItems2).itemProductTotal,
+                deliveryMethod: "",
+                deliveryCharges: 0,
+                totalAmount: calculateTotals2(universalItems2).itemProductTotal,
+                shippingAddress: updatedOrder.shippingAddress,
+                customerComments: updatedOrder.customerComments || "",
+                couponCode: updatedOrder.couponCode,
+                discountAmount: updatedOrder.discountAmount || 0,
+                createdAt: updatedOrder.createdAt.toISOString(),
+              };
+
+              // Send both emails to user
+              sendRegularProductOrderConfirmationToUser(regularOrderEmailData2).catch((error) => {
                 console.error("Failed to send regular product order confirmation email to user:", error);
               });
-            }
+              sendUniversalProductOrderConfirmationToUser(universalOrderEmailData2).catch((error) => {
+                console.error("Failed to send universal product order confirmation email to user:", error);
+              });
 
-            // Send email notification to admin (universal product vs regular product)
-            if (hasUniversalProduct) {
-              sendUniversalProductOrderNotificationToAdmin(orderEmailData).catch((error) => {
+              // Send both emails to admin
+              sendOrderPlacementNotificationToAdmin(regularOrderEmailData2).catch((error) => {
+                console.error("Failed to send regular product order notification email to admin:", error);
+              });
+              sendUniversalProductOrderNotificationToAdmin(universalOrderEmailData2).catch((error) => {
                 console.error("Failed to send universal product order notification email to admin:", error);
               });
             } else {
-              sendOrderPlacementNotificationToAdmin(orderEmailData).catch((error) => {
-                console.error("Failed to send order placement email to admin:", error);
-              });
+              // Order has only one type - send single email
+              const orderEmailData = {
+                orderId: updatedOrder._id.toString(),
+                customerName: updatedOrder.customerName,
+                customerEmail: updatedOrder.customerEmail,
+                userId: updatedOrder.userId,
+                items: updatedOrder.items.map((item: any) => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                  isSet: item.isSet,
+                  imageUrl: item.imageUrl || undefined,
+                })),
+                productTotal: updatedOrder.productTotal,
+                deliveryMethod: updatedOrder.deliveryCharges?.method || "",
+                deliveryCharges: updatedOrder.deliveryCharges?.total || 0,
+                totalAmount: updatedOrder.amount,
+                shippingAddress: updatedOrder.shippingAddress,
+                customerComments: updatedOrder.customerComments || "",
+                couponCode: updatedOrder.couponCode,
+                discountAmount: updatedOrder.discountAmount || 0,
+                createdAt: updatedOrder.createdAt.toISOString(),
+              };
+
+              // Send email to user
+              if (hasUniversalProduct2) {
+                sendUniversalProductOrderConfirmationToUser(orderEmailData).catch((error) => {
+                  console.error("Failed to send universal product order confirmation email to user:", error);
+                });
+              } else {
+                sendRegularProductOrderConfirmationToUser(orderEmailData).catch((error) => {
+                  console.error("Failed to send regular product order confirmation email to user:", error);
+                });
+              }
+
+              // Send email notification to admin
+              if (hasUniversalProduct2) {
+                sendUniversalProductOrderNotificationToAdmin(orderEmailData).catch((error) => {
+                  console.error("Failed to send universal product order notification email to admin:", error);
+                });
+              } else {
+                sendOrderPlacementNotificationToAdmin(orderEmailData).catch((error) => {
+                  console.error("Failed to send order placement email to admin:", error);
+                });
+              }
             }
 
             return NextResponse.json({ success: true, data: updatedOrder });

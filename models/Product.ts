@@ -17,7 +17,7 @@ const ProductSchema = new Schema<ProductType>(
       required: false
     }, // Subcategory reference (ObjectId)
     price: { type: Number, required: true },
-    imageUrl: { type: [String], default: [] } as any, // Array of base64 image strings (max 3)
+    imageUrl: { type: [String], default: [] } as any, // Array of S3 URLs or base64 strings (max 7)
     videoUrl: { type: Schema.Types.Mixed, default: [] } as any, // Can be string or array of strings (max 2 videos)
     isSet: { type: Boolean, required: false, default: false }, // Checkbox field
     numberOfSets: { type: Number, required: false }, // Number of sets (only if isSet is true)
@@ -36,9 +36,19 @@ const ProductSchema = new Schema<ProductType>(
     weight: { 
       type: String, 
       required: false, 
-      enum: ['less than 1kg', 'less than 6kg', 'between 1-3kg', '3-5kg'],
+      enum: ['less than 1kg', 'less than 6kg', 'between 1-3kg', '3-5kg', 'greater than 6kg'],
       trim: true 
     }, // Weight category
+    deleted: { 
+      type: Boolean, 
+      required: false, 
+      default: false 
+    }, // Soft delete flag
+    discount: { 
+      type: Number, 
+      required: false, 
+      min: 0 
+    }, // Discount amount (optional)
   },
   { timestamps: true }
 );

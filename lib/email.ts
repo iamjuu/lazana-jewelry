@@ -504,7 +504,8 @@ export async function sendEnquiryConfirmationToUser(data: {
             <h2 style="margin-top: 0; color: #10b981;">✅ Thank You for Your Enquiry!</h2>
             <p>Dear ${data.fullName},</p>
             <p>We have received your enquiry for <strong>${data.services}</strong>.</p>
-            <p>Our team will get back to you soon. We appreciate your interest in Crystal Bowl Studio!</p>
+            ${data.sessionType === 'corporate' ? '<p style="margin-top: 15px; font-weight: 500;">Our team will review your enquiry and respond within 2–3 business days.</p>' : '<p>Our team will get back to you soon. We appreciate your interest in Crystal Bowl Studio!</p>'}
+            ${data.sessionType === 'corporate' ? '<p style="margin-top: 15px;">We appreciate your interest in Crystal Bowl Studio!</p>' : ''}
           </div>
         </div>
         <div class="footer">
@@ -754,10 +755,65 @@ export async function sendDiscoverySessionNotificationToAdmin(data: {
 export async function sendPrivateSessionConfirmationToUser(data: {
   fullName: string;
   email: string;
-  date: string;
-  time: string;
+  sessionTitle?: string;
+  date?: string;
+  time?: string;
+  preferredDates?: string;
+  preferredLocation?: string;
+  preferredDuration?: string;
+  companyName?: string;
+  jobTitle?: string;
+  workEmail?: string;
+  industry?: string;
+  companySize?: string;
+  sessionObjectives?: string[];
+  comment?: string;
 }) {
-  const subject = "Private Session Confirmed - Crystal Bowl Studio";
+  const subject = "Private Session Request - Crystal Bowl Studio";
+  
+  // Build session details section
+  let sessionDetailsHtml = '';
+  if (data.sessionTitle) {
+    sessionDetailsHtml += `<p><strong>Session:</strong> ${data.sessionTitle}</p>`;
+  }
+  // if (data.date && data.time) {
+  //   sessionDetailsHtml += `<p><strong>Date:</strong> ${data.date}</p>`;
+  //   sessionDetailsHtml += `<p><strong>Time:</strong> ${data.time}</p>`;
+  // }
+  
+  // Build form details section
+  let formDetailsHtml = '';
+  if (data.preferredDates) {
+    formDetailsHtml += `<p><strong>Preferred Date(s):</strong> ${data.preferredDates}</p>`;
+  }
+  if (data.preferredLocation) {
+    formDetailsHtml += `<p><strong>Preferred Location:</strong> ${data.preferredLocation}</p>`;
+  }
+  if (data.preferredDuration) {
+    formDetailsHtml += `<p><strong>Preferred Duration:</strong> ${data.preferredDuration}</p>`;
+  }
+  if (data.companyName) {
+    formDetailsHtml += `<p><strong>Company Name:</strong> ${data.companyName}</p>`;
+  }
+  if (data.jobTitle) {
+    formDetailsHtml += `<p><strong>Job Title / Role:</strong> ${data.jobTitle}</p>`;
+  }
+  if (data.workEmail) {
+    formDetailsHtml += `<p><strong>Work Email:</strong> ${data.workEmail}</p>`;
+  }
+  if (data.industry) {
+    formDetailsHtml += `<p><strong>Industry:</strong> ${data.industry}</p>`;
+  }
+  if (data.companySize) {
+    formDetailsHtml += `<p><strong>Company Size:</strong> ${data.companySize}</p>`;
+  }
+  if (data.sessionObjectives && data.sessionObjectives.length > 0) {
+    formDetailsHtml += `<p><strong>Session Objectives:</strong> ${data.sessionObjectives.join(', ')}</p>`;
+  }
+  if (data.comment) {
+    formDetailsHtml += `<p><strong>Additional Notes:</strong> ${data.comment}</p>`;
+  }
+  
   const html = `
     <!DOCTYPE html>
     <html>
@@ -769,6 +825,7 @@ export async function sendPrivateSessionConfirmationToUser(data: {
         .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
+        .details-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
       </style>
     </head>
@@ -782,10 +839,10 @@ export async function sendPrivateSessionConfirmationToUser(data: {
           <div class="success-box">
             <h2 style="margin-top: 0; color: #10b981;">✅ Your Private Session is Confirmed!</h2>
             <p>Dear ${data.fullName},</p>
-            <p>Your private session has been confirmed:</p>
-            <p><strong>Date:</strong> ${data.date}</p>
-            <p><strong>Time:</strong> ${data.time}</p>
-            <p>We look forward to seeing you!</p>
+            <p>Your private session has been confirmed.</p>
+            ${sessionDetailsHtml ? `<div class="details-section"><h3 style="margin-top: 0; color: #1C3163;">Session Details</h3>${sessionDetailsHtml}</div>` : ''}
+            ${formDetailsHtml ? `<div class="details-section"><h3 style="margin-top: 0; color: #1C3163;">Your Booking Details</h3>${formDetailsHtml}</div>` : ''}
+            <p style="margin-top: 20px;">We look forward to seeing you!</p>
           </div>
         </div>
         <div class="footer">
@@ -811,8 +868,19 @@ export async function sendPrivateSessionNotificationToAdmin(data: {
   fullName: string;
   email: string;
   phone: string;
-  date: string;
-  time: string;
+  sessionTitle?: string;
+  date?: string;
+  time?: string;
+  preferredDates?: string;
+  preferredLocation?: string;
+  preferredDuration?: string;
+  companyName?: string;
+  jobTitle?: string;
+  workEmail?: string;
+  industry?: string;
+  companySize?: string;
+  sessionObjectives?: string[];
+  comment?: string;
 }) {
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
   
@@ -857,14 +925,19 @@ export async function sendPrivateSessionNotificationToAdmin(data: {
               <td>Phone</td>
               <td><a href="tel:${data.phone}">${data.phone}</a></td>
             </tr>
-            <tr>
-              <td>Date</td>
-              <td>${data.date}</td>
-            </tr>
-            <tr>
-              <td>Time</td>
-              <td>${data.time}</td>
-            </tr>
+            ${data.sessionTitle ? `<tr><td>Session Title</td><td>${data.sessionTitle}</td></tr>` : ''}
+            ${data.date ? `<tr><td>Date</td><td>${data.date}</td></tr>` : ''}
+            ${data.time ? `<tr><td>Time</td><td>${data.time}</td></tr>` : ''}
+            ${data.preferredDates ? `<tr><td>Preferred Date(s)</td><td>${data.preferredDates}</td></tr>` : ''}
+            ${data.preferredLocation ? `<tr><td>Preferred Location</td><td>${data.preferredLocation}</td></tr>` : ''}
+            ${data.preferredDuration ? `<tr><td>Preferred Duration</td><td>${data.preferredDuration}</td></tr>` : ''}
+            ${data.companyName ? `<tr><td>Company Name</td><td>${data.companyName}</td></tr>` : ''}
+            ${data.jobTitle ? `<tr><td>Job Title / Role</td><td>${data.jobTitle}</td></tr>` : ''}
+            ${data.workEmail ? `<tr><td>Work Email</td><td><a href="mailto:${data.workEmail}">${data.workEmail}</a></td></tr>` : ''}
+            ${data.industry ? `<tr><td>Industry</td><td>${data.industry}</td></tr>` : ''}
+            ${data.companySize ? `<tr><td>Company Size</td><td>${data.companySize}</td></tr>` : ''}
+            ${data.sessionObjectives && data.sessionObjectives.length > 0 ? `<tr><td>Session Objectives</td><td>${data.sessionObjectives.join(', ')}</td></tr>` : ''}
+            ${data.comment ? `<tr><td>Additional Notes</td><td>${data.comment}</td></tr>` : ''}
           </table>
 
           <p style="margin-top: 30px;">
@@ -958,6 +1031,41 @@ export async function sendOrderStatusUpdateToUser(data: {
 
 // Send universal product order confirmation email to user
 export async function sendUniversalProductOrderConfirmationToUser(orderData: any) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const orderLink = `${baseUrl}/profile?tab=orders`;
+  
+  // Format shipping address
+  const formatAddress = (addr: any) => {
+    if (!addr) return "N/A";
+    const parts = [
+      addr.fullName,
+      addr.street,
+      addr.city,
+      addr.state,
+      addr.postalCode,
+      addr.country
+    ].filter(Boolean);
+    return parts.join(", ");
+  };
+
+  // Build product items HTML
+  const itemsHtml = orderData.items.map((item: any) => {
+    const imageHtml = item.imageUrl 
+      ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
+      : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
+    
+    return `
+      <div style="display: flex; padding: 15px; border-bottom: 1px solid #e0e0e0; align-items: center;">
+        ${imageHtml}
+        <div style="flex: 1;">
+          <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
+          <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">SGD $${(item.price * item.quantity).toFixed(2)}</p>
+        </div>
+      </div>
+    `;
+  }).join("");
+
   const subject = "Session Order Confirmed - Crystal Bowl Studio";
   const html = `
     <!DOCTYPE html>
@@ -970,6 +1078,9 @@ export async function sendUniversalProductOrderConfirmationToUser(orderData: any
         .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
+        .info-box { background-color: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .info-box h3 { margin-top: 0; color: #1C3163; font-size: 18px; }
+        .button { display: inline-block; padding: 12px 24px; background-color: #1C3163; color: #fff; text-decoration: none; border-radius: 5px; margin: 10px 0; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
       </style>
     </head>
@@ -985,7 +1096,18 @@ export async function sendUniversalProductOrderConfirmationToUser(orderData: any
             <p>Dear ${orderData.customerName},</p>
             <p>Thank you for your session order. Our team will connect with you within 24-48 hours to provide you with the service.</p>
             <p><strong>Order ID:</strong> #${orderData.orderId.slice(-8).toUpperCase()}</p>
-            <p><strong>Total Amount:</strong> SGD $${orderData.totalAmount.toFixed(2)}</p>
+          </div>
+
+          <div class="info-box">
+            <h3>Order Items</h3>
+            ${itemsHtml}
+            <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: SGD $${orderData.totalAmount.toFixed(2)}</p>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${orderLink}" class="button">View Your Orders</a>
           </div>
         </div>
         <div class="footer">
@@ -1008,6 +1130,41 @@ export async function sendUniversalProductOrderConfirmationToUser(orderData: any
 
 // Send regular product order confirmation email to user
 export async function sendRegularProductOrderConfirmationToUser(orderData: any) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const orderLink = `${baseUrl}/profile?tab=orders`;
+  
+  // Format shipping address
+  const formatAddress = (addr: any) => {
+    if (!addr) return "N/A";
+    const parts = [
+      addr.fullName,
+      addr.street,
+      addr.city,
+      addr.state,
+      addr.postalCode,
+      addr.country
+    ].filter(Boolean);
+    return parts.join(", ");
+  };
+
+  // Build product items HTML
+  const itemsHtml = orderData.items.map((item: any) => {
+    const imageHtml = item.imageUrl 
+      ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
+      : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
+    
+    return `
+      <div style="display: flex; padding: 15px; border-bottom: 1px solid #e0e0e0; align-items: center;">
+        ${imageHtml}
+        <div style="flex: 1;">
+          <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
+          <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">SGD $${(item.price * item.quantity).toFixed(2)}</p>
+        </div>
+      </div>
+    `;
+  }).join("");
+
   const subject = "Order Confirmed - Crystal Bowl Studio";
   const html = `
     <!DOCTYPE html>
@@ -1020,6 +1177,9 @@ export async function sendRegularProductOrderConfirmationToUser(orderData: any) 
         .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
+        .info-box { background-color: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .info-box h3 { margin-top: 0; color: #1C3163; font-size: 18px; }
+        .button { display: inline-block; padding: 12px 24px; background-color: #1C3163; color: #fff; text-decoration: none; border-radius: 5px; margin: 10px 0; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
       </style>
     </head>
@@ -1035,7 +1195,32 @@ export async function sendRegularProductOrderConfirmationToUser(orderData: any) 
             <p>Dear ${orderData.customerName},</p>
             <p>Thank you for your order. We'll process it soon.</p>
             <p><strong>Order ID:</strong> #${orderData.orderId.slice(-8).toUpperCase()}</p>
-            <p><strong>Total Amount:</strong> SGD $${orderData.totalAmount.toFixed(2)}</p>
+          </div>
+
+          <div class="info-box">
+            <h3>Order Items</h3>
+            ${itemsHtml}
+            ${orderData.couponCode ? `
+              <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px;">
+                <p style="margin: 5px 0; color: #10b981;">Coupon Applied: ${orderData.couponCode}</p>
+                <p style="margin: 5px 0; color: #10b981;">Discount: SGD $${orderData.discountAmount.toFixed(2)}</p>
+              </div>
+            ` : ""}
+            <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
+              <p style="margin: 5px 0; color: #666;">Product Total: SGD $${orderData.productTotal.toFixed(2)}</p>
+              <p style="margin: 5px 0; color: #666;">Delivery Charges: SGD $${orderData.deliveryCharges.toFixed(2)}</p>
+              ${orderData.discountAmount > 0 ? `<p style="margin: 5px 0; color: #10b981;">Discount: -SGD $${orderData.discountAmount.toFixed(2)}</p>` : ""}
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: SGD $${orderData.totalAmount.toFixed(2)}</p>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <h3>Shipping Address</h3>
+            <p style="color: #666; margin: 5px 0;">${formatAddress(orderData.shippingAddress)}</p>
+          </div>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${orderLink}" class="button">View Your Orders</a>
           </div>
         </div>
         <div class="footer">
@@ -1064,6 +1249,38 @@ export async function sendUniversalProductOrderNotificationToAdmin(orderData: an
     throw new Error("Admin email not configured");
   }
 
+  // Format shipping address
+  const formatAddress = (addr: any) => {
+    if (!addr) return "N/A";
+    const parts = [
+      addr.fullName,
+      addr.street,
+      addr.city,
+      addr.state,
+      addr.postalCode,
+      addr.country
+    ].filter(Boolean);
+    return parts.join(", ");
+  };
+
+  // Build product items HTML
+  const itemsHtml = orderData.items.map((item: any) => {
+    const imageHtml = item.imageUrl 
+      ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
+      : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
+    
+    return `
+      <div style="display: flex; padding: 15px; border-bottom: 1px solid #e0e0e0; align-items: center;">
+        ${imageHtml}
+        <div style="flex: 1;">
+          <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
+          <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">SGD $${(item.price * item.quantity).toFixed(2)}</p>
+        </div>
+      </div>
+    `;
+  }).join("");
+
   const subject = `New Session Order - ${orderData.customerName}`;
   const html = `
     <!DOCTYPE html>
@@ -1078,6 +1295,8 @@ export async function sendUniversalProductOrderNotificationToAdmin(orderData: an
         .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; background-color: #fff; }
         .info-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
         .info-table td:first-child { font-weight: bold; width: 200px; color: #1C3163; }
+        .info-box { background-color: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .info-box h3 { margin-top: 0; color: #1C3163; font-size: 18px; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
       </style>
     </head>
@@ -1103,10 +1322,34 @@ export async function sendUniversalProductOrderNotificationToAdmin(orderData: an
               <td><a href="mailto:${orderData.customerEmail}">${orderData.customerEmail}</a></td>
             </tr>
             <tr>
+              <td>Phone</td>
+              <td>${orderData.shippingAddress?.phone || "N/A"}</td>
+            </tr>
+            <tr>
               <td>Total Amount</td>
               <td style="font-weight: bold; color: #10b981;">SGD $${orderData.totalAmount.toFixed(2)}</td>
             </tr>
           </table>
+
+          <div class="info-box">
+            <h3>Order Items</h3>
+            ${itemsHtml}
+            <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: SGD $${orderData.totalAmount.toFixed(2)}</p>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <h3>Shipping Address</h3>
+            <p style="color: #666; margin: 5px 0; white-space: pre-line;">${formatAddress(orderData.shippingAddress)}</p>
+          </div>
+
+          ${orderData.customerComments ? `
+            <div class="info-box">
+              <h3>Customer Comments</h3>
+              <p style="color: #666; margin: 5px 0;">${orderData.customerComments}</p>
+            </div>
+          ` : ""}
         </div>
         <div class="footer">
           <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
@@ -1134,6 +1377,38 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
     throw new Error("Admin email not configured");
   }
 
+  // Format shipping address
+  const formatAddress = (addr: any) => {
+    if (!addr) return "N/A";
+    const parts = [
+      addr.fullName,
+      addr.street,
+      addr.city,
+      addr.state,
+      addr.postalCode,
+      addr.country
+    ].filter(Boolean);
+    return parts.join(", ");
+  };
+
+  // Build product items HTML
+  const itemsHtml = orderData.items.map((item: any) => {
+    const imageHtml = item.imageUrl 
+      ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
+      : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
+    
+    return `
+      <div style="display: flex; padding: 15px; border-bottom: 1px solid #e0e0e0; align-items: center;">
+        ${imageHtml}
+        <div style="flex: 1;">
+          <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
+          <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">SGD $${(item.price * item.quantity).toFixed(2)}</p>
+        </div>
+      </div>
+    `;
+  }).join("");
+
   const subject = `New Order - ${orderData.customerName}`;
   const html = `
     <!DOCTYPE html>
@@ -1148,6 +1423,8 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
         .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; background-color: #fff; }
         .info-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
         .info-table td:first-child { font-weight: bold; width: 200px; color: #1C3163; }
+        .info-box { background-color: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .info-box h3 { margin-top: 0; color: #1C3163; font-size: 18px; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
       </style>
     </head>
@@ -1172,10 +1449,43 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
               <td><a href="mailto:${orderData.customerEmail}">${orderData.customerEmail}</a></td>
             </tr>
             <tr>
+              <td>Phone</td>
+              <td>${orderData.shippingAddress?.phone || "N/A"}</td>
+            </tr>
+            <tr>
               <td>Total Amount</td>
               <td style="font-weight: bold; color: #10b981;">SGD $${orderData.totalAmount.toFixed(2)}</td>
             </tr>
           </table>
+
+          <div class="info-box">
+            <h3>Order Items</h3>
+            ${itemsHtml}
+            ${orderData.couponCode ? `
+              <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px;">
+                <p style="margin: 5px 0; color: #10b981;">Coupon Applied: ${orderData.couponCode}</p>
+                <p style="margin: 5px 0; color: #10b981;">Discount: SGD $${(orderData.discountAmount || 0).toFixed(2)}</p>
+              </div>
+            ` : ""}
+            <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
+              <p style="margin: 5px 0; color: #666;">Product Total: SGD $${orderData.productTotal.toFixed(2)}</p>
+              <p style="margin: 5px 0; color: #666;">Delivery Charges: SGD $${orderData.deliveryCharges.toFixed(2)}</p>
+              ${(orderData.discountAmount || 0) > 0 ? `<p style="margin: 5px 0; color: #10b981;">Discount: -SGD $${orderData.discountAmount.toFixed(2)}</p>` : ""}
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: SGD $${orderData.totalAmount.toFixed(2)}</p>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <h3>Shipping Address</h3>
+            <p style="color: #666; margin: 5px 0; white-space: pre-line;">${formatAddress(orderData.shippingAddress)}</p>
+          </div>
+
+          ${orderData.customerComments ? `
+            <div class="info-box">
+              <h3>Customer Comments</h3>
+              <p style="color: #666; margin: 5px 0;">${orderData.customerComments}</p>
+            </div>
+          ` : ""}
         </div>
         <div class="footer">
           <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>

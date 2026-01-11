@@ -96,43 +96,20 @@ export async function GET(req: NextRequest) {
     if (!sessionType || sessionType === "private") {
       let privateQuery: Record<string, any> = {};
       
-      // Only show sessions that have a date (required for booking)
-      privateQuery.date = { $exists: true, $nin: [null, ""] };
-      
-      // Filter by booked status (default: only show available)
-      if (showAll !== "true") {
-        // Only show sessions where bookedSeats < totalSeats (not fully booked)
-        // Handle cases where bookedSeats might be 0, undefined, null, or less than totalSeats
-        const bookedStatusFilter = {
-          $or: [
-            { bookedSeats: { $exists: false } }, // Handle sessions without bookedSeats field
-            { bookedSeats: null }, // Handle null values
-            { bookedSeats: 0 }, // Not booked
-            { $expr: { $lt: ["$bookedSeats", { $ifNull: ["$totalSeats", 1] }] } }, // bookedSeats < totalSeats
-          ]
-        };
-        
-        // Combine date requirement with booked status filter
-        privateQuery.$and = [
-          { date: { $exists: true, $nin: [null, ""] } },
-          bookedStatusFilter
-        ];
-        delete privateQuery.date; // Remove from top level since it's in $and
-      }
+      // For private sessions, show ALL sessions regardless of date/time (date/time are optional)
+      // REMOVED: Booking limit filtering - show all private sessions (no limit on bookings)
+      // No query filter needed - show all private sessions
 
       const privateSessions = await PrivateSession.find(privateQuery)
-        .sort({ date: 1, startTime: 1 })
+        .sort({ title: 1 }) // Sort by title alphabetically
         .lean();
 
       console.log('Private sessions found:', privateSessions.length, 'with query:', JSON.stringify(privateQuery));
       console.log('Private sessions dates:', privateSessions.map((s: any) => ({ id: s._id, date: s.date, bookedSeats: s.bookedSeats, totalSeats: s.totalSeats })));
 
       // Convert PrivateSession to slot format
+      // REMOVED: Booking limit filter - show all sessions (unlimited bookings allowed)
       const privateSlots = privateSessions
-        .filter((session: any) => {
-          // Double-check: filter out fully booked sessions
-          return (session.bookedSeats || 0) < (session.totalSeats || 1);
-        })
         .map((session: any) => {
           // Ensure date is in YYYY-MM-DD format (handle Date objects or string dates)
           let formattedDate = session.date;
@@ -163,17 +140,13 @@ export async function GET(req: NextRequest) {
           const slot = {
             _id: session._id,
             sessionType: "private",
+            title: session.title || 'Private Session', // Include session title
             month: formattedDate ? new Date(formattedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long' }) : '',
-            date: formattedDate,
-            time: session.startTime,
-            isBooked: (session.bookedSeats || 0) >= (session.totalSeats || 1),
+            date: formattedDate || undefined, // Allow undefined if no date
+            time: session.startTime || undefined, // Allow undefined if no time
+            isBooked: false, // Always show as available - no booking limit
             price: session.price || 0, // Include price from session
           };
-          
-          // Debug log for slots with issues
-          if (!formattedDate) {
-            console.warn('⚠️ Slot missing date:', { sessionId: session._id, originalDate: session.date });
-          }
           
           return slot;
         });
@@ -186,11 +159,20 @@ export async function GET(req: NextRequest) {
       slots = [...slots, ...privateSlots];
     }
 
-    // Sort all slots by date and time
+    // Sort all slots by title (alphabetically) since date/time are optional
     slots.sort((a, b) => {
-      const dateCompare = a.date.localeCompare(b.date);
-      if (dateCompare !== 0) return dateCompare;
-      return a.time.localeCompare(b.time);
+      const titleCompare = (a.title || '').localeCompare(b.title || '');
+      if (titleCompare !== 0) return titleCompare;
+      // If titles are same, sort by date if available
+      if (a.date && b.date) {
+        const dateCompare = a.date.localeCompare(b.date);
+        if (dateCompare !== 0) return dateCompare;
+        // If dates are same, sort by time if available
+        if (a.time && b.time) {
+          return a.time.localeCompare(b.time);
+        }
+      }
+      return 0;
     });
 
     return NextResponse.json(

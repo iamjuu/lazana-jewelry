@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { requireAdmin } from "@/lib/auth";
 import mongoose from "mongoose";
+import { uploadToS3 } from "@/lib/aws-s3";
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,7 +11,7 @@ export async function POST(req: NextRequest) {
     await connectDB();
     
     const body = await req.json();
-    const { name, shortDescription, description, category, subcategory, price, imageUrl, videoUrl, isSet, numberOfSets, newAddition, featured, tuning, octave, size, weight, relativeproduct } = body;
+    const { name, shortDescription, description, category, subcategory, price, discount, imageUrl, videoUrl, isSet, numberOfSets, newAddition, featured, tuning, octave, size, weight, relativeproduct } = body;
 
     // Validation
     const isUniversalProduct = relativeproduct === true;
@@ -43,6 +44,41 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (imageUrl.length > 7) {
+      return NextResponse.json(
+        { success: false, message: "Maximum 7 images allowed" },
+        { status: 400 }
+      );
+    }
+
+    // Upload images to S3 and get URLs
+    console.log("Uploading images to S3...");
+    const s3ImageUrls: string[] = [];
+    
+    for (let i = 0; i < imageUrl.length; i++) {
+      const image = imageUrl[i];
+      
+      // Skip if already an S3 URL (in case of updates)
+      if (typeof image === 'string' && image.startsWith('https://')) {
+        s3ImageUrls.push(image);
+        continue;
+      }
+
+      // Upload image to S3 (will be converted to WebP)
+      try {
+        const filename = `product-${Date.now()}-${i + 1}.webp`;
+        const result = await uploadToS3(image, filename, 'images');
+        s3ImageUrls.push(result.url);
+        console.log(`✓ Uploaded image ${i + 1} to S3 as WebP: ${result.url}`);
+      } catch (uploadError) {
+        console.error(`Failed to upload image ${i + 1}:`, uploadError);
+        return NextResponse.json(
+          { success: false, message: `Failed to upload image ${i + 1} to S3` },
+          { status: 500 }
+        );
+      }
+    }
+
     // Price should be in rupees/dollars (not cents/paise)
     const priceString = String(price).trim();
     const priceInRupees = parseFloat(priceString);
@@ -66,14 +102,58 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Handle videoUrl - can be string or array
+    // Validate discount if provided
+    let processedDiscount: number | undefined = undefined;
+    if (discount !== undefined && discount !== null && discount !== "") {
+      const discountNum = typeof discount === 'number' ? discount : parseFloat(String(discount));
+      if (!isNaN(discountNum)) {
+        if (discountNum < 0) {
+          return NextResponse.json(
+            { success: false, message: "Discount cannot be negative" },
+            { status: 400 }
+          );
+        }
+        if (discountNum >= priceInRupees) {
+          return NextResponse.json(
+            { success: false, message: "Discount cannot be greater than or equal to price" },
+            { status: 400 }
+          );
+        }
+        processedDiscount = Math.round(discountNum * 100) / 100; // Round to 2 decimal places
+      }
+    }
+
+    // Handle videoUrl - upload to S3 if base64, otherwise keep URL
     let processedVideoUrl: string | string[] = [];
     if (videoUrl) {
-      if (Array.isArray(videoUrl)) {
-        processedVideoUrl = videoUrl.filter(v => v && String(v).trim()).map(v => String(v).trim());
-      } else {
-        processedVideoUrl = [String(videoUrl).trim()];
+      const videoArray = Array.isArray(videoUrl) ? videoUrl : [videoUrl];
+      const s3VideoUrls: string[] = [];
+
+      for (let i = 0; i < videoArray.length; i++) {
+        const video = videoArray[i];
+        const videoStr = String(video).trim();
+        
+        if (!videoStr) continue;
+
+        // Skip if already an S3/external URL
+        if (videoStr.startsWith('https://') || videoStr.startsWith('http://')) {
+          s3VideoUrls.push(videoStr);
+          continue;
+        }
+
+        // Upload base64 video to S3
+        try {
+          const filename = `product-video-${Date.now()}-${i + 1}.mp4`;
+          const result = await uploadToS3(videoStr, filename, 'videos');
+          s3VideoUrls.push(result.url);
+          console.log(`Uploaded video ${i + 1} to S3: ${result.url}`);
+        } catch (uploadError) {
+          console.error(`Failed to upload video ${i + 1}:`, uploadError);
+          // Continue with other videos, don't fail the entire request
+        }
       }
+
+      processedVideoUrl = s3VideoUrls.length > 0 ? s3VideoUrls : [];
     }
 
     // Validate and process category - must be a valid ObjectId or empty
@@ -102,9 +182,14 @@ export async function POST(req: NextRequest) {
       shortDescription: shortDescription ? String(shortDescription).trim() : "",
       description: String(description).trim(),
       price: roundedPrice,
-      imageUrl: imageUrl,
+      imageUrl: s3ImageUrls, // S3 URLs only
       videoUrl: processedVideoUrl.length > 0 ? processedVideoUrl : [],
     };
+
+    // Add discount if provided
+    if (processedDiscount !== undefined) {
+      productData.discount = processedDiscount;
+    }
 
     // Only add category, subcategory if not a universal product
     if (!isUniversalProduct) {

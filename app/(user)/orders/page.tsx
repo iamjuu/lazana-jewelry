@@ -33,7 +33,7 @@ const OrdersPageContent = () => {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const token = localStorage.getItem("userToken");
+      const token = sessionStorage.getItem("userToken");
       
       if (!token) {
         return;

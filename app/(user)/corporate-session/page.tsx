@@ -8,14 +8,51 @@ import Footer from '@/components/user/Footer'
 const CorporateSessionPage = () => {
   const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
+    // Section 1: Contact Details
     fullName: '',
+    workEmail: '',
+    companyName: '',
+    jobTitle: '',
     phone: '',
-    email: '',
+    cityCountry: '',
+    // Section 2: Company Information
+    industry: '',
+    companySize: '',
+    // Section 3: Enquiry Type
+    enquiryTypes: [] as string[],
+    // Section 4: Session Details
+    preferredDates: '',
+    preferredLocation: '',
+    estimatedParticipants: '',
+    preferredDuration: '',
+    // Section 5: Session Objective
+    sessionObjectives: [] as string[],
+    // Section 6: Additional Information
     comment: ''
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleCheckboxChange = (name: 'enquiryTypes' | 'sessionObjectives', value: string) => {
+    setFormData(prev => {
+      const currentArray = prev[name] || []
+      const isChecked = currentArray.includes(value)
+      return {
+        ...prev,
+        [name]: isChecked
+          ? currentArray.filter(item => item !== value)
+          : [...currentArray, value]
+      }
+    })
+  }
+
+  const handleRadioChange = (name: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -35,18 +72,34 @@ const CorporateSessionPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...formData, services, sessionType }),
+        body: JSON.stringify({ 
+          ...formData, 
+          email: formData.workEmail, // Use workEmail as email for API
+          services, 
+          sessionType 
+        }),
       })
 
       const data = await response.json()
 
       if (data.success) {
-        toast.success('Thank you for submitting! We will contact you soon.')
+        toast.success('Thank you for submitting! We will respond within 2-3 business days.')
         // Reset form
         setFormData({
           fullName: '',
+          workEmail: '',
+          companyName: '',
+          jobTitle: '',
           phone: '',
-          email: '',
+          cityCountry: '',
+          industry: '',
+          companySize: '',
+          enquiryTypes: [],
+          preferredDates: '',
+          preferredLocation: '',
+          estimatedParticipants: '',
+          preferredDuration: '',
+          sessionObjectives: [],
           comment: ''
         })
       } else {
@@ -72,63 +125,257 @@ const CorporateSessionPage = () => {
                 Corporate Session
               </h1>
               <p className="text-[14px] sm:text-[15px] md:text-[16px] text-[#5B7C99] font-light leading-relaxed max-w-2xl">
-                Bring the healing power of crystal bowls to your workplace. Fill out the form below 
-                and we&apos;ll contact you to discuss your corporate wellness needs.
+                Fill out the form below and we&apos;ll respond within 2-3 business days.
               </p>
             </div>
 
             {/* Form */}
             <div className="bg-white/50 rounded-lg p-6 md:p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Full Name */}
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Section 1: Contact Details */}
                 <div>
-                  <input
-                    type="text"
-                    name="fullName"
-                    placeholder="Full Name"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
-                    required
-                  />
+                  <h2 className="text-[#1C3163] text-[18px] md:text-[20px] font-medium mb-4">1. Contact Details</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">Full Name*</label>
+                      <input
+                        type="text"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">Work Email*</label>
+                      <input
+                        type="email"
+                        name="workEmail"
+                        value={formData.workEmail}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">Company Name*</label>
+                      <input
+                        type="text"
+                        name="companyName"
+                        value={formData.companyName}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">Job Title / Role*</label>
+                      <input
+                        type="text"
+                        name="jobTitle"
+                        value={formData.jobTitle}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">Contact Number</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">City & Country*</label>
+                      <input
+                        type="text"
+                        name="cityCountry"
+                        value={formData.cityCountry}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                {/* Phone and Email */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                  <div>
-                    <input
-                      type="tel"
-                      name="phone"
-                      placeholder="Phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
-                      required
-                    />
+                {/* Section 2: Company Information */}
+                <div>
+                  <h2 className="text-[#1C3163] text-[18px] md:text-[20px] font-medium mb-4">2. Company Information</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">Industry</label>
+                      <select
+                        name="industry"
+                        value={formData.industry}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      >
+                        <option value="">Select Industry</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Technology">Technology</option>
+                        <option value="FMCG">FMCG</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Hospitality">Hospitality</option>
+                        <option value="Education">Education</option>
+                        <option value="Professional Services">Professional Services</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">Company Size</label>
+                      <select
+                        name="companySize"
+                        value={formData.companySize}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      >
+                        <option value="">Select Company Size</option>
+                        <option value="1-50">1-50</option>
+                        <option value="51-200">51-200</option>
+                        <option value="201-1,000">201-1,000</option>
+                        <option value="1,000+">1,000+</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
-                {/* Comment Section */}
-                <div className="pt-4">
-                  <textarea
-                    name="comment"
-                    placeholder="Write your comment here"
-                    value={formData.comment}
-                    onChange={handleChange}
-                    rows={6}
-                    className="w-full px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all resize-none"
-                  />
+                {/* Section 3: Enquiry Type */}
+                <div>
+                  <h2 className="text-[#1C3163] text-[18px] md:text-[20px] font-medium mb-4">3. Enquiry Type</h2>
+                  <div>
+                    <label className="block text-[#5B7C99] text-[14px] mb-3">What are you enquiring about?*</label>
+                    <div className="space-y-2">
+                      {[
+                        'Corporate Sound Healing Sessions',
+                        'Wellness Workshops or Retreats',
+                        'Ongoing Corporate Wellness Partners',
+                        'Private Event or Brand Activation',
+                        'Other'
+                      ].map((option) => (
+                        <label key={option} className="flex items-center space-x-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.enquiryTypes.includes(option)}
+                            onChange={() => handleCheckboxChange('enquiryTypes', option)}
+                            className="w-4 h-4 text-[#D5B584] border-[#5B7C99] rounded focus:ring-[#D5B584]"
+                          />
+                          <span className="text-[#5B7C99] text-[14px]">{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 4: Session Details */}
+                <div>
+                  <h2 className="text-[#1C3163] text-[18px] md:text-[20px] font-medium mb-4">4. Session Details</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">Preferred Date(s)</label>
+                      <input
+                        type="text"
+                        name="preferredDates"
+                        value={formData.preferredDates}
+                        onChange={handleChange}
+                        placeholder="DD-MM-YYYY"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-3">Preferred Location</label>
+                      <div className="space-y-2">
+                        {['On-site', 'Off-site', 'Virtual / Hybrid'].map((option) => (
+                          <label key={option} className="flex items-center space-x-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="preferredLocation"
+                              value={option}
+                              checked={formData.preferredLocation === option}
+                              onChange={() => handleRadioChange('preferredLocation', option)}
+                              className="w-4 h-4 text-[#D5B584] border-[#5B7C99] focus:ring-[#D5B584]"
+                            />
+                            <span className="text-[#5B7C99] text-[14px]">{option}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">Estimated Number of Participants</label>
+                      <input
+                        type="number"
+                        name="estimatedParticipants"
+                        value={formData.estimatedParticipants}
+                        onChange={handleChange}
+                        min="1"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#5B7C99] text-[14px] mb-2">Preferred Session Duration</label>
+                      <select
+                        name="preferredDuration"
+                        value={formData.preferredDuration}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      >
+                        <option value="">Select Duration</option>
+                        <option value="30 minutes">30 minutes</option>
+                        <option value="45 minutes">45 minutes</option>
+                        <option value="60 minutes">60 minutes</option>
+                        <option value="90 minutes">90 minutes</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 5: Session Objective */}
+                <div>
+                  <h2 className="text-[#1C3163] text-[18px] md:text-[20px] font-medium mb-4">5. Session Objective</h2>
+                  <div>
+                    <label className="block text-[#5B7C99] text-[14px] mb-3">What is the main intention of this session?</label>
+                    <div className="space-y-2">
+                      {[
+                        'Stress reduction & relaxation',
+                        'Team bonding',
+                        'Focus & mental clarity',
+                        'Leadership or high-performance support',
+                        'Employee wellbeing initiative',
+                        'Other'
+                      ].map((option) => (
+                        <label key={option} className="flex items-center space-x-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.sessionObjectives.includes(option)}
+                            onChange={() => handleCheckboxChange('sessionObjectives', option)}
+                            className="w-4 h-4 text-[#D5B584] border-[#5B7C99] rounded focus:ring-[#D5B584]"
+                          />
+                          <span className="text-[#5B7C99] text-[14px]">{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 6: Additional Information */}
+                <div>
+                  <h2 className="text-[#1C3163] text-[18px] md:text-[20px] font-medium mb-4">6. Additional Information</h2>
+                  <div>
+                    <label className="block text-[#5B7C99] text-[14px] mb-2">Message / Additional Notes</label>
+                    <textarea
+                      name="comment"
+                      value={formData.comment}
+                      onChange={handleChange}
+                      rows={6}
+                      className="w-full px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all resize-none"
+                      placeholder="Any additional information you'd like to share..."
+                    />
+                  </div>
                 </div>
 
                 {/* Submit Button */}
@@ -152,4 +399,3 @@ const CorporateSessionPage = () => {
 }
 
 export default CorporateSessionPage
-

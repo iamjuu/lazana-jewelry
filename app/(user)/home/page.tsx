@@ -370,7 +370,7 @@ const Index = () => {
           onLoadedData={() => console.log("Video loaded successfully")}
         >
           <source
-            src="/assets/images/landing/video/hero.mp4"
+            src="https://amzn-crystalbowls3.s3.ap-southeast-1.amazonaws.com/videos/1768043688349-ttt.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.
@@ -401,7 +401,7 @@ const Index = () => {
           </div>
         </div>
       </div>
-      <div className="w-full bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+      <div className="w-full bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] ">
         {/* about section  */}
         <AboutSectionComponent />
 
@@ -411,7 +411,7 @@ const Index = () => {
 
         {/* service section  */}
 
-        <section className="w-full py-[40px] md:py-[68px] ">
+        <section className="w-full py-[40px] md:py-[45px]  ">
           <div className="max-w-6xl mx-auto px-4">
             {/* Header */}
             <div className="mb-8 md:mb-12 flex    flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]">
@@ -419,7 +419,7 @@ const Index = () => {
                 Services
               </h2>
               <p className="text-black text-[14px] mt-3 sm:text-[16px] md:text-[18px] font-light">
-                Private Sessions & <br /> Corporate Wellness
+                Private Sessions &  Corporate Wellness
               </p>
             </div>
 
@@ -515,15 +515,15 @@ const Index = () => {
 
             {/* Second Section Header */}
             <div className="mb-8 md:mb-12 mt-12 md:mt-20">
-              <h2 className="text-black text-[13px] sm:text-[14px] md:text-[16px] font-normal leading-tight">
+              {/* <h2 className="text-black text-[13px] sm:text-[14px] md:text-[16px] font-normal leading-tight">
                 Journey to Healing:
                 <br />
                 Sound & Music for Creatives
-              </h2>
+              </h2> */}
             </div>
 
             {/* Second Row - Featured Private Sessions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-12 gap-y-8 md:gap-y-16 mb-12 md:mb-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-12 gap-y-8 md:gap-y-16 mb-12 md:mb-1  ">
               {featuredPrivateSessions.length > 0 ? (
                 featuredPrivateSessions.map((session) => {
                   const imageUrl = session.imageUrl
@@ -610,9 +610,9 @@ const Index = () => {
 
         {/* testimonials section  */}
 
-        <section className="w-full py-[40px] md:py-[68px]  relative">
+        <section className="w-full py-[40px] md:py-[10px]  relative ">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12">
+            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12 ">
               What our Clients are saying..
             </h2>
           </div>
@@ -644,7 +644,7 @@ const Index = () => {
                     >
                  
                       {/* Right Side - Testimonial Card */}
-                      <div className="flex-1 w-full border rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[200px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
+                      <div className="flex-1 w-full border border-[#D5B584] rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[200px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
                         <div className="animate-fadeIn">
                           <blockquote className="text-black text-[12px] sm:text-[12px] md:text-[14px] lg:text-[14px] font-light leading-relaxed mb-6 md:mb-8 italic">
                             &ldquo;{testimonial.testimonial}&rdquo;

@@ -14,12 +14,19 @@ type Product = {
   _id: string;
   name: string;
   price: number;
+  discount?: number;
   createdAt: string;
   description?: string;
   shortDescription?: string;
   imageUrl?: string[];
   videoUrl?: string | string[];
   relativeproduct?: boolean;
+};
+
+type MediaItem = {
+  type: 'image' | 'video';
+  url: string;
+  index: number;
 };
 
 // Magnifier Component
@@ -78,7 +85,7 @@ const ImageMagnifier = ({ src, alt }: { src: string; alt: string }) => {
           src={src}
           alt={alt}
           fill
-          className="object-cover"
+          className="object-contain"
           unoptimized
         />
       </div>
@@ -106,7 +113,7 @@ const ProductDetailPage = () => {
   const params = useParams();
   const router = useRouter();
   const productId = params.id as string;
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem>({ type: 'image', url: '', index: 0 });
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [relativeProduct, setRelativeProduct] = useState<Product | null>(null);
@@ -114,6 +121,7 @@ const ProductDetailPage = () => {
   const [buyingNow, setBuyingNow] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const { addItem } = useCart();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const fetchProduct = async () => {
     try {
@@ -190,6 +198,21 @@ const ProductDetailPage = () => {
     if (product && product.relativeproduct) {
       setRelativeProduct(null);
     }
+    
+    // Set initial selected media when product loads
+    if (product) {
+      const productImages = Array.isArray(product.imageUrl) && product.imageUrl.length > 0 
+        ? product.imageUrl 
+        : [];
+      
+      if (productImages.length > 0) {
+        setSelectedMedia({
+          type: 'image',
+          url: normalizeImageUrl(productImages[0]),
+          index: 0
+        });
+      }
+    }
   }, [product]);
 
   // Helper function to normalize image URL
@@ -224,20 +247,20 @@ const ProductDetailPage = () => {
     );
   }
 
-  // Get product images (max 3) - ensure it's always an array
+  // Get product images and videos
   const productImages = Array.isArray(product.imageUrl) && product.imageUrl.length > 0 
     ? product.imageUrl 
     : [];
   
-  // Ensure selectedImage is within bounds
-  const safeSelectedImage = productImages.length > 0 
-    ? Math.min(Math.max(0, selectedImage), productImages.length - 1)
-    : 0;
+  const productVideos = product.videoUrl 
+    ? (Array.isArray(product.videoUrl) ? product.videoUrl : [product.videoUrl]).filter(v => v && v.trim())
+    : [];
   
-  // Get main image or placeholder
-  const mainImage = productImages.length > 0 && productImages[safeSelectedImage]
-    ? normalizeImageUrl(productImages[safeSelectedImage])
-    : null;
+  // Combine images and videos into media items
+  const mediaItems: MediaItem[] = [
+    ...productImages.map((url, index) => ({ type: 'image' as const, url: normalizeImageUrl(url), index })),
+    ...productVideos.map((url, index) => ({ type: 'video' as const, url: url, index }))
+  ];
   
   // Format price to show decimals only if needed
   const formatPrice = (price: number) => {
@@ -247,12 +270,16 @@ const ProductDetailPage = () => {
     }
     return `$${rounded.toFixed(2)}`;
   };
-  const priceInDollars = formatPrice(product.price);
+  const hasDiscount = product.discount && product.discount > 0;
+  const originalPrice = product.price;
+  const discountedPrice = hasDiscount && product.discount ? product.price - product.discount : product.price;
+  const priceInDollars = formatPrice(discountedPrice);
+  const originalPriceFormatted = formatPrice(originalPrice);
 
   // Handle Add to Cart
   const handleAddToCart = () => {
     // Check if user is logged in
-    const token = localStorage.getItem("userToken");
+    const token = sessionStorage.getItem("userToken");
     if (!token) {
       toast.error("Please login to add items to cart");
       router.push("/login");
@@ -267,7 +294,7 @@ const ProductDetailPage = () => {
     addItem({
       id: product._id,
       name: product.name,
-      price: product.price, // Price in dollars
+      price: discountedPrice, // Use discounted price
       imageUrl: imageUrl,
     });
 
@@ -279,12 +306,18 @@ const ProductDetailPage = () => {
     if (!relativeProduct) return;
     
     // Check if user is logged in
-    const token = localStorage.getItem("userToken");
+    const token = sessionStorage.getItem("userToken");
     if (!token) {
       toast.error("Please login to add items to cart");
       router.push("/login");
       return;
     }
+
+    // Calculate discounted price if applicable
+    const hasRelativeDiscount = relativeProduct.discount && relativeProduct.discount > 0;
+    const relativeDiscountedPrice = hasRelativeDiscount && relativeProduct.discount 
+      ? relativeProduct.price - relativeProduct.discount 
+      : relativeProduct.price;
 
     // Get first image URL for cart
     const imageUrl = relativeProduct.imageUrl && relativeProduct.imageUrl.length > 0
@@ -294,8 +327,38 @@ const ProductDetailPage = () => {
     addItem({
       id: relativeProduct._id,
       name: relativeProduct.name,
-      price: relativeProduct.price, // Price in dollars
+      price: relativeDiscountedPrice, // Use discounted price
       imageUrl: imageUrl,
+    });
+
+    toast.success("Added to cart!");
+  };
+
+  // Handle Add Related Product to Cart
+  const handleAddRelatedProductToCart = (item: Product) => {
+    // Check if user is logged in
+    const token = sessionStorage.getItem("userToken");
+    if (!token) {
+      toast.error("Please login to add items to cart");
+      router.push("/login");
+      return;
+    }
+
+    // Calculate discounted price if discount exists
+    const itemDiscountedPrice = item.discount && item.discount > 0 
+      ? item.price - item.discount 
+      : item.price;
+
+    // Get first image URL for cart
+    const itemImageUrl = item.imageUrl && item.imageUrl.length > 0
+      ? normalizeImageUrl(item.imageUrl[0])
+      : "";
+
+    addItem({
+      id: item._id,
+      name: item.name,
+      price: itemDiscountedPrice,
+      imageUrl: itemImageUrl,
     });
 
     toast.success("Added to cart!");
@@ -304,7 +367,7 @@ const ProductDetailPage = () => {
   // Handle Instant Buy - redirect to order confirmation
   const handleBuyNow = async () => {
     // Check if user is logged in
-    const token = localStorage.getItem("userToken");
+    const token = sessionStorage.getItem("userToken");
     if (!token) {
       toast.error("Please login to proceed with purchase");
       router.push("/login");
@@ -323,43 +386,71 @@ const ProductDetailPage = () => {
         <div className="max-w-6xl mx-auto px-4">
           {/* Product Detail Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16 lg:mb-24 lg:items-start">
-            {/* Left Side - Images */}
+            {/* Left Side - Images and Videos */}
             <div className="flex flex-col-reverse sm:flex-row gap-4">
-              {/* Thumbnail Images */}
-              {Array.isArray(productImages) && productImages.length > 1 && (
+              {/* Thumbnail Images and Videos */}
+              {mediaItems.length > 1 && (
                 <div className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible">
-                  {productImages.map((imgUrl, index) => (
+                  {mediaItems.map((media, index) => (
                     <button
-                      key={index}
-                      onClick={() => setSelectedImage(index)}
+                      key={`${media.type}-${index}`}
+                      onClick={() => setSelectedMedia(media)}
                       className={`relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
-                        selectedImage === index
+                        selectedMedia.type === media.type && selectedMedia.index === media.index
                           ? "border-[#1C3163]"
                           : "border-transparent opacity-60 hover:opacity-100"
                       }`}
                     >
-                      <Image
-                        src={normalizeImageUrl(imgUrl)}
-                        alt={`Product view ${index + 1}`}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
+                      {media.type === 'image' ? (
+                        <Image
+                          src={media.url}
+                          alt={`Product view ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="relative w-full h-full bg-black">
+                          <video
+                            src={media.url}
+                            className="w-full h-full object-cover"
+                            muted
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                            </svg>
+                          </div>
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
               )}
 
-              {/* Main Image */}
-              <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-white">
-                {mainImage ? (
-                  <ImageMagnifier src={mainImage} alt={product.name} />
+              {/* Main Display Area - Fixed Height */}
+              <div className="relative w-full h-[400px] sm:h-[450px] md:h-[500px] rounded-lg overflow-hidden ">
+                {selectedMedia.type === 'image' ? (
+                  selectedMedia.url ? (
+                    <ImageMagnifier
+                      src={selectedMedia.url}
+                      alt={product.name}
+                    />
+                  ) : (
+                    <Image
+                      src={Bucket1}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                    />
+                  )
                 ) : (
-                  <Image
-                    src={Bucket1}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
+                  <video
+                    ref={videoRef}
+                    src={selectedMedia.url}
+                    controls
+                    autoPlay
+                    className="w-full h-full object-contain"
                   />
                 )}
               </div>
@@ -372,9 +463,20 @@ const ProductDetailPage = () => {
               </h1>
 
               <div className="mb-4">
-                <p className="text-[#1C3163] text-[24px] sm:text-[28px] lg:text-[32px] font-medium">
-                  {priceInDollars}
-                </p>
+                {hasDiscount ? (
+                  <div className="flex items-center gap-3">
+                    <p className="text-gray-500 text-[20px] sm:text-[24px] line-through">
+                      {originalPriceFormatted}
+                    </p>
+                    <p className="text-[#1C3163] text-[24px] sm:text-[28px] lg:text-[32px] font-medium">
+                      {priceInDollars} USD
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-[#1C3163] text-[24px] sm:text-[28px] lg:text-[32px] font-medium">
+                    {priceInDollars} USD
+                  </p>
+                )}
               </div>
 
               {/* Short Description - Show after price */}
@@ -650,7 +752,7 @@ const ProductDetailPage = () => {
                   
                   return (
                     <div key={item._id} className="group">
-                      <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-white mb-4">
+                      <div className="relative w-full aspect-square rounded-lg overflow-hidden  mb-4">
                         {itemImageUrl ? (
                           <Link href={`/shop/${item._id}`} className="block w-full h-full">
                             <Image
@@ -688,6 +790,7 @@ const ProductDetailPage = () => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
+                                handleAddRelatedProductToCart(item);
                               }}
                               className="w-8 h-8 rounded-full border-2 border-[#1C3163] flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors"
                             >

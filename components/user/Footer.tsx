@@ -178,7 +178,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       Home
                     </Link>
@@ -186,7 +186,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/shop"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       Shop
                     </Link>
@@ -194,7 +194,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/services"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       Services
                     </Link>
@@ -202,7 +202,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/about"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       About Us
                     </Link>
@@ -210,7 +210,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/faq"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       FAQs
                     </Link>
@@ -222,7 +222,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/events"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       Events
                     </Link>
@@ -230,7 +230,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/blog"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       Blog
                     </Link>
@@ -238,7 +238,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/book-a-session"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       Book a Call
                     </Link>
@@ -246,7 +246,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/shipping-and-delivery"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       Shipping & Delivery
                     </Link>
@@ -254,7 +254,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/returns-and-refund-policy"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       Returns & Refund Policy
                     </Link>
@@ -271,7 +271,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="mailto:mail@frankieyogini@gmail.com"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
                     >
                       mail@frankieyogini@gmail.com
                     </a>

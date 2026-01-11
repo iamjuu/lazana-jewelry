@@ -3,7 +3,9 @@ import mongoose, { Schema, models, model } from "mongoose";
 export interface EventCouponType {
   couponCode: string; // Coupon code (can be reused if previous coupon with same code is expired)
   couponName: string; // Display name for the coupon
-  discountPercent: number; // Discount percentage (e.g., 10 for 10%)
+  discountType: "percentage" | "amount"; // Discount type: percentage or fixed amount
+  discountPercent?: number; // Discount percentage (e.g., 10 for 10%) - required if discountType is "percentage"
+  discountAmount?: number; // Fixed discount amount (e.g., 50 for SGD 50) - required if discountType is "amount"
   expiryDate: Date; // Expiry date
   excludedEvents?: mongoose.Types.ObjectId[]; // Events to exclude (these events won't be eligible for this coupon)
   usageLimit?: number | null; // Total number of times coupon can be used (optional, null = unlimited)
@@ -33,11 +35,26 @@ const EventCouponSchema = new Schema<EventCouponType>(
       required: true,
       trim: true,
     },
+    discountType: {
+      type: String,
+      required: true,
+      enum: ["percentage", "amount"],
+      default: "percentage",
+    },
     discountPercent: {
       type: Number,
-      required: true,
+      required: function(this: EventCouponType) {
+        return this.discountType === "percentage";
+      },
       min: 0,
       max: 100,
+    },
+    discountAmount: {
+      type: Number,
+      required: function(this: EventCouponType) {
+        return this.discountType === "amount";
+      },
+      min: 0,
     },
     expiryDate: {
       type: Date,

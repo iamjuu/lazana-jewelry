@@ -21,7 +21,7 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem("userToken");
+      const token = sessionStorage.getItem("userToken");
       
       if (!token && requireAuth) {
         toast.error("Please login to continue");

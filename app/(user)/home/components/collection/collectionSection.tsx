@@ -125,7 +125,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = ({ categories, loadi
                 <p className="pt-4 sm:pt-6 md:pt-[28px] text-center font-normal text-[14px] sm:text-[16px] md:text-[18px] pb-4 sm:pb-6 md:pb-8">
                   {item.title}
                 </p>
-                <p className="text-center text-[9px] sm:text-[9.5px] md:text-[10px] font-light leading-[14px] sm:leading-[15px] md:leading-[16px]">
+                <p className="text-center text-[9px] sm:text-[9.5px] md:text-[16px] font-light leading-[14px] sm:leading-[15px] md:leading-[22px]">
                   {item.para}
                 </p>
                 </div>

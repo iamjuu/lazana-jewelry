@@ -7,6 +7,7 @@ const OrderItemSchema = new Schema<OrderItem>({
   price: { type: Number, required: true },
   quantity: { type: Number, required: true },
   isSet: { type: Boolean, default: false },
+  imageUrl: { type: String, required: false }, // Product image URL for display in emails and order details
 });
 
 const DeliveryChargesSchema = new Schema<DeliveryCharges>({

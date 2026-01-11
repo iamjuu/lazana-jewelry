@@ -24,7 +24,7 @@ export default function EventBookingSuccessPage() {
       }
 
       try {
-        const token = localStorage.getItem('userToken')
+        const token = sessionStorage.getItem('userToken')
         if (!token) {
           toast.error('Please login')
           router.push('/login')
@@ -129,6 +129,8 @@ export default function EventBookingSuccessPage() {
     </div>
   )
 }
+
+
 
 
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import WhatsAppFloating from "@/components/WhatsAppFloating";
 
 export const metadata: Metadata = {
   title: "Crystal Bowl Studio - Healing Through Sound",
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         {children}
+        <WhatsAppFloating />
         <Toaster position="top-right" />
       </body>
     </html>

@@ -16,7 +16,7 @@ function AdminLoginContent() {
   // Check if admin is already logged in
   useEffect(() => {
     const checkAuth = async () => {
-      const adminToken = localStorage.getItem("adminToken");
+      const adminToken = sessionStorage.getItem("adminToken");
       if (!adminToken) {
         setCheckingAuth(false);
         return;
@@ -39,14 +39,14 @@ function AdminLoginContent() {
           }
         }
         
-        // Token/cookie is invalid, clear localStorage and show login
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminRole");
+        // Token/cookie is invalid, clear sessionStorage and show login
+        sessionStorage.removeItem("adminToken");
+        sessionStorage.removeItem("adminRole");
         setCheckingAuth(false);
       } catch {
         // If API call fails, clear token and show login
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminRole");
+        sessionStorage.removeItem("adminToken");
+        sessionStorage.removeItem("adminRole");
         setCheckingAuth(false);
       }
     };
@@ -100,9 +100,9 @@ function AdminLoginContent() {
         return;
       }
 
-      // Store token in localStorage (for client-side reference)
-      localStorage.setItem("adminToken", data.data.token);
-      localStorage.setItem("adminRole", "admin");
+      // Store token in sessionStorage (for client-side reference, cleared when browser closes)
+      sessionStorage.setItem("adminToken", data.data.token);
+      sessionStorage.setItem("adminRole", "admin");
 
       // Wait a bit for cookie to be set, then navigate
       // The middleware will verify the cookie token

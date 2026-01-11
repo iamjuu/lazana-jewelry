@@ -96,6 +96,12 @@ function ProfilePageContent() {
   const [ordersPage, setOrdersPage] = useState(1);
   const [hasMoreOrders, setHasMoreOrders] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [bookingsPage, setBookingsPage] = useState(1);
+  const [hasMoreBookings, setHasMoreBookings] = useState(true);
+  const [isLoadingMoreBookings, setIsLoadingMoreBookings] = useState(false);
+  const [eventBookingsPage, setEventBookingsPage] = useState(1);
+  const [hasMoreEventBookings, setHasMoreEventBookings] = useState(true);
+  const [isLoadingMoreEventBookings, setIsLoadingMoreEventBookings] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -117,7 +123,7 @@ function ProfilePageContent() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("userToken");
+    const token = sessionStorage.getItem("userToken");
     if (token) {
       fetchUserData(token);
     }
@@ -128,10 +134,10 @@ function ProfilePageContent() {
       fetchOrders(1, false);
     }
     if (activeTab === "bookings" && bookings.length === 0 && !bookingsLoading) {
-      fetchBookings();
+      fetchBookings(1, false);
     }
     if (activeTab === "bookedEvents" && eventBookings.length === 0 && !eventBookingsLoading) {
-      fetchEventBookings();
+      fetchEventBookings(1, false);
     }
   }, [activeTab]);
 
@@ -144,7 +150,7 @@ function ProfilePageContent() {
       
       if (!res.ok) {
         if (res.status === 401) {
-          localStorage.removeItem("userToken");
+          sessionStorage.removeItem("userToken");
           toast.error("Session expired. Please login again.");
           router.push("/login");
           return;
@@ -177,7 +183,7 @@ function ProfilePageContent() {
   };
 
   const fetchOrders = async (page: number = 1, append: boolean = false) => {
-    const token = localStorage.getItem("userToken");
+    const token = sessionStorage.getItem("userToken");
     if (!token) return;
 
     try {
@@ -188,7 +194,7 @@ function ProfilePageContent() {
         setOrders([]); // Clear previous orders when fetching first page
       }
       
-      const response = await fetch(`/api/orders?page=${page}&limit=10`, {
+      const response = await fetch(`/api/orders?page=${page}&limit=5`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -220,21 +226,45 @@ function ProfilePageContent() {
     }
   };
 
-  const fetchBookings = async () => {
-    const token = localStorage.getItem("userToken");
+  // Load more bookings when scrolling
+  const handleLoadMoreBookings = () => {
+    if (!isLoadingMoreBookings && hasMoreBookings) {
+      fetchBookings(bookingsPage + 1, true);
+    }
+  };
+
+  // Load more event bookings when scrolling
+  const handleLoadMoreEventBookings = () => {
+    if (!isLoadingMoreEventBookings && hasMoreEventBookings) {
+      fetchEventBookings(eventBookingsPage + 1, true);
+    }
+  };
+
+  const fetchBookings = async (page: number = 1, append: boolean = false) => {
+    const token = sessionStorage.getItem("userToken");
     if (!token) return;
 
     try {
-      setBookingsLoading(true);
-      const response = await fetch("/api/bookings?sessionType=discovery,private,corporate", {
+      if (append) {
+        setIsLoadingMoreBookings(true);
+      } else {
+        setBookingsLoading(true);
+        setBookings([]); // Clear previous bookings when fetching first page
+      }
+      
+      const response = await fetch(`/api/bookings?sessionType=discovery,private,corporate&page=${page}&limit=5`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await response.json();
       if (data.success) {
-        // Filter out event bookings
-        const yogaBookings = (data.data || []).filter((b: Booking) => b.sessionType !== "event");
-        setBookings(yogaBookings);
+        if (append) {
+          setBookings((prev) => [...prev, ...(data.data || [])]);
+        } else {
+          setBookings(data.data || []);
+        }
+        setHasMoreBookings(data.pagination?.hasMore || false);
+        setBookingsPage(page);
       } else {
         toast.error(data.message || "Failed to fetch bookings");
       }
@@ -243,22 +273,35 @@ function ProfilePageContent() {
       toast.error("Something went wrong");
     } finally {
       setBookingsLoading(false);
+      setIsLoadingMoreBookings(false);
     }
   };
 
-  const fetchEventBookings = async () => {
-    const token = localStorage.getItem("userToken");
+  const fetchEventBookings = async (page: number = 1, append: boolean = false) => {
+    const token = sessionStorage.getItem("userToken");
     if (!token) return;
 
     try {
-      setEventBookingsLoading(true);
-      const response = await fetch("/api/bookings?sessionType=event", {
+      if (append) {
+        setIsLoadingMoreEventBookings(true);
+      } else {
+        setEventBookingsLoading(true);
+        setEventBookings([]); // Clear previous event bookings when fetching first page
+      }
+      
+      const response = await fetch(`/api/bookings?sessionType=event&page=${page}&limit=5`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await response.json();
       if (data.success) {
-        setEventBookings(data.data || []);
+        if (append) {
+          setEventBookings((prev) => [...prev, ...(data.data || [])]);
+        } else {
+          setEventBookings(data.data || []);
+        }
+        setHasMoreEventBookings(data.pagination?.hasMore || false);
+        setEventBookingsPage(page);
       } else {
         toast.error(data.message || "Failed to fetch event bookings");
       }
@@ -267,6 +310,7 @@ function ProfilePageContent() {
       toast.error("Something went wrong");
     } finally {
       setEventBookingsLoading(false);
+      setIsLoadingMoreEventBookings(false);
     }
   };
 
@@ -324,7 +368,7 @@ function ProfilePageContent() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = typeof window !== "undefined" ? localStorage.getItem("userToken") : null;
+    const token = typeof window !== "undefined" ? sessionStorage.getItem("userToken") : null;
     if (!token) {
       router.push("/login");
       return;
@@ -381,8 +425,8 @@ function ProfilePageContent() {
     } catch (err) {
       console.error("Logout error:", err);
     } finally {
-      localStorage.removeItem("userToken");
-      localStorage.removeItem("userRole");
+      sessionStorage.removeItem("userToken");
+      sessionStorage.removeItem("userRole");
       localStorage.removeItem("user");
       window.dispatchEvent(new Event("logout"));
       toast.success("Logged out successfully");
@@ -928,6 +972,17 @@ function ProfilePageContent() {
                         </div>
                       </div>
                     ))}
+                    {hasMoreBookings && (
+                      <div className="text-center py-6">
+                        <button
+                          onClick={handleLoadMoreBookings}
+                          disabled={isLoadingMoreBookings}
+                          className="bg-[#1C3163] text-white px-6 py-2 rounded-lg hover:bg-[#152747] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isLoadingMoreBookings ? "Loading..." : "Load More Bookings"}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -1050,6 +1105,17 @@ function ProfilePageContent() {
                         </div>
                       </div>
                     ))}
+                    {hasMoreEventBookings && (
+                      <div className="text-center py-6">
+                        <button
+                          onClick={handleLoadMoreEventBookings}
+                          disabled={isLoadingMoreEventBookings}
+                          className="bg-[#1C3163] text-white px-6 py-2 rounded-lg hover:bg-[#152747] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isLoadingMoreEventBookings ? "Loading..." : "Load More Events"}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

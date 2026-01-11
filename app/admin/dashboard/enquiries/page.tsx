@@ -35,6 +35,20 @@ type Enquiry = {
   bookedDate?: string;
 
   bookedTime?: string;
+  
+  // Corporate session specific fields
+  companyName?: string;
+  jobTitle?: string;
+  workEmail?: string;
+  cityCountry?: string;
+  industry?: string;
+  companySize?: string;
+  enquiryTypes?: string[];
+  preferredDates?: string;
+  preferredLocation?: string;
+  estimatedParticipants?: number;
+  preferredDuration?: string;
+  sessionObjectives?: string[];
 
   createdAt: string;
 
@@ -684,13 +698,95 @@ export default function EnquiriesPage() {
 
                                 </div>
 
+                                {(enquiry.sessionType === 'corporate' || enquiry.sessionType === 'private') && (
+                                  <div className="pt-4 border-t border-zinc-700">
+                                    <h3 className="text-sm font-medium text-white mb-3">
+                                      {enquiry.sessionType === 'corporate' ? 'Corporate Session Details' : 'Additional Information'}
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      {enquiry.companyName && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Company Name</p>
+                                          <p className="text-sm text-white">{enquiry.companyName}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.jobTitle && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Job Title / Role</p>
+                                          <p className="text-sm text-white">{enquiry.jobTitle}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.workEmail && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Work Email</p>
+                                          <p className="text-sm text-white">{enquiry.workEmail}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.cityCountry && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">City & Country</p>
+                                          <p className="text-sm text-white">{enquiry.cityCountry}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.industry && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Industry</p>
+                                          <p className="text-sm text-white">{enquiry.industry}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.companySize && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Company Size</p>
+                                          <p className="text-sm text-white">{enquiry.companySize}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.enquiryTypes && enquiry.enquiryTypes.length > 0 && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Enquiry Types</p>
+                                          <p className="text-sm text-white">{enquiry.enquiryTypes.join(', ')}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.preferredDates && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Preferred Date(s)</p>
+                                          <p className="text-sm text-white">{enquiry.preferredDates}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.preferredLocation && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Preferred Location</p>
+                                          <p className="text-sm text-white">{enquiry.preferredLocation}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.estimatedParticipants && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Estimated Participants</p>
+                                          <p className="text-sm text-white">{enquiry.estimatedParticipants}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.preferredDuration && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Preferred Duration</p>
+                                          <p className="text-sm text-white">{enquiry.preferredDuration}</p>
+                                        </div>
+                                      )}
+                                      {enquiry.sessionObjectives && enquiry.sessionObjectives.length > 0 && (
+                                        <div>
+                                          <p className="text-xs text-zinc-500 mb-1">Session Objectives</p>
+                                          <p className="text-sm text-white">{enquiry.sessionObjectives.join(', ')}</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+
                                 {enquiry.comment && (
 
                                   <div className="pt-2">
 
                                     <p className="text-xs text-zinc-500 mb-1">
 
-                                      {enquiry.sessionType === 'discovery' ? 'Discovery Form Details' : 'Comment'}
+                                      {enquiry.sessionType === 'discovery' ? 'Discovery Form Details' : 'Message / Additional Notes'}
 
                                     </p>
 

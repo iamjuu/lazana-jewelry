@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { CryselLogo } from '@/public/assets'
-import { ShoppingCart, User } from 'lucide-react'
+import { ShoppingCart, User, Search, X } from 'lucide-react'
 import { useCart } from '@/stores/useCart'
 
 // Navigation items array
@@ -45,6 +45,12 @@ const Navbar = () => {
   const [categories, setCategories] = useState<Category[]>([])
   const [isMobileOfferingOpen, setIsMobileOfferingOpen] = useState(false)
   const [isMobileShopOpen, setIsMobileShopOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Fetch categories from API
   useEffect(() => {
@@ -69,7 +75,7 @@ const Navbar = () => {
   useEffect(() => {
     setMounted(true)
     // Check login status after mount to prevent hydration mismatch
-    setIsLoggedIn(!!localStorage.getItem("userToken"))
+    setIsLoggedIn(!!sessionStorage.getItem("userToken"))
   }, [])
 
   // Update cart count whenever items change
@@ -87,6 +93,68 @@ const Navbar = () => {
     }
   }, [isShopHovered])
 
+  // Search functionality
+  useEffect(() => {
+    const searchProducts = async () => {
+      if (searchQuery.trim().length < 2) {
+        setSearchResults([])
+        return
+      }
+
+      setIsSearching(true)
+      try {
+        const response = await fetch(`/api/products?search=${encodeURIComponent(searchQuery.trim())}&limit=5&excludeImages=false`)
+        const data = await response.json()
+        if (data.success && data.data) {
+          setSearchResults(data.data)
+        } else {
+          setSearchResults([])
+        }
+      } catch (error) {
+        console.error('Search error:', error)
+        setSearchResults([])
+      } finally {
+        setIsSearching(false)
+      }
+    }
+
+    const debounceTimer = setTimeout(() => {
+      searchProducts()
+    }, 300)
+
+    return () => clearTimeout(debounceTimer)
+  }, [searchQuery])
+
+  // Close search when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false)
+        // Clear search query to hide desktop dropdown
+        setSearchQuery('')
+        setSearchResults([])
+      }
+    }
+
+    if (searchQuery.trim().length >= 2 || isSearchOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [searchQuery, isSearchOpen])
+
+  // Focus search input when opened on mobile
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [isSearchOpen])
+
+  const handleSearchResultClick = (productId: string) => {
+    setIsSearchOpen(false)
+    setSearchQuery('')
+    setSearchResults([])
+    router.push(`/shop/${productId}`)
+  }
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -358,6 +426,66 @@ const Navbar = () => {
               <span className="relative z-10">Book a Call</span>
             </Link>
             
+            {/* Search - Desktop */}
+            <div ref={searchRef} className="relative">
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#D5B584] w-4 h-4" />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-4 py-2 bg-transparent border border-[#D5B584]/30 rounded-md text-white placeholder-[#D5B584]/60 focus:outline-none focus:border-[#D5B584] text-sm w-48 xl:w-56 transition-all duration-150"
+                  />
+                </div>
+              </div>
+              
+              {/* Search Results Dropdown */}
+              {searchQuery.trim().length >= 2 && (
+                <div className="absolute top-full right-0 mt-2 w-80 bg-white/95 backdrop-blur-sm shadow-lg border border-white/20 rounded-lg z-50 max-h-96 overflow-y-auto">
+                  {isSearching ? (
+                    <div className="p-4 text-center text-[#1C3163]">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#D5B584] mx-auto"></div>
+                      <p className="mt-2 text-sm">Searching...</p>
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <div className="py-2">
+                      {searchResults.map((product) => (
+                        <button
+                          key={product._id}
+                          onClick={() => handleSearchResultClick(product._id)}
+                          className="w-full px-4 py-3 hover:bg-[#D5B584]/10 transition-colors text-left flex items-center gap-3 group"
+                        >
+                          {product.imageUrl && product.imageUrl[0] && (
+                            <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0 bg-zinc-100">
+                              <img
+                                src={product.imageUrl[0].startsWith('http') ? product.imageUrl[0] : `data:image/jpeg;base64,${product.imageUrl[0]}`}
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-[#1C3163] group-hover:text-[#D5B584] truncate">
+                              {product.name}
+                            </p>
+                            <p className="text-xs text-[#1C3163]/70 mt-0.5">
+                              ${product.price?.toFixed(2) || '0.00'}
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-4 text-center text-[#1C3163] text-sm">
+                      No products found
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Profile Icon - Always visible */}
             <Link 
               href="/profile" 
@@ -400,6 +528,15 @@ const Navbar = () => {
           </Link>
 
           <div className="flex items-center gap-4">
+            {/* Search Icon Mobile */}
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="relative text-[#D5B584] hover:text-white transition-all duration-150"
+              aria-label="Search"
+            >
+              <Search size={24} />
+            </button>
+
             {/* Profile Icon Mobile - Always visible */}
             <Link 
               href="/profile" 
@@ -457,6 +594,86 @@ const Navbar = () => {
             </button>
           </div>
         </div>
+
+        {/* Mobile Search Dropdown */}
+        {isSearchOpen && (
+          <div ref={searchRef} className="lg:hidden absolute left-4 right-4 top-full mt-2 bg-black/90 backdrop-blur-md rounded-lg z-50 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#D5B584] w-4 h-4" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-10 py-2 bg-white/10 border border-[#D5B584]/30 rounded-md text-white placeholder-[#D5B584]/60 focus:outline-none focus:border-[#D5B584] text-sm"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => {
+                      setSearchQuery('')
+                      setSearchResults([])
+                    }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#D5B584] hover:text-white"
+                  >
+                    <X size={18} />
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={() => setIsSearchOpen(false)}
+                className="text-[#D5B584] hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            {/* Search Results */}
+            {searchQuery.trim().length >= 2 && (
+              <div className="max-h-64 overflow-y-auto">
+                {isSearching ? (
+                  <div className="p-4 text-center text-white">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#D5B584] mx-auto"></div>
+                    <p className="mt-2 text-sm">Searching...</p>
+                  </div>
+                ) : searchResults.length > 0 ? (
+                  <div className="space-y-1">
+                    {searchResults.map((product) => (
+                      <button
+                        key={product._id}
+                        onClick={() => handleSearchResultClick(product._id)}
+                        className="w-full px-4 py-3 hover:bg-white/10 transition-colors text-left flex items-center gap-3 rounded-md group"
+                      >
+                        {product.imageUrl && product.imageUrl[0] && (
+                          <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0 bg-white/10">
+                            <img
+                              src={product.imageUrl[0].startsWith('http') ? product.imageUrl[0] : `data:image/jpeg;base64,${product.imageUrl[0]}`}
+                              alt={product.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white group-hover:text-[#D5B584] truncate">
+                            {product.name}
+                          </p>
+                          <p className="text-xs text-white/70 mt-0.5">
+                            ${product.price?.toFixed(2) || '0.00'}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-white/70 text-sm">
+                    No products found
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Mobile Menu Backdrop - Blurs content behind */}
         <div 

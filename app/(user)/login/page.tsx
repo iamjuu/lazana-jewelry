@@ -116,10 +116,10 @@ export default function LoginPage() {
         return;
       }
 
-      // Store token in localStorage for client-side auth
+      // Store token in sessionStorage for client-side auth (cleared when browser closes)
       if (data.data?.token) {
-        localStorage.setItem("userToken", data.data.token);
-        localStorage.setItem("userRole", "user");
+        sessionStorage.setItem("userToken", data.data.token);
+        sessionStorage.setItem("userRole", "user");
         toast.success("Login successful!");
         router.push("/");
       }

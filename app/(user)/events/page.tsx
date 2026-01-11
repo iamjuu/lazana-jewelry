@@ -58,7 +58,9 @@ const EventsPage = () => {
   const [loading, setLoading] = useState(true);
   const [pastEventsLoading, setPastEventsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const itemsPerPage = 4; // Show 4 items per page for horizontal scroll
+  const MAX_DESCRIPTION_LENGTH = 450; // Maximum characters to show before truncation
 
   // Helper function to parse date and extract month and day
   const parseDate = (dateString: string): { month: string; day: string } => {
@@ -231,6 +233,29 @@ const EventsPage = () => {
     }
   };
 
+  // Toggle description expansion
+  const toggleDescription = (eventId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setExpandedDescriptions((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(eventId)) {
+        newSet.delete(eventId);
+      } else {
+        newSet.add(eventId);
+      }
+      return newSet;
+    });
+  };
+
+  // Get truncated description
+  const getDisplayDescription = (description: string, eventId: string): string => {
+    if (expandedDescriptions.has(eventId) || description.length <= MAX_DESCRIPTION_LENGTH) {
+      return description;
+    }
+    return description.substring(0, MAX_DESCRIPTION_LENGTH) + "...";
+  };
+
   return (
     <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <Navbar />
@@ -312,9 +337,19 @@ const EventsPage = () => {
                           </p>
                         </div>
 
-                        <p className="text-[#6B5D4F] text-[14px] sm:text-[15px] md:text-[16px] font-light leading-relaxed mb-6">
-                          {event.description}
-                        </p>
+                        <div className="mb-6">
+                          <p className="text-[#6B5D4F] text-[14px] sm:text-[15px] md:text-[16px] font-light leading-relaxed">
+                            {getDisplayDescription(event.description, event.id)}
+                          </p>
+                          {/* {event.description.length > MAX_DESCRIPTION_LENGTH && (
+                            <button
+                              onClick={(e) => toggleDescription(event.id, e)}
+                              className="text-[#D5B584] text-[14px] sm:text-[15px] md:text-[16px] font-normal mt-2 hover:underline focus:outline-none"
+                            >
+                              {expandedDescriptions.has(event.id) ? "Show Less" : "Read More"}
+                            </button>
+                          )} */}
+                        </div>
                       </div>
 
                       {/* View Details Button */}

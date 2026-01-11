@@ -10,15 +10,26 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
-    const limit = parseInt(searchParams.get("limit") || "50");
+    const search = searchParams.get("search") || "";
+    const limit = parseInt(searchParams.get("limit") || "10");
     const page = parseInt(searchParams.get("page") || "1");
     const skip = (page - 1) * limit;
 
     const query: any = {};
     if (status) query.status = status;
+    
+    // Add search functionality
+    if (search) {
+      query.$or = [
+        { customerName: { $regex: search, $options: "i" } },
+        { customerEmail: { $regex: search, $options: "i" } },
+        { paymentRef: { $regex: search, $options: "i" } },
+        { "items.name": { $regex: search, $options: "i" } },
+      ];
+    }
 
     const orders = await Order.find(query)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1 }) // Newest first
       .skip(skip)
       .limit(limit)
       .lean();
