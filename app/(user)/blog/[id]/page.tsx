@@ -27,12 +27,13 @@ const BlogDetailPage = () => {
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(-1)
 
-  // Format date like "Nov 14"
+  // Format date like "Nov 14, 2025"
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
       month: 'short', 
-      day: 'numeric'
+      day: 'numeric',
+      year: 'numeric'
     });
   };
 
@@ -156,7 +157,7 @@ const BlogDetailPage = () => {
                 </div>
                 <div>
                   <p className="text-[#1C3163] text-sm md:text-base">
-                    Written By <span className="text-[#D5B584] font-medium group-hover:underline">{blog.name || 'Francesca Wong'}</span>
+                    Written By <span className="text-[#D5B584] font-medium group-hover:underline">{ 'Francesca Wong'}</span>
                   </p>
                 </div>
               </Link>
@@ -167,12 +168,12 @@ const BlogDetailPage = () => {
               <div className="text-[#1C3163] text-base md:text-lg leading-relaxed space-y-6">
                 {paragraphs.length > 0 ? (
                   paragraphs.map((paragraph, index) => (
-                    <p key={index} className="whitespace-pre-line">
+                    <p key={index} className="whitespace-pre-line text-black">
                       {paragraph}
                     </p>
                   ))
                 ) : (
-                  <p className="whitespace-pre-line">{blog.description}</p>
+                  <p className="whitespace-pre-line text-black">{blog.description}</p>
                 )}
               </div>
             </div>

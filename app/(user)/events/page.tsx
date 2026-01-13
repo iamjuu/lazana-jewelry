@@ -263,8 +263,8 @@ const EventsPage = () => {
         <section className="w-full px-4 md:px-0 py-[68px]">
           <div className="max-w-6xl pb-[106px]  mx-auto">
             {/* Header Section */}
-            <div className="mb-12 flex gap-[48px] md:mb-16">
-              <h1 className="text-[#D5B584] text-[36px] sm:text-[40px]  font-light mb-4">
+            <div className="mb-12 flex gap-[48px] md:mb-0">
+              <h1 className="text-[#D5B584] text-[36px] sm:text-[40px]  font-light mb-">
                 Events
               </h1>
               {/* <p className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-light max-w-md">
@@ -284,7 +284,7 @@ const EventsPage = () => {
                   <Link
                     key={event.id}
                     href={`/events/${event.id}`}
-                    className="flex py-[50px] border-b border-[#D5B584] flex-col lg:flex-row gap-8 lg:gap-12 hover:bg-white/10 transition-colors duration-300  px-4 -mx-4 block"
+                    className="flex py-[5px] border-b border-[#D5B584] flex-col lg:flex-row gap-8 lg:gap-12 hover:bg-white/10 transition-colors duration-300  px-4 -mx-4 block  "
                   >
                   {/* Date Section */}
                   <div className="lg:w-[150px] flex-shrink-0">
@@ -338,7 +338,7 @@ const EventsPage = () => {
                         </div>
 
                         <div className="mb-6">
-                          <p className="text-[#6B5D4F] text-[14px] sm:text-[15px] md:text-[16px] font-light leading-relaxed">
+                          <p className="text-black text-[14px] sm:text-[15px] md:text-[16px] font-light leading-relaxed">
                             {getDisplayDescription(event.description, event.id)}
                           </p>
                           {/* {event.description.length > MAX_DESCRIPTION_LENGTH && (

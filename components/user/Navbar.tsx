@@ -78,12 +78,12 @@ const Navbar = () => {
     setIsLoggedIn(!!sessionStorage.getItem("userToken"))
   }, [])
 
-  // Update cart count whenever items change
+  // Update cart count whenever items change (use length to avoid unnecessary re-renders)
   useEffect(() => {
     if (mounted) {
       setCartCount(totalQuantity())
     }
-  }, [items, mounted, totalQuantity]) // Depend on items array to detect changes
+  }, [items.length, mounted, totalQuantity]) // Use items.length instead of items array to reduce re-renders
 
   // Calculate dropdown position
   useEffect(() => {
@@ -93,26 +93,39 @@ const Navbar = () => {
     }
   }, [isShopHovered])
 
-  // Search functionality
+  // Search functionality with debouncing and abort controller
   useEffect(() => {
+    let abortController: AbortController | null = null;
+    
     const searchProducts = async () => {
       if (searchQuery.trim().length < 2) {
         setSearchResults([])
         return
       }
 
+      // Cancel previous request if still pending
+      if (abortController) {
+        abortController.abort();
+      }
+      abortController = new AbortController();
+
       setIsSearching(true)
       try {
-        const response = await fetch(`/api/products?search=${encodeURIComponent(searchQuery.trim())}&limit=5&excludeImages=false`)
+        const response = await fetch(`/api/products?search=${encodeURIComponent(searchQuery.trim())}&limit=5&excludeImages=false`, {
+          signal: abortController.signal
+        })
         const data = await response.json()
         if (data.success && data.data) {
           setSearchResults(data.data)
         } else {
           setSearchResults([])
         }
-      } catch (error) {
-        console.error('Search error:', error)
-        setSearchResults([])
+      } catch (error: any) {
+        // Ignore abort errors
+        if (error.name !== 'AbortError') {
+          console.error('Search error:', error)
+          setSearchResults([])
+        }
       } finally {
         setIsSearching(false)
       }
@@ -122,7 +135,12 @@ const Navbar = () => {
       searchProducts()
     }, 300)
 
-    return () => clearTimeout(debounceTimer)
+    return () => {
+      clearTimeout(debounceTimer)
+      if (abortController) {
+        abortController.abort();
+      }
+    }
   }, [searchQuery])
 
   // Close search when clicking outside
@@ -136,11 +154,11 @@ const Navbar = () => {
       }
     }
 
-    if (searchQuery.trim().length >= 2 || isSearchOpen) {
+    if (isSearchOpen) {
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [searchQuery, isSearchOpen])
+  }, [isSearchOpen])
 
   // Focus search input when opened on mobile
   useEffect(() => {
@@ -230,7 +248,7 @@ const Navbar = () => {
       <nav ref={navRef} className="w-full px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 lg:pt-[43px] relative">
         <div className="max-w-[1400px] mx-auto">
         {/* Desktop Layout */}
-        <div className="hidden lg:flex gap-8 xl:gap-[60px] 2xl:gap-[100px] justify-center items-center flex-wrap">
+        <div className="hidden lg:flex items-center justify-between w-full">
           {/* Logo Section */}
           <div className="flex items-center shrink-0">
             <Link href="/" className="flex items-center">
@@ -245,8 +263,8 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex items-center gap-6 lg:gap-8 xl:gap-[40px] 2xl:gap-[68px] flex-wrap justify-center">
+          {/* Navigation Links - Center */}
+          <div className="flex items-center gap-6 lg:gap-8 xl:gap-[40px] 2xl:gap-[68px] flex-shrink-0">
             {navigationItems.map((item) => {
               // Handle Shop with dropdown
               if (item.hasDropdown) {
@@ -425,21 +443,45 @@ const Navbar = () => {
             >
               <span className="relative z-10">Book a Call</span>
             </Link>
+          </div>
             
+          {/* Right Section - Search, Profile, Cart */}
+          <div className="flex items-center gap-4 xl:gap-6 shrink-0">
             {/* Search - Desktop */}
             <div ref={searchRef} className="relative">
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#D5B584] w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2 bg-transparent border border-[#D5B584]/30 rounded-md text-white placeholder-[#D5B584]/60 focus:outline-none focus:border-[#D5B584] text-sm w-48 xl:w-56 transition-all duration-150"
-                  />
+              {!isSearchOpen ? (
+                <button
+                  onClick={() => setIsSearchOpen(true)}
+                  className="relative text-[#D5B584] hover:text-white transition-all duration-150 hover:scale-110"
+                  aria-label="Search"
+                >
+                  <Search size={24} />
+                </button>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#D5B584] w-4 h-4" />
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 pr-10 py-2 bg-transparent border border-[#D5B584]/30 rounded-md text-white placeholder-[#D5B584]/60 focus:outline-none focus:border-[#D5B584] text-sm w-48 xl:w-56 transition-all duration-150"
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => {
+                        setIsSearchOpen(false);
+                        setSearchQuery('');
+                        setSearchResults([]);
+                      }}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#D5B584] hover:text-white"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
               
               {/* Search Results Dropdown */}
               {searchQuery.trim().length >= 2 && (

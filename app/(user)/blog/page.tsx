@@ -132,7 +132,7 @@ const BlogPage = () => {
 
                           {/* Description with Read More aligned to right */}
                           <div className="flex items-start justify-between gap-2 ">
-                            <p className="text-[#1C3163] text-sm md:text-base leading-relaxed flex-1">
+                            <p className="text-black text-sm md:text-base leading-relaxed flex-1">
                               {excerpt}
                             </p>
                           
@@ -143,7 +143,7 @@ const BlogPage = () => {
                       <div className='flex justify-start'>
                       <Link 
                               href={`/blog/${blog._id}`}
-                              className="underline hover:text-[#D5B584] transition-colors duration-200 whitespace-nowrap flex-shrink-0"
+                              className="underline hover:text-[#D5B584] transition-colors duration-200 whitespace-nowrap flex-shrink-0 text-[#1C3163]"
                               onClick={(e) => e.stopPropagation()}
                             >
                               Read More

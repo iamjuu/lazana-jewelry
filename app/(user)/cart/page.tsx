@@ -201,8 +201,8 @@ const CartPageContent = () => {
                             </div>
                           ) : (
                             <p className="text-[#2C3E50] text-lg md:text-xl font-semibold">
-                              ${item.price.toLocaleString("en-US")}
-                            </p>
+                          ${item.price.toLocaleString("en-US")}
+                        </p>
                           )}
                         </div>
 

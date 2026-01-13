@@ -111,8 +111,6 @@ export default function EnquiriesPage() {
 
       const data = await response.json();
 
-      console.log("Enquiries API response:", data);
-
       
 
       if (data.success && data.data) {

@@ -51,17 +51,17 @@ const normalizeImageUrl = (url: string): string => {
 
 const CollectionSection: React.FC<CollectionSectionProps> = ({ categories, loading }) => {
   return (
-    <section className="w-full py-[40px] md:py-[68px] ">
+    <section className="w-full py-[40px] md:py-[10px] ">
       <div className="max-w-6xl items-center flex flex-col mx-auto px-4">
         <div className="flex w-full items-center justify-between mb-8 md:mb-0">
           <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] font-normal">
           Shop Collection          </h2>
           <Link
             href="/shop?category=all"
-            className="text-[#D5B584] flex gap-2 text-[14px] sm:text-[16px] md:text-[18px]"
+            className="text-[#1C3163] flex gap-2 text-[14px] sm:text-[16px] md:text-[18px]"
           >
             View All
-            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#D5B584]" />
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#1C3163]" />
           </Link>
         </div>
         <div className="flex flex-col gap-12 md:gap-16 lg:gap-[80px]">

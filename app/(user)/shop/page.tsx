@@ -4,11 +4,7 @@ import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 import Image from "next/image";
 import { Plus, ChevronDown, X } from "lucide-react";
-import {
-  Bucket1,
-  FliterIcon,
-  SortIcon
-} from "@/public/assets";
+import { Bucket1, FliterIcon, SortIcon } from "@/public/assets";
 import Link from "next/link";
 import { useCart } from "@/stores/useCart";
 import { useRouter } from "next/navigation";
@@ -38,10 +34,10 @@ const ShopPage = () => {
   const [categoryName, setCategoryName] = useState<string>("All Products");
   const { addItem } = useCart();
   const router = useRouter();
-  
+
   // Get category from URL using window.location (avoid useSearchParams Suspense issue)
   const [categoryParam, setCategoryParam] = useState<string | null>(null);
-  
+
   // Filter states
   const [filters, setFilters] = useState({
     featured: false,
@@ -53,53 +49,78 @@ const ShopPage = () => {
     sortBy: "",
     sortOrder: "asc",
   });
-  
+
   // Filter panel visibility
   const [showFilters, setShowFilters] = useState(true);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
-  
+
   // Close filters when category changes
   useEffect(() => {
     setShowFilters(false);
   }, [categoryParam]);
-  
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+      if (
+        sortDropdownRef.current &&
+        !sortDropdownRef.current.contains(event.target as Node)
+      ) {
         setShowSortDropdown(false);
       }
     };
 
     if (showSortDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showSortDropdown]);
-  
+
   // Get sort label
   const getSortLabel = () => {
     if (filters.featured) return "FEATURED";
     if (filters.newAddition) return "NEW ADDITION";
-    if (filters.sortBy === "price" && filters.sortOrder === "desc") return "PRICE, HIGH TO LOW";
-    if (filters.sortBy === "price" && filters.sortOrder === "asc") return "PRICE, LOW TO HIGH";
-    if (filters.sortBy === "name" && filters.sortOrder === "asc") return "ALPHABETICALLY, A-Z";
-    if (filters.sortBy === "name" && filters.sortOrder === "desc") return "ALPHABETICALLY, Z-A";
+    if (filters.sortBy === "price" && filters.sortOrder === "desc")
+      return "PRICE, HIGH TO LOW";
+    if (filters.sortBy === "price" && filters.sortOrder === "asc")
+      return "PRICE, LOW TO HIGH";
+    if (filters.sortBy === "name" && filters.sortOrder === "asc")
+      return "ALPHABETICALLY, A-Z";
+    if (filters.sortBy === "name" && filters.sortOrder === "desc")
+      return "ALPHABETICALLY, Z-A";
     return "SORT PRODUCTS";
   };
-  
+
   const handleSortChange = (sortBy: string, sortOrder: string) => {
     if (sortBy === "featured") {
-      setFilters({ ...filters, featured: true, newAddition: false, sortBy: "", sortOrder: "asc" });
+      setFilters({
+        ...filters,
+        featured: true,
+        newAddition: false,
+        sortBy: "",
+        sortOrder: "asc",
+      });
     } else if (sortBy === "newAddition") {
-      setFilters({ ...filters, newAddition: true, featured: false, sortBy: "", sortOrder: "asc" });
+      setFilters({
+        ...filters,
+        newAddition: true,
+        featured: false,
+        sortBy: "",
+        sortOrder: "asc",
+      });
     } else {
-      setFilters({ ...filters, sortBy, sortOrder, featured: false, newAddition: false });
+      setFilters({
+        ...filters,
+        sortBy,
+        sortOrder,
+        featured: false,
+        newAddition: false,
+      });
     }
     setShowSortDropdown(false);
   };
@@ -115,43 +136,46 @@ const ShopPage = () => {
     // Initial load
     updateCategoryFromUrl();
 
-    // Poll for URL changes every 100ms (to catch Next.js Link navigation)
-    const intervalId = setInterval(() => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const currentCategory = urlParams.get("category");
-      setCategoryParam(prev => {
-        if (prev !== currentCategory) {
-          return currentCategory;
-        }
-        return prev;
-      });
-    }, 100);
+    // Listen for URL changes (for browser back/forward)
+    window.addEventListener("popstate", updateCategoryFromUrl);
 
-    // Also listen for URL changes (for browser back/forward)
-    window.addEventListener('popstate', updateCategoryFromUrl);
+    // Use a more efficient approach - check URL on focus/visibility change
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        updateCategoryFromUrl();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      clearInterval(intervalId);
-      window.removeEventListener('popstate', updateCategoryFromUrl);
+      window.removeEventListener("popstate", updateCategoryFromUrl);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 
   useEffect(() => {
     let isMounted = true;
     let timeoutId: NodeJS.Timeout;
-    
+    let abortController: AbortController | null = null;
+
     const fetchProducts = async () => {
+      // Cancel previous request if still pending
+      if (abortController) {
+        abortController.abort();
+      }
+      abortController = new AbortController();
       try {
         setLoading(true);
-        
+
         // Build API URL with category and filters
         let apiUrl = "/api/products";
         const params = new URLSearchParams();
-        
+
         if (categoryParam && categoryParam !== "all") {
           params.append("category", categoryParam);
         }
-        
+
         // Add filters
         if (filters.featured) {
           params.append("featured", "true");
@@ -175,53 +199,52 @@ const ShopPage = () => {
           params.append("sortBy", filters.sortBy);
           params.append("sortOrder", filters.sortOrder);
         }
-        
+
         if (params.toString()) {
           apiUrl += `?${params.toString()}`;
         }
 
         // Add timeout to prevent hanging requests
-        const controller = new AbortController();
         timeoutId = setTimeout(() => {
-          controller.abort();
+          abortController?.abort();
         }, 5000); // 5 second timeout
 
         const response = await fetch(apiUrl, {
-          signal: controller.signal
+          signal: abortController.signal,
         });
-        
+
         clearTimeout(timeoutId);
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         // Always set products, even if empty array
         if (isMounted) {
           setProducts(data.data || []);
         }
-        
+
         // Set category name immediately with a default, then try to fetch the real name
         if (categoryParam && categoryParam !== "all") {
           // Set a default first
           if (isMounted) {
             setCategoryName(categoryParam);
           }
-          
+
           // Then try to fetch the real category name (non-blocking)
           fetch("/api/categories")
             .then((categoryResponse) => categoryResponse.json())
             .then((categoryData) => {
               if (categoryData.success && isMounted) {
-                const category = categoryData.data.find(
-                  (cat: Category) => {
-                    const slugMatch = cat.slug === categoryParam;
-                    const nameSlugMatch = cat.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") === categoryParam;
-                    return slugMatch || nameSlugMatch;
-                  }
-                );
+                const category = categoryData.data.find((cat: Category) => {
+                  const slugMatch = cat.slug === categoryParam;
+                  const nameSlugMatch =
+                    cat.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") ===
+                    categoryParam;
+                  return slugMatch || nameSlugMatch;
+                });
                 if (isMounted && category) {
                   setCategoryName(category.name);
                 }
@@ -239,7 +262,11 @@ const ShopPage = () => {
         console.error("Failed to fetch products:", error);
         if (isMounted) {
           setProducts([]);
-          setCategoryName(categoryParam && categoryParam !== "all" ? (categoryParam || "Category") : "All Products");
+          setCategoryName(
+            categoryParam && categoryParam !== "all"
+              ? categoryParam || "Category"
+              : "All Products"
+          );
         }
       } finally {
         // Always clear loading state immediately
@@ -250,14 +277,17 @@ const ShopPage = () => {
     };
 
     fetchProducts();
-    
+
     return () => {
       isMounted = false;
       if (timeoutId) clearTimeout(timeoutId);
+      if (abortController) {
+        abortController.abort();
+      }
       // Force loading to false on cleanup to prevent stuck state
       setLoading(false);
     };
-  }, [categoryParam, filters]); // Re-fetch when category or filters change
+  }, [categoryParam, filters.featured, filters.newAddition, filters.weight, filters.octave, filters.size, filters.tuning, filters.sortBy, filters.sortOrder]); // Re-fetch when category or specific filter values change
 
   // Helper function to normalize image URL
   const normalizeImageUrl = (url: string): string => {
@@ -271,7 +301,7 @@ const ShopPage = () => {
   const handleAddToCart = (e: React.MouseEvent, item: Product) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     // Check if user is logged in
     const token = sessionStorage.getItem("userToken");
     if (!token) {
@@ -282,12 +312,14 @@ const ShopPage = () => {
 
     // Calculate discounted price if applicable
     const hasDiscount = item.discount && item.discount > 0;
-    const discountedPrice = hasDiscount && item.discount ? item.price - item.discount : item.price;
+    const discountedPrice =
+      hasDiscount && item.discount ? item.price - item.discount : item.price;
 
     // Get first image URL for cart
-    const imageUrl = item.imageUrl && item.imageUrl.length > 0 
-      ? normalizeImageUrl(item.imageUrl[0])
-      : "";
+    const imageUrl =
+      item.imageUrl && item.imageUrl.length > 0
+        ? normalizeImageUrl(item.imageUrl[0])
+        : "";
 
     addItem({
       id: item._id,
@@ -315,7 +347,7 @@ const ShopPage = () => {
   };
 
   return (
-    <div className=' bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+    <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <Navbar />
 
       <>
@@ -333,20 +365,23 @@ const ShopPage = () => {
                     : "Browse our collection"}
                 </p> */}
               </div>
-              
             </div>
-            
+
             {/* Main Content Layout */}
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
               {/* Left Side Icons - Filter and Sort */}
               <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
                 {/* Filter Icon Button */}
-                <button 
+                <button
                   onClick={() => setShowFilters(!showFilters)}
                   className="p-2 lg:p-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
                   aria-label={showFilters ? "Hide Filters" : "Show Filters"}
                 >
-                  <Image src={FliterIcon} alt="filter" className="w-5 h-5 lg:w-6 lg:h-6" />
+                  <Image
+                    src={FliterIcon}
+                    alt="filter"
+                    className="w-5 h-5 lg:w-6 lg:h-6"
+                  />
                 </button>
 
                 {/* Sort Icon Button with Dropdown */}
@@ -356,15 +391,19 @@ const ShopPage = () => {
                     className="p-2 lg:p-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
                     aria-label="Sort Products"
                   >
-                    <Image src={SortIcon} alt="sort" className="w-5 h-5 lg:w-6 lg:h-6" />
-                </button>
+                    <Image
+                      src={SortIcon}
+                      alt="sort"
+                      className="w-5 h-5 lg:w-6 lg:h-6"
+                    />
+                  </button>
 
                   {showSortDropdown && (
                     <div className="absolute left-0 lg:left-full lg:top-0 top-full mt-2 lg:mt-0 lg:ml-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[220px]">
                       <button
                         onClick={() => handleSortChange("featured", "asc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                          filters.featured ? 'underline' : ''
+                          filters.featured ? "underline" : ""
                         }`}
                       >
                         FEATURED
@@ -372,7 +411,7 @@ const ShopPage = () => {
                       <button
                         onClick={() => handleSortChange("newAddition", "asc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                          filters.newAddition ? 'underline' : ''
+                          filters.newAddition ? "underline" : ""
                         }`}
                       >
                         NEW ADDITION
@@ -380,7 +419,10 @@ const ShopPage = () => {
                       <button
                         onClick={() => handleSortChange("name", "asc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                          filters.sortBy === "name" && filters.sortOrder === "asc" ? 'underline' : ''
+                          filters.sortBy === "name" &&
+                          filters.sortOrder === "asc"
+                            ? "underline"
+                            : ""
                         }`}
                       >
                         ALPHABETICALLY, A-Z
@@ -388,7 +430,10 @@ const ShopPage = () => {
                       <button
                         onClick={() => handleSortChange("name", "desc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                          filters.sortBy === "name" && filters.sortOrder === "desc" ? 'underline' : ''
+                          filters.sortBy === "name" &&
+                          filters.sortOrder === "desc"
+                            ? "underline"
+                            : ""
                         }`}
                       >
                         ALPHABETICALLY, Z-A
@@ -396,7 +441,10 @@ const ShopPage = () => {
                       <button
                         onClick={() => handleSortChange("price", "asc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                          filters.sortBy === "price" && filters.sortOrder === "asc" ? 'underline' : ''
+                          filters.sortBy === "price" &&
+                          filters.sortOrder === "asc"
+                            ? "underline"
+                            : ""
                         }`}
                       >
                         PRICE, LOW TO HIGH
@@ -404,185 +452,259 @@ const ShopPage = () => {
                       <button
                         onClick={() => handleSortChange("price", "desc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                          filters.sortBy === "price" && filters.sortOrder === "desc" ? 'underline' : ''
+                          filters.sortBy === "price" &&
+                          filters.sortOrder === "desc"
+                            ? "underline"
+                            : ""
                         }`}
                       >
                         PRICE, HIGH TO LOW
-                </button>
+                      </button>
                     </div>
                   )}
+                </div>
               </div>
-            </div>
-            
+
               {/* Filter Sidebar - Left */}
-            {showFilters && (
+              {showFilters && (
                 <div className="w-full lg:w-64 shrink-0 bg-white rounded-lg p-6 shadow-lg">
                   <div className="space-y-6">
                     {/* All Collections Heading */}
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-[#1C3163]">ALL COLLECTIONS</h3>
+                      <h3 className="text-lg font-semibold text-[#1C3163]">
+                        ALL COLLECTIONS
+                      </h3>
                       <ChevronDown className="w-5 h-5 text-[#1C3163]" />
                     </div>
-                    
+
                     {/* Filter Options */}
-                  <div className="space-y-3">
+                    <div className="space-y-3">
                       {/* Weight Options */}
                       <div className="space-y-2 pt-2">
-                        <h4 className="text-sm font-medium text-[#1C3163]">Weight</h4>
-                        {["less than 1kg", "less than 6kg", "between 1-3kg", "3-5kg", "greater than 6kg"].map((weight) => (
-                          <label key={weight} className="flex items-center justify-between cursor-pointer py-1">
-                            <span className="text-sm text-[#1C3163]">{weight}</span>
-                      <input
-                        type="checkbox"
+                        <h4 className="text-sm font-medium text-[#1C3163]">
+                          Weight
+                        </h4>
+                        {[
+                          "LESS THAN 1KG",
+                          "LESS THAN 6KG",
+                          "BETWEEN 1-3KG",
+                          "BETWEEN 3-5KG",
+                          "GREATER THAN 6KG",
+                        ].map((weight) => (
+                          <label
+                            key={weight}
+                            className="flex items-center justify-between cursor-pointer py-1"
+                          >
+                            <span className="text-sm text-[#1C3163]">
+                              {weight}
+                            </span>
+                            <input
+                              type="checkbox"
                               checked={filters.weight === weight}
-                              onChange={(e) => setFilters({ ...filters, weight: e.target.checked ? weight : "" })}
-                        className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
-                      />
-                    </label>
+                              onChange={(e) =>
+                                setFilters({
+                                  ...filters,
+                                  weight: e.target.checked ? weight : "",
+                                })
+                              }
+                              className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
+                            />
+                          </label>
                         ))}
                       </div>
-                      
+
                       {/* Octave Options */}
                       <div className="space-y-2 pt-2">
-                        <h4 className="text-sm font-medium text-[#1C3163]">Octave</h4>
-                        {["3rd octave", "4th octave"].map((octave) => (
-                          <label key={octave} className="flex items-center justify-between cursor-pointer py-1">
-                            <span className="text-sm text-[#1C3163]">{octave}</span>
-                      <input
-                        type="checkbox"
+                        <h4 className="text-sm font-medium text-[#1C3163]">
+                          Octave
+                        </h4>
+                        {["3RD OCTAVE", "4TH OCTAVE"].map((octave) => (
+                          <label
+                            key={octave}
+                            className="flex items-center justify-between cursor-pointer py-1"
+                          >
+                            <span className="text-sm text-[#1C3163]">
+                              {octave}
+                            </span>
+                            <input
+                              type="checkbox"
                               checked={filters.octave === octave}
-                              onChange={(e) => setFilters({ ...filters, octave: e.target.checked ? octave : "" })}
-                        className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
-                      />
-                    </label>
+                              onChange={(e) =>
+                                setFilters({
+                                  ...filters,
+                                  octave: e.target.checked ? octave : "",
+                                })
+                              }
+                              className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
+                            />
+                          </label>
                         ))}
-                  </div>
-                  
+                      </div>
+
                       {/* Size Options */}
                       <div className="space-y-2 pt-2">
-                        <h4 className="text-sm font-medium text-[#1C3163]">Size</h4>
+                        <h4 className="text-sm font-medium text-[#1C3163]">
+                          Size
+                        </h4>
+
                         {["5-6", "6-7", "7-8", "8"].map((size) => (
-                          <label key={size} className="flex items-center justify-between cursor-pointer py-1">
-                            <span className="text-sm text-[#1C3163]">{size}</span>
+                          <label
+                            key={size}
+                            className="flex items-center justify-between cursor-pointer py-1"
+                          >
+                            <span className="text-sm text-[#1C3163]">
+                              {size}″
+                            </span>
+
                             <input
                               type="checkbox"
                               checked={filters.size === size}
-                              onChange={(e) => setFilters({ ...filters, size: e.target.checked ? size : "" })}
+                              onChange={(e) =>
+                                setFilters({
+                                  ...filters,
+                                  size: e.target.checked ? size : "",
+                                })
+                              }
                               className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
                             />
                           </label>
                         ))}
-                  </div>
-                  
+                      </div>
+
                       {/* Tuning Options */}
                       <div className="space-y-2 pt-2">
-                        <h4 className="text-sm font-medium text-[#1C3163]">Tuning</h4>
+                        <h4 className="text-sm font-medium text-[#1C3163]">
+                          Tuning
+                        </h4>
                         {["432", "440", "528"].map((tuning) => (
-                          <label key={tuning} className="flex items-center justify-between cursor-pointer py-1">
-                            <span className="text-sm text-[#1C3163]">{tuning} HZ TUNING</span>
+                          <label
+                            key={tuning}
+                            className="flex items-center justify-between cursor-pointer py-1"
+                          >
+                            <span className="text-sm text-[#1C3163]">
+                              {tuning} HZ TUNING
+                            </span>
                             <input
                               type="checkbox"
                               checked={filters.tuning === tuning}
-                              onChange={(e) => setFilters({ ...filters, tuning: e.target.checked ? tuning : "" })}
+                              onChange={(e) =>
+                                setFilters({
+                                  ...filters,
+                                  tuning: e.target.checked ? tuning : "",
+                                })
+                              }
                               className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
                             />
                           </label>
                         ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                </div>
-              </div>
-            )}
-            
+              )}
+
               {/* Products Grid - Right */}
               <div className="flex-1">
-              {loading ? (
-                <div className="text-center py-12 text-[#1C3163]">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
-                  <p>Loading products...</p>
-                </div>
-              ) : products.length === 0 ? (
-                <div className="text-center py-12 text-[#1C3163]">
-                  {categoryParam && categoryParam !== "all"
-                    ? "No products for this category"
-                    : "No products available"}
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-[18px] w-full">
-                  {products.map((item) => {
-                    // Get first image or use placeholder
-                    const imageUrl = item.imageUrl && item.imageUrl.length > 0 
-                      ? item.imageUrl[0] 
-                      : null;
-                    // Price is already in dollars - format to show decimals only if needed
-                    const formatPrice = (price: number) => {
-                      const rounded = Math.round(price * 100) / 100;
-                      if (rounded % 1 === 0) {
-                        return `$${rounded}`;
-                      }
-                      return `$${rounded.toFixed(2)}`;
-                    };
-                    const hasDiscount = item.discount && item.discount > 0;
-                    const originalPrice = item.price;
-                    const discountedPrice = hasDiscount && item.discount ? item.price - item.discount : item.price;
-                    const displayPrice = formatPrice(discountedPrice);
-                    const displayOriginalPrice = formatPrice(originalPrice);
-                    
-                    return (
-                      <Link 
-                        href={`/shop/${item._id}`} 
-                        key={item._id} 
-                        className="text-black group cursor-pointer"
-                      >
-                        <div className="relative w-full aspect-square">
-                          {imageUrl ? (
-                            <Image
-                              src={imageUrl.startsWith("data:") || imageUrl.startsWith("http") 
-                                ? imageUrl 
-                                : `data:image/jpeg;base64,${imageUrl}`}
-                              alt={item.name}
-                              fill
-                              className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                              unoptimized
-                            />
-                          ) : (
-                            <Image
-                              src={Bucket1}
-                              alt={item.name}
-                              fill
-                              className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                            />
-                          )}
-                        </div>
-                        <div className="pt-4 sm:pt-6 md:pt-[28px] flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[14px] sm:text-[16px] md:text-[18px] line-clamp-2 min-h-[2.5em] mb-3 sm:mb-4 md:mb-[18px]  text-[#6B5D4F] font-light">
-                              {item.name}
-                            </p>
-                            <div className="text-[10px] sm:text-[11px] md:text-[12px] ">
-                              {hasDiscount ? (
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[#6B5D4F] font-light line-through text-[18px]">{displayOriginalPrice}</span>
-                                  <span className="text-[#6B5D4F] font-light text-[18px]">{displayPrice} USD</span>
-                                </div>
-                              ) : (
-                                <span className="text-[#6B5D4F] font-light text-[18px]">{displayPrice} USD</span>
-                              )}
-                            </div>
+                {loading ? (
+                  <div className="text-center py-12 text-[#1C3163]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
+                    <p>Loading products...</p>
+                  </div>
+                ) : products.length === 0 ? (
+                  <div className="text-center py-12 text-[#1C3163]">
+                    {categoryParam && categoryParam !== "all"
+                      ? "No products for this category"
+                      : "No products available"}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-[18px] w-full">
+                    {products.map((item) => {
+                      // Get first image or use placeholder
+                      const imageUrl =
+                        item.imageUrl && item.imageUrl.length > 0
+                          ? item.imageUrl[0]
+                          : null;
+                      // Price is already in dollars - format to show decimals only if needed
+                      const formatPrice = (price: number) => {
+                        const rounded = Math.round(price * 100) / 100;
+                        if (rounded % 1 === 0) {
+                          return `$${rounded}`;
+                        }
+                        return `$${rounded.toFixed(2)}`;
+                      };
+                      const hasDiscount = item.discount && item.discount > 0;
+                      const originalPrice = item.price;
+                      const discountedPrice =
+                        hasDiscount && item.discount
+                          ? item.price - item.discount
+                          : item.price;
+                      const displayPrice = formatPrice(discountedPrice);
+                      const displayOriginalPrice = formatPrice(originalPrice);
+
+                      return (
+                        <Link
+                          href={`/shop/${item._id}`}
+                          key={item._id}
+                          className="text-black group cursor-pointer"
+                        >
+                          <div className="relative w-full aspect-square">
+                            {imageUrl ? (
+                              <Image
+                                src={
+                                  imageUrl.startsWith("data:") ||
+                                  imageUrl.startsWith("http")
+                                    ? imageUrl
+                                    : `data:image/jpeg;base64,${imageUrl}`
+                                }
+                                alt={item.name}
+                                fill
+                                className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                                unoptimized
+                              />
+                            ) : (
+                              <Image
+                                src={Bucket1}
+                                alt={item.name}
+                                fill
+                                className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                              />
+                            )}
                           </div>
-                          <button
-                            onClick={(e) => handleAddToCart(e, item)}
-                            className="border rounded-full p-1 hover:bg-[#1C3163] hover:text-white transition-colors cursor-pointer flex-shrink-0"
-                            aria-label="Add to cart"
-                          >
-                            <Plus size={16} />
-                          </button>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
+                          <div className="pt-4 sm:pt-6 md:pt-[28px] flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[14px] sm:text-[16px] md:text-[18px] line-clamp-2 min-h-[2.5em] mb-3 sm:mb-4 md:mb-[18px]  text-[#1C3163] font-medium">
+                                {item.name}
+                              </p>
+                              <div className="text-[10px] sm:text-[11px] md:text-[12px]  text-black">
+                                {hasDiscount ? (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[black] font-light line-through text-[18px] ">
+                                      {displayOriginalPrice}
+                                    </span>
+                                    <span className="text-[black] font-light text-[18px]">
+                                      {displayPrice} USD
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-[black] font-light text-[18px]">
+                                    {displayPrice} USD
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {/* <button
+                              onClick={(e) => handleAddToCart(e, item)}
+                              className="border rounded-full p-1 hover:bg-[#1C3163] hover:text-white transition-colors cursor-pointer flex-shrink-0"
+                              aria-label="Add to cart"
+                            >
+                              <Plus size={16} />
+                            </button> */}
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           </div>

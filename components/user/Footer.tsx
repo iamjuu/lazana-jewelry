@@ -132,10 +132,10 @@ const Footer = () => {
 <div>
 <div className="max-w-6xl flex flex-col   md:flex-row py-[44px] mx-auto px-4 gap-8 md:gap-0">
 <div className="w-full  flex flex-col items-center justify-center">
-            <h2 className="text-black font-[400] text-center text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] mb-3 sm:mb-4">
+            <h2 className="text-[#D5B584] font-[400] text-center text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] mb-3 sm:mb-4">
               Join our mailing list
             </h2>
-            <p className="text-black text-center  font-[300] text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px]">
+            <p className="text-black text-center  text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px]">
               Be the first to know about special offers, new collections and stay up to date with all our magic!
             </p>
             <form onSubmit={handleSubscribe} className="w-full max-w-[500px] flex flex-col sm:flex-row gap-3 sm:gap-0">
@@ -171,6 +171,9 @@ const Footer = () => {
               className="w-[180px] sm:w-[220px] md:w-auto"
             />
           </div>
+
+ 
+
           <div className="w-full md:w-[50%] font-montserrat font-[200] text-[14px] md:text-[16px] relative z-10 md:z-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-4">
               <div>
@@ -178,7 +181,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      className="text-black hover:text-[black] transition-colors"
                     >
                       Home
                     </Link>
@@ -186,7 +189,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/shop"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      className="text-black hover:text-[black] transition-colors"
                     >
                       Shop
                     </Link>
@@ -194,7 +197,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/services"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      className="text-black hover:text-[black] transition-colors"
                     >
                       Services
                     </Link>
@@ -202,7 +205,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/about"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      className="text-black hover:text-[black] transition-colors"
                     >
                       About Us
                     </Link>
@@ -210,7 +213,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/faq"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      className="text-black hover:text-[black] transition-colors"
                     >
                       FAQs
                     </Link>
@@ -222,7 +225,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/events"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      className="text-black hover:text-[black] transition-colors"
                     >
                       Events
                     </Link>
@@ -230,7 +233,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/blog"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      className="text-black hover:text-[black] transition-colors"
                     >
                       Blog
                     </Link>
@@ -238,7 +241,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/book-a-session"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      className="text-black hover:text-[black] transition-colors"
                     >
                       Book a Call
                     </Link>
@@ -246,7 +249,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/shipping-and-delivery"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      className="text-black hover:text-[black] transition-colors"
                     >
                       Shipping & Delivery
                     </Link>
@@ -254,7 +257,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/returns-and-refund-policy"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      className="text-black hover:text-[black] transition-colors"
                     >
                       Returns & Refund Policy
                     </Link>
@@ -264,16 +267,18 @@ const Footer = () => {
               <div>
                 <ul className="space-y-2">
                   <li>
+
+                    
                     <span className="text-black break-words">
                       Based in Singapore
                     </span>
                   </li>
                   <li>
                     <a
-                      href="mailto:mail@frankieyogini@gmail.com"
-                      className="text-[#6B5D4F] font-light hover:text-[black] transition-colors"
+                      href="mailto:hello@crystalbowlstudio.com"
+                      className="text-black hover:text-[black] transition-colors"
                     >
-                      mail@frankieyogini@gmail.com
+                      hello@crystalbowlstudio.com
                     </a>
                   </li>
                 </ul>
@@ -281,6 +286,8 @@ const Footer = () => {
             </div>
           </div>
         </div>
+
+
 
         <div className="w-full font-montserrat">
           <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">

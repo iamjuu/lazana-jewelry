@@ -14,9 +14,9 @@ import Link from "next/link";
 
 const AboutSectionComponent = () => {
   return (
-    <section className="w-full  px-4 md:px-0 py-[68px]">
+    <section className="w-full  px-4 md:px-0 py-[6px] ">
       <div className="max-w-6xl mx-auto">
-        <div className="flex   flex-col w-full">
+        <div className="flex   flex-col w-full ">
           {/* Section Title */}
           <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] font-normal">
             Founder's Note
@@ -98,7 +98,7 @@ const AboutSectionComponent = () => {
           </div>
           <div className="">
             {/* Read More Link */}
-            <div className="flex pt-6 sm:pt-7 md:pt-8 lg:pt-9 items-center">
+            {/* <div className="flex pt-6 sm:pt-7 md:pt-8 lg:pt-9 items-center"> */}
               {/* <Link
                 href="/about"
                 className="inline-flex text-[#D5B584] items-center gap-2 text-[15px] sm:text-[16px] md:text-[17px] lg:text-[18px] font-medium hover:opacity-80 transition-opacity"
@@ -106,7 +106,7 @@ const AboutSectionComponent = () => {
                 Read More
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#D5B584]" />
               </Link> */}
-            </div>
+            {/* </div> */}
           </div>
         </div>
         {/* Original Founder's Note - Commented Out (duplicate) */}
@@ -143,9 +143,9 @@ const AboutSectionComponent = () => {
           
           </div>
         </div> */}
-        <div className="mt-10">
+        <div className="mt-1">
           <div>
-            <h1  className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[22px] pb-4 sm:pb-5 md:pb-6 text-black font-normal">About Crystal Bowl Studio</h1>
+            <h1  className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[22px] pb-4 sm:pb-5 md:pb-0 text-black font-normal">About Crystal Bowl Studio</h1>
             <p 
                className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#6B5D4F] leading-relaxed sm:leading-relaxed md:leading-loose"
                >

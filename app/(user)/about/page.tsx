@@ -33,16 +33,16 @@ const AboutPage = () => {
     }
   ];
 
-  // Show skeleton while loading
-  if (isLoading) {
-    return (
-      <>
-        {/* <Navbar /> */}
-        <AboutSkeleton />
-        <Footer />
-      </>
-    );
-  }
+  // // Show skeleton while loading
+  // if (isLoading) {
+  //   return (
+  //     <>
+  //       {/* <Navbar /> */}
+  //       <AboutSkeleton />
+  //       <Footer />
+  //     </>
+  //   );
+  // }
 
   return (
     <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
@@ -83,13 +83,13 @@ const AboutPage = () => {
 
           {/* Right Side - Image */}
           <div className="relative w-full flex justify-center lg:justify-end py-8 sm:py-12 md:py-16">
-            <div className="relative w-full max-w-[350px] sm:max-w-[400px] md:max-w-[480px] group">
+            <div className="relative w-full max-w-[400px] sm:max-w-[450px] md:max-w-[500px] group">
               <div className="relative w-full overflow-hidden shadow-lg">
                 <ImageWithShimmer
                   src={AboutIMG6097}
                   alt="Crystal singing bowl"
-                  width={480}
-                  height={720}
+                  width={500}
+                  height={750}
                   className="w-full h-auto group-hover:scale-105 transition-transform duration-300 ease-out"
                   priority
                 />
@@ -133,13 +133,13 @@ const AboutPage = () => {
 
           {/* Right Side - Image */}
           <div className="relative w-full flex justify-center lg:justify-end py-8 sm:py-12 md:py-16">
-            <div className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] group">
+            <div className="relative w-full max-w-[400px] sm:max-w-[450px] md:max-w-[500px] group">
               <div className="relative w-full overflow-hidden shadow-lg">
                 <ImageWithShimmer
                   src={AboutCrystal}
                   alt="Sound healing session"
-                  width={380}
-                  height={600}
+                  width={500}
+                  height={750}
                   className="w-full h-auto group-hover:scale-105 transition-transform duration-300 ease-out"
                   priority
                 />
@@ -164,7 +164,7 @@ const AboutPage = () => {
                 international business experience and long-standing practice in yoga and sound healing.
               </p>
 
-              <p className="text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300]">
+              <p className="text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-black">
                 Before establishing Crystal Bowl Studio, Francesca spent over a decade working across global
                 finance, e-commerce, and luxury beauty, with experience at KPMG, Citibank, Alibaba, and
                 Estée Lauder. While these international environments shaped her understanding of structure,
@@ -173,7 +173,7 @@ const AboutPage = () => {
                 her values and lived experience.
               </p>
 
-              <p className="text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300]">
+              <p className="text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-black">
                 Her journey into yoga and sound began in 2011 and gradually deepened through years of
                 study, practice, and teaching. Francesca trained extensively in India and Australia, spending
                 over a year living and studying in Indian ashrams, in Rishikesh, Dharamshala, Bangalore, Delhi,
@@ -195,12 +195,12 @@ const AboutPage = () => {
 
           {/* Right Image */}
           <div className="relative w-full flex justify-center lg:justify-end py-8 sm:py-12 md:py-16">
-            <div className="relative w-full max-w-[240px] sm:max-w-[280px] md:max-w-[300px] group">
+            <div className="relative w-full max-w-[240px] sm:max-w-[280px] md:max-w-[400px] group ">
               {/* Horizontal Card - Rotated 90 degrees */}
-              <div className="absolute top-1/2 left-1/2 w-full aspect-[3/4] bg-[#1C3163] rounded-[15px] sm:rounded-[18px] md:rounded-[20px] -translate-x-[50%] -translate-y-1/2 rotate-90 group-hover:rotate-60 transition-transform duration-300 ease-out shadow-lg"></div>
+              <div className="absolute top-1/2 left-1/2 w-full aspect-[3/4] bg-[#D5B584] rounded-[15px] sm:rounded-[18px] md:rounded-[20px] -translate-x-[50%] -translate-y-1/2 rotate-90 group-hover:rotate-60 transition-transform duration-300 ease-out shadow-lg"></div>
 
               {/* Main Image */}
-              <div className="relative w-full aspect-[3/4] rounded-[15px] sm:rounded-[18px] md:rounded-[20px] overflow-hidden z-10">
+              <div className="relative w-[400px] h-[600px] rounded-[15px] sm:rounded-[18px] md:rounded-[20px] overflow-hidden z-10">
                 <ImageWithShimmer
                   src={UpcomingEvent1}
                   alt="Francesca Wong, founder of Crystal Bowl Studio"

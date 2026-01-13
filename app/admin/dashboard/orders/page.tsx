@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { 
   Package, 
   Clock, 
@@ -85,12 +85,111 @@ export default function OrdersPage() {
     totalRevenue: 0,
   });
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   useEffect(() => {
-    setCurrentPage(1); // Reset to page 1 when filter changes
+    // Reset to page 1 when filter changes, then fetch
+    setCurrentPage(1);
   }, [statusFilter, searchQuery]);
 
   useEffect(() => {
-    fetchOrders();
+    // Cancel previous request if still pending
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Create new abort controller
+    abortControllerRef.current = new AbortController();
+    const abortController = abortControllerRef.current;
+    
+    const fetchData = async () => {
+      try {
+        setError(null);
+        setLoading(true);
+        const token = sessionStorage.getItem("adminToken");
+        
+        // Build query parameters
+        const params = new URLSearchParams();
+        params.append("page", currentPage.toString());
+        params.append("limit", "10");
+        if (statusFilter !== "all") {
+          params.append("status", statusFilter);
+        }
+        if (searchQuery.trim()) {
+          params.append("search", searchQuery.trim());
+        }
+        
+        const url = `/api/admin/orders?${params.toString()}`;
+        
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          signal: abortController.signal,
+        });
+
+        if (!response.ok) {
+          let errorMessage = "Failed to load orders";
+          if (response.status === 404) {
+            errorMessage = "Orders API endpoint not found. Please check if the API route exists.";
+          } else if (response.status === 401 || response.status === 403) {
+            errorMessage = "Unauthorized. Please log in again.";
+          } else {
+            errorMessage = `Failed to load orders (Error ${response.status})`;
+          }
+          setError(errorMessage);
+          toast.error(errorMessage);
+          setOrders([]);
+          setLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+          const ordersList = data.data?.orders || [];
+          setOrders(ordersList);
+          setError(null);
+          
+          if (data.data?.pagination) {
+            setTotalPages(data.data.pagination.pages || 1);
+            setTotalOrders(data.data.pagination.total || 0);
+          }
+          
+          const stats = {
+            total: data.data?.pagination?.total || ordersList.length,
+            pending: ordersList.filter((o: Order) => o.status === "pending").length,
+            paid: ordersList.filter((o: Order) => o.status === "paid").length,
+            cancelled: ordersList.filter((o: Order) => o.status === "cancelled").length,
+            failed: ordersList.filter((o: Order) => o.status === "failed").length,
+            totalRevenue: ordersList
+              .filter((o: Order) => o.status === "paid")
+              .reduce((sum: number, o: Order) => sum + o.amount, 0),
+          };
+          setStats(stats);
+        } else {
+          const errorMessage = data.message || "Failed to load orders";
+          setError(errorMessage);
+          toast.error(errorMessage);
+          setOrders([]);
+        }
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          const errorMessage = "Failed to load orders. Please check your connection.";
+          setError(errorMessage);
+          toast.error(errorMessage);
+          setOrders([]);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      abortController.abort();
+    };
   }, [statusFilter, currentPage, searchQuery]);
 
   const fetchOrders = async () => {

@@ -465,15 +465,15 @@ const ProductDetailPage = () => {
               <div className="mb-4">
                 {hasDiscount ? (
                   <div className="flex items-center gap-3">
-                    <p className="text-gray-500 text-[20px] sm:text-[24px] line-through">
+                    <p className="text-gray-500 text-[24px] sm:text-[16px] line-through">
                       {originalPriceFormatted}
                     </p>
-                    <p className="text-[#1C3163] text-[24px] sm:text-[28px] lg:text-[32px] font-medium">
+                    <p className="text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] ">
                       {priceInDollars} USD
                     </p>
                   </div>
                 ) : (
-                  <p className="text-[#1C3163] text-[24px] sm:text-[28px] lg:text-[32px] font-medium">
+                  <p className="text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] ">
                     {priceInDollars} USD
                   </p>
                 )}
@@ -482,7 +482,7 @@ const ProductDetailPage = () => {
               {/* Short Description - Show after price */}
               {product.shortDescription && (
                 <div className="mb-6">
-                  <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed">
+                  <p className="text-black text-[14px] sm:text-[15px] leading-relaxed">
                     {product.shortDescription}
                   </p>
                 </div>
@@ -585,7 +585,7 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("description") && (
                     <div className="pb-4">
-                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed whitespace-pre-wrap">
+                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed whitespace-pre-wrap">
                         {product.description}
                       </p>
                     </div>
@@ -610,7 +610,7 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("bowlSizing") && (
                     <div className="pb-4">
-                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed">
+                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed">
                         Our crystal bowls come in various sizes to suit different healing practices. We offer bowls ranging from small (4-6 inches) for personal use to large (12-14 inches) for group sessions. Each size is carefully crafted to produce specific frequencies and resonances. The size you choose depends on your intended use - smaller bowls are perfect for individual meditation and chakra work, while larger bowls create powerful sound waves ideal for group healing sessions.
                       </p>
                     </div>
@@ -632,32 +632,32 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("shipping") && (
                     <div className="pb-4">
-                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mb-3">
+                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed mb-3">
                         We offer Air Express shipping to ensure your crystal bowls arrive safely and promptly. Shipping charges are calculated based on the total number of bowls in your order:
                       </p>
-                      <ul className="list-disc list-inside text-[#1C3163] text-[14px] sm:text-[15px] space-y-2 ml-2">
+                      <ul className="list-disc list-inside text-black text-[14px] sm:text-[15px] space-y-2 ml-2">
                         <li>1 Bowl: SGD $65</li>
                         <li>2-3 Bowls: SGD $111</li>
                         <li>4-7 Bowls: SGD $155</li>
                         <li>8+ Bowls: Rates continue in cycles (8 = $65, 9-10 = $111, 11-14 = $155, and so on)</li>
                       </ul>
-                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mt-3">
+                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed mt-3">
                         All orders are carefully packaged to protect your bowls during transit. Delivery times vary by location, typically 7-14 business days for international orders.
                       </p>
                       
                       {/* Additional Information */}
                       <div className="mt-6 space-y-4 pt-4 border-t border-[#D5B584]/30">
                         <div>
-                          <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Return Policy</h4>
-                          <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">No Returns unless it&apos;s broken</p>
+                          <h4 className="text-black font-semibold text-[14px] sm:text-[15px] mb-1">Return Policy</h4>
+                          <p className="text-black text-[13px] sm:text-[14px]">No Returns unless it&apos;s broken</p>
                         </div>
                         <div>
-                          <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Care Instructions</h4>
-                          <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">Wipe with soft cloth, avoid water contact</p>
+                          <h4 className="text-black font-semibold text-[14px] sm:text-[15px] mb-1">Care Instructions</h4>
+                          <p className="text-black text-[13px] sm:text-[14px]">Wipe with soft cloth, avoid water contact</p>
                         </div>
                         <div>
-                          <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Includes Accessories</h4>
-                          <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">Rubber ring + suede mallet</p>
+                          <h4 className="text-black font-semibold text-[14px] sm:text-[15px] mb-1">Includes Accessories</h4>
+                          <p className="text-black text-[13px] sm:text-[14px]">Rubber ring + suede mallet</p>
                         </div>
                       </div>
                     </div>
@@ -679,7 +679,7 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("octave") && (
                     <div className="pb-4">
-                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed">
+                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed">
                         The 3rd octave bowls produce deeper, more grounding frequencies that are ideal for root chakra work and deep meditation. These bowls create a rich, resonant sound that helps anchor you to the earth and promotes feelings of stability and security. The 4th octave bowls have higher, more ethereal frequencies that are perfect for crown chakra activation and spiritual connection. These bowls produce lighter, more uplifting tones that can help elevate consciousness and facilitate connection with higher realms. Each octave offers unique healing properties, and many practitioners use both in their healing sessions for a complete chakra balancing experience.
                       </p>
                     </div>
@@ -701,15 +701,15 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("tuning") && (
                     <div className="pb-4">
-                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mb-3">
+                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed mb-3">
                         Our bowls are available in multiple tuning frequencies to suit your preferences:
                       </p>
-                      <ul className="list-disc list-inside text-[#1C3163] text-[14px] sm:text-[15px] space-y-2 ml-2">
+                      <ul className="list-disc list-inside text-black text-[14px] sm:text-[15px] space-y-2 ml-2">
                         <li><strong>432 Hz:</strong> The healing frequency of nature, known for its calming and harmonizing effects. This is our standard tuning and is believed to resonate with the natural frequency of the universe.</li>
                         <li><strong>440 Hz:</strong> Western standard tuning, commonly used in modern music. This frequency is familiar to most ears and works well for general sound healing.</li>
                         <li><strong>528 Hz:</strong> The miracle frequency of unconditional love, known for its transformative and healing properties. This frequency is said to repair DNA and promote positive transformation.</li>
                       </ul>
-                      <p className="text-[#1C3163] text-[14px] sm:text-[15px] leading-relaxed mt-3">
+                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed mt-3">
                         If you would like your bowls in an alternative frequency, please leave a note on your order at checkout and we can customize your order to your preferred frequency.
                       </p>
                     </div>
@@ -786,7 +786,7 @@ const ProductDetailPage = () => {
                             <p className="text-[#1C3163] text-[12px] sm:text-[14px]">
                               {itemPriceInDollars}
                             </p>
-                            <button 
+                            {/* <button 
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -795,7 +795,7 @@ const ProductDetailPage = () => {
                               className="w-8 h-8 rounded-full border-2 border-[#1C3163] flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors"
                             >
                               <Plus size={16} />
-                            </button>
+                            </button> */}
                           </div>
                         </div>
                       </Link>

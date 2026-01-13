@@ -411,10 +411,10 @@ const Index = () => {
 
         {/* service section  */}
 
-        <section className="w-full py-[40px] md:py-[45px]  ">
+        <section className="w-full py-[40px] md:py-[20px]  ">
           <div className="max-w-6xl mx-auto px-4">
             {/* Header */}
-            <div className="mb-8 md:mb-12 flex    flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]">
+            <div className="mb-8 md:mb-12 flex    flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px] ">
               <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
                 Services
               </h2>
@@ -610,7 +610,7 @@ const Index = () => {
 
         {/* testimonials section  */}
 
-        <section className="w-full py-[40px] md:py-[10px]  relative ">
+        <section className="w-full py-[40px] md:py-[0px]  relative bg-green-">
           <div className="max-w-6xl mx-auto px-4">
             <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12 ">
               What our Clients are saying..
@@ -795,7 +795,7 @@ const Index = () => {
 
         {/* Upcoming Events section */}
 
-        <section className="w-full py-[40px] md:py-[68px] ">
+        <section className="w-full py-[40px] md:py-[10px] ">
           <div className="max-w-6xl mx-auto px-4">
             <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12">
               Upcoming Events
@@ -831,8 +831,8 @@ const Index = () => {
                   // Format date for display: "Nov 7, 2025"
                   const formattedFullDate = `${monthAbbr} ${dayNumber}, ${year}`;
 
-                  // Format time if available
-                  const timeDisplay = event.time ? ` · ${event.time}` : "";
+                  // Format time if available - use non-breaking space to prevent PM/AM from wrapping
+                  const timeDisplay = event.time ? ` · ${event.time.replace(/\s+/g, '\u00A0')}` : "";
 
                   const imageUrl = event.imageUrl
                     ? event.imageUrl.startsWith("data:") ||
@@ -870,7 +870,7 @@ const Index = () => {
                         </h3>
                         <p className="text-[#8B6F47] text-[12px] sm:text-[13px] md:text-[14px] font-light">
                           {formattedFullDate}
-                          {timeDisplay}
+                          <span className="whitespace-nowrap">{timeDisplay}</span>
                         </p>
                       </div>
                     </div>

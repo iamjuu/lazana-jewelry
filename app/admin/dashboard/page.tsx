@@ -85,7 +85,6 @@ const ChartCard = ({
 
 export default async function DashboardPage() {
   const stats = await getDashboardStats();
-console.log(stats,'data gotted');
   // Calculate Annual Income (total revenue)
   const annualIncome = stats.revenue.total;
   

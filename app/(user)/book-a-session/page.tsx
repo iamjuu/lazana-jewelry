@@ -14,10 +14,10 @@ const BookASessionPage = () => {
           <div className="max-w-6xl pb-[106px] mx-auto">
             {/* Header */}
             <div className="mb-8 md:mb-12">
-              <h1 className="text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] text-[#D5B584] font-light leading-tight mb-3">
+              <h1 className="text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] text-[#D5B584] font-medium leading-tight mb-3">
                 Book a Call
               </h1>
-              <p className="text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#5B7C99] font-light leading-relaxed max-w-2xl">
+              <p className="text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-black leading-relaxed max-w-2xl">
                 Choose from our available sessions and book your preferred
                 experience with us.
               </p>
@@ -36,7 +36,7 @@ const BookASessionPage = () => {
                         30 minutes
                       </span>
                     </h2>
-                    <p className="text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#5B7C99] mb-4 leading-relaxed max-w-2xl">
+                    <p className="text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-black mb-4 leading-relaxed max-w-2xl">
                       This is for you if you want to come and visit in person to
                       experience and listen to our Crystal Bowls live before
                       purchasing our collection.
@@ -62,10 +62,10 @@ const BookASessionPage = () => {
                     <h2 className="text-[16px] flex flex-col sm:text-[18px] md:text-[20px] lg:text-[22px] text-[#1C3163] font-medium mb-3 sm:mb-4">
                       Discovery Call
                       <span className="text-[13px] text-gray-500 sm:text-[14px] md:text-[15px] lg:text-[16px] mt-1">
-                        45 minutes
+                        45 minutes / 75 USD
                       </span>
                     </h2>
-                    <p className="text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#5B7C99] mb-4 leading-relaxed max-w-2xl">
+                    <p className="text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-black mb-4 leading-relaxed max-w-2xl">
                       A consultation call to help match you with your perfect
                       crystal bowl. We&apos;ll explore your goals, answer your
                       questions, and help you feel confident in choosing the
@@ -93,7 +93,7 @@ const BookASessionPage = () => {
                     <h2 className="text-[16px] sm:text-[18px] md:text-[20px] lg:text-[22px] text-[#1C3163] font-medium mb-3 sm:mb-4">
                       Corporate Wellness Solutions
                     </h2>
-                    <p className="text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-[#5B7C99] mb-4 leading-relaxed max-w-2xl">
+                    <p className="text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-black mb-4 leading-relaxed max-w-2xl">
                       Invite Crystal Bowl Studio into your workplace for team
                       bonding, seminars, sound healing, recharge and
                       rejuvenate.
@@ -106,7 +106,7 @@ const BookASessionPage = () => {
                       href="/corporate-session"
                       className="rounded-lg border border-zinc-700 bg-[#1C3163] px-4 py-2 text-[12px] font-medium text-zinc-300 hover:bg-[#7A6345] hover:text-white disabled:opacity-60 transition-colors"
                     >
-                      Register your interest
+                      REGISTER YOUR INTEREST
                     </Link>
                   </div>
                 </div>

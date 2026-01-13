@@ -56,15 +56,15 @@ const ShippingAndDeliveryPage = () => {
                     <tbody>
                       <tr>
                         <td className="border border-[#1C3163]/20 px-4 py-3">1 Bowl</td>
-                        <td className="border border-[#1C3163]/20 px-4 py-3">SGD $65</td>
+                        <td className="border border-[#1C3163]/20 px-4 py-3">USD $65</td>
                       </tr>
                       <tr className="bg-white/50">
                         <td className="border border-[#1C3163]/20 px-4 py-3">2–3 Bowls</td>
-                        <td className="border border-[#1C3163]/20 px-4 py-3">SGD $111</td>
+                        <td className="border border-[#1C3163]/20 px-4 py-3">USD $111</td>
                       </tr>
                       <tr>
                         <td className="border border-[#1C3163]/20 px-4 py-3">4–7 Bowls</td>
-                        <td className="border border-[#1C3163]/20 px-4 py-3">SGD $155</td>
+                        <td className="border border-[#1C3163]/20 px-4 py-3">USD $155</td>
                       </tr>
                     </tbody>
                   </table>
