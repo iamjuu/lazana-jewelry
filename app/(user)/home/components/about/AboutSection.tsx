@@ -27,7 +27,7 @@ const AboutSectionComponent = () => {
             {/* Left side - Text Content */}
             <div className="w-full lg:w-[65%] xl:w-[60%]">
               <div
-               className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#6B5D4F] leading-relaxed sm:leading-relaxed md:leading-loose"
+               className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[black] leading-relaxed sm:leading-relaxed md:leading-loose"
                >
                 {/* Original About Content - Commented Out */}
                 {/* <p>
@@ -72,7 +72,7 @@ const AboutSectionComponent = () => {
                   experience and share the power of sound healing with ease,
                   simplicity, beauty, and integrity.
                 </p>
-                <p className="text-[#6B5D4F]">
+                <p className="text-[black]">
                   May these bowls be a bridge to your highest self. - Francesca
                 </p>
               </div>
@@ -145,9 +145,9 @@ const AboutSectionComponent = () => {
         </div> */}
         <div className="mt-1">
           <div>
-            <h1  className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[22px] pb-4 sm:pb-5 md:pb-0 text-black font-normal">About Crystal Bowl Studio</h1>
+            <h1  className="text-[24px] sm:text-[28px] md:text-[36px] lg:text-[32px] xl:text-[32px] pb-4 sm:pb-5 md:pb-0 text-[#D5B584] font-normal">About Crystal Bowl Studio</h1>
             <p 
-               className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#6B5D4F] leading-relaxed sm:leading-relaxed md:leading-loose"
+               className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[black] leading-relaxed sm:leading-relaxed md:leading-loose"
                >
               Crystal Bowl Studio is designed for modern, conscious living,
               rooted in ancient traditions and wisdom. Each bowl is made from
