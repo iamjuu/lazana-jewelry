@@ -69,8 +69,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${montserrat.variable} font-montserrat antialiased`}>
-        {children}
+      <body className={` `}>
+        {children}  
         <WhatsAppFloating />
         <Toaster position="top-right" />
       </body>

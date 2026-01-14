@@ -738,7 +738,7 @@ const ProductDetailPage = () => {
           {/* Related Products Section - Only show if current product is NOT a relative product */}
           {!product.relativeproduct && (
             <div>
-              <h2 className="text-black text-[28px] sm:text-[32px] lg:text-[40px] font-normal mb-8 lg:mb-12">
+              <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] lg:text-[40px] font-normal mb-8 lg:mb-12">
                 Related Products
               </h2>
 

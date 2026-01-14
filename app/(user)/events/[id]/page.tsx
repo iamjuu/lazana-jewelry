@@ -283,7 +283,7 @@ const EventDetailPage = () => {
                   <img
                     src={imageUrl}
                     alt={event.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               )}

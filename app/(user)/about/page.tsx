@@ -54,7 +54,7 @@ const AboutPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Side - Content */}
           <div className="space-y-6">
-            <h2 className="text-[#D5B584] text-[32px] sm:text-[40px] font-normal font-serif">
+            <h2 className="text-[#D5B584] text-[32px] sm:text-[40px] font-normal ">
               About Crystal Singing Bowls
             </h2>
 
@@ -104,7 +104,7 @@ const AboutPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Side - Content */}
           <div className="space-y-6">
-            <h2 className="text-[#D5B584] text-[32px] sm:text-[40px] font-normal font-serif">
+            <h2 className="text-[#D5B584] text-[32px] sm:text-[40px] font-normal ">
               About Sound Healing
             </h2>
 
@@ -154,7 +154,7 @@ const AboutPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-6">
-            <h2 className="text-[#D5B584] text-[32px] sm:text-[40px] font-normal font-serif">
+            <h2 className="text-[#D5B584] text-[32px] sm:text-[40px] font-normal ">
               About Our Founder
             </h2>
 

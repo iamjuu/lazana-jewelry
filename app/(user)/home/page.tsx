@@ -414,11 +414,11 @@ const Index = () => {
         <section className="w-full py-[40px] md:py-[20px]  ">
           <div className="max-w-6xl mx-auto px-4">
             {/* Header */}
-            <div className="mb-8 md:mb-12 flex    flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px] ">
-              <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
+            <div className="mb-8 md:mb-12 flex    flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]  ">
+              <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal ">
                 Services
               </h2>
-              <p className="text-black text-[14px] mt-3 sm:text-[16px] md:text-[18px] font-light">
+              <p className="text-black text-[14px] mt-3 sm:text-[16px] md:text-[18px] font-light  flex items-center justify-center">
                 Private Sessions &  Corporate Wellness
               </p>
             </div>
@@ -455,7 +455,7 @@ const Index = () => {
                         </h3>
                         <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
                           <p className="text-black text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed line-clamp-2">
-                            {session.description || ""}
+                            {/* {session.description || ""} */}
                           </p>
                           {/* Arrow Button */}
                           <Link href="/services">

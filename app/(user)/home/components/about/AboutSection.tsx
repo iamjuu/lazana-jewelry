@@ -27,7 +27,7 @@ const AboutSectionComponent = () => {
             {/* Left side - Text Content */}
             <div className="w-full lg:w-[65%] xl:w-[60%]">
               <div
-               className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[black] leading-relaxed sm:leading-relaxed md:leading-loose"
+               className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-black leading-relaxed sm:leading-relaxed md:leading-loose"
                >
                 {/* Original About Content - Commented Out */}
                 {/* <p>

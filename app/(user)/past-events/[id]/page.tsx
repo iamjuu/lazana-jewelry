@@ -152,11 +152,11 @@ const PastEventDetailPage = () => {
            {/* Main Thumbnail Image */}
            {thumbnailUrl && (
              <div className="mb-8 md:mb-12">
-               <div className="relative w-full aspect-[5/2] rounded-2xl overflow-hidden">
+               <div className="relative w-full aspect-[5/2]  overflow-hidden">
                  <img
                    src={thumbnailUrl}
                    alt={pastEvent.title}
-                   className="w-full h-full object-cover"
+                   className="w-full h-full object-contain"
                  />
                </div>
              </div>
@@ -180,7 +180,7 @@ const PastEventDetailPage = () => {
                      <img
                        src={getImageUrl(photos[0])}
                        alt={`${pastEvent.title} - Photo`}
-                       className="w-full h-full object-cover"
+                       className="w-full h-full object-contain"
                      />
                    </div>
                  )}
@@ -194,7 +194,7 @@ const PastEventDetailPage = () => {
                            <img
                              src={photoUrl}
                              alt={`${pastEvent.title} - Photo ${index + 1}`}
-                             className="w-full h-full object-cover"
+                             className="w-full h-full object-contain"
                            />
                          </div>
                        );
@@ -212,7 +212,7 @@ const PastEventDetailPage = () => {
                              <img
                                src={photoUrl}
                                alt={`${pastEvent.title} - Photo ${index + 1}`}
-                               className="w-full h-full object-cover"
+                               className="w-full h-full object-contain"
                              />
                            </div>
                          );
@@ -276,11 +276,11 @@ const PastEventDetailPage = () => {
                            {photos.map((photo, index) => {
                              const photoUrl = getImageUrl(photo);
                              return (
-                               <div key={index} className="relative w-full aspect-[3/2] rounded-xl overflow-hidden">
+                               <div key={index} className="relative w-full aspect-[3/2]  overflow-hidden">
                                  <img
                                    src={photoUrl}
                                    alt={`${pastEvent.title} - Photo ${index + 1}`}
-                                   className="w-full h-full object-cover"
+                                   className="w-full h-full object-contain"
                                  />
                                </div>
                              );

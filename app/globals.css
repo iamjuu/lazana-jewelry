@@ -10,7 +10,7 @@
   display: none; /* Chrome, Safari, Opera */
 }
 
-body {
+/* body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-montserrat), 'Montserrat', sans-serif;
@@ -18,18 +18,18 @@ body {
 
 .font-montserrat {
   font-family: var(--font-montserrat), 'Montserrat', sans-serif;
-}
+} */
 
 /* Ivy Mode Font */
-@font-face {
+/* @font-face {
   font-family: 'Ivy Mode';
   src: url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Regular.woff2') format('woff2'),
        url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Regular.woff') format('woff'),
        url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-}
-
+} */
+/* 
 @font-face {
   font-family: 'Ivy Mode';
   src: url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/ivy-mode/IvyMode-Light.woff2') format('woff2'),
@@ -59,7 +59,7 @@ body {
 
 .font-ivy-mode {
   font-family: 'Ivy Mode', sans-serif;
-}
+} */
 
 @keyframes fadeIn {
   from {
