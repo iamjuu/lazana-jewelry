@@ -29,7 +29,6 @@ const userRoutes = [
   "/events",
   "/blog",
   "/book",
-  "/book-a-call",
   "/book-a-session",
   "/calendar",
   "/discoveryappointment",

@@ -105,7 +105,7 @@ export default function EventBookingSuccessPage() {
               Booking Confirmed!
             </h1>
             <p className="text-[#6B5D4F] text-[16px] md:text-[18px] mb-8">
-              Your event booking has been confirmed. You will receive a confirmation email shortly.
+              Your event booking has been confirmed. You will receive a confirmation email shortly asap.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
