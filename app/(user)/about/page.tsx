@@ -50,15 +50,15 @@ const AboutPage = () => {
         <Navbar />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[60px] sm:py-[80px] md:py-[100px]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[40px] sm:py-[50px] md:py-[60px] lg:mt-[40px] lg:py-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Side - Content */}
-          <div className="space-y-6">
-            <h2 className="text-[#D5B584] text-[32px] sm:text-[40px] font-normal ">
+          <div className="space-y-2 sm:space-y-3">
+            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight">
               About Crystal Singing Bowls
             </h2>
 
-            <div className="space-y-4 text-black">
+            <div className="space-y-4 sm:space-y-5 text-black">
               <p className="text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300]">
                 Crystal Singing Bowls are instruments of sound and vibration widely used in meditation, sound healing, yoga, and mindfulness practices. Unlike traditional metal singing bowls, which have centuries-old roots in the Himalayas, Crystal Singing Bowls are a more recent development. They emerged in the late twentieth century, drawing on advances in quartz crystal manufacturing and were later adopted by wellness practitioners for their clear, sustained tones and simplicity.
               </p>
@@ -82,8 +82,8 @@ const AboutPage = () => {
           </div>
 
           {/* Right Side - Image */}
-          <div className="relative w-full flex justify-center lg:justify-end py-8 sm:py-12 md:py-16">
-            <div className="relative w-full max-w-[400px] sm:max-w-[450px] md:max-w-[500px] group">
+          <div className="relative w-full flex justify-center lg:justify-end pt-6 sm:pt-8 md:pt-12 lg:pt-16">
+            <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] group">
               <div className="relative w-full overflow-hidden shadow-lg">
                 <ImageWithShimmer
                   src={AboutIMG6097}
@@ -100,11 +100,11 @@ const AboutPage = () => {
       </div>
 
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[60px] sm:py-[80px] md:py-[100px]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[30px] sm:pt-[40px] md:pt-[50px] lg:pt-0 pb-[40px] sm:pb-[50px] md:pb-[60px] lg:pb-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Side - Content */}
-          <div className="space-y-6">
-            <h2 className="text-[#D5B584] text-[32px] sm:text-[40px] font-normal ">
+          <div className="space-y-2 sm:space-y-3">
+            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight">
               About Sound Healing
             </h2>
 
@@ -132,8 +132,8 @@ const AboutPage = () => {
           </div>
 
           {/* Right Side - Image */}
-          <div className="relative w-full flex justify-center lg:justify-end py-8 sm:py-12 md:py-16">
-            <div className="relative w-full max-w-[400px] sm:max-w-[450px] md:max-w-[500px] group">
+          <div className="relative w-full flex justify-center lg:justify-end pt-6 sm:pt-8 md:pt-12 lg:pt-16">
+            <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] group">
               <div className="relative w-full overflow-hidden shadow-lg">
                 <ImageWithShimmer
                   src={AboutCrystal}
@@ -150,11 +150,11 @@ const AboutPage = () => {
       </div>
 
       {/* About Our Founder Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[60px] sm:py-[80px] md:py-[100px]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[20px] sm:pt-[30px] md:pt-[40px] lg:pt-0 pb-[40px] sm:pb-[50px] md:pb-[60px] lg:pb-[40px] ">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Content */}
-          <div className="space-y-6">
-            <h2 className="text-[#D5B584] text-[32px] sm:text-[40px] font-normal ">
+          <div className="space-y-2 sm:space-y-3">
+            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight">
               About Our Founder
             </h2>
 
@@ -194,13 +194,13 @@ const AboutPage = () => {
           </div>
 
           {/* Right Image */}
-          <div className="relative w-full flex justify-center lg:justify-end py-8 sm:py-12 md:py-16">
-            <div className="relative w-full max-w-[240px] sm:max-w-[280px] md:max-w-[400px] group ">
+          <div className="relative w-full flex justify-center lg:justify-end pt-6 sm:pt-8 md:pt-12 lg:pt-16">
+            <div className="relative w-full max-w-[200px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[320px] xl:max-w-[400px] group">
               {/* Horizontal Card - Rotated 90 degrees */}
-              <div className="absolute top-1/2 left-1/2 w-full aspect-[3/4] bg-[#D5B584] rounded-[15px] sm:rounded-[18px] md:rounded-[20px] -translate-x-[50%] -translate-y-1/2 rotate-90 group-hover:rotate-60 transition-transform duration-300 ease-out shadow-lg"></div>
+              <div className="absolute top-1/2 left-1/2 w-full aspect-[3/4] bg-[#D5B584] rounded-[12px] sm:rounded-[15px] md:rounded-[18px] lg:rounded-[20px] -translate-x-[50%] -translate-y-1/2 rotate-90 group-hover:rotate-60 transition-transform duration-300 ease-out shadow-lg"></div>
 
               {/* Main Image */}
-              <div className="relative w-[400px] h-[600px] rounded-[15px] sm:rounded-[18px] md:rounded-[20px] overflow-hidden z-10">
+              <div className="relative w-full aspect-[2/3] max-w-[200px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[320px] xl:max-w-[400px] rounded-[12px] sm:rounded-[15px] md:rounded-[18px] lg:rounded-[20px] overflow-hidden z-10">
                 <ImageWithShimmer
                   src={UpcomingEvent1}
                   alt="Francesca Wong, founder of Crystal Bowl Studio"

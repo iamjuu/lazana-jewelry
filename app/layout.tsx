@@ -60,6 +60,18 @@ const montserrat = localFont({
 export const metadata: Metadata = {
   title: "Crystal Bowl Studio - Healing Through Sound",
   description: "Experience the healing power of crystal singing bowls and yoga sessions",
+  icons: {
+    icon: [
+      { url: "/assets/icon/android-chrome-512x512.png", sizes: "16x16", type: "image/png" },
+      { url: "/assets/icon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/assets/icon/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/assets/icon/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/assets/icon/favicon-32x32.png",
+    apple: [
+      { url: "/assets/icon/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({

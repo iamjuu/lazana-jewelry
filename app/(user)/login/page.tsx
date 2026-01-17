@@ -147,7 +147,7 @@ export default function LoginPage() {
           </button>
 
           {/* Title */}
-          <h1 className="text-2xl sm:text-3xl font-[300] text-black mb-6 mt-2">Log In</h1>
+          <h1 className="text-2xl sm:text-3xl font-[300] text-black mb-6 mt-2 pl-10 sm:pl-0">Log In</h1>
 
           {step === "email" && (
             <form onSubmit={handleSendOTP} className="space-y-5">

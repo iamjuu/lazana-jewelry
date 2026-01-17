@@ -7,15 +7,16 @@ import { usePathname, useRouter } from 'next/navigation'
 import { CryselLogo } from '@/public/assets'
 import { ShoppingCart, User, Search, X } from 'lucide-react'
 import { useCart } from '@/stores/useCart'
+import toast from 'react-hot-toast'
 
 // Navigation items array
 const navigationItems = [
   { href: '/', label: 'Home' },
   { href: '/shop', label: 'Shop', hasDropdown: true },
-  { href: '/services', label: 'Offering', hasOfferingDropdown: true },
-  { href: '/about', label: 'About Us' },
+  { href: '/services', label: 'Offering', hasOfferingDropdown: true, hovertrue:true  },
+  { href: '/about', label: 'About Us', hovertrue:true  },
   // { href: '/events', label: 'Events' },
-  // { href: '/blog', label: 'Blog' },
+  // { href: '/blog', label: 'Blog' },,
   // { href: '/book', label: 'Book' },
 ]
 
@@ -123,8 +124,8 @@ const Navbar = () => {
       } catch (error: any) {
         // Ignore abort errors
         if (error.name !== 'AbortError') {
-          console.error('Search error:', error)
-          setSearchResults([])
+        console.error('Search error:', error)
+        setSearchResults([])
         }
       } finally {
         setIsSearching(false)
@@ -205,11 +206,18 @@ const Navbar = () => {
   }
 
   const handleCartNavigation = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault()
-    
     // If already on cart page, just refresh
     if (pathname === '/cart') {
+      e.preventDefault()
       window.location.reload()
+      return
+    }
+    
+    e.preventDefault()
+    
+    // If already on login page and not logged in, show toast and keep button clickable
+    if (pathname === '/login' && !isLoggedIn) {
+      toast.error("Please login to continue")
       return
     }
 
@@ -217,11 +225,21 @@ const Navbar = () => {
     setIsMobileMenuOpen(false)
 
     // Check login status and route accordingly
+    if (!isLoggedIn) {
+      // Show toast when redirecting to login from cart click
+      toast.error("Please login to continue")
+    }
+    
     const targetPath = isLoggedIn ? '/cart' : '/login'
     
-    setTimeout(() => {
-      router.push(targetPath)
-    }, 150)
+    // Only navigate if not already on the target path
+    if (pathname !== targetPath) {
+      setTimeout(() => {
+        router.push(targetPath)
+      }, 150)
+    } else {
+      setIsNavigating(false)
+    }
   }
 
   return (
@@ -288,8 +306,10 @@ const Navbar = () => {
                     <Link 
                       href={item.href} 
                       onClick={(e) => handleNavigation(e, item.href)}
-                      className={`group relative text-[#D5B584] hover:text-white transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 overflow-hidden ${
-                        pathname === item.href || pathname.startsWith('/shop') ? 'text-white font-semibold scale-110' : ''
+                      className={`group relative text-[#D5B584] hover:text-[#1C3163] transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 overflow-hidden ${
+                        pathname === item.href || pathname.startsWith('/shop') 
+                          ? (item.hovertrue ? 'text-[#1C3163] font-semibold scale-110' : 'text-white font-semibold scale-110')
+                          : ''
                       }`}
                     >
                       <span className="relative z-10">{item.label}</span>
@@ -322,7 +342,7 @@ const Navbar = () => {
                             }}
                             className="text-[#1C3163] hover:text-[#D5B584] transition-all duration-150 text-sm xl:text-base font-normal py-2 px-4 hover:translate-x-2 cursor-pointer"
                           >
-                            All Products
+                            All Crystal singing bowls
                           </Link>
                           {/* Dynamic Categories */}
                           {categories.slice(0, 8).map((category) => (
@@ -368,7 +388,7 @@ const Navbar = () => {
                     <Link 
                       href={item.href} 
                       onClick={(e) => handleNavigation(e, item.href)}
-                      className={`group relative text-[#D5B584] hover:text-white transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 overflow-hidden ${
+                      className={`group relative text-[#D5B584] hover:text-[#1C3163] transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 overflow-hidden ${
                         pathname === item.href || pathname.startsWith('/services') || pathname.startsWith('/events') ? 'text-white font-semibold scale-110' : ''
                       }`}
                     >
@@ -426,7 +446,7 @@ const Navbar = () => {
                   key={item.href}
                   href={item.href} 
                   onClick={(e) => handleNavigation(e, item.href)}
-                  className={`group relative text-[#D5B584] hover:text-white transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 overflow-hidden ${
+                  className={`group relative text-[#D5B584] hover:text-[#1C3163] transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 overflow-hidden ${
                     pathname === item.href ? 'text-white font-semibold scale-110' : ''
                   }`}
                 >
@@ -437,8 +457,8 @@ const Navbar = () => {
             <Link 
               href="/book-a-session" 
               onClick={(e) => handleNavigation(e, '/book-a-session')}
-              className={`group relative text-[#D5B584] hover:text-white transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 overflow-hidden ${
-                pathname === '/book-a-session' ? 'text-white font-semibold scale-110' : ''
+              className={`group relative text-[#D5B584] hover:text-[#1C3163] transition-all duration-150 text-sm xl:text-base font-normal whitespace-nowrap hover:scale-110 overflow-hidden ${
+                pathname === '/book-a-session' ? 'text-[#1C3163] font-semibold scale-110' : ''
               }`}
             >
               <span className="relative z-10">Book a Call</span>
@@ -458,17 +478,17 @@ const Navbar = () => {
                   <Search size={24} />
                 </button>
               ) : (
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#D5B584] w-4 h-4" />
-                    <input
-                      type="text"
-                      placeholder="Search products..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#D5B584] w-4 h-4" />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10 pr-10 py-2 bg-transparent border border-[#D5B584]/30 rounded-md text-white placeholder-[#D5B584]/60 focus:outline-none focus:border-[#D5B584] text-sm w-48 xl:w-56 transition-all duration-150"
                       autoFocus
-                    />
+                  />
                     <button
                       onClick={() => {
                         setIsSearchOpen(false);

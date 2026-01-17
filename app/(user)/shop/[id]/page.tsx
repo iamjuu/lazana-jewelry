@@ -21,6 +21,8 @@ type Product = {
   imageUrl?: string[];
   videoUrl?: string | string[];
   relativeproduct?: boolean;
+  category?: string | { _id: string; name: string; slug: string };
+  subcategory?: string | { _id: string; name: string; slug: string; category?: string | { _id: string; name: string; slug: string } };
 };
 
 type MediaItem = {
@@ -381,6 +383,37 @@ const ProductDetailPage = () => {
   return (
     <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen]">
       <Navbar />
+
+      {/* Breadcrumb */}
+      <div className="max-w-6xl mx-auto px-4 pt-4 pb-2">
+        <nav className="flex items-center space-x-2 text-sm sm:text-base text-[#6B5D4F]">
+          <Link href="/" className="hover:text-[#D5B584] transition-colors">
+            Home
+          </Link>
+          {product.category && typeof product.category === 'object' && product.category.name ? (
+            <>
+              <span>/</span>
+              <Link 
+                href={`/shop?category=${product.category.slug}`} 
+                className="hover:text-[#D5B584] transition-colors"
+              >
+                {product.category.name}
+              </Link>
+              {product.subcategory && typeof product.subcategory === 'object' && product.subcategory.name && (
+                <>
+                  <span>/</span>
+                  <span className="text-black">{product.subcategory.name}</span>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <span>/</span>
+              <span>All Products</span>
+            </>
+          )}
+        </nav>
+      </div>
 
       <section className="w-full py-[40px] md:py-[68px]">
         <div className="max-w-6xl mx-auto px-4">

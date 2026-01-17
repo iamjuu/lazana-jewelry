@@ -263,19 +263,19 @@ const EventDetailPage = () => {
     <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
       <Navbar />
       
-      <div className="w-full py-[40px] md:py-[68px]">
+      <div className="w-full py-[30px] sm:py-[35px] md:py-[38px] lg:py-[40px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
           <Link 
             href="/events"
-            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-8 transition-colors text-[14px] md:text-[16px]"
+            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-6 sm:mb-8 transition-colors text-[13px] sm:text-[14px] md:text-[16px]"
           >
-            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+            <ArrowLeft className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5" />
             <span>Back to All Events</span>
           </Link>
 
           {/* Top Section: Image and Booking Info Side by Side */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-16 mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6 sm:gap-8 lg:gap-16 mb-8 sm:mb-10 md:mb-12">
             {/* Left Column - Main Image */}
             <div className="order-1">
               {imageUrl && (
@@ -291,14 +291,14 @@ const EventDetailPage = () => {
 
             {/* Right Column - Event Info & Booking */}
             <div className="order-2">
-              <div className="space-y-2 mt-4">
+              <div className="space-y-2 sm:space-y-3 mt-0 sm:mt-4">
                 {/* Event Title */}
-                <h1 className="text-[#1C3163] text-[22px] md:text-[24px] lg:text-[26px] font-light leading-tight">
+                <h1 className="text-[#1C3163] text-[20px] sm:text-[22px] md:text-[24px] lg:text-[26px] font-light leading-tight">
                   {event.title}
                 </h1>
 
                 {/* Event Details */}
-                <div className="space-y-1.5 text-[#1C3163] text-[13px] md:text-[14px]">
+                <div className="space-y-1 sm:space-y-1.5 text-[#1C3163] text-[12px] sm:text-[13px] md:text-[14px]">
                   <p className="font-normal">{event.day}, {formattedDate}</p>
                   <p className="font-light">{event.time}</p>
                   <p className="font-light">{event.location}</p>
@@ -306,17 +306,17 @@ const EventDetailPage = () => {
 
                 {/* Booking Card */}
                 {isFullyBooked ? (
-                  <div className="bg-white/50 rounded-lg p-4 text-center mt-4">
-                    <p className="text-[#6B5D4F] text-[14px] font-light">
+                  <div className="bg-white/50 rounded-lg p-3 sm:p-4 text-center mt-4 sm:mt-6">
+                    <p className="text-[#6B5D4F] text-[13px] sm:text-[14px] font-light">
                       This event has reached its capacity. Please check back for future events.
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-4 mt-4">
+                  <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
                     {/* Price */}
                     {price > 0 && (
-                      <div className="pb-2">
-                        <p className="text-[#1C3163] text-[20px] md:text-[22px] font-light">
+                      <div className="pb-1 sm:pb-2">
+                        <p className="text-[#1C3163] text-[18px] sm:text-[20px] md:text-[22px] font-light">
                           SGD {price.toFixed(2)}
                         </p>
                       </div>
@@ -328,19 +328,19 @@ const EventDetailPage = () => {
                         type="button"
                         onClick={() => handleQuantityChange(quantity - 1)}
                         disabled={quantity <= 1}
-                        className="w-10 h-10 flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors text-[#1C3163] text-[18px] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1C3163]"
+                        className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors text-[#1C3163] text-[16px] sm:text-[18px] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1C3163]"
                         aria-label="Decrease quantity"
                       >
                         −
                       </button>
-                      <span className="px-4 border-x border-[#1C3163] h-10 flex items-center justify-center text-[#1C3163] text-[16px] font-medium min-w-[50px]">
+                      <span className="px-3 sm:px-4 border-x border-[#1C3163] h-9 sm:h-10 flex items-center justify-center text-[#1C3163] text-[14px] sm:text-[16px] font-medium min-w-[45px] sm:min-w-[50px]">
                         {quantity}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleQuantityChange(quantity + 1)}
                         disabled={quantity >= availableSlots}
-                        className="w-10 h-10 flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors text-[#1C3163] text-[18px] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1C3163]"
+                        className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors text-[#1C3163] text-[16px] sm:text-[18px] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#1C3163]"
                         aria-label="Increase quantity"
                       >
                         +
@@ -425,13 +425,13 @@ const EventDetailPage = () => {
                     <button
                       onClick={handleBooking}
                       disabled={bookingLoading}
-                      className="w-full bg-[#8B6F47] text-white px-6 py-2.5 text-[13px] md:text-[14px] font-medium uppercase tracking-wider hover:bg-[#7a5f3d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-[#1C3163] text-white px-5 sm:px-6 py-2.5 text-[12px] sm:text-[13px] md:text-[14px] font-medium uppercase tracking-wider hover:bg-[#D5B584] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {bookingLoading ? "Processing..." : "Reserve Your Spot"}
                     </button>
 
                     {/* Availability Info */}
-                    <p className="text-[#6B5D4F] text-[12px] font-light">
+                    <p className="text-[#6B5D4F] text-[11px] sm:text-[12px] font-light">
                       {availableSlots} spot{availableSlots !== 1 ? 's' : ''} remaining
                     </p>
                   </div>
@@ -441,8 +441,8 @@ const EventDetailPage = () => {
           </div>
 
           {/* Description Section - Full Width Below Image */}
-          <div className="max-w-4xl">
-            <div className="text-[#1C3163] text-[15px] md:text-[16px] font-light leading-[1.75] whitespace-pre-line">
+          <div className="max-w-4xl mt-6 sm:mt-8 md:mt-10 lg:mt-12">
+            <div className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-light leading-[1.7] sm:leading-[1.75] whitespace-pre-line">
               {event.description}
             </div>
           </div>

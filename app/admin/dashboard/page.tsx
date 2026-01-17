@@ -159,7 +159,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Main Metric Cards */}
-        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {/* <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title="Annual Income"
             value={formatCurrency(annualIncome)}
@@ -188,7 +188,7 @@ export default async function DashboardPage() {
             trend="up"
             bgColor="bg-gradient-to-br from-zinc-800/90 to-zinc-900/90"
           />
-        </section>
+        </section> */}
 
 
       {/* Additional Statistics - Unified Card */}

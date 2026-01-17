@@ -299,23 +299,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
       );
     }
 
-    // Delete images from S3
-    if (product.imageUrl && Array.isArray(product.imageUrl)) {
-      for (const imageUrl of product.imageUrl) {
-        if (imageUrl && typeof imageUrl === 'string' && imageUrl.startsWith('https://')) {
-          try {
-            const s3Key = extractS3Key(imageUrl);
-            if (s3Key) {
-              await deleteFromS3(s3Key);
-              console.log(`✓ Deleted image from S3: ${s3Key}`);
-            }
-          } catch (deleteError) {
-            console.error(`Failed to delete image ${imageUrl}:`, deleteError);
-            // Continue even if deletion fails
-          }
-        }
-      }
-    }
+    // Note: Images are kept in S3, only videos are deleted
 
     // Delete videos from S3
     if (product.videoUrl) {

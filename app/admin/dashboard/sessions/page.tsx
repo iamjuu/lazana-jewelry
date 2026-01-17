@@ -73,6 +73,9 @@ export default function SessionsPage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [selectedVideoFile, setSelectedVideoFile] = useState<File | null>(null);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  
+  // Track original image URL when editing (for restore on cancel)
+  const [originalImageUrl, setOriginalImageUrl] = useState<string>("");
 
   // Helper function to convert 12-hour to 24-hour format
   const convertTo24Hour = (hour: number, minute: number, amPm: "AM" | "PM"): string => {
@@ -274,69 +277,43 @@ export default function SessionsPage() {
   const handleImageSelect = (file: File | null) => {
     if (!file) {
       setSelectedImageFile(null);
+      setPreviewUrl("");
+      setFormData({ ...formData, image: "" });
       return;
     }
     setSelectedImageFile(file);
-    setError(null);
-  };
-
-  const handleUploadImageToS3 = async () => {
-    if (!selectedImageFile) return;
-
-    setUploadingImage(true);
-    setError(null);
-
-    try {
-      // Delete old image if replacing
-      if (formData.image) {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.image }),
-        });
-      }
-
-      // Upload new image to S3
-      const uploadFormData = new FormData();
-      uploadFormData.append("file", selectedImageFile);
-      uploadFormData.append("folder", "images");
-
-      const response = await fetch("/api/upload/s3", {
-        method: "POST",
-        body: uploadFormData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image to S3");
-      }
-
-      const { url } = await response.json();
-
-      setFormData({ ...formData, image: url });
-      setPreviewUrl(url);
-      setSelectedImageFile(null);
-    } catch (err) {
-      console.error("Error uploading image:", err);
-      setError("Failed to upload image");
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
-  const handleRemoveImage = async () => {
-    if (formData.image) {
-      try {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.image }),
-        });
-      } catch (err) {
-        console.error("Error deleting image:", err);
-      }
-    }
+    // Clear any existing image URL when selecting new file
     setFormData({ ...formData, image: "" });
-    setPreviewUrl("");
+    // Use local file preview (not uploaded to S3 yet)
+    setPreviewUrl(URL.createObjectURL(file));
+    setError(null);
+  };
+
+  // Image upload to S3 now happens only during form submission
+  // Removed handleUploadImageToS3 - upload happens in handleSubmit
+
+  const handleRemoveImage = () => {
+    // Clear form state - if editing, keep originalImageUrl for restore on cancel
+    // If selectedImageFile exists (local file), just clear it (no S3 upload happened)
+    // If formData.image exists (S3 URL), clear it but don't delete from S3 until form submission
+    
+    // Clean up object URL if it was created from local file
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    
+    setFormData({ ...formData, image: "" });
+    
+    // If editing and we have original image, restore preview to original
+    if (editingId && originalImageUrl && !selectedImageFile) {
+      const currentSession = sessions.find(s => s._id === editingId);
+      if (currentSession) {
+        setPreviewUrl(getImageUrl(currentSession));
+      }
+    } else {
+      setPreviewUrl("");
+    }
+    
     setSelectedImageFile(null);
   };
 
@@ -464,10 +441,14 @@ export default function SessionsPage() {
       }
     }
     
+    // Store original image URL for restore on cancel and S3 deletion on update
+    const originalImg = session.imageUrl || "";
+    setOriginalImageUrl(originalImg);
+    
     setFormData({
       title: session.title || "",
       description: session.description || "",
-      image: session.imageUrl || "",
+      image: originalImg,
       video: session.videoUrl || "",
       format: session.format || "",
       benefits: session.benefits && session.benefits.length > 0 ? session.benefits : [""],
@@ -479,15 +460,12 @@ export default function SessionsPage() {
       featured: session.featured || false,
     });
     
-    // Set media type based on what exists
+    // Always use image (video no longer supported)
     if (session.imageUrl) {
       setMediaType("image");
       setPreviewUrl(getImageUrl(session));
-    } else if (session.videoUrl) {
-      setMediaType("video");
-      setPreviewUrl(session.videoUrl);
     } else {
-      setMediaType(null);
+      setMediaType("image");
       setPreviewUrl("");
     }
     
@@ -513,22 +491,20 @@ export default function SessionsPage() {
       return;
     }
 
-    if (mediaType === "image" && !formData.image) {
-      setError("Please upload an image");
-      setLoading(false);
-      return;
-    }
-
-    if (mediaType === "video" && !formData.video) {
-      setError("Please upload a video or enter a video URL");
-      setLoading(false);
-      return;
-    }
-
-    if (!mediaType) {
-      setError("Please choose either Image or Video");
-      setLoading(false);
-      return;
+    // Validate image is required
+    if (!formData.image && !selectedImageFile) {
+      // If editing and image was removed, require a new image
+      if (editingId && originalImageUrl && !formData.image) {
+        setError("Image is required. Please choose a new image or cancel to keep the existing one.");
+        setLoading(false);
+        return;
+      }
+      // If creating new or no original image existed
+      if (!editingId || !originalImageUrl) {
+        setError("Please upload an image");
+        setLoading(false);
+        return;
+      }
     }
 
     // Validate featured count for private and corporate sessions (separate limits for each type)
@@ -626,28 +602,47 @@ export default function SessionsPage() {
         requestBody.duration = Number(formData.duration);
       }
 
-      if (isEdit) {
-        // When editing, preserve existing media if not changed, or update if new media is provided
-        const currentSession = sessions.find(s => s._id === editingId);
-        if (mediaType === "image") {
-          requestBody.imageUrl = typeof formData.image === "string" ? formData.image : undefined;
-          // Clear video if switching from video to image
-          if (currentSession?.videoUrl) {
-            requestBody.videoUrl = "";
-          }
-        } else if (mediaType === "video") {
-          requestBody.videoUrl = typeof formData.video === "string" ? formData.video : undefined;
-          // Clear image if switching from image to video
-          if (currentSession?.imageUrl) {
-            requestBody.imageUrl = "";
-          }
+      // Handle image upload if a new file is selected (upload happens here during form submission)
+      let finalImageUrl = formData.image;
+      
+      if (selectedImageFile) {
+        // Upload new image file to S3 only during form submission
+        // This prevents orphaned files if user cancels
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', selectedImageFile);
+        uploadFormData.append('folder', 'images');
+        
+        const uploadResponse = await fetch('/api/upload/s3', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+        
+        const uploadData = await uploadResponse.json();
+        
+        if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
+          throw new Error('Failed to upload image to S3');
         }
-      } else {
-        // When creating, only set the selected media type
-        if (mediaType === "image") {
-          requestBody.imageUrl = typeof formData.image === "string" ? formData.image : undefined;
-        } else if (mediaType === "video") {
-          requestBody.videoUrl = typeof formData.video === "string" ? formData.video : undefined;
+        
+        finalImageUrl = uploadData.url;
+      }
+      
+      // Always use image (must have image or selectedImageFile will be uploaded)
+      if (!finalImageUrl) {
+        // If editing and no new image selected, use original image
+        if (isEdit && originalImageUrl && !selectedImageFile) {
+          finalImageUrl = originalImageUrl;
+        } else {
+          throw new Error('Image is required');
+        }
+      }
+      
+      requestBody.imageUrl = finalImageUrl;
+      
+      if (isEdit) {
+        // Clear video if it exists when editing
+        const currentSession = sessions.find(s => s._id === editingId);
+        if (currentSession?.videoUrl) {
+          requestBody.videoUrl = "";
         }
       }
 
@@ -663,6 +658,21 @@ export default function SessionsPage() {
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || `Failed to ${isEdit ? "update" : "create"} session`);
+      }
+
+      // After successful update, delete old image from S3 if it was replaced
+      if (isEdit && originalImageUrl && finalImageUrl && originalImageUrl !== finalImageUrl && originalImageUrl.startsWith('https://')) {
+        try {
+          await fetch("/api/upload/s3/delete", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: originalImageUrl }),
+          });
+          console.log(`✓ Deleted old image from S3: ${originalImageUrl}`);
+        } catch (err) {
+          console.error("Error deleting old image from S3:", err);
+          // Don't fail the update if deletion fails
+        }
       }
 
       setSuccess(`Session ${isEdit ? "updated" : "created"} successfully!`);
@@ -683,6 +693,8 @@ export default function SessionsPage() {
       setMediaType(null);
       setPreviewUrl("");
       setEditingId(null);
+      setOriginalImageUrl("");
+      setSelectedImageFile(null);
       
       // Refresh sessions list
       await fetchSessions();
@@ -699,6 +711,23 @@ export default function SessionsPage() {
   };
 
   const handleCancel = () => {
+    // Clean up object URL if it was created from local file
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    
+    // If editing, restore original image
+    if (editingId && originalImageUrl) {
+      const currentSession = sessions.find(s => s._id === editingId);
+      if (currentSession) {
+        setFormData({ 
+          ...formData,
+          image: originalImageUrl,
+        });
+        setPreviewUrl(getImageUrl(currentSession));
+      }
+    }
+    
     setShowAddForm(false);
     setFormData({ 
       title: "", 
@@ -717,6 +746,8 @@ export default function SessionsPage() {
     setMediaType(null);
     setPreviewUrl("");
     setEditingId(null);
+    setOriginalImageUrl("");
+    setSelectedImageFile(null);
     setError(null);
     setSuccess(null);
   };
@@ -775,7 +806,10 @@ export default function SessionsPage() {
           <div className="mb-6 space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <button
-                onClick={() => setShowAddForm(true)}
+                onClick={() => {
+                  setShowAddForm(true);
+                  setMediaType("image");
+                }}
                 className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
               >
                 Add {tabs.find(t => t.id === activeTab)?.label}
@@ -1058,46 +1092,9 @@ export default function SessionsPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-white">
-                Media Type <span className="text-red-500">*</span>
+              <label htmlFor="session-image" className="text-sm font-medium text-white">
+                Image <span className="text-red-500">*</span>
               </label>
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => handleMediaTypeChange("image")}
-                  className={`
-                    flex-1 rounded-md border px-4 py-2 text-sm font-medium transition-colors
-                    ${
-                      mediaType === "image"
-                        ? "border-emerald-500 bg-emerald-500/20 text-emerald-400"
-                        : "border-zinc-600 bg-zinc-900 text-zinc-400 hover:border-zinc-500 hover:text-zinc-300"
-                    }
-                  `}
-                >
-                  Image
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleMediaTypeChange("video")}
-                  className={`
-                    flex-1 rounded-md border px-4 py-2 text-sm font-medium transition-colors
-                    ${
-                      mediaType === "video"
-                        ? "border-emerald-500 bg-emerald-500/20 text-emerald-400"
-                        : "border-zinc-600 bg-zinc-900 text-zinc-400 hover:border-zinc-500 hover:text-zinc-300"
-                    }
-                  `}
-                >
-                  Video
-                </button>
-              </div>
-            </div>
-
-            {mediaType === "image" && (
-              <div className="space-y-1">
-                <label htmlFor="session-image" className="text-sm font-medium text-white">
-                  Image <span className="text-red-500">*</span>
-                </label>
                 <input
                   id="session-image"
                   type="file"
@@ -1106,7 +1103,7 @@ export default function SessionsPage() {
                   className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
                 />
                 
-                {/* Pending file with upload button */}
+                {/* Selected file preview (not uploaded to S3 yet) */}
                 {selectedImageFile && !formData.image && (
                   <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mt-2">
                     <div className="flex items-center gap-3">
@@ -1115,19 +1112,31 @@ export default function SessionsPage() {
                         <p className="text-xs text-zinc-400 mt-1">
                           Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
                         </p>
+                        <p className="text-xs text-yellow-500 mt-2">⚠️ Image will be uploaded when you save the form</p>
                       </div>
                       <button
                         type="button"
-                        onClick={handleUploadImageToS3}
-                        disabled={uploadingImage}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
+                        onClick={() => {
+                          // Clean up object URL
+                          if (previewUrl && previewUrl.startsWith('blob:')) {
+                            URL.revokeObjectURL(previewUrl);
+                          }
+                          setSelectedImageFile(null);
+                          setPreviewUrl("");
+                          setFormData({ ...formData, image: "" });
+                          // If editing, restore original image preview
+                          if (editingId && originalImageUrl) {
+                            const currentSession = sessions.find(s => s._id === editingId);
+                            if (currentSession) {
+                              setPreviewUrl(getImageUrl(currentSession));
+                            }
+                          }
+                        }}
+                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
                       >
-                        {uploadingImage ? "Uploading..." : "Upload"}
+                        Remove
                       </button>
                     </div>
-                    {!uploadingImage && (
-                      <p className="text-xs text-yellow-500 mt-2">⚠️ Click "Upload" to save this image</p>
-                    )}
                   </div>
                 )}
 
@@ -1150,62 +1159,6 @@ export default function SessionsPage() {
                   </div>
                 )}
               </div>
-            )}
-
-            {mediaType === "video" && (
-              <div className="space-y-1">
-                <label htmlFor="session-video" className="text-sm font-medium text-white">
-                  Video <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="session-video-file"
-                  type="file"
-                  accept="video/*"
-                  onChange={(e) => handleVideoSelect(e.target.files?.[0] || null)}
-                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none mb-2"
-                />
-                
-                {/* Pending file with upload button */}
-                {selectedVideoFile && !formData.video && (
-                  <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mt-2">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1">
-                        <p className="text-sm text-white font-medium">🎥 {selectedVideoFile.name}</p>
-                        <p className="text-xs text-zinc-400 mt-1">
-                          Size: {(selectedVideoFile.size / (1024 * 1024)).toFixed(2)} MB
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleUploadVideoToS3}
-                        disabled={uploadingVideo}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
-                      >
-                        {uploadingVideo ? "Uploading..." : "Upload"}
-                      </button>
-                    </div>
-                    {!uploadingVideo && (
-                      <p className="text-xs text-yellow-500 mt-2">⚠️ Click "Upload" to save this video</p>
-                    )}
-                  </div>
-                )}
-
-                {/* Uploaded video */}
-                {previewUrl && formData.video && (
-                  <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900 mt-2">
-                    <video src={previewUrl} controls className="w-full h-full object-contain" />
-                    <button
-                      type="button"
-                      onClick={handleRemoveVideo}
-                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
-                      title="Remove video"
-                    >
-                      ×
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
 
             <div className="space-y-1">
               <label htmlFor="session-description" className="text-sm font-medium text-white">
@@ -1318,13 +1271,12 @@ export default function SessionsPage() {
               </div>
             )}
 
-            {/* Date - For Discovery and Private */}
-            {(activeTab === "discovery" || activeTab === "private") && (
+            {/* Date - For Discovery Only */}
+            {activeTab === "discovery" && (
               <div className="space-y-1 relative">
                 <label htmlFor="date" className="text-sm font-medium text-white">
-                  Date <span className="text-red-500">{activeTab === "discovery" && !editingId ? "*" : ""}</span>
+                  Date <span className="text-red-500">{!editingId ? "*" : ""}</span>
                   {editingId && <span className="text-xs text-zinc-400 ml-2">(Cannot be changed after creation)</span>}
-                  {activeTab === "private" && <span className="text-xs text-zinc-400 ml-2">(Optional)</span>}
                 </label>
                 <div className="relative">
                   <input
@@ -1439,13 +1391,12 @@ export default function SessionsPage() {
               </div>
             )}
 
-            {/* Start Time - For Discovery and Private */}
-            {(activeTab === "discovery" || activeTab === "private") && (
+            {/* Start Time - For Discovery Only */}
+            {activeTab === "discovery" && (
               <div className="space-y-1 relative">
                 <label htmlFor="start-time" className="text-sm font-medium text-white">
-                  Start Time <span className="text-red-500">{activeTab === "discovery" && !editingId ? "*" : ""}</span>
+                  Start Time <span className="text-red-500">{!editingId ? "*" : ""}</span>
                   {editingId && <span className="text-xs text-zinc-400 ml-2">(Cannot be changed after creation)</span>}
-                  {activeTab === "private" && <span className="text-xs text-zinc-400 ml-2">(Optional)</span>}
                 </label>
                 <div className="relative">
                   <input

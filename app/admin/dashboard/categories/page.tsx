@@ -30,7 +30,9 @@ export default function CategoriesPage() {
   
   // S3 upload states
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
+  
+  // Track original image URL when editing (for restore on cancel)
+  const [originalImageUrl, setOriginalImageUrl] = useState<string>("");
 
   const fetchCategories = async () => {
     try {
@@ -80,73 +82,37 @@ export default function CategoriesPage() {
     return imageUrl;
   };
 
-  // Handle image selection (don't upload yet)
+  // Handle image selection - use local preview (no upload yet)
   const handleImageSelect = (file: File | null) => {
     if (!file) {
       setSelectedImageFile(null);
+      setPreviewUrl("");
+      setFormData({ ...formData, image: "" });
       return;
     }
     setSelectedImageFile(file);
-  };
-
-  // Upload image to S3
-  const handleUploadImageToS3 = async () => {
-    if (!selectedImageFile) return;
-
-    setUploadingImage(true);
-
-    try {
-      // Delete old image if replacing
-      if (formData.image) {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.image }),
-        });
-      }
-
-      // Upload new image to S3
-      const uploadFormData = new FormData();
-      uploadFormData.append("file", selectedImageFile);
-      uploadFormData.append("folder", "images");
-
-      const response = await fetch("/api/upload/s3", {
-        method: "POST",
-        body: uploadFormData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image to S3");
-      }
-
-      const { url } = await response.json();
-
-      setFormData({ ...formData, image: url });
-      setPreviewUrl(url);
-      setSelectedImageFile(null);
-    } catch (err) {
-      console.error("Error uploading image:", err);
-      toast.error("Failed to upload image");
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
-  // Remove uploaded image
-  const handleRemoveImage = async () => {
-    if (formData.image) {
-      try {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.image }),
-        });
-      } catch (err) {
-        console.error("Error deleting image:", err);
-      }
-    }
+    // Clear any existing image URL when selecting new file
     setFormData({ ...formData, image: "" });
-    setPreviewUrl("");
+    // Use local file preview (not uploaded to S3 yet)
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  // Remove image - only clear form state, don't delete from S3 yet
+  const handleRemoveImage = () => {
+    // Clean up object URL if it was created from local file
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    
+    setFormData({ ...formData, image: "" });
+    
+    // If editing and we have original image, restore preview to original
+    if (editingCategory && originalImageUrl && !selectedImageFile) {
+      setPreviewUrl(getImageUrl(originalImageUrl));
+    } else {
+      setPreviewUrl("");
+    }
+    
     setSelectedImageFile(null);
   };
 
@@ -173,6 +139,52 @@ export default function CategoriesPage() {
     setSubmitting(true);
 
     try {
+      const isEdit = !!editingCategory;
+      
+      // Handle image upload if a new file is selected (upload happens here during form submission)
+      let finalImageUrl = formData.image;
+      let uploadToastId: string | undefined;
+      
+      if (selectedImageFile) {
+        // Show progress toast during upload (green progress bar)
+        uploadToastId = toast.loading(
+          <div className="flex flex-col gap-2">
+            <span className="text-white font-medium">Uploading image to S3...</span>
+            <div className="w-full bg-zinc-700 rounded-full h-2">
+              <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '50%' }}></div>
+            </div>
+          </div>,
+          { duration: Infinity }
+        );
+        
+        try {
+          // Upload new image file to S3 only during form submission
+          const uploadFormData = new FormData();
+          uploadFormData.append('file', selectedImageFile);
+          uploadFormData.append('folder', 'images');
+          
+          const uploadResponse = await fetch('/api/upload/s3', {
+            method: 'POST',
+            body: uploadFormData,
+          });
+          
+          const uploadData = await uploadResponse.json();
+          
+          if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
+            throw new Error('Failed to upload image to S3');
+          }
+          
+          finalImageUrl = uploadData.url;
+          
+          // Update progress toast
+          toast.dismiss(uploadToastId);
+          toast.success('Image uploaded successfully!', { duration: 2000 });
+        } catch (uploadErr) {
+          toast.dismiss(uploadToastId);
+          throw new Error('Failed to upload image. Please try again.');
+        }
+      }
+
       const url = editingCategory 
         ? `/api/admin/categories/${editingCategory._id}`
         : "/api/admin/categories";
@@ -186,21 +198,25 @@ export default function CategoriesPage() {
         imageUrl: "", // Default to empty string
       };
 
-      // Handle image URL - ALWAYS set it
-      if (formData.image && typeof formData.image === "string" && formData.image.length > 0) {
-        // New image uploaded or existing image preserved
-        requestBody.imageUrl = formData.image;
-      } else if (editingCategory && editingCategory.imageUrl && !formData.image) {
+      // Use final image URL (uploaded or existing)
+      if (finalImageUrl) {
+        requestBody.imageUrl = finalImageUrl;
+      } else if (isEdit && originalImageUrl) {
         // When editing, preserve existing image if no new one uploaded
-        requestBody.imageUrl = editingCategory.imageUrl;
+        requestBody.imageUrl = originalImageUrl;
       }
       // Otherwise imageUrl stays as empty string (which will be saved in DB)
-      
-      console.log("Sending request body:", JSON.stringify({
-        ...requestBody,
-        imageUrl: requestBody.imageUrl ? `${requestBody.imageUrl.substring(0, 50)}...` : "empty"
-      }, null, 2)); // Debug log (truncate image for readability)
-      console.log("isFeatured being sent:", requestBody.isFeatured, "Type:", typeof requestBody.isFeatured); // Debug log
+
+      // Show saving toast
+      const saveToastId = toast.loading(
+        <div className="flex flex-col gap-2">
+          <span className="text-white font-medium">{isEdit ? "Updating category..." : "Creating category..."}</span>
+          <div className="w-full bg-zinc-700 rounded-full h-2">
+            <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '70%' }}></div>
+          </div>
+        </div>,
+        { duration: Infinity }
+      );
 
       const response = await fetch(url, {
         method,
@@ -210,82 +226,155 @@ export default function CategoriesPage() {
 
       const data = await response.json();
 
-      if (data.success) {
-        toast.success(data.message || `Category ${editingCategory ? 'updated' : 'created'} successfully`);
-        setFormData({ name: "", image: "", isFeatured: false });
-        setPreviewUrl("");
-        setShowAddForm(false);
-        setEditingCategory(null);
-        fetchCategories();
-      } else {
-        toast.error(data.message || `Failed to ${editingCategory ? 'update' : 'create'} category`);
+      toast.dismiss(saveToastId);
+
+      if (!data.success) {
+        throw new Error(data.message || `Failed to ${isEdit ? 'update' : 'create'} category`);
       }
+
+      // After successful update, delete old image from S3 if it was replaced
+      if (isEdit && originalImageUrl && finalImageUrl && originalImageUrl !== finalImageUrl && originalImageUrl.startsWith('https://')) {
+        try {
+          await fetch("/api/upload/s3/delete", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: originalImageUrl }),
+          });
+        } catch (err) {
+          console.error("Error deleting old image from S3:", err);
+          // Don't fail the update if deletion fails
+        }
+      }
+
+      toast.success(data.message || `Category ${isEdit ? 'updated' : 'created'} successfully`, { duration: 3000 });
+      setFormData({ name: "", image: "", isFeatured: false });
+      
+      // Clean up object URL if it was created from local file
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      
+      setPreviewUrl("");
+      setShowAddForm(false);
+      setEditingCategory(null);
+      setOriginalImageUrl("");
+      setSelectedImageFile(null);
+      fetchCategories();
     } catch (error) {
-      console.error("Error submitting category:", error);
-      toast.error(`Failed to ${editingCategory ? 'update' : 'create'} category`);
+      const errorMessage = error instanceof Error ? error.message : `Failed to ${editingCategory ? 'update' : 'create'} category`;
+      toast.error(errorMessage, { duration: 4000 });
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleEdit = (category: Category) => {
-    console.log("Editing category:", category); // Debug log
-    console.log("Category isFeatured:", category.isFeatured, "Type:", typeof category.isFeatured); // Debug log
-    console.log("Category imageUrl:", category.imageUrl); // Debug log
+    // Store original image URL for restore on cancel and S3 deletion on update
+    const originalImg = category.imageUrl || "";
+    setOriginalImageUrl(originalImg);
     
     setEditingCategory(category);
     
     // Preserve existing image if available
-    const existingImageUrl = category.imageUrl ? getImageUrl(category.imageUrl) : "";
-    console.log("Existing image URL:", existingImageUrl); // Debug log
+    const existingImageUrl = originalImg ? getImageUrl(originalImg) : "";
     
     // Handle isFeatured - it's already a boolean, just check if it's true
     const isFeaturedValue = category.isFeatured === true;
-    console.log("Setting isFeatured to:", isFeaturedValue); // Debug log
     
     // Reset form data completely
     const newFormData = { 
       name: category.name || "", 
-      image: category.imageUrl || "", // Preserve existing image URL
+      image: originalImg, // Preserve existing image URL
       isFeatured: Boolean(isFeaturedValue) // Force to boolean
     };
     
-    console.log("Setting form data to:", newFormData); // Debug log
-    
     setFormData(newFormData);
     setPreviewUrl(existingImageUrl);
+    setSelectedImageFile(null);
     setShowAddForm(true);
   };
 
   const handleDelete = async (categoryId: string, categoryName: string) => {
-    if (!confirm(`Are you sure you want to delete "${categoryName}"?`)) {
-      return;
-    }
+    // Toast-based confirmation
+    const confirmed = await new Promise<boolean>((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div className="flex flex-col gap-3">
+            <p className="text-white font-medium">Delete Category?</p>
+            <p className="text-sm text-zinc-300">Are you sure you want to delete "{categoryName}"? This action cannot be undone.</p>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => {
+                  toast.dismiss(toastId);
+                  resolve(true);
+                }}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(toastId);
+                  resolve(false);
+                }}
+                className="px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity }
+      );
+    });
+
+    if (!confirmed) return;
+
+    const deletePromise = fetch(`/api/admin/categories/${categoryId}`, {
+      method: "DELETE",
+    }).then(async (response) => {
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || "Failed to delete category");
+      }
+      fetchCategories();
+      return data;
+    });
+
+    toast.promise(deletePromise, {
+      loading: "Deleting category...",
+      success: "Category deleted successfully!",
+      error: (err) => err.message || "Failed to delete category",
+    });
 
     try {
-      const response = await fetch(`/api/admin/categories/${categoryId}`, {
-        method: "DELETE",
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success("Category deleted successfully");
-        fetchCategories();
-      } else {
-        toast.error(data.message || "Failed to delete category");
-      }
-    } catch (error) {
-      console.error("Error deleting category:", error);
-      toast.error("Failed to delete category");
+      await deletePromise;
+    } catch {
+      // Error handled by toast.promise
     }
   };
 
   const handleCancel = () => {
+    // Clean up object URL if it was created from local file
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    
+    // If editing, restore original image
+    if (editingCategory && originalImageUrl) {
+      setFormData({ 
+        ...formData,
+        image: originalImageUrl,
+      });
+      setPreviewUrl(getImageUrl(originalImageUrl));
+    }
+    
     setShowAddForm(false);
     setEditingCategory(null);
     setFormData({ name: "", image: "", isFeatured: false });
     setPreviewUrl("");
+    setOriginalImageUrl("");
+    setSelectedImageFile(null);
   };
 
   const handleFeaturedChange = (checked: boolean) => {
@@ -357,33 +446,54 @@ export default function CategoriesPage() {
                   className="w-full px-4 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-white"
                 />
                 
-                {/* Pending file with upload button */}
-                {selectedImageFile && !formData.image && (
-                  <div className="bg-zinc-700 border border-zinc-600 rounded-md p-3 mt-2">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1">
-                        <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
-                        <p className="text-xs text-zinc-400 mt-1">
-                          Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
-                        </p>
+                {/* Selected file preview (not uploaded to S3 yet) */}
+                {selectedImageFile && !formData.image && previewUrl && (
+                  <div className="mt-2">
+                    <div className="bg-zinc-700 border border-zinc-600 rounded-md p-3 mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1">
+                          <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
+                          <p className="text-xs text-zinc-400 mt-1">
+                            Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
+                          </p>
+                          <p className="text-xs text-yellow-500 mt-2">⚠️ Image will be uploaded when you save the form</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (previewUrl && previewUrl.startsWith('blob:')) {
+                              URL.revokeObjectURL(previewUrl);
+                            }
+                            setSelectedImageFile(null);
+                            setPreviewUrl("");
+                            setFormData({ ...formData, image: "" });
+                            if (editingCategory && originalImageUrl) {
+                              setPreviewUrl(getImageUrl(originalImageUrl));
+                            }
+                          }}
+                          className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
+                        >
+                          Remove
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleUploadImageToS3}
-                        disabled={uploadingImage}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
-                      >
-                        {uploadingImage ? "Uploading..." : "Upload"}
-                      </button>
                     </div>
-                    {!uploadingImage && (
-                      <p className="text-xs text-yellow-500 mt-2">⚠️ Click "Upload" to save this image</p>
-                    )}
+                    {/* Image Preview */}
+                    <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.error("Image load error:", previewUrl);
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    </div>
                   </div>
                 )}
 
                 {/* Uploaded image preview */}
-                {previewUrl && formData.image && (
+                {previewUrl && formData.image && !selectedImageFile && (
                   <div className="mt-4 relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
                     <img
                       src={previewUrl}

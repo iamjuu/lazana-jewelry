@@ -2,6 +2,7 @@
 
   import NextImage from "next/image";
   import { useState, useEffect } from "react";
+  import toast from "react-hot-toast";
 
   type Category = {
     _id: string;
@@ -174,107 +175,109 @@
       return existing.map(normalizeVideoUrl);
     });
 
-    // Track pending video files (not yet uploaded)
+    // Track pending image files (not yet uploaded to S3)
+    const [pendingImageFiles, setPendingImageFiles] = useState<(File | null)[]>([]);
+    
+    // Track pending video files (not yet uploaded to S3)
     const [pendingVideoFiles, setPendingVideoFiles] = useState<(File | null)[]>([]);
-    const [uploadingVideoIndex, setUploadingVideoIndex] = useState<number | null>(null);
+    
+    // Track original media URLs when editing (for restore on cancel)
+    const [originalImages, setOriginalImages] = useState<string[]>(() => {
+      if (initialData?.imageUrl) {
+        return initialData.imageUrl;
+      }
+      return [];
+    });
+    const [originalVideos, setOriginalVideos] = useState<string[]>(() => {
+      if (initialData?.videoUrl) {
+        return Array.isArray(initialData.videoUrl) 
+          ? initialData.videoUrl 
+          : [initialData.videoUrl];
+      }
+      return [];
+    });
 
-    // Helper function to compress and convert image to base64
-    const compressImageToBase64 = (file: File): Promise<string> => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = new Image();
-          img.onload = () => {
-            const MAX_WIDTH = 800;
-            const MAX_HEIGHT = 800;
-            let width = img.width;
-            let height = img.height;
-
-            if (width > height) {
-              if (width > MAX_WIDTH) {
-                height = Math.round((height * MAX_WIDTH) / width);
-                width = MAX_WIDTH;
-              }
-            } else {
-              if (height > MAX_HEIGHT) {
-                width = Math.round((width * MAX_HEIGHT) / height);
-                height = MAX_HEIGHT;
-              }
-            }
-
-            const canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext("2d");
-
-            if (!ctx) {
-              reject(new Error("Could not get canvas context"));
-              return;
-            }
-
-            ctx.drawImage(img, 0, 0, width, height);
-
-            canvas.toBlob(
-              (blob) => {
-                if (!blob) {
-                  reject(new Error("Failed to create blob"));
-                  return;
-                }
-
-                const reader2 = new FileReader();
-                reader2.onloadend = () => {
-                  const base64String = reader2.result as string;
-                  resolve(base64String);
-                };
-                reader2.onerror = () => reject(new Error("Failed to read blob"));
-                reader2.readAsDataURL(blob);
-              },
-              "image/webp",
-              0.8
-            );
-          };
-          img.onerror = () => reject(new Error("Failed to load image"));
-          img.src = e.target?.result as string;
-        };
-        reader.onerror = () => reject(new Error("Failed to read file"));
-        reader.readAsDataURL(file);
-      });
-    };
-
-    const handleImageUpload = async (index: number, file: File | null) => {
+    // Handle image selection - use local preview (no upload yet, no base64)
+    const handleImageSelect = (index: number, file: File | null) => {
       if (!file) {
+        const newPendingFiles = [...pendingImageFiles];
+        newPendingFiles[index] = null;
+        setPendingImageFiles(newPendingFiles);
+        
+        // Update preview - if editing and we have original image, restore it
         const newImages = [...uploadedImages];
         const newFormImages = [...formData.images];
-        newImages.splice(index, 1);
-        newFormImages.splice(index, 1);
+        if (isEdit && originalImages[index]) {
+          newImages[index] = normalizeImageUrl(originalImages[index]);
+          newFormImages[index] = originalImages[index];
+        } else {
+          newImages.splice(index, 1);
+          newFormImages.splice(index, 1);
+        }
         setUploadedImages(newImages);
         setFormData({ ...formData, images: newFormImages });
         
         // If removing the last image and there are multiple fields, reduce field count
-        if (index === imageFieldCount - 1 && imageFieldCount > 1) {
+        if (index === imageFieldCount - 1 && imageFieldCount > 1 && !originalImages[index]) {
           setImageFieldCount(imageFieldCount - 1);
         }
         return;
       }
 
-      try {
-        const base64String = await compressImageToBase64(file);
-        const newImages = [...uploadedImages];
-        const newFormImages = [...formData.images];
-        
-        while (newImages.length <= index) {
-          newImages.push("");
-          newFormImages.push("");
-        }
-        
-        newImages[index] = base64String;
-        newFormImages[index] = base64String;
-        
-        setUploadedImages(newImages);
-        setFormData({ ...formData, images: newFormImages });
-      } catch (error) {
-        console.error("Error compressing image:", error);
-        alert("Failed to process image. Please try again.");
+      // Store the file (don't upload yet)
+      const newPendingFiles = [...pendingImageFiles];
+      while (newPendingFiles.length <= index) {
+        newPendingFiles.push(null);
+      }
+      newPendingFiles[index] = file;
+      setPendingImageFiles(newPendingFiles);
+      
+      // Clear existing image URL at this index (will be replaced after upload)
+      const newImages = [...uploadedImages];
+      const newFormImages = [...formData.images];
+      
+      while (newImages.length <= index) {
+        newImages.push("");
+        newFormImages.push("");
+      }
+      
+      // Use local file preview (not uploaded to S3 yet)
+      newImages[index] = URL.createObjectURL(file);
+      newFormImages[index] = ""; // Will be set to S3 URL after upload
+      
+      setUploadedImages(newImages);
+      setFormData({ ...formData, images: newFormImages });
+    };
+
+    const handleImageRemove = (index: number) => {
+      // Clean up object URL if it was created from local file
+      if (uploadedImages[index] && uploadedImages[index].startsWith('blob:')) {
+        URL.revokeObjectURL(uploadedImages[index]);
+      }
+      
+      const newImages = [...uploadedImages];
+      const newFormImages = [...formData.images];
+      
+      // If editing and we have original image, restore it
+      if (isEdit && originalImages[index]) {
+        newImages[index] = normalizeImageUrl(originalImages[index]);
+        newFormImages[index] = originalImages[index];
+      } else {
+        newImages.splice(index, 1);
+        newFormImages.splice(index, 1);
+      }
+      
+      setUploadedImages(newImages);
+      setFormData({ ...formData, images: newFormImages });
+      
+      // Clear pending file
+      const newPendingFiles = [...pendingImageFiles];
+      newPendingFiles[index] = null;
+      setPendingImageFiles(newPendingFiles);
+      
+      // If removing the last image and there are multiple fields, reduce field count
+      if (index === imageFieldCount - 1 && imageFieldCount > 1 && !originalImages[index]) {
+        setImageFieldCount(imageFieldCount - 1);
       }
     };
 
@@ -282,7 +285,7 @@
       if (imageFieldCount < MAX_IMAGES) {
         setImageFieldCount(imageFieldCount + 1);
       } else {
-        alert(`Maximum ${MAX_IMAGES} images allowed`);
+        toast.error(`Maximum ${MAX_IMAGES} images allowed`);
       }
     };
 
@@ -304,7 +307,7 @@
       // Check file size (limit to 100MB)
       const MAX_SIZE = 100 * 1024 * 1024; // 100MB
       if (file.size > MAX_SIZE) {
-        alert("Video file is too large. Maximum size is 100MB.");
+        toast.error("Video file is too large. Maximum size is 100MB.");
         return;
       }
 
@@ -315,125 +318,54 @@
       }
       newPendingFiles[index] = file;
       setPendingVideoFiles(newPendingFiles);
-    };
-
-    const handleVideoUpload = async (index: number) => {
-      const file = pendingVideoFiles[index];
       
-      if (!file) {
-        alert("Please select a video file first");
-        return;
-      }
-
-      try {
-        setUploadingVideoIndex(index);
-        console.log(`[Video Upload] Starting upload for video ${index + 1}, size: ${file.size} bytes`);
-        
-        // If there's an existing video at this index, delete it from S3 first
-        const existingVideoUrl = uploadedVideos[index];
-        if (existingVideoUrl && existingVideoUrl.startsWith('https://')) {
-          try {
-            console.log(`[Video Upload] Deleting old video: ${existingVideoUrl}`);
-            const deleteResponse = await fetch('/api/upload/s3/delete', {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ url: existingVideoUrl }),
-            });
-            
-            if (deleteResponse.ok) {
-              console.log(`✓ Old video deleted from S3`);
-            }
-          } catch (deleteError) {
-            console.error('[Video Upload] Failed to delete old video:', deleteError);
-            // Continue with upload even if delete fails
-          }
-        }
-        
-        // Upload new video to S3 using FormData
-        const uploadFormData = new FormData();
-        uploadFormData.append('file', file);
-        uploadFormData.append('folder', 'videos');
-        
-        const response = await fetch('/api/upload/s3', {
-          method: 'POST',
-          body: uploadFormData,
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to upload video to S3');
-        }
-
-        const result = await response.json();
-        console.log(`[Video Upload] Success! S3 URL: ${result.url}`);
-
-        // Update state with S3 URL
-        const newVideos = [...uploadedVideos];
-        const newFormVideos = [...formData.videos];
-        
-        while (newVideos.length <= index) {
-          newVideos.push("");
-          newFormVideos.push("");
-        }
-        
-        newVideos[index] = result.url;
-        newFormVideos[index] = result.url;
-        
-        setUploadedVideos(newVideos);
-        setFormData({ ...formData, videos: newFormVideos });
-        
-        // Clear pending file
-        const newPendingFiles = [...pendingVideoFiles];
-        newPendingFiles[index] = null;
-        setPendingVideoFiles(newPendingFiles);
-        
-        alert('Video uploaded successfully!');
-      } catch (error) {
-        console.error('[Video Upload] Error:', error);
-        alert('Failed to upload video. Please try again.');
-      } finally {
-        setUploadingVideoIndex(null);
-      }
-    };
-
-    const handleVideoRemove = async (index: number) => {
-      const videoUrl = uploadedVideos[index];
-      
-      // If it's an S3 URL, delete from S3
-      if (videoUrl && videoUrl.startsWith('https://')) {
-        try {
-          console.log(`[Video Remove] Deleting video from S3: ${videoUrl}`);
-          const response = await fetch('/api/upload/s3/delete', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: videoUrl }),
-          });
-          
-          if (response.ok) {
-            console.log(`✓ Video deleted from S3`);
-          } else {
-            console.error('[Video Remove] Failed to delete from S3');
-          }
-        } catch (error) {
-          console.error('[Video Remove] Error deleting from S3:', error);
-          // Continue with removal from state even if S3 delete fails
-        }
-      }
-      
-      // Remove from state
+      // Clear existing video URL at this index (will be replaced after upload)
       const newVideos = [...uploadedVideos];
       const newFormVideos = [...formData.videos];
-      newVideos.splice(index, 1);
-      newFormVideos.splice(index, 1);
+      
+      while (newVideos.length <= index) {
+        newVideos.push("");
+        newFormVideos.push("");
+      }
+      
+      // Use local file preview (not uploaded to S3 yet)
+      newVideos[index] = URL.createObjectURL(file);
+      newFormVideos[index] = ""; // Will be set to S3 URL after upload
+      
+      setUploadedVideos(newVideos);
+      setFormData({ ...formData, videos: newFormVideos });
+    };
+
+    // Video upload removed - will happen during form submission only
+
+    const handleVideoRemove = (index: number) => {
+      // Clean up object URL if it was created from local file
+      if (uploadedVideos[index] && uploadedVideos[index].startsWith('blob:')) {
+        URL.revokeObjectURL(uploadedVideos[index]);
+      }
+      
+      const newVideos = [...uploadedVideos];
+      const newFormVideos = [...formData.videos];
+      
+      // If editing and we have original video, restore it
+      if (isEdit && originalVideos[index]) {
+        newVideos[index] = normalizeVideoUrl(originalVideos[index]);
+        newFormVideos[index] = originalVideos[index];
+      } else {
+        newVideos.splice(index, 1);
+        newFormVideos.splice(index, 1);
+      }
+      
       setUploadedVideos(newVideos);
       setFormData({ ...formData, videos: newFormVideos });
       
       // Clear pending file too
       const newPendingFiles = [...pendingVideoFiles];
-      newPendingFiles.splice(index, 1);
+      newPendingFiles[index] = null;
       setPendingVideoFiles(newPendingFiles);
       
       // If removing the last video and there are multiple fields, reduce field count
-      if (index === videoFieldCount - 1 && videoFieldCount > 0) {
+      if (index === videoFieldCount - 1 && videoFieldCount > 0 && !originalVideos[index]) {
         setVideoFieldCount(videoFieldCount - 1);
       }
     };
@@ -442,7 +374,7 @@
       if (videoFieldCount < MAX_VIDEOS) {
         setVideoFieldCount(videoFieldCount + 1);
       } else {
-        alert(`Maximum ${MAX_VIDEOS} videos allowed`);
+        toast.error(`Maximum ${MAX_VIDEOS} videos allowed`);
       }
     };
 
@@ -499,35 +431,157 @@
         return;
       }
 
-      if (formData.images.length === 0) {
+      // Check if we have at least one image (either uploaded or pending)
+      const hasImages = formData.images.length > 0 || pendingImageFiles.some(f => f !== null);
+      if (!hasImages) {
         setError("At least one image is required");
         setLoading(false);
         return;
       }
 
-      if (formData.images.length > MAX_IMAGES) {
+      const totalImages = Math.max(formData.images.filter(img => img).length, pendingImageFiles.filter(f => f !== null).length);
+      if (totalImages > MAX_IMAGES) {
         setError(`Maximum ${MAX_IMAGES} images allowed`);
         setLoading(false);
         return;
       }
 
-      if (formData.videos.length > MAX_VIDEOS) {
+      const totalVideos = Math.max(formData.videos.filter(v => v).length, pendingVideoFiles.filter(f => f !== null).length);
+      if (totalVideos > MAX_VIDEOS) {
         setError(`Maximum ${MAX_VIDEOS} videos allowed`);
         setLoading(false);
         return;
       }
 
       try {
+        // Upload all pending images to S3 during form submission
+        const finalImages: string[] = [...formData.images];
+        
+        for (let i = 0; i < pendingImageFiles.length; i++) {
+          const file = pendingImageFiles[i];
+          if (file) {
+            const uploadToastId = toast.loading(
+              <div className="flex flex-col gap-2">
+                <span className="text-white font-medium">Uploading image {i + 1} to S3...</span>
+                <div className="w-full bg-zinc-700 rounded-full h-2">
+                  <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '50%' }}></div>
+                </div>
+              </div>,
+              { duration: Infinity }
+            );
+            
+            try {
+              const uploadFormData = new FormData();
+              uploadFormData.append('file', file);
+              uploadFormData.append('folder', 'images');
+              
+              const uploadResponse = await fetch('/api/upload/s3', {
+                method: 'POST',
+                body: uploadFormData,
+              });
+              
+              const uploadData = await uploadResponse.json();
+              
+              if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
+                throw new Error(`Failed to upload image ${i + 1} to S3`);
+              }
+              
+              // Insert or replace at index i
+              if (finalImages.length <= i) {
+                finalImages.push(uploadData.url);
+              } else {
+                finalImages[i] = uploadData.url;
+              }
+              
+              toast.dismiss(uploadToastId);
+              toast.success(`Image ${i + 1} uploaded successfully!`, { duration: 2000 });
+            } catch (uploadErr) {
+              toast.dismiss(uploadToastId);
+              throw new Error(`Failed to upload image ${i + 1}. Please try again.`);
+            }
+          } else if (isEdit && originalImages[i] && !formData.images[i]) {
+            // Use original image if editing and no new image at this index
+            if (finalImages.length <= i) {
+              finalImages.push(originalImages[i]);
+            } else {
+              finalImages[i] = originalImages[i];
+            }
+          }
+        }
+        
+        // Upload all pending videos to S3 during form submission
+        const finalVideos: string[] = [...formData.videos];
+        
+        for (let i = 0; i < pendingVideoFiles.length; i++) {
+          const file = pendingVideoFiles[i];
+          if (file) {
+            const uploadToastId = toast.loading(
+              <div className="flex flex-col gap-2">
+                <span className="text-white font-medium">Uploading video {i + 1} to S3...</span>
+                <div className="w-full bg-zinc-700 rounded-full h-2">
+                  <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '50%' }}></div>
+                </div>
+              </div>,
+              { duration: Infinity }
+            );
+            
+            try {
+              const uploadFormData = new FormData();
+              uploadFormData.append('file', file);
+              uploadFormData.append('folder', 'videos');
+              
+              const uploadResponse = await fetch('/api/upload/s3', {
+                method: 'POST',
+                body: uploadFormData,
+              });
+              
+              const uploadData = await uploadResponse.json();
+              
+              if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
+                throw new Error(`Failed to upload video ${i + 1} to S3`);
+              }
+              
+              // Insert or replace at index i
+              if (finalVideos.length <= i) {
+                finalVideos.push(uploadData.url);
+              } else {
+                finalVideos[i] = uploadData.url;
+              }
+              
+              toast.dismiss(uploadToastId);
+              toast.success(`Video ${i + 1} uploaded successfully!`, { duration: 2000 });
+            } catch (uploadErr) {
+              toast.dismiss(uploadToastId);
+              throw new Error(`Failed to upload video ${i + 1}. Please try again.`);
+            }
+          } else if (isEdit && originalVideos[i] && !formData.videos[i]) {
+            // Use original video if editing and no new video at this index
+            if (finalVideos.length <= i) {
+              finalVideos.push(originalVideos[i]);
+            } else {
+              finalVideos[i] = originalVideos[i];
+            }
+          }
+        }
+
         const url = isEdit 
           ? `/api/admin/products/${productId}`
           : `/api/admin/products`;
         
         const method = isEdit ? "PATCH" : "POST";
 
-        // Log price before sending
-        console.log("Form submitting price:", formData.price, "Type:", typeof formData.price);
         const priceValue = formData.price.trim();
-        console.log("Price value after trim:", priceValue);
+
+        // Show saving toast
+        const saveToastId = toast.loading(
+          <div className="flex flex-col gap-2">
+            <span className="text-white font-medium">{isEdit ? "Updating product..." : "Creating product..."}</span>
+            <div className="w-full bg-zinc-700 rounded-full h-2">
+              <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '70%' }}></div>
+            </div>
+          </div>,
+          { duration: Infinity }
+        );
 
         const response = await fetch(url, {
           method,
@@ -542,8 +596,8 @@
             subcategory: isUniversalProduct ? undefined : (formData.subcategory || undefined),
             price: priceValue,
             discount: formData.discount ? parseFloat(formData.discount) : undefined,
-            imageUrl: formData.images,
-            videoUrl: formData.videos.filter(v => v && v.trim() !== ""), // Filter out empty strings and always send array (even if empty)
+            imageUrl: finalImages.filter(img => img && img.trim() !== ""),
+            videoUrl: finalVideos.filter(v => v && v.trim() !== ""), // Filter out empty strings and always send array (even if empty)
             isSet: isUniversalProduct ? undefined : (formData.isSet || undefined),
             numberOfSets: isUniversalProduct ? undefined : (formData.isSet && formData.numberOfSets ? parseInt(formData.numberOfSets) : undefined),
             newAddition: isUniversalProduct ? undefined : (formData.newAddition || undefined),
@@ -558,10 +612,50 @@
 
         const data = await response.json();
 
+        toast.dismiss(saveToastId);
+
         if (!response.ok || !data.success) {
           throw new Error(data.message || "Failed to save product");
         }
 
+        // After successful update, delete old media from S3 if it was replaced
+        if (isEdit) {
+          // Delete old images that were removed
+          originalImages.forEach((oldImg, index) => {
+            if (oldImg && !finalImages.includes(oldImg) && oldImg.startsWith('https://')) {
+              fetch("/api/upload/s3/delete", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: oldImg }),
+              }).catch(err => console.error("Error deleting old image from S3:", err));
+            }
+          });
+          
+          // Delete old videos that were removed
+          originalVideos.forEach((oldVideo, index) => {
+            if (oldVideo && !finalVideos.includes(oldVideo) && oldVideo.startsWith('https://')) {
+              fetch("/api/upload/s3/delete", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: oldVideo }),
+              }).catch(err => console.error("Error deleting old video from S3:", err));
+            }
+          });
+        }
+
+        // Clean up blob URLs
+        uploadedImages.forEach(img => {
+          if (img && img.startsWith('blob:')) {
+            URL.revokeObjectURL(img);
+          }
+        });
+        uploadedVideos.forEach(video => {
+          if (video && video.startsWith('blob:')) {
+            URL.revokeObjectURL(video);
+          }
+        });
+
+        toast.success(isEdit ? "Product updated successfully!" : "Product created successfully!", { duration: 3000 });
         setSuccess(isEdit ? "Product updated successfully!" : "Product created successfully!");
         
         setTimeout(() => {
@@ -570,7 +664,9 @@
           }
         }, 1500);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        const errorMessage = err instanceof Error ? err.message : "An error occurred";
+        setError(errorMessage);
+        toast.error(errorMessage, { duration: 4000 });
         setLoading(false);
       }
     };
@@ -898,7 +994,7 @@
                   className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
                   onChange={(e) => {
                     const file = e.target.files?.[0] || null;
-                    handleImageUpload(index, file);
+                    handleImageSelect(index, file);
                   }}
                 />
                 {uploadedImages[index] && (
@@ -915,12 +1011,17 @@
                     />
                     <button
                       type="button"
-                      onClick={() => handleImageUpload(index, null)}
+                      onClick={() => handleImageRemove(index)}
                       className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 z-10"
                       title="Remove image"
                     >
                       ×
                     </button>
+                    {pendingImageFiles[index] && (
+                      <div className="absolute bottom-1 left-1 bg-yellow-600 text-white text-xs px-2 py-1 rounded">
+                        ⚠️ Will upload on save
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -964,34 +1065,6 @@
                       handleVideoSelect(index, file);
                     }}
                   />
-                  {pendingVideoFiles[index] && !uploadedVideos[index] && (
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleVideoSelect(index, null)}
-                        disabled={uploadingVideoIndex === index}
-                        className="px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                        title="Remove selection"
-                      >
-                        Remove
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleVideoUpload(index)}
-                        disabled={uploadingVideoIndex === index}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                      >
-                        {uploadingVideoIndex === index ? (
-                          <span className="flex items-center gap-2">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                            Uploading...
-                          </span>
-                        ) : (
-                          'Upload'
-                        )}
-                      </button>
-                    </div>
-                  )}
                 </div>
                 <input
                   id={`product-video-url-${index}`}
@@ -1004,23 +1077,34 @@
                   placeholder="Or enter video URL (e.g., https://youtube.com/watch?v=...)"
                 />
                 {/* Show pending file preview */}
-                {pendingVideoFiles[index] && !uploadedVideos[index] && (
-                  <div className="p-3 bg-zinc-800 rounded-md border border-zinc-600">
-                    <p className="text-sm text-zinc-300">
-                      📁 Selected: <span className="text-white">{pendingVideoFiles[index]?.name}</span>
-                    </p>
-                    <p className="text-xs text-zinc-400 mt-1">
-                      Size: {((pendingVideoFiles[index]?.size || 0) / (1024 * 1024)).toFixed(2)} MB
-                    </p>
-                    <p className="text-xs text-yellow-400 mt-1">
-                      ⚠️ Click "Upload" button to upload this video
-                    </p>
+                {pendingVideoFiles[index] && !formData.videos[index] && uploadedVideos[index] && (
+                  <div className="space-y-2">
+                    <div className="p-3 bg-zinc-800 rounded-md border border-zinc-600">
+                      <p className="text-sm text-zinc-300">
+                        📁 Selected: <span className="text-white">{pendingVideoFiles[index]?.name}</span>
+                      </p>
+                      <p className="text-xs text-zinc-400 mt-1">
+                        Size: {((pendingVideoFiles[index]?.size || 0) / (1024 * 1024)).toFixed(2)} MB
+                      </p>
+                      <p className="text-xs text-yellow-400 mt-1">
+                        ⚠️ Video will be uploaded when you save the form
+                      </p>
+                    </div>
+                    <div className="relative w-full rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
+                      <video
+                        src={uploadedVideos[index]}
+                        controls
+                        className="w-full max-h-64 object-contain"
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
                   </div>
                 )}
-                {/* Show uploaded video */}
-                {uploadedVideos[index] && (
+                {/* Show uploaded video (not pending file) */}
+                {uploadedVideos[index] && formData.videos[index] && !pendingVideoFiles[index] && (
                   <div className="relative w-full rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
-                    {uploadedVideos[index].startsWith("data:video") ? (
+                    {uploadedVideos[index].startsWith("data:video") || uploadedVideos[index].startsWith("blob:") ? (
                       <video
                         src={normalizeVideoUrl(uploadedVideos[index])}
                         controls

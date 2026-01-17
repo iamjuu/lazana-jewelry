@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import ProductForm from "./ProductForm";
+import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 
 type ProductListItem = {
   _id: string;
@@ -51,7 +53,18 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
   }, [initialProducts]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Are you sure you want to delete this product?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
 
     setDeletingId(id);
     try {
@@ -62,13 +75,14 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        alert(data.message || "Failed to delete product");
+        toast.error(data.message || "Failed to delete product");
       } else {
         setProducts(products.filter((p) => p._id !== id));
         onRefresh();
+        toast.success("Product deleted successfully");
       }
     } catch {
-      alert("Failed to delete product");
+      toast.error("Failed to delete product");
     } finally {
       setDeletingId(null);
     }

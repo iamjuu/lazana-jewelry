@@ -30,10 +30,16 @@ export default function SubcategoriesPage() {
   const [formData, setFormData] = useState({ 
     name: "", 
     category: "",
-    image: "" as string | File | null,
+    image: "",
   });
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
+  
+  // S3 upload states
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  
+  // Track original image URL when editing (for restore on cancel)
+  const [originalImageUrl, setOriginalImageUrl] = useState<string>("");
 
   const fetchCategories = async () => {
     try {
@@ -87,83 +93,38 @@ export default function SubcategoriesPage() {
     return imageUrl;
   };
 
-  const compressImageToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = Math.round((height * MAX_WIDTH) / width);
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = Math.round((width * MAX_HEIGHT) / height);
-              height = MAX_HEIGHT;
-            }
-          }
-
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-
-          if (!ctx) {
-            reject(new Error("Could not get canvas context"));
-            return;
-          }
-
-          ctx.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                reject(new Error("Failed to create blob"));
-                return;
-              }
-
-              const reader2 = new FileReader();
-              reader2.onloadend = () => {
-                const base64String = reader2.result as string;
-                resolve(base64String);
-              };
-              reader2.onerror = () => reject(new Error("Failed to read blob"));
-              reader2.readAsDataURL(blob);
-            },
-            "image/webp",
-            0.8
-          );
-        };
-        img.onerror = () => reject(new Error("Failed to load image"));
-        img.src = e.target?.result as string;
-      };
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleImageUpload = async (file: File | null) => {
+  // Handle image selection - use local preview (no upload yet)
+  const handleImageSelect = (file: File | null) => {
     if (!file) {
-      setFormData({ ...formData, image: "" });
+      setSelectedImageFile(null);
       setPreviewUrl("");
+      setFormData({ ...formData, image: "" });
       return;
     }
+    setSelectedImageFile(file);
+    // Clear any existing image URL when selecting new file
+    setFormData({ ...formData, image: "" });
+    // Use local file preview (not uploaded to S3 yet)
+    setPreviewUrl(URL.createObjectURL(file));
+  };
 
-    try {
-      const base64String = await compressImageToBase64(file);
-      setFormData({ ...formData, image: base64String });
-      setPreviewUrl(base64String);
-    } catch (error) {
-      console.error("Error compressing image:", error);
-      toast.error("Failed to process image");
+  // Remove image - only clear form state, don't delete from S3 yet
+  const handleRemoveImage = () => {
+    // Clean up object URL if it was created from local file
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
     }
+    
+    setFormData({ ...formData, image: "" });
+    
+    // If editing and we have original image, restore preview to original
+    if (editingSubcategory && originalImageUrl && !selectedImageFile) {
+      setPreviewUrl(getImageUrl(originalImageUrl));
+    } else {
+      setPreviewUrl("");
+    }
+    
+    setSelectedImageFile(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -182,6 +143,52 @@ export default function SubcategoriesPage() {
     setSubmitting(true);
 
     try {
+      const isEdit = !!editingSubcategory;
+      
+      // Handle image upload if a new file is selected (upload happens here during form submission)
+      let finalImageUrl = formData.image;
+      let uploadToastId: string | undefined;
+      
+      if (selectedImageFile) {
+        // Show progress toast during upload (green progress bar)
+        uploadToastId = toast.loading(
+          <div className="flex flex-col gap-2">
+            <span className="text-white font-medium">Uploading image to S3...</span>
+            <div className="w-full bg-zinc-700 rounded-full h-2">
+              <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '50%' }}></div>
+            </div>
+          </div>,
+          { duration: Infinity }
+        );
+        
+        try {
+          // Upload new image file to S3 only during form submission
+          const uploadFormData = new FormData();
+          uploadFormData.append('file', selectedImageFile);
+          uploadFormData.append('folder', 'images');
+          
+          const uploadResponse = await fetch('/api/upload/s3', {
+            method: 'POST',
+            body: uploadFormData,
+          });
+          
+          const uploadData = await uploadResponse.json();
+          
+          if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
+            throw new Error('Failed to upload image to S3');
+          }
+          
+          finalImageUrl = uploadData.url;
+          
+          // Update progress toast
+          toast.dismiss(uploadToastId);
+          toast.success('Image uploaded successfully!', { duration: 2000 });
+        } catch (uploadErr) {
+          toast.dismiss(uploadToastId);
+          throw new Error('Failed to upload image. Please try again.');
+        }
+      }
+
       const url = editingSubcategory 
         ? `/api/admin/subcategories/${editingSubcategory._id}`
         : "/api/admin/subcategories";
@@ -194,12 +201,24 @@ export default function SubcategoriesPage() {
         imageUrl: "", // Default to empty string
       };
 
-      // Handle image URL
-      if (formData.image && typeof formData.image === "string" && formData.image.length > 0) {
-        requestBody.imageUrl = formData.image;
-      } else if (editingSubcategory && editingSubcategory.imageUrl && !formData.image) {
-        requestBody.imageUrl = editingSubcategory.imageUrl;
+      // Use final image URL (uploaded or existing)
+      if (finalImageUrl) {
+        requestBody.imageUrl = finalImageUrl;
+      } else if (isEdit && originalImageUrl) {
+        // When editing, preserve existing image if no new one uploaded
+        requestBody.imageUrl = originalImageUrl;
       }
+
+      // Show saving toast
+      const saveToastId = toast.loading(
+        <div className="flex flex-col gap-2">
+          <span className="text-white font-medium">{isEdit ? "Updating subcategory..." : "Creating subcategory..."}</span>
+          <div className="w-full bg-zinc-700 rounded-full h-2">
+            <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '70%' }}></div>
+          </div>
+        </div>,
+        { duration: Infinity }
+      );
 
       const response = await fetch(url, {
         method,
@@ -209,68 +228,149 @@ export default function SubcategoriesPage() {
 
       const data = await response.json();
 
-      if (data.success) {
-        toast.success(data.message || `Subcategory ${editingSubcategory ? 'updated' : 'created'} successfully`);
-        setFormData({ name: "", category: "", image: "" });
-        setPreviewUrl("");
-        setShowAddForm(false);
-        setEditingSubcategory(null);
-        fetchSubcategories();
-      } else {
-        toast.error(data.message || `Failed to ${editingSubcategory ? 'update' : 'create'} subcategory`);
+      toast.dismiss(saveToastId);
+
+      if (!data.success) {
+        throw new Error(data.message || `Failed to ${isEdit ? 'update' : 'create'} subcategory`);
       }
+
+      // After successful update, delete old image from S3 if it was replaced
+      if (isEdit && originalImageUrl && finalImageUrl && originalImageUrl !== finalImageUrl && originalImageUrl.startsWith('https://')) {
+        try {
+          await fetch("/api/upload/s3/delete", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: originalImageUrl }),
+          });
+        } catch (err) {
+          console.error("Error deleting old image from S3:", err);
+          // Don't fail the update if deletion fails
+        }
+      }
+
+      toast.success(data.message || `Subcategory ${isEdit ? 'updated' : 'created'} successfully`, { duration: 3000 });
+      
+      // Clean up object URL if it was created from local file
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      
+      setFormData({ name: "", category: "", image: "" });
+      setPreviewUrl("");
+      setShowAddForm(false);
+      setEditingSubcategory(null);
+      setOriginalImageUrl("");
+      setSelectedImageFile(null);
+      fetchSubcategories();
     } catch (error) {
-      console.error("Error submitting subcategory:", error);
-      toast.error(`Failed to ${editingSubcategory ? 'update' : 'create'} subcategory`);
+      const errorMessage = error instanceof Error ? error.message : `Failed to ${editingSubcategory ? 'update' : 'create'} subcategory`;
+      toast.error(errorMessage, { duration: 4000 });
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleEdit = (subcategory: Subcategory) => {
+    // Store original image URL for restore on cancel and S3 deletion on update
+    const originalImg = subcategory.imageUrl || "";
+    setOriginalImageUrl(originalImg);
+    
     setEditingSubcategory(subcategory);
     
-    const existingImageUrl = subcategory.imageUrl ? getImageUrl(subcategory.imageUrl) : "";
+    const existingImageUrl = originalImg ? getImageUrl(originalImg) : "";
     const categoryId = typeof subcategory.category === 'object' ? subcategory.category._id : subcategory.category;
     
     setFormData({ 
       name: subcategory.name || "", 
       category: categoryId || "",
-      image: subcategory.imageUrl || "", 
+      image: originalImg, 
     });
     setPreviewUrl(existingImageUrl);
+    setSelectedImageFile(null);
     setShowAddForm(true);
   };
 
   const handleDelete = async (subcategoryId: string, subcategoryName: string) => {
-    if (!confirm(`Are you sure you want to delete "${subcategoryName}"?`)) {
-      return;
-    }
+    // Toast-based confirmation
+    const confirmed = await new Promise<boolean>((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div className="flex flex-col gap-3">
+            <p className="text-white font-medium">Delete Subcategory?</p>
+            <p className="text-sm text-zinc-300">Are you sure you want to delete "{subcategoryName}"? This action cannot be undone.</p>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => {
+                  toast.dismiss(toastId);
+                  resolve(true);
+                }}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(toastId);
+                  resolve(false);
+                }}
+                className="px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity }
+      );
+    });
+
+    if (!confirmed) return;
+
+    const deletePromise = fetch(`/api/admin/subcategories/${subcategoryId}`, {
+      method: "DELETE",
+    }).then(async (response) => {
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || "Failed to delete subcategory");
+      }
+      fetchSubcategories();
+      return data;
+    });
+
+    toast.promise(deletePromise, {
+      loading: "Deleting subcategory...",
+      success: "Subcategory deleted successfully!",
+      error: (err) => err.message || "Failed to delete subcategory",
+    });
 
     try {
-      const response = await fetch(`/api/admin/subcategories/${subcategoryId}`, {
-        method: "DELETE",
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success("Subcategory deleted successfully");
-        fetchSubcategories();
-      } else {
-        toast.error(data.message || "Failed to delete subcategory");
-      }
-    } catch (error) {
-      console.error("Error deleting subcategory:", error);
-      toast.error("Failed to delete subcategory");
+      await deletePromise;
+    } catch {
+      // Error handled by toast.promise
     }
   };
 
   const handleCancel = () => {
+    // Clean up object URL if it was created from local file
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    
+    // If editing, restore original image
+    if (editingSubcategory && originalImageUrl) {
+      setFormData({ 
+        ...formData,
+        image: originalImageUrl,
+      });
+      setPreviewUrl(getImageUrl(originalImageUrl));
+    }
+    
     setShowAddForm(false);
     setEditingSubcategory(null);
     setFormData({ name: "", category: "", image: "" });
     setPreviewUrl("");
+    setOriginalImageUrl("");
+    setSelectedImageFile(null);
   };
 
   const getCategoryName = (category: string | Category) => {
@@ -356,10 +456,58 @@ export default function SubcategoriesPage() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageUpload(e.target.files?.[0] || null)}
+                  onChange={(e) => handleImageSelect(e.target.files?.[0] || null)}
                   className="w-full px-4 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-white"
                 />
-                {previewUrl && (
+                
+                {/* Selected file preview (not uploaded to S3 yet) */}
+                {selectedImageFile && !formData.image && previewUrl && (
+                  <div className="mt-2">
+                    <div className="bg-zinc-700 border border-zinc-600 rounded-md p-3 mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1">
+                          <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
+                          <p className="text-xs text-zinc-400 mt-1">
+                            Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
+                          </p>
+                          <p className="text-xs text-yellow-500 mt-2">⚠️ Image will be uploaded when you save the form</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (previewUrl && previewUrl.startsWith('blob:')) {
+                              URL.revokeObjectURL(previewUrl);
+                            }
+                            setSelectedImageFile(null);
+                            setPreviewUrl("");
+                            setFormData({ ...formData, image: "" });
+                            if (editingSubcategory && originalImageUrl) {
+                              setPreviewUrl(getImageUrl(originalImageUrl));
+                            }
+                          }}
+                          className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                    {/* Image Preview */}
+                    <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.error("Image load error:", previewUrl);
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                {/* Uploaded image preview */}
+                {previewUrl && formData.image && !selectedImageFile && (
                   <div className="mt-4 relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
                     <img
                       src={previewUrl}
@@ -370,18 +518,14 @@ export default function SubcategoriesPage() {
                         e.currentTarget.style.display = "none";
                       }}
                     />
-                    {editingSubcategory && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFormData({ ...formData, image: "" });
-                          setPreviewUrl("");
-                        }}
-                        className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
-                      >
-                        Remove
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+                      title="Remove image"
+                    >
+                      ×
+                    </button>
                   </div>
                 )}
                 {editingSubcategory && editingSubcategory.imageUrl && !previewUrl && (

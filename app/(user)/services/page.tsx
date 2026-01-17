@@ -68,16 +68,32 @@ const ServicesPage = () => {
   const corporateSessions = sessions.filter((s) => s.sessionType === "corporate");
   const privateSessions = sessions.filter((s) => s.sessionType === "private");
 
-  const ITEMS_PER_PAGE = 3;
+  // Responsive items per page: 1 on mobile, 3 on desktop
+  const [itemsPerPage, setItemsPerPage] = useState(1);
+
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      // Mobile: 1 item, Desktop (md and above): 3 items
+      if (window.innerWidth >= 768) {
+        setItemsPerPage(3);
+      } else {
+        setItemsPerPage(1);
+      }
+    };
+
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
 
   const handleCorporatePrev = () => {
     setCorporateCurrentIndex((prev) =>
-      prev === 0 ? Math.max(0, Math.ceil(corporateSessions.length / ITEMS_PER_PAGE) - 1) : prev - 1
+      prev === 0 ? Math.max(0, Math.ceil(corporateSessions.length / itemsPerPage) - 1) : prev - 1
     );
   };
 
   const handleCorporateNext = () => {
-    const maxPage = Math.max(0, Math.ceil(corporateSessions.length / ITEMS_PER_PAGE) - 1);
+    const maxPage = Math.max(0, Math.ceil(corporateSessions.length / itemsPerPage) - 1);
     setCorporateCurrentIndex((prev) =>
       prev === maxPage ? 0 : prev + 1
     );
@@ -85,12 +101,12 @@ const ServicesPage = () => {
 
   const handlePrivatePrev = () => {
     setPrivateCurrentIndex((prev) =>
-      prev === 0 ? Math.max(0, Math.ceil(privateSessions.length / ITEMS_PER_PAGE) - 1) : prev - 1
+      prev === 0 ? Math.max(0, Math.ceil(privateSessions.length / itemsPerPage) - 1) : prev - 1
     );
   };
 
   const handlePrivateNext = () => {
-    const maxPage = Math.max(0, Math.ceil(privateSessions.length / ITEMS_PER_PAGE) - 1);
+    const maxPage = Math.max(0, Math.ceil(privateSessions.length / itemsPerPage) - 1);
     setPrivateCurrentIndex((prev) =>
       prev === maxPage ? 0 : prev + 1
     );
@@ -100,11 +116,11 @@ const ServicesPage = () => {
     <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <Navbar />
       <div className="w-full ">
-        <section className="w-full px-4 md:px-0 py-[68px]">
-          <div className="max-w-6xl pb-[106px] border-b mx-auto">
-            <div className="flex flex-col w-full">
+        <section className="w-full px-4 md:px-0 py-[0px] mt-[35px]">
+          <div className="max-w-6xl pb-[10px] border-b mx-auto">
+            <div className="flex flex-col w-full ">
               {/* Section Title */}
-              <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] font-normal">
+              <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#D5B584] font-normal ">
                 Services
               </h2>
 
@@ -193,8 +209,8 @@ const ServicesPage = () => {
           </div>
 
           {/* Work With Me Section */}
-          <div className="max-w-6xl mx-auto mt-16 md:mt-20 lg:mt-24 px-4 md:px-0">
-            <div className="flex flex-col lg:flex-row w-full gap-8 md:gap-12 lg:gap-16">
+          <div className="max-w-6xl mx-auto mt-16 md:mt-20 lg:mt-[50px] px-4 md:px-0 ">
+            <div className="flex flex-col lg:flex-row w-full gap-8 md:gap-12 lg:gap-16 ">
               {/* Left side - Title */}
               <div className="w-full lg:w-[40%]">
                 <h2 className="text-[32px] sm:text-[36px] md:text-[40px]  text-[#D5B584] font-light leading-tight">
@@ -218,8 +234,8 @@ const ServicesPage = () => {
             </div>
           </div>
 
-          <div className="max-w-6xl mx-auto mt-16 md:mt-20 lg:mt-24 px-4 md:px-0">
-            <h2 className="text-[32px] pb-[70px]  sm:text-[36px] md:text-[40px]  text-[#D5B584] font-light leading-tight">
+          <div className="max-w-6xl mx-auto mt-16 md:mt-20 lg:mt-[50px] px-4 md:px-0">
+            <h2 className="text-[32px] pb-[40px]  sm:text-[36px] md:text-[40px]  text-[#D5B584] font-light leading-tight">
               For Corporate & Group
             </h2>
             {sessionsLoading ? (
@@ -358,7 +374,7 @@ const ServicesPage = () => {
                 </div>
 
                 {/* Navigation Arrows */}
-                {corporateSessions.length > ITEMS_PER_PAGE && (
+                {corporateSessions.length > itemsPerPage && (
                   <>
                     <button
                       onClick={handleCorporatePrev}
@@ -406,9 +422,9 @@ const ServicesPage = () => {
                 )}
 
                 {/* Dots Indicator */}
-                {corporateSessions.length > ITEMS_PER_PAGE && (
+                {corporateSessions.length > itemsPerPage && (
                   <div className="flex justify-center gap-2 mt-6">
-                    {Array.from({ length: Math.ceil(corporateSessions.length / ITEMS_PER_PAGE) }).map((_, index) => (
+                    {Array.from({ length: Math.ceil(corporateSessions.length / itemsPerPage) }).map((_, index) => (
                       <button
                         key={index}
                         onClick={() => setCorporateCurrentIndex(index)}
@@ -426,8 +442,8 @@ const ServicesPage = () => {
             )}
           </div>
 
-          <div className="max-w-6xl  mx-auto mt-16 md:mt-20 lg:mt-24 px-4 md:px-0">
-            <h2 className="text-[32px] pb-[70px]  sm:text-[36px] md:text-[40px]  text-[#D5B584] font-light leading-tight">
+          <div className="max-w-6xl  mx-auto mt-16 md:mt-20 lg:mt-[50px] px-4 md:px-0 " >
+            <h2 className="text-[32px] pb-[40px]  sm:text-[36px] md:text-[40px]  text-[#D5B584] font-light leading-tight">
               Private & Group Offerings
             </h2>
             {sessionsLoading ? (
@@ -565,7 +581,7 @@ const ServicesPage = () => {
                 </div>
 
                 {/* Navigation Arrows */}
-                {privateSessions.length > ITEMS_PER_PAGE && (
+                {privateSessions.length > itemsPerPage && (
                   <>
                     <button
                       onClick={handlePrivatePrev}
@@ -613,9 +629,9 @@ const ServicesPage = () => {
                 )}
 
                 {/* Dots Indicator */}
-                {privateSessions.length > ITEMS_PER_PAGE && (
+                {privateSessions.length > itemsPerPage && (
                   <div className="flex justify-center gap-2 mt-6">
-                    {Array.from({ length: Math.ceil(privateSessions.length / ITEMS_PER_PAGE) }).map((_, index) => (
+                    {Array.from({ length: Math.ceil(privateSessions.length / itemsPerPage) }).map((_, index) => (
                       <button
                         key={index}
                         onClick={() => setPrivateCurrentIndex(index)}
@@ -633,8 +649,9 @@ const ServicesPage = () => {
             )}
           </div>
         </section>
-      </div>
-      <Footer />
+      </div >
+      <div className="mt-[50px]">
+      <Footer /></div>
     </div>
   );
 };

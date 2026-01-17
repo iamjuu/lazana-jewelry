@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import toast from "react-hot-toast";
 
 type PastEvent = {
   _id: string;
@@ -65,11 +66,13 @@ export default function PastEventsPage() {
   
   // S3 upload states
   const [selectedThumbnailFile, setSelectedThumbnailFile] = useState<File | null>(null);
-  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [selectedPhotoFiles, setSelectedPhotoFiles] = useState<(File | null)[]>([null, null, null, null, null, null]);
-  const [uploadingPhotos, setUploadingPhotos] = useState<boolean[]>([false, false, false, false, false, false]);
   const [selectedVideoFiles, setSelectedVideoFiles] = useState<(File | null)[]>([null, null]);
-  const [uploadingVideos, setUploadingVideos] = useState<boolean[]>([false, false]);
+  
+  // Track original media URLs when editing (for restore on cancel)
+  const [originalThumbnailUrl, setOriginalThumbnailUrl] = useState<string>("");
+  const [originalPhotos, setOriginalPhotos] = useState<string[]>([]);
+  const [originalVideos, setOriginalVideos] = useState<string[]>([]);
 
   // Fetch past events
   const fetchPastEvents = async () => {
@@ -117,184 +120,159 @@ export default function PastEventsPage() {
     return `data:image/jpeg;base64,${url}`;
   };
 
-  // Handle delete
+  // Handle delete with toast confirmation
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this past event?")) return;
+    const event = pastEvents.find(e => e._id === id);
+    const eventTitle = event?.title || "this past event";
+    
+    // Toast-based confirmation
+    const confirmed = await new Promise<boolean>((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div className="flex flex-col gap-3">
+            <p className="text-white font-medium">Delete Past Event?</p>
+            <p className="text-sm text-zinc-300">Are you sure you want to delete "{eventTitle}"? This action cannot be undone.</p>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => {
+                  toast.dismiss(toastId);
+                  resolve(true);
+                }}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(toastId);
+                  resolve(false);
+                }}
+                className="px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity }
+      );
+    });
+
+    if (!confirmed) return;
 
     setDeletingId(id);
-    try {
-      const response = await fetch(`/api/admin/past-events/${id}`, {
-        method: "DELETE",
-      });
-
+    const deletePromise = fetch(`/api/admin/past-events/${id}`, {
+      method: "DELETE",
+    }).then(async (response) => {
       const data = await response.json();
-
       if (!response.ok || !data.success) {
-        alert(data.message || "Failed to delete past event");
-      } else {
-        setPastEvents(pastEvents.filter((e) => e._id !== id));
+        throw new Error(data.message || "Failed to delete past event");
       }
+      setPastEvents(pastEvents.filter((e) => e._id !== id));
+      return data;
+    });
+
+    toast.promise(deletePromise, {
+      loading: "Deleting past event...",
+      success: "Past event deleted successfully!",
+      error: (err) => err.message || "Failed to delete past event",
+    });
+
+    try {
+      await deletePromise;
     } catch {
-      alert("Failed to delete past event");
+      // Error handled by toast.promise
     } finally {
       setDeletingId(null);
     }
   };
 
   // ====================
-  // THUMBNAIL UPLOAD (S3)
+  // THUMBNAIL UPLOAD (S3) - Upload only on form submission
   // ====================
   const handleThumbnailSelect = (file: File | null) => {
     if (!file) {
       setSelectedThumbnailFile(null);
+      setThumbnailPreview("");
+      setFormData({ ...formData, thumbnailImage: "" });
       return;
     }
     setSelectedThumbnailFile(file);
-    setError(null);
-  };
-
-  const handleUploadThumbnailToS3 = async () => {
-    if (!selectedThumbnailFile) return;
-
-    setUploadingThumbnail(true);
-    setError(null);
-
-    try {
-      // Delete old thumbnail if replacing
-      if (formData.thumbnailImage) {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.thumbnailImage }),
-        });
-      }
-
-      // Upload new thumbnail to S3
-      const uploadFormData = new FormData();
-      uploadFormData.append("file", selectedThumbnailFile);
-      uploadFormData.append("folder", "images");
-
-      const response = await fetch("/api/upload/s3", {
-        method: "POST",
-        body: uploadFormData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload thumbnail to S3");
-      }
-
-      const { url } = await response.json();
-
-      setFormData({ ...formData, thumbnailImage: url });
-      setThumbnailPreview(url);
-      setSelectedThumbnailFile(null);
-    } catch (err) {
-      console.error("Error uploading thumbnail:", err);
-      setError("Failed to upload thumbnail");
-    } finally {
-      setUploadingThumbnail(false);
-    }
-  };
-
-  const handleRemoveThumbnail = async () => {
-    if (formData.thumbnailImage) {
-      try {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.thumbnailImage }),
-        });
-      } catch (err) {
-        console.error("Error deleting thumbnail:", err);
-      }
-    }
+    // Clear any existing thumbnail URL when selecting new file
     setFormData({ ...formData, thumbnailImage: "" });
-    setThumbnailPreview("");
+    // Use local file preview (not uploaded to S3 yet)
+    setThumbnailPreview(URL.createObjectURL(file));
+    setError(null);
+  };
+
+  const handleRemoveThumbnail = () => {
+    // Clean up object URL if it was created from local file
+    if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(thumbnailPreview);
+    }
+    
+    setFormData({ ...formData, thumbnailImage: "" });
+    
+    // If editing and we have original thumbnail, restore preview to original
+    if (editingId && originalThumbnailUrl && !selectedThumbnailFile) {
+      setThumbnailPreview(getImageUrl(originalThumbnailUrl));
+    } else {
+      setThumbnailPreview("");
+    }
+    
     setSelectedThumbnailFile(null);
   };
 
   // ====================
-  // PHOTOS UPLOAD (S3) - Max 6
+  // PHOTOS UPLOAD (S3) - Max 6 - Upload only on form submission
   // ====================
   const handlePhotoSelect = (file: File | null, index: number) => {
-    if (!file) return;
-    const newFiles = [...selectedPhotoFiles];
-    newFiles[index] = file;
-    setSelectedPhotoFiles(newFiles);
-    setError(null);
-  };
-
-  const handleUploadPhotoToS3 = async (index: number) => {
-    const file = selectedPhotoFiles[index];
-    if (!file) return;
-
-    const newUploadingPhotos = [...uploadingPhotos];
-    newUploadingPhotos[index] = true;
-    setUploadingPhotos(newUploadingPhotos);
-    setError(null);
-
-    try {
-      // Delete old photo if replacing
-      if (formData.photos[index]) {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.photos[index] }),
-        });
-      }
-
-      // Upload new photo to S3
-      const uploadFormData = new FormData();
-      uploadFormData.append("file", file);
-      uploadFormData.append("folder", "images");
-
-      const response = await fetch("/api/upload/s3", {
-        method: "POST",
-        body: uploadFormData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to upload photo ${index + 1} to S3`);
-      }
-
-      const { url } = await response.json();
-
-      const newPhotos = [...formData.photos];
-      newPhotos[index] = url;
-      setFormData({ ...formData, photos: newPhotos });
-      setPhotoPreviews(newPhotos);
-
-      // Clear selected file
+    if (!file) {
       const newFiles = [...selectedPhotoFiles];
       newFiles[index] = null;
       setSelectedPhotoFiles(newFiles);
-    } catch (err) {
-      console.error(`Error uploading photo ${index + 1}:`, err);
-      setError(`Failed to upload photo ${index + 1}`);
-    } finally {
-      const newUploadingPhotos = [...uploadingPhotos];
-      newUploadingPhotos[index] = false;
-      setUploadingPhotos(newUploadingPhotos);
+      // Update preview
+      const newPreviews = [...photoPreviews];
+      if (editingId && originalPhotos[index]) {
+        newPreviews[index] = getImageUrl(originalPhotos[index]);
+      } else {
+        newPreviews[index] = "";
+      }
+      setPhotoPreviews(newPreviews);
+      return;
     }
+    const newFiles = [...selectedPhotoFiles];
+    newFiles[index] = file;
+    setSelectedPhotoFiles(newFiles);
+    // Clear existing photo URL at this index
+    const newPhotos = [...formData.photos];
+    newPhotos[index] = "";
+    setFormData({ ...formData, photos: newPhotos });
+    // Use local file preview (not uploaded to S3 yet)
+    const newPreviews = [...photoPreviews];
+    newPreviews[index] = URL.createObjectURL(file);
+    setPhotoPreviews(newPreviews);
+    setError(null);
   };
 
-  const handleRemovePhoto = async (index: number) => {
-    if (formData.photos[index]) {
-      try {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.photos[index] }),
-        });
-      } catch (err) {
-        console.error(`Error deleting photo ${index + 1}:`, err);
-      }
+  const handleRemovePhoto = (index: number) => {
+    // Clean up object URL if it was created from local file
+    if (photoPreviews[index] && photoPreviews[index].startsWith('blob:')) {
+      URL.revokeObjectURL(photoPreviews[index]);
     }
-
+    
     const newPhotos = [...formData.photos];
     newPhotos[index] = "";
     setFormData({ ...formData, photos: newPhotos.filter(p => p !== "") });
-    setPhotoPreviews(newPhotos.filter(p => p !== ""));
+    
+    // Update preview
+    const newPreviews = [...photoPreviews];
+    if (editingId && originalPhotos[index] && !selectedPhotoFiles[index]) {
+      newPreviews[index] = getImageUrl(originalPhotos[index]);
+    } else {
+      newPreviews[index] = "";
+    }
+    setPhotoPreviews(newPreviews.filter(p => p !== ""));
 
     const newFiles = [...selectedPhotoFiles];
     newFiles[index] = null;
@@ -302,94 +280,86 @@ export default function PastEventsPage() {
   };
 
   // ====================
-  // VIDEOS UPLOAD (S3) - Max 2
+  // VIDEOS UPLOAD (S3) - Max 2 - Upload only on form submission
   // ====================
   const handleVideoSelect = (file: File | null, index: number) => {
-    if (!file) return;
+    if (!file) {
+      const newFiles = [...selectedVideoFiles];
+      newFiles[index] = null;
+      setSelectedVideoFiles(newFiles);
+      // Update preview
+      const newPreviews = [...videoPreviews];
+      if (editingId && originalVideos[index]) {
+        newPreviews[index] = originalVideos[index];
+      } else {
+        newPreviews[index] = "";
+      }
+      setVideoPreviews(newPreviews);
+      return;
+    }
     const newFiles = [...selectedVideoFiles];
     newFiles[index] = file;
     setSelectedVideoFiles(newFiles);
+    // Clear existing video URL at this index
+    const newVideos = [...formData.videos];
+    newVideos[index] = "";
+    setFormData({ ...formData, videos: newVideos });
+    // Use local file preview (not uploaded to S3 yet)
+    const newPreviews = [...videoPreviews];
+    newPreviews[index] = URL.createObjectURL(file);
+    setVideoPreviews(newPreviews);
     setError(null);
   };
 
   const handleUnselectVideo = (index: number) => {
+    // Clean up object URL if it was created from local file
+    if (videoPreviews[index] && videoPreviews[index].startsWith('blob:')) {
+      URL.revokeObjectURL(videoPreviews[index]);
+    }
+    
     const newFiles = [...selectedVideoFiles];
     newFiles[index] = null;
     setSelectedVideoFiles(newFiles);
+    
+    // Update preview
+    const newPreviews = [...videoPreviews];
+    if (editingId && originalVideos[index]) {
+      newPreviews[index] = originalVideos[index];
+    } else {
+      newPreviews[index] = "";
+    }
+    setVideoPreviews(newPreviews);
     setError(null);
   };
 
-  const handleUploadVideoToS3 = async (index: number) => {
-    const file = selectedVideoFiles[index];
-    if (!file) return;
-
-    const newUploadingVideos = [...uploadingVideos];
-    newUploadingVideos[index] = true;
-    setUploadingVideos(newUploadingVideos);
-    setError(null);
-
-    try {
-      // Delete old video if replacing
-      if (formData.videos[index]) {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.videos[index] }),
-        });
-      }
-
-      // Upload new video to S3
-      const uploadFormData = new FormData();
-      uploadFormData.append("file", file);
-      uploadFormData.append("folder", "videos");
-
-      const response = await fetch("/api/upload/s3", {
-        method: "POST",
-        body: uploadFormData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to upload video ${index + 1} to S3`);
-      }
-
-      const { url } = await response.json();
-
-      const newVideos = [...formData.videos];
-      newVideos[index] = url;
-      setFormData({ ...formData, videos: newVideos });
-      setVideoPreviews(newVideos);
-
-      // Clear selected file
-      const newFiles = [...selectedVideoFiles];
-      newFiles[index] = null;
-      setSelectedVideoFiles(newFiles);
-    } catch (err) {
-      console.error(`Error uploading video ${index + 1}:`, err);
-      setError(`Failed to upload video ${index + 1}`);
-    } finally {
-      const newUploadingVideos = [...uploadingVideos];
-      newUploadingVideos[index] = false;
-      setUploadingVideos(newUploadingVideos);
+  const handleRemoveVideo = (index: number) => {
+    // Clean up object URL if it was created from local file
+    if (videoPreviews[index] && videoPreviews[index].startsWith('blob:')) {
+      URL.revokeObjectURL(videoPreviews[index]);
     }
-  };
-
-  const handleRemoveVideo = async (index: number) => {
-    if (formData.videos[index]) {
-      try {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.videos[index] }),
-        });
-      } catch (err) {
-        console.error(`Error deleting video ${index + 1}:`, err);
-      }
-    }
-
+    
+    // Keep arrays at fixed length (2 slots) to maintain indices - don't filter!
     const newVideos = [...formData.videos];
+    // Ensure array has exactly 2 slots
+    while (newVideos.length < 2) {
+      newVideos.push("");
+    }
+    // Remove video at specific index only
     newVideos[index] = "";
-    setFormData({ ...formData, videos: newVideos.filter(v => v !== "") });
-    setVideoPreviews(newVideos.filter(v => v !== ""));
+    setFormData({ ...formData, videos: newVideos });
+    
+    // Update preview - maintain fixed indices (2 slots)
+    const newPreviews = [...videoPreviews];
+    // Ensure array has exactly 2 slots
+    while (newPreviews.length < 2) {
+      newPreviews.push("");
+    }
+    if (editingId && originalVideos[index] && !selectedVideoFiles[index]) {
+      newPreviews[index] = originalVideos[index];
+    } else {
+      newPreviews[index] = "";
+    }
+    setVideoPreviews(newPreviews);
 
     const newFiles = [...selectedVideoFiles];
     newFiles[index] = null;
@@ -425,6 +395,15 @@ export default function PastEventsPage() {
 
   // Handle edit button click
   const handleEdit = (pastEvent: PastEvent) => {
+    // Store original media URLs for restore on cancel and S3 deletion on update
+    const originalThumb = pastEvent.thumbnailImage || "";
+    const originalPhotosArray = pastEvent.photos || [];
+    const originalVideosArray = pastEvent.videos || [];
+    
+    setOriginalThumbnailUrl(originalThumb);
+    setOriginalPhotos(originalPhotosArray);
+    setOriginalVideos(originalVideosArray);
+    
     setEditingId(pastEvent._id);
     setShowAddForm(true);
     const timeRange = parseTimeRange(pastEvent.time || "");
@@ -436,9 +415,9 @@ export default function PastEventsPage() {
       time: pastEvent.time || "",
       date: pastEvent.date || "",
       description: pastEvent.description || "",
-      thumbnailImage: pastEvent.thumbnailImage || "",
-      photos: pastEvent.photos || [],
-      videos: pastEvent.videos || [],
+      thumbnailImage: originalThumb,
+      photos: originalPhotosArray,
+      videos: originalVideosArray,
     });
     setStartHour(timeRange.startHour);
     setStartMinute(timeRange.startMinute);
@@ -447,9 +426,14 @@ export default function PastEventsPage() {
     setEndMinute(timeRange.endMinute);
     setEndPeriod(timeRange.endPeriod);
     
-    setThumbnailPreview(pastEvent.thumbnailImage ? getImageUrl(pastEvent.thumbnailImage) : "");
-    setPhotoPreviews(pastEvent.photos?.map(p => getImageUrl(p)) || []);
-    setVideoPreviews(pastEvent.videos || []);
+    setThumbnailPreview(originalThumb ? getImageUrl(originalThumb) : "");
+    setPhotoPreviews(originalPhotosArray.map(p => getImageUrl(p)));
+    setVideoPreviews(originalVideosArray);
+    
+    // Clear selected files
+    setSelectedThumbnailFile(null);
+    setSelectedPhotoFiles([null, null, null, null, null, null]);
+    setSelectedVideoFiles([null, null]);
     
     setError(null);
     setSuccess(null);
@@ -506,7 +490,8 @@ export default function PastEventsPage() {
       return;
     }
 
-    if (!formData.thumbnailImage) {
+    // Validate thumbnail (must have either existing or new file)
+    if (!formData.thumbnailImage && !selectedThumbnailFile) {
       setError("Thumbnail image is required");
       setLoading(false);
       return;
@@ -514,6 +499,146 @@ export default function PastEventsPage() {
 
     try {
       const isEdit = !!editingId;
+      
+      // Upload all media during form submission
+      let finalThumbnailUrl = formData.thumbnailImage;
+      let finalPhotos: string[] = [...formData.photos];
+      let finalVideos: string[] = [...formData.videos];
+      
+      // Upload thumbnail if new file selected
+      if (selectedThumbnailFile) {
+        const uploadToastId = toast.loading(
+          <div className="flex flex-col gap-2">
+            <span className="text-white font-medium">Uploading thumbnail to S3...</span>
+            <div className="w-full bg-zinc-700 rounded-full h-2">
+              <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '50%' }}></div>
+            </div>
+          </div>,
+          { duration: Infinity }
+        );
+        
+        try {
+          const uploadFormData = new FormData();
+          uploadFormData.append('file', selectedThumbnailFile);
+          uploadFormData.append('folder', 'images');
+          
+          const uploadResponse = await fetch('/api/upload/s3', {
+            method: 'POST',
+            body: uploadFormData,
+          });
+          
+          const uploadData = await uploadResponse.json();
+          
+          if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
+            throw new Error('Failed to upload thumbnail to S3');
+          }
+          
+          finalThumbnailUrl = uploadData.url;
+          toast.dismiss(uploadToastId);
+          toast.success('Thumbnail uploaded successfully!', { duration: 2000 });
+        } catch (uploadErr) {
+          toast.dismiss(uploadToastId);
+          throw new Error('Failed to upload thumbnail. Please try again.');
+        }
+      }
+      
+      // Upload photos if new files selected
+      for (let i = 0; i < selectedPhotoFiles.length; i++) {
+        const file = selectedPhotoFiles[i];
+        if (file) {
+          const uploadToastId = toast.loading(
+            <div className="flex flex-col gap-2">
+              <span className="text-white font-medium">Uploading photo {i + 1} to S3...</span>
+              <div className="w-full bg-zinc-700 rounded-full h-2">
+                <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '50%' }}></div>
+              </div>
+            </div>,
+            { duration: Infinity }
+          );
+          
+          try {
+            const uploadFormData = new FormData();
+            uploadFormData.append('file', file);
+            uploadFormData.append('folder', 'images');
+            
+            const uploadResponse = await fetch('/api/upload/s3', {
+              method: 'POST',
+              body: uploadFormData,
+            });
+            
+            const uploadData = await uploadResponse.json();
+            
+            if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
+              throw new Error(`Failed to upload photo ${i + 1} to S3`);
+            }
+            
+            // Insert or replace at index i
+            if (finalPhotos.length <= i) {
+              finalPhotos.push(uploadData.url);
+            } else {
+              finalPhotos[i] = uploadData.url;
+            }
+            
+            toast.dismiss(uploadToastId);
+            toast.success(`Photo ${i + 1} uploaded successfully!`, { duration: 2000 });
+          } catch (uploadErr) {
+            toast.dismiss(uploadToastId);
+            throw new Error(`Failed to upload photo ${i + 1}. Please try again.`);
+          }
+        }
+      }
+      
+      // Upload videos if new files selected
+      for (let i = 0; i < selectedVideoFiles.length; i++) {
+        const file = selectedVideoFiles[i];
+        if (file) {
+          const uploadToastId = toast.loading(
+            <div className="flex flex-col gap-2">
+              <span className="text-white font-medium">Uploading video {i + 1} to S3...</span>
+              <div className="w-full bg-zinc-700 rounded-full h-2">
+                <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '50%' }}></div>
+              </div>
+            </div>,
+            { duration: Infinity }
+          );
+          
+          try {
+            const uploadFormData = new FormData();
+            uploadFormData.append('file', file);
+            uploadFormData.append('folder', 'videos');
+            
+            const uploadResponse = await fetch('/api/upload/s3', {
+              method: 'POST',
+              body: uploadFormData,
+            });
+            
+            const uploadData = await uploadResponse.json();
+            
+            if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
+              throw new Error(`Failed to upload video ${i + 1} to S3`);
+            }
+            
+            // Insert or replace at index i
+            if (finalVideos.length <= i) {
+              finalVideos.push(uploadData.url);
+            } else {
+              finalVideos[i] = uploadData.url;
+            }
+            
+            toast.dismiss(uploadToastId);
+            toast.success(`Video ${i + 1} uploaded successfully!`, { duration: 2000 });
+          } catch (uploadErr) {
+            toast.dismiss(uploadToastId);
+            throw new Error(`Failed to upload video ${i + 1}. Please try again.`);
+          }
+        }
+      }
+      
+      // Use original thumbnail if editing and no new one uploaded
+      if (!finalThumbnailUrl && isEdit && originalThumbnailUrl) {
+        finalThumbnailUrl = originalThumbnailUrl;
+      }
+      
       const url = isEdit 
         ? `/api/admin/past-events/${editingId}`
         : `/api/admin/past-events`;
@@ -538,10 +663,21 @@ export default function PastEventsPage() {
         time: timeRange,
         date: formData.date.trim(),
         description: formData.description.trim(),
-        thumbnailImage: typeof formData.thumbnailImage === "string" ? formData.thumbnailImage : "",
-        photos: formData.photos,
-        videos: formData.videos,
+        thumbnailImage: finalThumbnailUrl,
+        photos: finalPhotos.filter(p => p !== ""),
+        videos: finalVideos.filter(v => v !== ""),
       };
+
+      // Show saving toast
+      const saveToastId = toast.loading(
+        <div className="flex flex-col gap-2">
+          <span className="text-white font-medium">{isEdit ? "Updating past event..." : "Creating past event..."}</span>
+          <div className="w-full bg-zinc-700 rounded-full h-2">
+            <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '70%' }}></div>
+          </div>
+        </div>,
+        { duration: Infinity }
+      );
 
       const response = await fetch(url, {
         method: isEdit ? "PATCH" : "POST",
@@ -553,11 +689,68 @@ export default function PastEventsPage() {
 
       const data = await response.json();
 
+      toast.dismiss(saveToastId);
+
       if (!response.ok || !data.success) {
         throw new Error(data.message || `Failed to ${isEdit ? "update" : "create"} past event`);
       }
 
+      // After successful update, delete old media from S3 if it was replaced
+      if (isEdit) {
+        // Delete old thumbnail if replaced
+        if (originalThumbnailUrl && finalThumbnailUrl && originalThumbnailUrl !== finalThumbnailUrl && originalThumbnailUrl.startsWith('https://')) {
+          try {
+            await fetch("/api/upload/s3/delete", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url: originalThumbnailUrl }),
+            });
+          } catch (err) {
+            console.error("Error deleting old thumbnail from S3:", err);
+          }
+        }
+        
+        // Delete old photos that were removed
+        originalPhotos.forEach((oldPhoto, index) => {
+          if (oldPhoto && !finalPhotos.includes(oldPhoto) && oldPhoto.startsWith('https://')) {
+            fetch("/api/upload/s3/delete", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url: oldPhoto }),
+            }).catch(err => console.error("Error deleting old photo from S3:", err));
+          }
+        });
+        
+        // Delete old videos that were removed
+        originalVideos.forEach((oldVideo, index) => {
+          if (oldVideo && !finalVideos.includes(oldVideo) && oldVideo.startsWith('https://')) {
+            fetch("/api/upload/s3/delete", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url: oldVideo }),
+            }).catch(err => console.error("Error deleting old video from S3:", err));
+          }
+        });
+      }
+
+      toast.success(`Past event ${isEdit ? "updated" : "created"} successfully!`, { duration: 3000 });
       setSuccess(`Past event ${isEdit ? "updated" : "created"} successfully!`);
+      
+      // Clean up blob URLs
+      if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(thumbnailPreview);
+      }
+      photoPreviews.forEach(preview => {
+        if (preview && preview.startsWith('blob:')) {
+          URL.revokeObjectURL(preview);
+        }
+      });
+      videoPreviews.forEach(preview => {
+        if (preview && preview.startsWith('blob:')) {
+          URL.revokeObjectURL(preview);
+        }
+      });
+      
       setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", thumbnailImage: "", photos: [], videos: [] });
       setStartHour("");
       setStartMinute("");
@@ -569,6 +762,12 @@ export default function PastEventsPage() {
       setPhotoPreviews([]);
       setVideoPreviews([]);
       setEditingId(null);
+      setOriginalThumbnailUrl("");
+      setOriginalPhotos([]);
+      setOriginalVideos([]);
+      setSelectedThumbnailFile(null);
+      setSelectedPhotoFiles([null, null, null, null, null, null]);
+      setSelectedVideoFiles([null, null]);
       
       // Refresh past events list
       await fetchPastEvents();
@@ -578,13 +777,45 @@ export default function PastEventsPage() {
         setSuccess(null);
       }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      setError(errorMessage);
+      toast.error(errorMessage, { duration: 4000 });
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = () => {
+    // Clean up blob URLs
+    if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(thumbnailPreview);
+    }
+    photoPreviews.forEach(preview => {
+      if (preview && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
+    });
+    videoPreviews.forEach(preview => {
+      if (preview && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
+    });
+    
+    // If editing, restore original media
+    if (editingId) {
+      if (originalThumbnailUrl) {
+        setFormData({ 
+          ...formData,
+          thumbnailImage: originalThumbnailUrl,
+          photos: originalPhotos,
+          videos: originalVideos,
+        });
+        setThumbnailPreview(getImageUrl(originalThumbnailUrl));
+        setPhotoPreviews(originalPhotos.map(p => getImageUrl(p)));
+        setVideoPreviews(originalVideos);
+      }
+    }
+    
     setShowAddForm(false);
     setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", thumbnailImage: "", photos: [], videos: [] });
     setStartHour("");
@@ -597,6 +828,12 @@ export default function PastEventsPage() {
     setPhotoPreviews([]);
     setVideoPreviews([]);
     setEditingId(null);
+    setOriginalThumbnailUrl("");
+    setOriginalPhotos([]);
+    setOriginalVideos([]);
+    setSelectedThumbnailFile(null);
+    setSelectedPhotoFiles([null, null, null, null, null, null]);
+    setSelectedVideoFiles([null, null]);
     setError(null);
     setSuccess(null);
   };
@@ -1011,33 +1248,50 @@ export default function PastEventsPage() {
                 className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
               />
               
-              {/* Pending file with upload button */}
-              {selectedThumbnailFile && !formData.thumbnailImage && (
-                <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mt-2">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1">
-                      <p className="text-sm text-white font-medium">📁 {selectedThumbnailFile.name}</p>
-                      <p className="text-xs text-zinc-400 mt-1">
-                        Size: {(selectedThumbnailFile.size / (1024 * 1024)).toFixed(2)} MB
-                      </p>
+              {/* Selected file preview (not uploaded to S3 yet) */}
+              {selectedThumbnailFile && !formData.thumbnailImage && thumbnailPreview && (
+                <div className="mt-2">
+                  <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <p className="text-sm text-white font-medium">📁 {selectedThumbnailFile.name}</p>
+                        <p className="text-xs text-zinc-400 mt-1">
+                          Size: {(selectedThumbnailFile.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                        <p className="text-xs text-yellow-500 mt-2">⚠️ Image will be uploaded when you save the form</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+                            URL.revokeObjectURL(thumbnailPreview);
+                          }
+                          setSelectedThumbnailFile(null);
+                          setThumbnailPreview("");
+                          setFormData({ ...formData, thumbnailImage: "" });
+                          if (editingId && originalThumbnailUrl) {
+                            setThumbnailPreview(getImageUrl(originalThumbnailUrl));
+                          }
+                        }}
+                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
+                      >
+                        Remove
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleUploadThumbnailToS3}
-                      disabled={uploadingThumbnail}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
-                    >
-                      {uploadingThumbnail ? "Uploading..." : "Upload"}
-                    </button>
                   </div>
-                  {!uploadingThumbnail && (
-                    <p className="text-xs text-yellow-500 mt-2">⚠️ Click "Upload" to save this image</p>
-                  )}
+                  {/* Image Preview */}
+                  <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
+                    <img
+                      src={thumbnailPreview}
+                      alt="Preview"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                 </div>
               )}
 
               {/* Uploaded thumbnail */}
-              {thumbnailPreview && formData.thumbnailImage && (
+              {thumbnailPreview && formData.thumbnailImage && !selectedThumbnailFile && (
                 <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900 mt-2">
                   <img
                     src={thumbnailPreview}
@@ -1074,36 +1328,48 @@ export default function PastEventsPage() {
                       className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none disabled:opacity-50"
                     />
                     
-                    {/* Pending file with upload button */}
-                    {selectedPhotoFiles[index] && !formData.photos[index] && (
-                      <div className="bg-zinc-800 border border-zinc-600 rounded-md p-2">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs text-white font-medium truncate">📁 {selectedPhotoFiles[index]!.name}</p>
-                            <p className="text-xs text-zinc-400">
-                              {(selectedPhotoFiles[index]!.size / (1024 * 1024)).toFixed(2)} MB
-                            </p>
+                    {/* Selected file preview (not uploaded to S3 yet) */}
+                    {selectedPhotoFiles[index] && !formData.photos[index] && photoPreviews[index] && (
+                      <div className="space-y-2">
+                        <div className="bg-zinc-800 border border-zinc-600 rounded-md p-2">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-white font-medium truncate">📁 {selectedPhotoFiles[index]!.name}</p>
+                              <p className="text-xs text-zinc-400">
+                                {(selectedPhotoFiles[index]!.size / (1024 * 1024)).toFixed(2)} MB
+                              </p>
+                              <p className="text-xs text-yellow-500 mt-1">⚠️ Will be uploaded when you save</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (photoPreviews[index] && photoPreviews[index].startsWith('blob:')) {
+                                  URL.revokeObjectURL(photoPreviews[index]);
+                                }
+                                handlePhotoSelect(null, index);
+                              }}
+                              className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition-colors"
+                            >
+                              Remove
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => handleUploadPhotoToS3(index)}
-                            disabled={uploadingPhotos[index]}
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-xs font-medium rounded transition-colors"
-                          >
-                            {uploadingPhotos[index] ? "Uploading..." : "Upload"}
-                          </button>
                         </div>
-                        {!uploadingPhotos[index] && (
-                          <p className="text-xs text-yellow-500 mt-1">⚠️ Click "Upload"</p>
-                        )}
+                        {/* Image Preview */}
+                        <div className="relative w-full h-32 rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
+                          <img
+                            src={photoPreviews[index]}
+                            alt={`Photo ${index + 1} Preview`}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
                       </div>
                     )}
 
                     {/* Uploaded photo */}
-                    {formData.photos[index] && (
+                    {photoPreviews[index] && formData.photos[index] && !selectedPhotoFiles[index] && (
                       <div className="relative w-full h-32 rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
                         <img
-                          src={formData.photos[index]}
+                          src={photoPreviews[index]}
                           alt={`Photo ${index + 1}`}
                           className="w-full h-full object-contain"
                         />
@@ -1140,47 +1406,44 @@ export default function PastEventsPage() {
                       className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none disabled:opacity-50"
                     />
                     
-                    {/* Pending file with upload button */}
-                    {selectedVideoFiles[index] && !formData.videos[index] && (
-                      <div className="bg-zinc-800 border border-zinc-600 rounded-md p-2">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs text-white font-medium truncate">🎥 {selectedVideoFiles[index]!.name}</p>
-                            <p className="text-xs text-zinc-400">
-                              {(selectedVideoFiles[index]!.size / (1024 * 1024)).toFixed(2)} MB
-                            </p>
-                          </div>
-                          <div className="flex gap-2">
+                    {/* Selected file preview (not uploaded to S3 yet) */}
+                    {selectedVideoFiles[index] && !formData.videos[index] && videoPreviews[index] && (
+                      <div className="space-y-2">
+                        <div className="bg-zinc-800 border border-zinc-600 rounded-md p-2">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-white font-medium truncate">🎥 {selectedVideoFiles[index]!.name}</p>
+                              <p className="text-xs text-zinc-400">
+                                {(selectedVideoFiles[index]!.size / (1024 * 1024)).toFixed(2)} MB
+                              </p>
+                              <p className="text-xs text-yellow-500 mt-1">⚠️ Will be uploaded when you save</p>
+                            </div>
                             <button
                               type="button"
                               onClick={() => handleUnselectVideo(index)}
-                              disabled={uploadingVideos[index]}
-                              className="px-3 py-1 bg-zinc-600 hover:bg-zinc-700 disabled:bg-zinc-800 disabled:opacity-50 text-white text-xs font-medium rounded transition-colors"
+                              className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition-colors"
                               title="Remove selection"
                             >
                               Remove
                             </button>
-                            <button
-                              type="button"
-                              onClick={() => handleUploadVideoToS3(index)}
-                              disabled={uploadingVideos[index]}
-                              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-xs font-medium rounded transition-colors"
-                            >
-                              {uploadingVideos[index] ? "Uploading..." : "Upload"}
-                            </button>
                           </div>
                         </div>
-                        {!uploadingVideos[index] && (
-                          <p className="text-xs text-yellow-500 mt-1">⚠️ Click "Upload"</p>
-                        )}
+                        {/* Video Preview */}
+                        <div className="relative w-full h-32 rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
+                          <video
+                            src={videoPreviews[index]}
+                            className="w-full h-full object-contain"
+                            controls
+                          />
+                        </div>
                       </div>
                     )}
 
                     {/* Uploaded video */}
-                    {formData.videos[index] && (
+                    {videoPreviews[index] && formData.videos[index] && !selectedVideoFiles[index] && (
                       <div className="relative w-full h-32 rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
                         <video
-                          src={formData.videos[index]}
+                          src={videoPreviews[index]}
                           className="w-full h-full object-contain"
                           controls
                         />

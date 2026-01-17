@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 import Image from "next/image";
@@ -7,7 +7,7 @@ import { Plus, ChevronDown, X } from "lucide-react";
 import { Bucket1, FliterIcon, SortIcon } from "@/public/assets";
 import Link from "next/link";
 import { useCart } from "@/stores/useCart";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 type Product = {
@@ -28,16 +28,17 @@ type Category = {
   slug: string;
 };
 
-const ShopPage = () => {
+const ShopPageContent = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [categoryName, setCategoryName] = useState<string>("All Products");
   const { addItem } = useCart();
   const router = useRouter();
-
-  // Get category from URL using window.location (avoid useSearchParams Suspense issue)
-  const [categoryParam, setCategoryParam] = useState<string | null>(null);
-
+  const searchParams = useSearchParams();
+  
+  // Get category from URL using useSearchParams (works with Next.js client-side navigation)
+  const categoryParam = searchParams.get("category");
+  
   // Filter states
   const [filters, setFilters] = useState({
     featured: false,
@@ -49,18 +50,18 @@ const ShopPage = () => {
     sortBy: "",
     sortOrder: "asc",
   });
-
+  
   // Filter panel visibility
   const [showFilters, setShowFilters] = useState(true);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
-
+  
   // Close filters when category changes
   useEffect(() => {
     setShowFilters(false);
   }, [categoryParam]);
-
+  
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -80,7 +81,7 @@ const ShopPage = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showSortDropdown]);
-
+  
   // Get sort label
   const getSortLabel = () => {
     if (filters.featured) return "FEATURED";
@@ -95,7 +96,7 @@ const ShopPage = () => {
       return "ALPHABETICALLY, Z-A";
     return "SORT PRODUCTS";
   };
-
+  
   const handleSortChange = (sortBy: string, sortOrder: string) => {
     if (sortBy === "featured") {
       setFilters({
@@ -125,38 +126,11 @@ const ShopPage = () => {
     setShowSortDropdown(false);
   };
 
-  // Parse URL on client side and listen for changes
-  useEffect(() => {
-    const updateCategoryFromUrl = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const category = urlParams.get("category");
-      setCategoryParam(category);
-    };
-
-    // Initial load
-    updateCategoryFromUrl();
-
-    // Listen for URL changes (for browser back/forward)
-    window.addEventListener("popstate", updateCategoryFromUrl);
-
-    // Use a more efficient approach - check URL on focus/visibility change
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        updateCategoryFromUrl();
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener("popstate", updateCategoryFromUrl);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
+  // Category param is now handled by useSearchParams which automatically updates on navigation
 
   useEffect(() => {
     let isMounted = true;
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: NodeJS.Timeout | null = null;
     let abortController: AbortController | null = null;
 
     const fetchProducts = async () => {
@@ -167,15 +141,15 @@ const ShopPage = () => {
       abortController = new AbortController();
       try {
         setLoading(true);
-
+        
         // Build API URL with category and filters
         let apiUrl = "/api/products";
         const params = new URLSearchParams();
-
+        
         if (categoryParam && categoryParam !== "all") {
           params.append("category", categoryParam);
         }
-
+        
         // Add filters
         if (filters.featured) {
           params.append("featured", "true");
@@ -199,7 +173,7 @@ const ShopPage = () => {
           params.append("sortBy", filters.sortBy);
           params.append("sortOrder", filters.sortOrder);
         }
-
+        
         if (params.toString()) {
           apiUrl += `?${params.toString()}`;
         }
@@ -212,38 +186,38 @@ const ShopPage = () => {
         const response = await fetch(apiUrl, {
           signal: abortController.signal,
         });
-
+        
         clearTimeout(timeoutId);
-
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
+        
         const data = await response.json();
-
+        
         // Always set products, even if empty array
         if (isMounted) {
           setProducts(data.data || []);
         }
-
+        
         // Set category name immediately with a default, then try to fetch the real name
         if (categoryParam && categoryParam !== "all") {
           // Set a default first
           if (isMounted) {
             setCategoryName(categoryParam);
           }
-
+          
           // Then try to fetch the real category name (non-blocking)
           fetch("/api/categories")
             .then((categoryResponse) => categoryResponse.json())
             .then((categoryData) => {
               if (categoryData.success && isMounted) {
                 const category = categoryData.data.find((cat: Category) => {
-                  const slugMatch = cat.slug === categoryParam;
+                    const slugMatch = cat.slug === categoryParam;
                   const nameSlugMatch =
                     cat.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") ===
                     categoryParam;
-                  return slugMatch || nameSlugMatch;
+                    return slugMatch || nameSlugMatch;
                 });
                 if (isMounted && category) {
                   setCategoryName(category.name);
@@ -277,12 +251,23 @@ const ShopPage = () => {
     };
 
     fetchProducts();
-
+    
     return () => {
       isMounted = false;
-      if (timeoutId) clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
       if (abortController) {
-        abortController.abort();
+        try {
+          // Check if signal is not already aborted before aborting
+          if (!abortController.signal.aborted) {
+            abortController.abort();
+          }
+        } catch (error) {
+          // Ignore errors when aborting (signal might already be aborted)
+        }
+        abortController = null;
       }
       // Force loading to false on cleanup to prevent stuck state
       setLoading(false);
@@ -301,7 +286,7 @@ const ShopPage = () => {
   const handleAddToCart = (e: React.MouseEvent, item: Product) => {
     e.preventDefault();
     e.stopPropagation();
-
+    
     // Check if user is logged in
     const token = sessionStorage.getItem("userToken");
     if (!token) {
@@ -318,8 +303,8 @@ const ShopPage = () => {
     // Get first image URL for cart
     const imageUrl =
       item.imageUrl && item.imageUrl.length > 0
-        ? normalizeImageUrl(item.imageUrl[0])
-        : "";
+      ? normalizeImageUrl(item.imageUrl[0])
+      : "";
 
     addItem({
       id: item._id,
@@ -366,13 +351,13 @@ const ShopPage = () => {
                 </p> */}
               </div>
             </div>
-
+            
             {/* Main Content Layout */}
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
               {/* Left Side Icons - Filter and Sort */}
               <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
                 {/* Filter Icon Button */}
-                <button
+                <button 
                   onClick={() => setShowFilters(!showFilters)}
                   className="p-2 lg:p-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
                   aria-label={showFilters ? "Hide Filters" : "Show Filters"}
@@ -396,7 +381,7 @@ const ShopPage = () => {
                       alt="sort"
                       className="w-5 h-5 lg:w-6 lg:h-6"
                     />
-                  </button>
+                </button>
 
                   {showSortDropdown && (
                     <div className="absolute left-0 lg:left-full lg:top-0 top-full mt-2 lg:mt-0 lg:ml-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[220px]">
@@ -459,14 +444,14 @@ const ShopPage = () => {
                         }`}
                       >
                         PRICE, HIGH TO LOW
-                      </button>
+                </button>
                     </div>
                   )}
-                </div>
               </div>
-
+            </div>
+            
               {/* Filter Sidebar - Left */}
-              {showFilters && (
+            {showFilters && (
                 <div className="w-full lg:w-64 shrink-0 bg-white rounded-lg p-6 shadow-lg">
                   <div className="space-y-6">
                     {/* All Collections Heading */}
@@ -476,9 +461,9 @@ const ShopPage = () => {
                       </h3>
                       <ChevronDown className="w-5 h-5 text-[#1C3163]" />
                     </div>
-
+                    
                     {/* Filter Options */}
-                    <div className="space-y-3">
+                  <div className="space-y-3">
                       {/* Weight Options */}
                       <div className="space-y-2 pt-2">
                         <h4 className="text-sm font-medium text-[#1C3163]">
@@ -498,8 +483,8 @@ const ShopPage = () => {
                             <span className="text-sm text-[#1C3163]">
                               {weight}
                             </span>
-                            <input
-                              type="checkbox"
+                      <input
+                        type="checkbox"
                               checked={filters.weight === weight}
                               onChange={(e) =>
                                 setFilters({
@@ -507,12 +492,12 @@ const ShopPage = () => {
                                   weight: e.target.checked ? weight : "",
                                 })
                               }
-                              className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
-                            />
-                          </label>
+                        className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
+                      />
+                    </label>
                         ))}
                       </div>
-
+                      
                       {/* Octave Options */}
                       <div className="space-y-2 pt-2">
                         <h4 className="text-sm font-medium text-[#1C3163]">
@@ -526,8 +511,8 @@ const ShopPage = () => {
                             <span className="text-sm text-[#1C3163]">
                               {octave}
                             </span>
-                            <input
-                              type="checkbox"
+                      <input
+                        type="checkbox"
                               checked={filters.octave === octave}
                               onChange={(e) =>
                                 setFilters({
@@ -535,12 +520,12 @@ const ShopPage = () => {
                                   octave: e.target.checked ? octave : "",
                                 })
                               }
-                              className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
-                            />
-                          </label>
+                        className="w-4 h-4 text-[#1C3163] border-gray-300 rounded focus:ring-[#1C3163]"
+                      />
+                    </label>
                         ))}
-                      </div>
-
+                  </div>
+                  
                       {/* Size Options */}
                       <div className="space-y-2 pt-2">
                         <h4 className="text-sm font-medium text-[#1C3163]">
@@ -569,8 +554,8 @@ const ShopPage = () => {
                             />
                           </label>
                         ))}
-                      </div>
-
+                  </div>
+                  
                       {/* Tuning Options */}
                       <div className="space-y-2 pt-2">
                         <h4 className="text-sm font-medium text-[#1C3163]">
@@ -597,114 +582,114 @@ const ShopPage = () => {
                             />
                           </label>
                         ))}
-                      </div>
-                    </div>
                   </div>
                 </div>
-              )}
-
+                </div>
+              </div>
+            )}
+            
               {/* Products Grid - Right */}
               <div className="flex-1">
-                {loading ? (
-                  <div className="text-center py-12 text-[#1C3163]">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
-                    <p>Loading products...</p>
-                  </div>
-                ) : products.length === 0 ? (
-                  <div className="text-center py-12 text-[#1C3163]">
-                    {categoryParam && categoryParam !== "all"
-                      ? "No products for this category"
-                      : "No products available"}
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-[18px] w-full">
-                    {products.map((item) => {
-                      // Get first image or use placeholder
+              {loading ? (
+                <div className="text-center py-12 text-[#1C3163]">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
+                  <p>Loading products...</p>
+                </div>
+              ) : products.length === 0 ? (
+                <div className="text-center py-12 text-[#1C3163]">
+                  {categoryParam && categoryParam !== "all"
+                    ? "No products for this category"
+                    : "No products available"}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-[18px] w-full">
+                  {products.map((item) => {
+                    // Get first image or use placeholder
                       const imageUrl =
                         item.imageUrl && item.imageUrl.length > 0
-                          ? item.imageUrl[0]
-                          : null;
-                      // Price is already in dollars - format to show decimals only if needed
-                      const formatPrice = (price: number) => {
-                        const rounded = Math.round(price * 100) / 100;
-                        if (rounded % 1 === 0) {
-                          return `$${rounded}`;
-                        }
-                        return `$${rounded.toFixed(2)}`;
-                      };
-                      const hasDiscount = item.discount && item.discount > 0;
-                      const originalPrice = item.price;
+                      ? item.imageUrl[0] 
+                      : null;
+                    // Price is already in dollars - format to show decimals only if needed
+                    const formatPrice = (price: number) => {
+                      const rounded = Math.round(price * 100) / 100;
+                      if (rounded % 1 === 0) {
+                        return `$${rounded}`;
+                      }
+                      return `$${rounded.toFixed(2)}`;
+                    };
+                    const hasDiscount = item.discount && item.discount > 0;
+                    const originalPrice = item.price;
                       const discountedPrice =
                         hasDiscount && item.discount
                           ? item.price - item.discount
                           : item.price;
-                      const displayPrice = formatPrice(discountedPrice);
-                      const displayOriginalPrice = formatPrice(originalPrice);
-
-                      return (
-                        <Link
-                          href={`/shop/${item._id}`}
-                          key={item._id}
-                          className="text-black group cursor-pointer"
-                        >
-                          <div className="relative w-full aspect-square">
-                            {imageUrl ? (
-                              <Image
+                    const displayPrice = formatPrice(discountedPrice);
+                    const displayOriginalPrice = formatPrice(originalPrice);
+                    
+                    return (
+                      <Link 
+                        href={`/shop/${item._id}`} 
+                        key={item._id} 
+                        className="text-black group cursor-pointer"
+                      >
+                        <div className="relative w-full aspect-square">
+                          {imageUrl ? (
+                            <Image
                                 src={
                                   imageUrl.startsWith("data:") ||
                                   imageUrl.startsWith("http")
-                                    ? imageUrl
+                                ? imageUrl 
                                     : `data:image/jpeg;base64,${imageUrl}`
                                 }
-                                alt={item.name}
-                                fill
-                                className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                                unoptimized
-                              />
-                            ) : (
-                              <Image
-                                src={Bucket1}
-                                alt={item.name}
-                                fill
-                                className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                              />
-                            )}
-                          </div>
-                          <div className="pt-4 sm:pt-6 md:pt-[28px] flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
+                              alt={item.name}
+                              fill
+                              className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                              unoptimized
+                            />
+                          ) : (
+                            <Image
+                              src={Bucket1}
+                              alt={item.name}
+                              fill
+                              className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                            />
+                          )}
+                        </div>
+                        <div className="pt-4 sm:pt-6 md:pt-[28px] flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
                               <p className="text-[14px] sm:text-[16px] md:text-[18px] line-clamp-2 min-h-[2.5em] mb-3 sm:mb-4 md:mb-[18px]  text-[#1C3163] font-medium">
-                                {item.name}
-                              </p>
+                              {item.name}
+                            </p>
                               <div className="text-[10px] sm:text-[11px] md:text-[12px]  text-black">
-                                {hasDiscount ? (
-                                  <div className="flex items-center gap-2">
+                              {hasDiscount ? (
+                                <div className="flex items-center gap-2">
                                     <span className="text-[black] font-light line-through text-[18px] ">
                                       {displayOriginalPrice}
                                     </span>
                                     <span className="text-[black] font-light text-[18px]">
                                       {displayPrice} USD
                                     </span>
-                                  </div>
-                                ) : (
+                                </div>
+                              ) : (
                                   <span className="text-[black] font-light text-[18px]">
                                     {displayPrice} USD
                                   </span>
-                                )}
-                              </div>
+                              )}
                             </div>
-                            {/* <button
-                              onClick={(e) => handleAddToCart(e, item)}
-                              className="border rounded-full p-1 hover:bg-[#1C3163] hover:text-white transition-colors cursor-pointer flex-shrink-0"
-                              aria-label="Add to cart"
-                            >
-                              <Plus size={16} />
-                            </button> */}
                           </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
+                            {/* <button
+                            onClick={(e) => handleAddToCart(e, item)}
+                            className="border rounded-full p-1 hover:bg-[#1C3163] hover:text-white transition-colors cursor-pointer flex-shrink-0"
+                            aria-label="Add to cart"
+                          >
+                            <Plus size={16} />
+                            </button> */}
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
               </div>
             </div>
           </div>
@@ -713,6 +698,25 @@ const ShopPage = () => {
 
       <Footer />
     </div>
+  );
+};
+
+const ShopPage = () => {
+  return (
+    <Suspense fallback={
+      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center text-[#1C3163]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    }>
+      <ShopPageContent />
+    </Suspense>
   );
 };
 

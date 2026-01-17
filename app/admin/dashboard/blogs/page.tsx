@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import toast from "react-hot-toast";
 
 type Blog = {
   _id: string;
@@ -36,7 +37,9 @@ export default function BlogsPage() {
   
   // S3 upload states
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
+  
+  // Track original image URL when editing (for restore on cancel)
+  const [originalImageUrl, setOriginalImageUrl] = useState<string>("");
 
   // Fetch blogs
   const fetchBlogs = async () => {
@@ -85,111 +88,124 @@ export default function BlogsPage() {
     return `data:image/jpeg;base64,${img}`;
   };
 
-  // Handle delete
+  // Handle delete with toast confirmation
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this blog?")) return;
+    const blog = blogs.find(b => b._id === id);
+    const blogTitle = blog?.title || "this blog";
+    
+    // Toast-based confirmation
+    const confirmed = await new Promise<boolean>((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div className="flex flex-col gap-3">
+            <p className="text-white font-medium">Delete Blog?</p>
+            <p className="text-sm text-zinc-300">Are you sure you want to delete "{blogTitle}"? This action cannot be undone.</p>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => {
+                  toast.dismiss(toastId);
+                  resolve(true);
+                }}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(toastId);
+                  resolve(false);
+                }}
+                className="px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity }
+      );
+    });
+
+    if (!confirmed) return;
 
     setDeletingId(id);
-    try {
-      const response = await fetch(`/api/admin/blogs/${id}`, {
-        method: "DELETE",
-      });
-
+    const deletePromise = fetch(`/api/admin/blogs/${id}`, {
+      method: "DELETE",
+    }).then(async (response) => {
       const data = await response.json();
-
       if (!response.ok || !data.success) {
-        alert(data.message || "Failed to delete blog");
-      } else {
-        setBlogs(blogs.filter((b) => b._id !== id));
+        throw new Error(data.message || "Failed to delete blog");
       }
+      setBlogs(blogs.filter((b) => b._id !== id));
+      return data;
+    });
+
+    toast.promise(deletePromise, {
+      loading: "Deleting blog...",
+      success: "Blog deleted successfully!",
+      error: (err) => err.message || "Failed to delete blog",
+    });
+
+    try {
+      await deletePromise;
     } catch {
-      alert("Failed to delete blog");
+      // Error handled by toast.promise
     } finally {
       setDeletingId(null);
     }
   };
 
-  // Handle image selection (don't upload yet)
+  // Handle image selection - use local preview (no upload yet)
   const handleImageSelect = (file: File | null) => {
     if (!file) {
       setSelectedImageFile(null);
+      setPreviewUrl("");
+      setFormData({ ...formData, image: "" });
       return;
     }
     setSelectedImageFile(file);
-    setError(null);
-  };
-
-  // Upload image to S3
-  const handleUploadImageToS3 = async () => {
-    if (!selectedImageFile) return;
-
-    setUploadingImage(true);
-    setError(null);
-
-    try {
-      // Delete old image if replacing
-      if (formData.image) {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.image }),
-        });
-      }
-
-      // Upload new image to S3
-      const uploadFormData = new FormData();
-      uploadFormData.append("file", selectedImageFile);
-      uploadFormData.append("folder", "images");
-
-      const response = await fetch("/api/upload/s3", {
-        method: "POST",
-        body: uploadFormData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image to S3");
-      }
-
-      const { url } = await response.json();
-
-      setFormData({ ...formData, image: url });
-      setPreviewUrl(url);
-      setSelectedImageFile(null);
-    } catch (err) {
-      console.error("Error uploading image:", err);
-      setError("Failed to upload image");
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
-  // Remove uploaded image
-  const handleRemoveImage = async () => {
-    if (formData.image) {
-      try {
-        await fetch("/api/upload/s3/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: formData.image }),
-        });
-      } catch (err) {
-        console.error("Error deleting image:", err);
-      }
-    }
+    // Clear any existing image URL when selecting new file
     setFormData({ ...formData, image: "" });
-    setPreviewUrl("");
+    // Use local file preview (not uploaded to S3 yet)
+    setPreviewUrl(URL.createObjectURL(file));
+    setError(null);
+  };
+
+  // Remove image - only clear form state, don't delete from S3 yet
+  const handleRemoveImage = () => {
+    // Clean up object URL if it was created from local file
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    
+    setFormData({ ...formData, image: "" });
+    
+    // If editing and we have original image, restore preview to original
+    if (editingId && originalImageUrl && !selectedImageFile) {
+      const currentBlog = blogs.find(b => b._id === editingId);
+      if (currentBlog) {
+        setPreviewUrl(getImageUrl(currentBlog));
+      }
+    } else {
+      setPreviewUrl("");
+    }
+    
     setSelectedImageFile(null);
   };
 
   // Handle edit button click
   const handleEdit = (blog: Blog) => {
+    // Store original image URL for restore on cancel and S3 deletion on update
+    const originalImg = blog.imageUrl || "";
+    setOriginalImageUrl(originalImg);
+    
     setEditingId(blog._id);
     setShowAddForm(true);
     setFormData({
       name: blog.name || "",
       title: blog.title || "",
       description: blog.description || "",
-      image: blog.imageUrl || "",
+      image: originalImg,
     });
     
     if (blog.imageUrl) {
@@ -200,6 +216,7 @@ export default function BlogsPage() {
     
     setError(null);
     setSuccess(null);
+    setSelectedImageFile(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -228,6 +245,51 @@ export default function BlogsPage() {
 
     try {
       const isEdit = !!editingId;
+      
+      // Handle image upload if a new file is selected (upload happens here during form submission)
+      let finalImageUrl = formData.image;
+      let uploadToastId: string | undefined;
+      
+      if (selectedImageFile) {
+        // Show progress toast during upload (green progress bar)
+        uploadToastId = toast.loading(
+          <div className="flex flex-col gap-2">
+            <span className="text-white font-medium">Uploading image to S3...</span>
+            <div className="w-full bg-zinc-700 rounded-full h-2">
+              <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '50%' }}></div>
+            </div>
+          </div>,
+          { duration: Infinity }
+        );
+        
+        try {
+          // Upload new image file to S3 only during form submission
+          const uploadFormData = new FormData();
+          uploadFormData.append('file', selectedImageFile);
+          uploadFormData.append('folder', 'images');
+          
+          const uploadResponse = await fetch('/api/upload/s3', {
+            method: 'POST',
+            body: uploadFormData,
+          });
+          
+          const uploadData = await uploadResponse.json();
+          
+          if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
+            throw new Error('Failed to upload image to S3');
+          }
+          
+          finalImageUrl = uploadData.url;
+          
+          // Update progress toast
+          toast.dismiss(uploadToastId);
+          toast.success('Image uploaded successfully!', { duration: 2000 });
+        } catch (uploadErr) {
+          toast.dismiss(uploadToastId);
+          throw new Error('Failed to upload image. Please try again.');
+        }
+      }
+
       const url = isEdit 
         ? `/api/admin/blogs/${editingId}`
         : `/api/admin/blogs`;
@@ -246,9 +308,24 @@ export default function BlogsPage() {
         description: formData.description.trim(),
       };
 
-      if (formData.image) {
-        requestBody.imageUrl = typeof formData.image === "string" ? formData.image : undefined;
+      // Use final image URL (uploaded or existing)
+      if (finalImageUrl) {
+        requestBody.imageUrl = finalImageUrl;
+      } else if (isEdit && originalImageUrl) {
+        // If editing and no new image, use original
+        requestBody.imageUrl = originalImageUrl;
       }
+
+      // Show saving toast
+      const saveToastId = toast.loading(
+        <div className="flex flex-col gap-2">
+          <span className="text-white font-medium">{isEdit ? "Updating blog..." : "Creating blog..."}</span>
+          <div className="w-full bg-zinc-700 rounded-full h-2">
+            <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '70%' }}></div>
+          </div>
+        </div>,
+        { duration: Infinity }
+      );
 
       const response = await fetch(url, {
         method,
@@ -260,14 +337,39 @@ export default function BlogsPage() {
 
       const data = await response.json();
 
+      toast.dismiss(saveToastId);
+
       if (!response.ok || !data.success) {
         throw new Error(data.message || `Failed to ${isEdit ? "update" : "create"} blog`);
       }
 
+      // After successful update, delete old image from S3 if it was replaced
+      if (isEdit && originalImageUrl && finalImageUrl && originalImageUrl !== finalImageUrl && originalImageUrl.startsWith('https://')) {
+        try {
+          await fetch("/api/upload/s3/delete", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: originalImageUrl }),
+          });
+        } catch (err) {
+          console.error("Error deleting old image from S3:", err);
+          // Don't fail the update if deletion fails
+        }
+      }
+
+      toast.success(`Blog ${isEdit ? "updated" : "created"} successfully!`, { duration: 3000 });
       setSuccess(`Blog ${isEdit ? "updated" : "created"} successfully!`);
       setFormData({ name: "", title: "", description: "", image: "" });
+      
+      // Clean up object URL if it was created from local file
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      
       setPreviewUrl("");
       setEditingId(null);
+      setOriginalImageUrl("");
+      setSelectedImageFile(null);
       
       // Refresh blogs list
       await fetchBlogs();
@@ -277,17 +379,38 @@ export default function BlogsPage() {
         setSuccess(null);
       }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      setError(errorMessage);
+      toast.error(errorMessage, { duration: 4000 });
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = () => {
+    // Clean up object URL if it was created from local file
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    
+    // If editing, restore original image
+    if (editingId && originalImageUrl) {
+      const currentBlog = blogs.find(b => b._id === editingId);
+      if (currentBlog) {
+        setFormData({ 
+          ...formData,
+          image: originalImageUrl,
+        });
+        setPreviewUrl(getImageUrl(currentBlog));
+      }
+    }
+    
     setShowAddForm(false);
     setFormData({ name: "", title: "", description: "", image: "" });
     setPreviewUrl("");
     setEditingId(null);
+    setOriginalImageUrl("");
+    setSelectedImageFile(null);
     setError(null);
     setSuccess(null);
   };
@@ -550,28 +673,50 @@ export default function BlogsPage() {
                 className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
               />
               
-              {/* Pending file preview with upload button */}
-              {selectedImageFile && !formData.image && (
-                <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mt-2">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1">
-                      <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
-                      <p className="text-xs text-zinc-400 mt-1">
-                        Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
-                      </p>
+              {/* Selected file preview (not uploaded to S3 yet) */}
+              {selectedImageFile && !formData.image && previewUrl && (
+                <div className="mt-2">
+                  <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
+                        <p className="text-xs text-zinc-400 mt-1">
+                          Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                        <p className="text-xs text-yellow-500 mt-2">⚠️ Image will be uploaded when you save the form</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Clean up object URL
+                          if (previewUrl && previewUrl.startsWith('blob:')) {
+                            URL.revokeObjectURL(previewUrl);
+                          }
+                          setSelectedImageFile(null);
+                          setPreviewUrl("");
+                          setFormData({ ...formData, image: "" });
+                          // If editing, restore original image preview
+                          if (editingId && originalImageUrl) {
+                            const currentBlog = blogs.find(b => b._id === editingId);
+                            if (currentBlog) {
+                              setPreviewUrl(getImageUrl(currentBlog));
+                            }
+                          }
+                        }}
+                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
+                      >
+                        Remove
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleUploadImageToS3}
-                      disabled={uploadingImage}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
-                    >
-                      {uploadingImage ? "Uploading..." : "Upload"}
-                    </button>
                   </div>
-                  {!uploadingImage && (
-                    <p className="text-xs text-yellow-500 mt-2">⚠️ Click "Upload" to save this image</p>
-                  )}
+                  {/* Image Preview */}
+                  <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                 </div>
               )}
 

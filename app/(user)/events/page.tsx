@@ -257,11 +257,11 @@ const EventsPage = () => {
   };
 
   return (
-    <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen mt-">
       <Navbar />
-      <div className="w-full ">
-        <section className="w-full px-4 md:px-0 py-[68px]">
-          <div className="max-w-6xl pb-[106px]  mx-auto">
+      <div className="w-full mt-[38px]">
+        <section className="w-full px-4 md:px-0 py-[0px]">
+          <div className="max-w-6xl pb-[10px]  mx-auto">
             {/* Header Section */}
             <div className="mb-12 flex gap-[48px] md:mb-0">
               <h1 className="text-[#D5B584] text-[36px] sm:text-[40px]  font-light mb-">
@@ -287,7 +287,7 @@ const EventsPage = () => {
                     className="flex py-[5px] border-b border-[#D5B584] flex-col lg:flex-row gap-8 lg:gap-12 hover:bg-white/10 transition-colors duration-300  px-4 -mx-4 block  "
                   >
                   {/* Date Section */}
-                  <div className="lg:w-[150px] flex-shrink-0">
+                  <div className="lg:w-[150px] flex-shrink-0 " >
                     <div className="text-[#D5B584]">
                       <p className="text-[18px] sm:text-[20px] md:text-[30px] font-light">
                         {event.date.month}
@@ -368,9 +368,9 @@ const EventsPage = () => {
             )}
           </div>
 
-          <div className="max-w-6xl mx-auto px-4">
+          <div className="max-w-6xl mx-auto px-4 ">
             {/* Header Section */}
-            <div className="mb-12 flex gap-[48px] md:mb-16">
+            <div className="mb-12 flex gap-[48px] md:mb-10">
               <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
                 Past Events
               </h2>
@@ -425,14 +425,19 @@ const EventsPage = () => {
                         className="flex gap-6 md:gap-8 flex-shrink-0 snap-start w-full"
                       >
                         {pastEventsData.slice(pageIndex * itemsPerPage, (pageIndex + 1) * itemsPerPage).map((event) => {
-                          const eventDate = new Date(pastEventsFromAPI.find(e => e._id === event.id)?.date || "");
+                          const dateString = pastEventsFromAPI.find(e => e._id === event.id)?.date || "";
+                          const eventDate = dateString ? new Date(dateString) : new Date();
+                          // Validate date - if invalid, use current date as fallback
+                          const isValidDate = !isNaN(eventDate.getTime());
+                          const validDate = isValidDate ? eventDate : new Date();
+                          
                           const monthNames = [
                             "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
                           ];
-                          const monthAbbr = monthNames[eventDate.getMonth()];
-                          const dayNumber = eventDate.getDate();
-                          const year = eventDate.getFullYear();
+                          const monthAbbr = monthNames[validDate.getMonth()] || "Jan";
+                          const dayNumber = validDate.getDate() || 1;
+                          const year = validDate.getFullYear() || new Date().getFullYear();
 
                           // Format date for display: "Nov 7, 2025"
                           const formattedFullDate = `${monthAbbr} ${dayNumber}, ${year}`;

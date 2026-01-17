@@ -112,47 +112,50 @@ const PastEventDetailPage = () => {
   const thumbnailUrl = getImageUrl(pastEvent.thumbnailImage);
 
   return (
-    <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+    <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen w-full overflow-x-hidden'>
       <Navbar />
       
-      <div className="w-full py-[40px] md:py-[68px]">
-        <div className="max-w-6xl mx-auto px-4">
+      <div className="w-full py-[30px] sm:py-[35px] md:py-[40px] lg:py-[50px]">
+        <div className="w-full min-w-0 px-4 sm:px-5 md:px-6 lg:px-8 xl:max-w-7xl xl:mx-auto">
           {/* Back Button */}
           <Link 
             href="/events"
-            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-4 sm:mb-6 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Events</span>
           </Link>
 
            {/* Event Header */}
-           <div className="mb-8 md:mb-12">
-             {/* Title - Centered */}
-             <h1 className="text-[#D5B584] text-[32px] sm:text-[36px] md:text-[40px] lg:text-[48px] font-normal mb-6 leading-tight text-center">
-               {pastEvent.title}
-             </h1>
-             
-             {/* Date and Time Details - Right Aligned */}
-             <div className="flex justify-end">
-               <div className="space-y-2 text-right">
-                 <p className="text-[#1C3163] text-[16px] md:text-[18px] font-normal">
-                   {pastEvent.location}
-                 </p>
-                 <p className="text-[#1C3163] text-[16px] md:text-[18px] font-light">
-                   {formattedDate}
-                 </p>
-                 <p className="text-[#1C3163] text-[16px] md:text-[18px] font-light">
-                   {pastEvent.day} {pastEvent.time}
-                 </p>
+           <div className="mb-3 sm:mb-4">
+             {/* Title and Details - Side by Side on Desktop (950px+) */}
+             <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4 xl:gap-8 mb-3 sm:mb-4">
+               {/* Title - Left Side */}
+               <h1 className="text-[#D5B584] text-[32px] sm:text-[36px] md:text-[40px] lg:text-[48px] font-normal leading-tight xl:flex-1 xl:min-w-0 break-words">
+                 {pastEvent.title}
+               </h1>
+               
+               {/* Date and Time Details - Right Aligned */}
+               <div className="flex justify-end xl:justify-end xl:flex-shrink-0">
+                 <div className="space-y-2 text-right">
+                   <p className="text-[#1C3163] text-[16px] md:text-[18px] font-normal whitespace-nowrap">
+                     {pastEvent.location}
+                   </p>
+                   <p className="text-[#1C3163] text-[16px] md:text-[18px] font-light whitespace-nowrap">
+                     {formattedDate}
+                   </p>
+                   <p className="text-[#1C3163] text-[16px] md:text-[18px] font-light whitespace-nowrap">
+                     {pastEvent.day} {pastEvent.time}
+                   </p>
+                 </div>
                </div>
              </div>
            </div>
 
            {/* Main Thumbnail Image */}
            {thumbnailUrl && (
-             <div className="mb-8 md:mb-12">
-               <div className="relative w-full aspect-[5/2]  overflow-hidden">
+             <div className="mb-6 sm:mb-8 md:mb-10">
+               <div className="relative w-full aspect-[7/3] overflow-hidden">
                  <img
                    src={thumbnailUrl}
                    alt={pastEvent.title}
@@ -163,7 +166,7 @@ const PastEventDetailPage = () => {
            )}
 
           {/* Content with Flexible Layout */}
-          <div className="space-y-8 md:space-y-12">
+          <div className="space-y-6 sm:space-y-8 md:space-y-10">
             {/* Description */}
             <div className="prose prose-lg max-w-none">
               <div className="text-[#6B5D4F] text-[16px] md:text-[18px] font-light leading-relaxed whitespace-pre-line">
@@ -171,254 +174,67 @@ const PastEventDetailPage = () => {
               </div>
             </div>
 
-            {/* Media Gallery - Dynamic Layout Based on Content */}
+            {/* Media Gallery - Unified Grid Layout */}
             {(photos.length > 0 || videos.length > 0) && (
-              <div className="space-y-8 md:space-y-12">
-                {/* Handle different media combinations */}
-                 {photos.length === 1 && videos.length === 0 && (
-                   <div className="relative w-full aspect-[3/2] rounded-xl overflow-hidden">
-                     <img
-                       src={getImageUrl(photos[0])}
-                       alt={`${pastEvent.title} - Photo`}
-                       className="w-full h-full object-contain"
-                     />
-                   </div>
-                 )}
-
-                 {photos.length === 2 && videos.length === 0 && (
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                     {photos.map((photo, index) => {
-                       const photoUrl = getImageUrl(photo);
-                       return (
-                         <div key={index} className="relative w-full aspect-[3/2] rounded-xl overflow-hidden">
-                           <img
-                             src={photoUrl}
-                             alt={`${pastEvent.title} - Photo ${index + 1}`}
-                             className="w-full h-full object-contain"
-                           />
-                         </div>
-                       );
-                     })}
-                   </div>
-                 )}
-
-                 {photos.length === 2 && videos.length === 1 && (
-                   <div className="space-y-4 md:space-y-6">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                       {photos.map((photo, index) => {
-                         const photoUrl = getImageUrl(photo);
-                         return (
-                           <div key={index} className="relative w-full aspect-[3/2] rounded-xl overflow-hidden">
-                             <img
-                               src={photoUrl}
-                               alt={`${pastEvent.title} - Photo ${index + 1}`}
-                               className="w-full h-full object-contain"
-                             />
-                           </div>
-                         );
-                       })}
-                     </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                       <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-black">
-                         {(() => {
-                           const video = videos[0];
-                           const isYouTube = video.includes('youtube.com') || video.includes('youtu.be');
-                           
-                           if (isYouTube) {
-                             let videoId = '';
-                             if (video.includes('youtube.com/watch?v=')) {
-                               videoId = video.split('v=')[1]?.split('&')[0] || '';
-                             } else if (video.includes('youtu.be/')) {
-                               videoId = video.split('youtu.be/')[1]?.split('?')[0] || '';
-                             }
-                             
-                             if (videoId) {
-                               return (
-                                 <iframe
-                                   src={`https://www.youtube.com/embed/${videoId}`}
-                                   title={`${pastEvent.title} - Video`}
-                                   className="w-full h-full"
-                                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                   allowFullScreen
-                                 />
-                               );
-                             }
-                           }
-                           
-                           return (
-                             <video
-                               src={video}
-                               controls
-                               className="w-full h-full"
-                             >
-                               Your browser does not support the video tag.
-                             </video>
-                           );
-                         })()}
-                       </div>
-                       <div></div>
-                     </div>
-                   </div>
-                 )}
-
-                {/* For other combinations - use grid layout */}
-                {(photos.length > 2 || videos.length > 1 || (photos.length > 0 && videos.length > 0 && !(photos.length === 2 && videos.length === 1))) && (
-                  <>
-                    {/* Photos Grid */}
-                    {photos.length > 0 && (
-                      <div>
-                        {photos.length > 2 && (
-                          <h2 className="text-[#D5B584] text-[24px] md:text-[28px] font-normal mb-6">
-                            Photos
-                          </h2>
-                        )}
-                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                           {photos.map((photo, index) => {
-                             const photoUrl = getImageUrl(photo);
-                             return (
-                               <div key={index} className="relative w-full aspect-[3/2]  overflow-hidden">
-                                 <img
-                                   src={photoUrl}
-                                   alt={`${pastEvent.title} - Photo ${index + 1}`}
-                                   className="w-full h-full object-contain"
-                                 />
-                               </div>
-                             );
-                           })}
-                         </div>
+              <div className="space-y-6 sm:space-y-8 md:space-y-10">
+                {/* Unified Grid: Photos and Videos together */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                  {/* Render Photos */}
+                  {photos.map((photo, index) => {
+                    const photoUrl = getImageUrl(photo);
+                    return (
+                      <div key={`photo-${index}`} className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
+                        <img
+                          src={photoUrl}
+                          alt={`${pastEvent.title} - Photo ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    )}
-
-                     {/* Videos - Staggered Layout (Left Top, Right Top Down) */}
-                     {videos.length > 0 && (
-                       <div>
-                         {videos.length > 1 && (
-                           <h2 className="text-[#D5B584] text-[24px] md:text-[28px] font-normal mb-6">
-                             Videos
-                           </h2>
-                         )}
-                         {videos.length === 2 ? (
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start">
-                             {/* First video - Left */}
-                             <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-black">
-                               {(() => {
-                                 const video = videos[0];
-                                 const isYouTube = video.includes('youtube.com') || video.includes('youtu.be');
-                                 
-                                 if (isYouTube) {
-                                   let videoId = '';
-                                   if (video.includes('youtube.com/watch?v=')) {
-                                     videoId = video.split('v=')[1]?.split('&')[0] || '';
-                                   } else if (video.includes('youtu.be/')) {
-                                     videoId = video.split('youtu.be/')[1]?.split('?')[0] || '';
-                                   }
-                                   
-                                   if (videoId) {
-                                     return (
-                                       <iframe
-                                         src={`https://www.youtube.com/embed/${videoId}`}
-                                         title={`${pastEvent.title} - Video 1`}
-                                         className="w-full h-full"
-                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                         allowFullScreen
-                                       />
-                                     );
-                                   }
-                                 }
-                                 
-                                 return (
-                                   <video
-                                     src={video}
-                                     controls
-                                     className="w-full h-full"
-                                   >
-                                     Your browser does not support the video tag.
-                                   </video>
-                                 );
-                               })()}
-                             </div>
-                             {/* Second video - Right */}
-                             <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-black">
-                               {(() => {
-                                 const video = videos[1];
-                                 const isYouTube = video.includes('youtube.com') || video.includes('youtu.be');
-                                 
-                                 if (isYouTube) {
-                                   let videoId = '';
-                                   if (video.includes('youtube.com/watch?v=')) {
-                                     videoId = video.split('v=')[1]?.split('&')[0] || '';
-                                   } else if (video.includes('youtu.be/')) {
-                                     videoId = video.split('youtu.be/')[1]?.split('?')[0] || '';
-                                   }
-                                   
-                                   if (videoId) {
-                                     return (
-                                       <iframe
-                                         src={`https://www.youtube.com/embed/${videoId}`}
-                                         title={`${pastEvent.title} - Video 2`}
-                                         className="w-full h-full"
-                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                         allowFullScreen
-                                       />
-                                     );
-                                   }
-                                 }
-                                 
-                                 return (
-                                   <video
-                                     src={video}
-                                     controls
-                                     className="w-full h-full"
-                                   >
-                                     Your browser does not support the video tag.
-                                   </video>
-                                 );
-                               })()}
-                             </div>
-                           </div>
-                         ) : (
-                           <div className="relative w-full md:w-[48%] aspect-[4/3] rounded-xl overflow-hidden bg-black">
-                             {(() => {
-                               const video = videos[0];
-                               const isYouTube = video.includes('youtube.com') || video.includes('youtu.be');
-                               
-                               if (isYouTube) {
-                                 let videoId = '';
-                                 if (video.includes('youtube.com/watch?v=')) {
-                                   videoId = video.split('v=')[1]?.split('&')[0] || '';
-                                 } else if (video.includes('youtu.be/')) {
-                                   videoId = video.split('youtu.be/')[1]?.split('?')[0] || '';
-                                 }
-                                 
-                                 if (videoId) {
-                                   return (
-                                     <iframe
-                                       src={`https://www.youtube.com/embed/${videoId}`}
-                                       title={`${pastEvent.title} - Video`}
-                                       className="w-full h-full"
-                                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                       allowFullScreen
-                                     />
-                                   );
-                                 }
-                               }
-                               
-                               return (
-                                 <video
-                                   src={video}
-                                   controls
-                                   className="w-full h-full"
-                                 >
-                                   Your browser does not support the video tag.
-                                 </video>
-                               );
-                             })()}
-                           </div>
-                         )}
-                       </div>
-                     )}
-                  </>
-                )}
+                    );
+                  })}
+                  
+                  {/* Render Videos */}
+                  {videos.map((video, index) => {
+                    const isYouTube = video.includes('youtube.com') || video.includes('youtu.be');
+                    return (
+                      <div key={`video-${index}`} className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-black">
+                        {isYouTube ? (() => {
+                          let videoId = '';
+                          if (video.includes('youtube.com/watch?v=')) {
+                            videoId = video.split('v=')[1]?.split('&')[0] || '';
+                          } else if (video.includes('youtu.be/')) {
+                            videoId = video.split('youtu.be/')[1]?.split('?')[0] || '';
+                          }
+                          
+                          if (videoId) {
+                            return (
+                              <iframe
+                                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`}
+                                title={`${pastEvent.title} - Video ${index + 1}`}
+                                className="w-full h-full"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                              />
+                            );
+                          }
+                          return null;
+                        })() : (
+                          <video
+                            src={video}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            controls
+                            className="w-full h-full object-cover"
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>

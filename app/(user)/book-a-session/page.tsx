@@ -9,11 +9,11 @@ const BookASessionPage = () => {
   return (
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <Navbar />
-      <div className="w-full">
-        <section className="w-full px-4 md:px-0 py-[68px]">
-          <div className="max-w-6xl pb-[106px] mx-auto">
+      <div className="w-full mt-[38px]">
+        <section className="w-full px-4 md:px-0 py-[0px]">
+          <div className="max-w-6xl pb-[24px] mx-auto ">
             {/* Header */}
-            <div className="mb-8 md:mb-12">
+            <div className="mb-4">
               <h1 className="text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] text-[#D5B584] font-medium leading-tight mb-3">
                 Book a Call
               </h1>

@@ -796,33 +796,70 @@ function ProfilePageContent() {
                           )}
 
                           <div className="space-y-4 mb-4">
-                            {order.items.map((item, index) => (
-                              <div key={index} className="flex gap-4 items-start">
-                                {/* Product Image */}
-                                {item.imageUrl && item.imageUrl.length > 0 && (
-                                  <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-md overflow-hidden flex-shrink-0 border border-gray-200">
-                                    <Image
-                                      src={item.imageUrl[0].startsWith("data:image") 
-                                        ? item.imageUrl[0] 
-                                        : `data:image/jpeg;base64,${item.imageUrl[0]}`}
-                                      alt={item.name}
-                                      fill
-                                      className="object-cover"
-                                      unoptimized
-                                    />
+                            {order.items.map((item, index) => {
+                              const handleProductClick = async (e: React.MouseEvent) => {
+                                e.preventDefault();
+                                try {
+                                  const response = await fetch(`/api/products/${item.productId}`);
+                                  const data = await response.json();
+                                  
+                                  if (data.success && data.data) {
+                                    // Check if product is deleted
+                                    if (data.data.deleted === true) {
+                                      toast.error("Product unavailable");
+                                      return;
+                                    }
+                                    // Product is available, navigate to product page
+                                    router.push(`/shop/${item.productId}`);
+                                  } else {
+                                    // Product not found or error
+                                    toast.error("Product unavailable");
+                                  }
+                                } catch (error) {
+                                  // Error fetching product
+                                  toast.error("Product unavailable");
+                                }
+                              };
+
+                              return (
+                                <div 
+                                  key={index} 
+                                  onClick={handleProductClick}
+                                  className="flex gap-4 items-start cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors"
+                                >
+                                  {/* Product Image */}
+                                  {item.imageUrl && item.imageUrl.length > 0 && item.imageUrl[0] && (() => {
+                                    const normalizeImageUrl = (url: string): string => {
+                                      if (!url) return "";
+                                      if (url.startsWith("data:image")) return url;
+                                      if (url.startsWith("http://") || url.startsWith("https://")) return url;
+                                      return `data:image/jpeg;base64,${url}`;
+                                    };
+                                    
+                                    return (
+                                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-md overflow-hidden flex-shrink-0 border border-gray-200">
+                                        <Image
+                                          src={normalizeImageUrl(item.imageUrl[0])}
+                                          alt={item.name}
+                                          fill
+                                          className="object-cover"
+                                          unoptimized
+                                        />
+                                      </div>
+                                    );
+                                  })()}
+                                  <div className="flex-1">
+                                    <p className="text-[#1C3163] font-medium">{item.name}</p>
+                                    <p className="text-sm text-gray-600">
+                                      Quantity: {item.quantity} {item.isSet ? '(Set)' : '(Piece)'}
+                                    </p>
                                   </div>
-                                )}
-                                <div className="flex-1">
-                                  <p className="text-[#1C3163] font-medium">{item.name}</p>
-                                  <p className="text-sm text-gray-600">
-                                    Quantity: {item.quantity} {item.isSet ? '(Set)' : '(Piece)'}
+                                  <p className="text-[#1C3163] font-medium">
+                                    ${(item.price * item.quantity).toFixed(2)}
                                   </p>
                                 </div>
-                                <p className="text-[#1C3163] font-medium">
-                                  ${(item.price * item.quantity).toFixed(2)}
-                                </p>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                           <div className="border-t border-gray-200 pt-4 mt-4 space-y-2">
                             {order.deliveryCharges && (

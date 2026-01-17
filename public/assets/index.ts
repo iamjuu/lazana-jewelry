@@ -29,6 +29,7 @@ export { default as HeroImage } from './images/landing/pexels-vintxg-rikoz-98047
 export { default as About1 } from './images/about/about1.svg';
 export { default as About2 } from './images/about/about2.svg';
 export { default as About3 } from './images/about/about3.svg';
+export { default as Crystal } from './images/about/crystal.svg';
 
 // Services Page Images
 export { default as Services1 } from './services/Rectangle.svg';

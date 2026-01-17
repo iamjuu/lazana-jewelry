@@ -411,7 +411,7 @@ const Index = () => {
 
         {/* service section  */}
 
-        <section className="w-full py-[40px] md:py-[20px]  ">
+        <section className="w-full py-[20px] md:py-[20px]  ">
           <div className="max-w-6xl mx-auto px-4">
             {/* Header */}
             <div className="mb-8 md:mb-12 flex    flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]  ">
@@ -495,7 +495,7 @@ const Index = () => {
                         </h3>
                         <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
                           <p className="text-black text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed line-clamp-2">
-                            {item.description}
+                            {/* {item.description} */}
                           </p>
                         {/* Arrow Button */}
                         <Link href="/services">
@@ -610,9 +610,9 @@ const Index = () => {
 
         {/* testimonials section  */}
 
-        <section className="w-full py-[40px] md:py-[0px]  relative bg-green-">
+        <section className="w-full py-[0px] md:py-[0px]  relative b">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12 ">
+            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12 text-nowrap ">
               What our Clients are saying..
             </h2>
           </div>
@@ -865,10 +865,10 @@ const Index = () => {
                       </Link>
                       {/* Event Details - Light Beige Background */}
                       <div className="px-4 py-5 md:px-5 md:py-6 -mt-2 relative z-10">
-                        <h3 className="text-[#8B6F47] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight mb-2 uppercase tracking-wide">
+                        <h3 className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight mb-2 uppercase tracking-wide">
                           {event.title}
                         </h3>
-                        <p className="text-[#8B6F47] text-[12px] sm:text-[13px] md:text-[14px] font-light">
+                        <p className="text-gray-700 text-[12px] sm:text-[13px] md:text-[14px] font-light">
                           {formattedFullDate}
                           <span className="whitespace-nowrap">{timeDisplay}</span>
                         </p>

@@ -14,11 +14,11 @@ import Link from "next/link";
 
 const AboutSectionComponent = () => {
   return (
-    <section className="w-full  px-4 md:px-0 py-[6px] ">
+    <section className="w-full  px-4 md:px-0 py-[4px] ">
       <div className="max-w-6xl mx-auto">
         <div className="flex   flex-col w-full ">
           {/* Section Title */}
-          <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] font-normal">
+          <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#D5B584] font-normal ">
             Founder's Note
           </h2>
 
