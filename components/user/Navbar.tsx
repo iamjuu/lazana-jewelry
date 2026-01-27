@@ -263,7 +263,10 @@ const Navbar = () => {
         </div>
       </div>
 
-      <nav ref={navRef} className="w-full px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 lg:pt-[43px] relative">
+      {/* Spacer to reserve nav height when fixed (md+), keeps hero/content layout intact */}
+      <div className="hidden md:block md:min-h-[84px] md:shrink-0" aria-hidden />
+
+      <nav ref={navRef} className="w-full px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 lg:pt-[43px] relative md:fixed md:top-0 md:left-0 md:right-0 md:z-50 md:bg-white/10 md:backdrop-blur-sm">
         <div className="max-w-[1400px] mx-auto">
         {/* Desktop Layout */}
         <div className="hidden lg:flex items-center justify-between w-full">

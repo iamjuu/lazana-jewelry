@@ -18,7 +18,7 @@ const AboutSectionComponent = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex   flex-col w-full ">
           {/* Section Title */}
-          <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#D5B584] font-normal ">
+          <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal ">
             Founder's Note
           </h2>
 
@@ -53,7 +53,7 @@ const AboutSectionComponent = () => {
                   and aesthetic as a healer.
                 </p> */}
 
-                <p>
+                <p className="text-[#545454]">
                   Crystal Bowl Studio was founded by Francesca Wong, a former
                   corporate executive with experience at KPMG, Citibank, Alibaba,
                   and Estée Lauder. After over a decade in global finance,
@@ -72,7 +72,7 @@ const AboutSectionComponent = () => {
                   experience and share the power of sound healing with ease,
                   simplicity, beauty, and integrity.
                 </p>
-                <p className="text-[black]">
+                <p className="text-[#545454]">
                   May these bowls be a bridge to your highest self. - Francesca
                 </p>
               </div>
@@ -145,9 +145,9 @@ const AboutSectionComponent = () => {
         </div> */}
         <div className="mt-1">
           <div>
-            <h1  className="text-[24px] sm:text-[28px] md:text-[36px] lg:text-[32px] xl:text-[32px] pb-4 sm:pb-5 md:pb-0 text-[#D5B584] font-normal">About Crystal Bowl Studio</h1>
+            <h1  className="text-[24px] sm:text-[28px] md:text-[36px] lg:text-[32px] xl:text-[32px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal">About Crystal Bowl Studio</h1>
             <p 
-               className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[black] leading-relaxed sm:leading-relaxed md:leading-loose"
+               className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed md:leading-loose"
                >
               Crystal Bowl Studio is designed for modern, conscious living,
               rooted in ancient traditions and wisdom. Each bowl is made from

@@ -401,7 +401,7 @@ const Index = () => {
           </div>
         </div>
       </div>
-      <div className="w-full bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] ">
+      <div className="w-full bg-[#fee8dd]">
         {/* about section  */}
         <AboutSectionComponent />
 
@@ -415,10 +415,10 @@ const Index = () => {
           <div className="max-w-6xl mx-auto px-4">
             {/* Header */}
             <div className="mb-8 md:mb-12 flex    flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]  ">
-              <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal ">
+              <h2 className="text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal ">
                 Services
               </h2>
-              <p className="text-black text-[14px] mt-3 sm:text-[16px] md:text-[18px] font-light  flex items-center justify-center">
+              <p className="text-[#545454]  text-[14px] mt-3 sm:text-[16px] md:text-[18px] font-light  flex items-center justify-center">
                 Private Sessions &  Corporate Wellness
               </p>
             </div>
@@ -612,7 +612,7 @@ const Index = () => {
 
         <section className="w-full py-[0px] md:py-[0px]  relative b">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12 text-nowrap ">
+            <h2 className="text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12 text-nowrap ">
               What our Clients are saying..
             </h2>
           </div>
@@ -646,11 +646,11 @@ const Index = () => {
                       {/* Right Side - Testimonial Card */}
                       <div className="flex-1 w-full border border-[#D5B584] rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[200px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
                         <div className="animate-fadeIn">
-                          <blockquote className="text-black text-[12px] sm:text-[12px] md:text-[14px] lg:text-[14px] font-light leading-relaxed mb-6 md:mb-8 italic">
+                          <blockquote className="text-[#545454]  text-[12px] sm:text-[12px] md:text-[14px] lg:text-[14px] font-light leading-relaxed mb-6 md:mb-8 italic">
                             &ldquo;{testimonial.testimonial}&rdquo;
                           </blockquote>
 
-                          <p className="text-black text-[14px] sm:text-[15px] md:text-[16px] font-light">
+                          <p className="text-[#545454]  text-[14px] sm:text-[15px] md:text-[16px] font-light">
                             {testimonial.name}
                           </p>
                         </div>
@@ -797,7 +797,7 @@ const Index = () => {
 
         <section className="w-full py-[40px] md:py-[10px] ">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12">
+            <h2 className="text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12">
               Upcoming Events
             </h2>
 
