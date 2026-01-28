@@ -1,16 +1,12 @@
 import React from "react";
 import Image from "next/image";
-import {
-  AboutNew1,
-  AboutNew2,
-  AboutSection,
-  AboutSection1,
-  ServiceImage1,
-  ServiceImage2,
-  ServiceImage3
-} from "@/public/assets";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import localFont from "next/font/local";
+import { AboutNew1 } from "@/public/assets";
+
+const theSeasonsBold = localFont({
+  src: "../../../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/fonnts.com-513211/fonts/fonnts.com-theseasons-bd.otf",
+  display: "swap",
+});
 
 const AboutSectionComponent = () => {
   return (
@@ -18,9 +14,16 @@ const AboutSectionComponent = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex   flex-col w-full ">
           {/* Section Title */}
-          <h2 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal ">
-            Founder's Note
-          </h2>
+          <h2
+  className={`${theSeasonsBold.className} text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal`}
+>
+  Founder{" "}
+  <span style={{ fontFamily: "var(--font-montserrat)" }}>
+    '
+  </span>
+  s Note
+</h2>
+
 
           {/* Content Container */}
           <div className="flex  flex-col lg:flex-row w-full gap-8 md:gap-10 lg:gap-12">
@@ -58,9 +61,9 @@ const AboutSectionComponent = () => {
                   corporate executive with experience at KPMG, Citibank, Alibaba,
                   and Estée Lauder. After over a decade in global finance,
                   ecommerce, and luxury beauty, she journeyed from boardrooms to a
-                  vision: "To create a range of crystal singing bowls that honour
+                  vision: &quot;To create a range of crystal singing bowls that honour
                   beauty, premium crystal quality and sound, with powerful
-                  resonance, at a more affordable price." Her mission is to make the
+                  resonance, at a more affordable price.&quot; Her mission is to make the
                   power of Sound Healing accessible to healers and practitioners all
                   over the world, anywhere anytime. Crystal Bowl Studio was born
                   from the belief that healing tools should be well-crafted,
@@ -145,7 +148,7 @@ const AboutSectionComponent = () => {
         </div> */}
         <div className="mt-1">
           <div>
-            <h1  className="text-[24px] sm:text-[28px] md:text-[36px] lg:text-[32px] xl:text-[32px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal">About Crystal Bowl Studio</h1>
+            <h1  className={`${theSeasonsBold.className} text-[24px] sm:text-[28px] md:text-[36px] lg:text-[32px] xl:text-[32px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal`}>About Crystal Bowl Studio</h1>
             <p 
                className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed md:leading-loose"
                >

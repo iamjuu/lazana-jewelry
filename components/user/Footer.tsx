@@ -15,6 +15,18 @@ import Link from "next/link";
 import { ArrowRight, ArrowUp } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import localFont from "next/font/local";
+
+
+const theSeasonsBold = localFont({
+  src: "../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/fonnts.com-513211/fonts/fonnts.com-theseasons-bd.otf",
+  display: "swap",
+});
+
+const touvloRegular = localFont({
+  src: "../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/touvlo-regular-maisfontes.464c/touvlo-regular.otf",
+  display: "swap",
+});
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -74,7 +86,7 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-8 md:gap-[64px] items-center text-center">
-          <h3 className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] italic">
+          <h3 className={`  ${theSeasonsBold.className}  text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] italic`}>
             Ready To Begin Your
             <br className="hidden sm:block" /> Healing Journey?
           </h3>

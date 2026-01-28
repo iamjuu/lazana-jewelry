@@ -81,7 +81,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` `}>
+      <body className={`${montserrat.variable}`}>
         {children}  
         <WhatsAppFloating />
         <Toaster position="top-right" />

@@ -4,10 +4,16 @@ import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import localFont from 'next/font/local'
 import { CryselLogo } from '@/public/assets'
 import { ShoppingCart, User, Search, X } from 'lucide-react'
 import { useCart } from '@/stores/useCart'
 import toast from 'react-hot-toast'
+
+const theSeasonsBold = localFont({
+  src: '../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/fonnts.com-513211/fonts/fonnts.com-theseasons-bd.otf',
+  display: 'swap',
+})
 
 // Navigation items array
 const navigationItems = [
@@ -26,6 +32,13 @@ type Category = {
   slug: string;
   imageUrl?: string;
   isFeatured?: boolean;
+}
+
+type ProductSearchResult = {
+  _id: string
+  name: string
+  price?: number
+  imageUrl?: string[]
 }
 
 const Navbar = () => {
@@ -47,7 +60,7 @@ const Navbar = () => {
   const [isMobileOfferingOpen, setIsMobileOfferingOpen] = useState(false)
   const [isMobileShopOpen, setIsMobileShopOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [searchResults, setSearchResults] = useState<ProductSearchResult[]>([])
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
@@ -121,11 +134,11 @@ const Navbar = () => {
         } else {
           setSearchResults([])
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Ignore abort errors
-        if (error.name !== 'AbortError') {
-        console.error('Search error:', error)
-        setSearchResults([])
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          console.error('Search error:', error)
+          setSearchResults([])
         }
       } finally {
         setIsSearching(false)
@@ -285,7 +298,7 @@ const Navbar = () => {
           </div>
 
           {/* Navigation Links - Center */}
-          <div className="flex items-center gap-6 lg:gap-8 xl:gap-[40px] 2xl:gap-[68px] flex-shrink-0">
+          <div className={`${theSeasonsBold.className} flex items-center gap-6 lg:gap-8 xl:gap-[40px] 2xl:gap-[68px] flex-shrink-0`}>
             {navigationItems.map((item) => {
               // Handle Shop with dropdown
               if (item.hasDropdown) {
@@ -754,7 +767,7 @@ const Navbar = () => {
             isMobileMenuOpen ? 'max-h-[600px] opacity-100 mt-2' : 'max-h-0 opacity-0 pointer-events-none'
           }`}
         >
-          <div className="flex flex-col gap-2 py-4 px-2">
+          <div className={`${theSeasonsBold.className} flex flex-col gap-2 py-4 px-2`}>
             {navigationItems.map((item) => {
               // Handle Shop with sub-menu in mobile (categories from backend)
               if (item.hasDropdown) {

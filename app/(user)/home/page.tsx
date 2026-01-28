@@ -3,10 +3,22 @@ import React, { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/user/Navbar";
 import Image from "next/image";
 import localFont from "next/font/local";
+const theSeasonsBold = localFont({
+  // From `app/(user)/home` to repo root is `../../../`
+  src: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/fonnts.com-513211/fonts/fonnts.com-theseasons-bd.otf",
+  display: "swap",
+});
+
+const touvloRegular = localFont({
+  src: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/touvlo-regular-maisfontes.464c/touvlo-regular.otf",
+  display: "swap",
+});
+
 import {
   Bucket1,
   Bucket2,
   Bucket3,
+  Crystal,
   Intention,
   LightWeight,
   ServiceImage1,
@@ -32,6 +44,9 @@ import Link from "next/link";
 import { ArrowRight, Volume2, VolumeX } from "lucide-react";
 import AboutSectionComponent from "./components/about/AboutSection";
 import CollectionSection from "./components/collection/collectionSection";
+
+
+
 
 // Ivy Mode font configuration
 const ivyMode = localFont({
@@ -330,14 +345,14 @@ const Index = () => {
       if (data.success && data.data) {
         // Filter featured corporate sessions (limit 3)
         const corporate = data.data
-          .filter((session: Session) => 
+          .filter((session: Session) =>
             session.sessionType === "corporate" && session.featured === true
           )
           .slice(0, 3);
-        
+
         // Filter featured private sessions (limit 3)
         const privateSessions = data.data
-          .filter((session: Session) => 
+          .filter((session: Session) =>
             session.sessionType === "private" && session.featured === true
           )
           .slice(0, 3);
@@ -355,6 +370,36 @@ const Index = () => {
     fetchUpcomingEvents();
     fetchFeaturedSessions();
   }, []);
+
+
+  const Icons = [
+    {
+      id: 1,
+      image: PremiumQuality,
+      title: " Premium Craftsmanship",
+      para: "Each piece is precision-crafted, made from 100% pure clear quartz, our bowls produce quality sound and long-lasting resonance."
+    },
+
+    {
+      id: 2,
+      image: UniqueToYou,
+      title: "Light Weight",
+      para: "Our bowls are light, durable, designed for travel-ready, portable anywhere, anytime in our protective cases"
+    },
+
+    {
+      id: 3,
+      image: Crystal,
+      title: "Made for You",
+      para: "Each bowl is unique and can be customised by chakra, note, frequency, colour, and design to make it uniquely yours."
+    },
+    {
+      id: 4,
+      image: Intention,
+      title: "With Intention",
+      para: "Each Bowl is precisely tuned, intentionally crafted with it’s own energy, so you can match with your unique energy and purpose. "
+    }
+  ];
 
   return (
     <>
@@ -403,13 +448,250 @@ const Index = () => {
       </div>
       <div className="w-full bg-[#fee8dd]">
         {/* about section  */}
-        <AboutSectionComponent />
 
         {/* collection section  */}
 
         <CollectionSection categories={categories} loading={loading} />
 
-        {/* service section  */}
+        {/* Shop Crystal Bowls - design from screenshot */}
+        <section className="w-full py-10 md:py-14 ">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="flex w-full items-center justify-between mb-8 md:mb-10">
+              <h2 className={`${theSeasonsBold.className} text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] text-[#b8865a] font-normal`}>
+                Shop Crystal Bowls
+              </h2>
+              <Link
+                href="/shop?category=all"
+                className={`${theSeasonsBold.className} text-[#2d2d2d] flex items-center gap-1.5 text-[14px] sm:text-[16px] md:text-[18px] hover:opacity-80 transition-opacity`}
+              >
+                Shop All
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={1.5} />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full">
+              {loading ? (
+                <div className="col-span-2 md:col-span-4 flex justify-center py-16">
+                  <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#D5B584] border-t-transparent" />
+                </div>
+              ) : categories.length === 0 ? (
+                <div className="col-span-2 md:col-span-4 text-center py-12 text-[#2d2d2d]">
+                  <p>No featured categories available</p>
+                </div>
+              ) : (
+                categories.slice(0, 4).map((category) => (
+                  <div key={category._id} className="group">
+                    <Link href={`/shop?category=${category.slug}`}>
+                      <div className="relative w-full aspect-[4/5] md:aspect-square rounded-xl overflow-hidden bg-white/50">
+                        {category.imageUrl ? (
+                          <Image
+                            src={normalizeImageUrl(category.imageUrl)}
+                            alt={category.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#D5B584] to-[#FEC1A2] flex items-center justify-center">
+                            <span className="text-white text-lg font-medium text-center px-2">{category.name}</span>
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                    <p className={`${theSeasonsBold.className} pt-4 sm:pt-5 text-center text-[#2d2d2d] text-[14px] sm:text-[16px] md:text-[18px]`}>
+                      {category.name}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          <section className="w-full py-[80px]">
+            <div className="max-w-6xl mx-auto px-4">
+              <h2
+                className={`${theSeasonsBold.className} text-[32px] sm:text-[36px] md:text-[40px] lg:text-[44px] text-[#e6b884] font-normal mb-6`}
+              >
+                About Crystal Bowl Studio
+              </h2>
+              <div className="max-w-4xl">
+                <p
+                  className={`${touvloRegular.className} text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454] mb-5`}
+                >
+                  Crystal Bowl Studio is designed for modern, conscious living, rooted in
+                  ancient traditions and wisdom. Each bowl is made from 99.9% pure clear
+                  quartz crystal, carefully handcrafted and quality-checked, to produce
+                  clarity, rich, ethereal vibrations that supports meditation, relaxation,
+                  healing and transformational work.{" "}
+                  <span className="font-semibold">
+                    Our bowls are lightweight, travel-friendly,
+                  </span>{" "}
+                  and designed in the most{" "}
+                  <span className="font-semibold">
+                    elegant and luminous colours
+                  </span>{" "}
+                  to make your practice available and accessible, anywhere and anytime.{" "}
+                  <span className="font-semibold">
+                    Take them with you on your travels! No two bowls are ever the same.
+                  </span>
+                </p>
+                <p
+                  className={`${touvloRegular.className} text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]`}
+                >
+                  Each Singing Bowl is crafted with its own unique energy and intention,
+                  so you can choose one that matches your purpose, and aesthetic. Crystal
+                  Bowl Studio designs beautifully crafted sound healing tools that are
+                  easy to use and made to support and enhance modern life.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div className="max-w-6xl items-center flex flex-col mx-auto px-4 ">
+            <div className="flex w-full mb-4">
+
+              <h1
+                className={`${theSeasonsBold.className} text-[32px] sm:text-[36px] md:text-[40px] lg:text-[44px] text-[#e6b884] font-normal mb-6`}
+
+              >
+                What makes our Singing Bowls unique
+              </h1>
+            </div>
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-[54px] ">
+              {Icons.map((item) => (
+                <Link
+                  key={item.id}
+                  href="/shop"
+                  className="flex text-black flex-col items-center cursor-pointer hover:opacity-80 transition-opacity"
+                >
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 relative">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="leading-5">
+                    <p className={`${theSeasonsBold.className} pt-4 sm:pt-6 md:pt-[28px] text-center font-normal text-[14px] sm:text-[16px] md:text-[18px] pb-4 sm:pb-6 md:pb-8`}>
+                      {item.title}
+                    </p>
+                    <p className="text-center text-[9px] sm:text-[9.5px] md:text-[16px] font-light leading-[14px] sm:leading-[15px] md:leading-[22px]">
+                      {item.para}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+        {/* holder  */}
+
+
+        <AboutSectionComponent />
+
+
+
+
+        <section className="w-full py-10 md:py-14 ">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="flex w-full items-center justify-between mb-8 md:mb-10">
+              <h2 className={`${theSeasonsBold.className} text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] text-[#e6b884] font-normal`}>
+                Our Best Sellers (place holde)
+              </h2>
+              <Link
+                href="/shop"
+                className={`${theSeasonsBold.className} text-[#2d2d2d] flex items-center gap-1.5 text-[14px] sm:text-[16px] md:text-[18px] hover:opacity-80 transition-opacity`}
+              >
+                Shop All
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={1.5} />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full">
+              {loading ? (
+                <div className="col-span-2 md:col-span-4 flex justify-center py-16">
+                  <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#D5B584] border-t-transparent" />
+                </div>
+              ) : categories.length === 0 ? (
+                <div className="col-span-2 md:col-span-4 text-center py-12 text-[#2d2d2d]">
+                  <p>No featured categories available</p>
+                </div>
+              ) : (
+                categories.slice(0, 4).map((category) => (
+                  <div key={category._id} className="group">
+                    {/* <Link href={`/shop?category=${category.slug}`}> */}
+                    <div className="relative w-full aspect-[4/5] md:aspect-square rounded-xl overflow-hidden bg-white/50">
+                      {category.imageUrl ? (
+                        <Image
+                          src={normalizeImageUrl(category.imageUrl)}
+                          alt={category.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#D5B584] to-[#FEC1A2] flex items-center justify-center">
+                          <span className="text-white text-lg font-medium text-center px-2">{category.name}</span>
+                        </div>
+                      )}
+                    </div>
+                    {/* </Link> */}
+                    <p className={`${theSeasonsBold.className} pt-4 sm:pt-5 text-center text-[#2d2d2d] text-[14px] sm:text-[16px] md:text-[18px]`}>
+                      {category.name}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+
+          </div>
+        </section>
+
+
+<section>
+<div className="max-w-6xl mx-auto px-4">
+<div className="flex w-full items-end py-1 gap-5 " >
+
+<h1
+  className={`${theSeasonsBold.className} text-[32px]  flex items-end gap-5 sm:text-[36px] md:text-[40px] lg:text-[44px] text-[#e6b884] font-normal `}
+
+>We Ship Globally.    <Link href="/shipping-and-delivery">
+  <p className={`flex  ${theSeasonsBold.className}   text-[12px] gap-2   items-start text-[#1f3364]`}> Learn more about our Shipping & Delivery  <ArrowRight /></p>
+</Link></h1>
+
+
+</div>
+
+  </div>
+</section>
+
+
+
+<section className="w-full py-10 md:py-16 bg-[#fbe7db]">
+  <div className="max-w-6xl mx-auto px-4">
+    <div className="flex flex-col gap-4 md:gap-6">
+      <h1
+        className={`${theSeasonsBold.className} text-[32px] sm:text-[36px] md:text-[40px] lg:text-[44px] text-[#e6b884] font-normal`}
+      >
+        What is Sound Healing?
+      </h1>
+      <p className="text-[#545454] text-[14px] sm:text-[16px] md:text-[18px] leading-relaxed font-light">
+        Sound healing uses sound and vibration to support relaxation, focus, and balance. From a scientific
+        perspective, sound healing is most often discussed in relation to its effects on the nervous system and
+        stress regulation. Research in psychology and neuroscience shows that slow, continuous sounds can help reduce
+        stress-related arousal by engaging the parasympathetic nervous system, which is the part of the nervous system
+        responsible for rest, recovery, and regulation.
+      </p>
+      <p className="text-[#545454] text-[14px] sm:text-[16px] md:text-[18px] leading-relaxed font-light">
+        Singing bowls can significantly reduce tension, anxiety, fatigue, and depressed mood after a single session of
+        sound meditation.
+        <span className="italic"> – National Library of Medicine</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+      
+
 
         <section className="w-full py-[20px] md:py-[20px]  ">
           <div className="max-w-6xl mx-auto px-4">
@@ -432,7 +714,7 @@ const Index = () => {
                       ? session.imageUrl
                       : `data:image/jpeg;base64,${session.imageUrl}`
                     : ServiceImage1;
-                  
+
                   return (
                     <div
                       key={session._id}
@@ -488,15 +770,15 @@ const Index = () => {
                       />
                     </div>
 
-                      {/* Content - Right Side */}
-                      <div className="flex w-[40%] h-full justify-between flex-col">
-                        <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
-                          {item.title}
-                        </h3>
-                        <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
-                          <p className="text-black text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed line-clamp-2">
-                            {/* {item.description} */}
-                          </p>
+                    {/* Content - Right Side */}
+                    <div className="flex w-[40%] h-full justify-between flex-col">
+                      <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
+                        {item.title}
+                      </h3>
+                      <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
+                        <p className="text-black text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed line-clamp-2">
+                          {/* {item.description} */}
+                        </p>
                         {/* Arrow Button */}
                         <Link href="/services">
                           <button className="size-[18px] sm:size-[20px] md:size-[22px] rounded-full border-1 border-[#1C3163] flex items-center justify-center hover:bg-[#1C3163] transition-colors group">
@@ -531,7 +813,7 @@ const Index = () => {
                       ? session.imageUrl
                       : `data:image/jpeg;base64,${session.imageUrl}`
                     : YogaSection1;
-                  
+
                   return (
                     <div
                       key={session._id}
@@ -584,13 +866,13 @@ const Index = () => {
                       />
                     </div>
 
-                      {/* Content - Right Side */}
-                      <div className="flex w-[40%] h-full justify-between flex-col">
-                        <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
-                          {item.title}
-                        </h3>
-                        <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
-                          {/* Arrow Button */}
+                    {/* Content - Right Side */}
+                    <div className="flex w-[40%] h-full justify-between flex-col">
+                      <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
+                        {item.title}
+                      </h3>
+                      <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
+                        {/* Arrow Button */}
                         <Link href="/services">
                           <button className="size-[18px] sm:size-[20px] md:size-[22px] rounded-full border-1 border-[#1C3163] flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors group">
                             <ArrowRight
@@ -612,8 +894,8 @@ const Index = () => {
 
         <section className="w-full py-[0px] md:py-[0px]  relative b">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12 text-nowrap ">
-              What our Clients are saying..
+            <h2 className={`${theSeasonsBold.className} text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12 text-nowrap `}>
+              What our Clients are saying
             </h2>
           </div>
           <div
@@ -642,11 +924,11 @@ const Index = () => {
                       key={testimonial.id}
                       className="min-w-full flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center"
                     >
-                 
+
                       {/* Right Side - Testimonial Card */}
                       <div className="flex-1 w-full border border-[#D5B584] rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[200px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
                         <div className="animate-fadeIn">
-                          <blockquote className="text-[#545454]  text-[12px] sm:text-[12px] md:text-[14px] lg:text-[14px] font-light leading-relaxed mb-6 md:mb-8 italic">
+                          <blockquote className={`${touvloRegular.className} text-[#545454]  text-[12px] sm:text-[12px] md:text-[14px] lg:text-[14px] font-light leading-relaxed mb-6 md:mb-8 `}>
                             &ldquo;{testimonial.testimonial}&rdquo;
                           </blockquote>
 
@@ -779,11 +1061,10 @@ const Index = () => {
                     <button
                       key={index}
                       onClick={() => setTestimonialCurrentIndex(index)}
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        index === testimonialCurrentIndex
-                          ? "bg-[#D5B584] w-8"
-                          : "bg-[#D5B584]/30 w-2"
-                      }`}
+                      className={`h-2 rounded-full transition-all duration-300 ${index === testimonialCurrentIndex
+                        ? "bg-[#D5B584] w-8"
+                        : "bg-[#D5B584]/30 w-2"
+                        }`}
                       aria-label={`Go to testimonial ${index + 1}`}
                     />
                   ))}
@@ -797,10 +1078,19 @@ const Index = () => {
 
         <section className="w-full py-[40px] md:py-[10px] ">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12">
-              Upcoming Events
-            </h2>
+            <div className="flex w-full  justify-between items-center">
 
+              <h2 className={`${theSeasonsBold.className} text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12`}>
+                Upcoming Events
+              </h2>
+              <Link
+                href="/services"
+                className={`${theSeasonsBold.className} text-[#1C3163] inline-flex items-center gap-1 text-[14px] sm:text-[15px] md:text-[16px] font-normal`}
+              >
+                <span>Explore our Services</span>
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#1C3163]" />
+              </Link>
+            </div>
             {/* Events Grid */}
             {upcomingEvents.length === 0 ? (
               <div className="text-center py-12 text-[#1C3163]">
