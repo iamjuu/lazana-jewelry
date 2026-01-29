@@ -158,13 +158,13 @@ export default function EventsPage() {
 
     setDeletingId(id);
     const deletePromise = fetch(`/api/admin/events/${id}`, {
-      method: "DELETE",
+        method: "DELETE",
     }).then(async (response) => {
       const data = await response.json();
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Failed to delete event");
       }
-      setEvents(events.filter((e) => e._id !== id));
+        setEvents(events.filter((e) => e._id !== id));
       return data;
     });
 
@@ -204,8 +204,8 @@ export default function EventsPage() {
     // Clean up object URL if it was created from local file
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
-    }
-    
+      }
+
     setFormData({ ...formData, image: "" });
     
     // If editing and we have original image, restore preview to original
@@ -215,7 +215,7 @@ export default function EventsPage() {
         setPreviewUrl(getImageUrl(currentEvent));
       }
     } else {
-      setPreviewUrl("");
+    setPreviewUrl("");
     }
     
     setSelectedImageFile(null);
@@ -983,16 +983,16 @@ export default function EventsPage() {
               {selectedImageFile && !formData.image && previewUrl && (
                 <div className="mt-2">
                   <div className="bg-zinc-800 border border-zinc-600 rounded-md p-3 mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1">
-                        <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
-                        <p className="text-xs text-zinc-400 mt-1">
-                          Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
-                        </p>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
+                      <p className="text-xs text-zinc-400 mt-1">
+                        Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
+                      </p>
                         <p className="text-xs text-yellow-500 mt-2">⚠️ Image will be uploaded when you save the form</p>
-                      </div>
-                      <button
-                        type="button"
+                    </div>
+                    <button
+                      type="button"
                         onClick={() => {
                           // Clean up object URL
                           if (previewUrl && previewUrl.startsWith('blob:')) {
@@ -1010,10 +1010,10 @@ export default function EventsPage() {
                           }
                         }}
                         className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
-                      >
+                    >
                         Remove
-                      </button>
-                    </div>
+                    </button>
+                  </div>
                   </div>
                   {/* Image Preview */}
                   <div className="relative w-full h-48 max-w-md rounded-md border border-zinc-600 overflow-hidden bg-zinc-900">

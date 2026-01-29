@@ -132,21 +132,21 @@ const PastEventDetailPage = () => {
              <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4 xl:gap-8 mb-3 sm:mb-4">
                {/* Title - Left Side */}
                <h1 className="text-[#D5B584] text-[32px] sm:text-[36px] md:text-[40px] lg:text-[48px] font-normal leading-tight xl:flex-1 xl:min-w-0 break-words">
-                 {pastEvent.title}
-               </h1>
-               
-               {/* Date and Time Details - Right Aligned */}
+               {pastEvent.title}
+             </h1>
+             
+             {/* Date and Time Details - Right Aligned */}
                <div className="flex justify-end xl:justify-end xl:flex-shrink-0">
-                 <div className="space-y-2 text-right">
+               <div className="space-y-2 text-right">
                    <p className="text-[#1C3163] text-[16px] md:text-[18px] font-normal whitespace-nowrap">
-                     {pastEvent.location}
-                   </p>
+                   {pastEvent.location}
+                 </p>
                    <p className="text-[#1C3163] text-[16px] md:text-[18px] font-light whitespace-nowrap">
-                     {formattedDate}
-                   </p>
+                   {formattedDate}
+                 </p>
                    <p className="text-[#1C3163] text-[16px] md:text-[18px] font-light whitespace-nowrap">
-                     {pastEvent.day} {pastEvent.time}
-                   </p>
+                   {pastEvent.day} {pastEvent.time}
+                 </p>
                  </div>
                </div>
              </div>
@@ -180,61 +180,61 @@ const PastEventDetailPage = () => {
                 {/* Unified Grid: Photos and Videos together */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   {/* Render Photos */}
-                  {photos.map((photo, index) => {
-                    const photoUrl = getImageUrl(photo);
-                    return (
+                     {photos.map((photo, index) => {
+                       const photoUrl = getImageUrl(photo);
+                       return (
                       <div key={`photo-${index}`} className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
-                        <img
-                          src={photoUrl}
-                          alt={`${pastEvent.title} - Photo ${index + 1}`}
+                           <img
+                             src={photoUrl}
+                             alt={`${pastEvent.title} - Photo ${index + 1}`}
                           className="w-full h-full object-cover"
-                        />
-                      </div>
-                    );
-                  })}
+                           />
+                         </div>
+                       );
+                     })}
                   
                   {/* Render Videos */}
                   {videos.map((video, index) => {
                     const isYouTube = video.includes('youtube.com') || video.includes('youtu.be');
-                    return (
+                         return (
                       <div key={`video-${index}`} className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-black">
                         {isYouTube ? (() => {
-                          let videoId = '';
-                          if (video.includes('youtube.com/watch?v=')) {
-                            videoId = video.split('v=')[1]?.split('&')[0] || '';
-                          } else if (video.includes('youtu.be/')) {
-                            videoId = video.split('youtu.be/')[1]?.split('?')[0] || '';
-                          }
-                          
-                          if (videoId) {
-                            return (
-                              <iframe
+                             let videoId = '';
+                             if (video.includes('youtube.com/watch?v=')) {
+                               videoId = video.split('v=')[1]?.split('&')[0] || '';
+                             } else if (video.includes('youtu.be/')) {
+                               videoId = video.split('youtu.be/')[1]?.split('?')[0] || '';
+                             }
+                             
+                             if (videoId) {
+                               return (
+                                 <iframe
                                 src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`}
                                 title={`${pastEvent.title} - Video ${index + 1}`}
-                                className="w-full h-full"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                              />
-                            );
-                          }
+                                   className="w-full h-full"
+                                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                   allowFullScreen
+                                 />
+                               );
+                             }
                           return null;
                         })() : (
-                          <video
-                            src={video}
+                             <video
+                               src={video}
                             autoPlay
                             muted
                             loop
                             playsInline
-                            controls
+                               controls
                             className="w-full h-full object-cover"
-                          >
-                            Your browser does not support the video tag.
-                          </video>
+                             >
+                               Your browser does not support the video tag.
+                             </video>
                         )}
-                      </div>
-                    );
-                  })}
-                </div>
+                               </div>
+                             );
+                           })}
+                         </div>
               </div>
             )}
           </div>

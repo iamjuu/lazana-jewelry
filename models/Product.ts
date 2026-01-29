@@ -23,6 +23,7 @@ const ProductSchema = new Schema<ProductType>(
     numberOfSets: { type: Number, required: false }, // Number of sets (only if isSet is true)
     newAddition: { type: Boolean, required: false, default: false }, // New addition checkbox
     featured: { type: Boolean, required: false, default: false }, // Featured checkbox
+    bestSelling: { type: Boolean, required: false, default: false }, // Best selling checkbox (max 4 products)
     tuning: { type: Number, required: false }, // Hz value like 20, 30 (number in Hz)
     relativeproduct: { type: Boolean, required: false, default: false }, // For universal products
     

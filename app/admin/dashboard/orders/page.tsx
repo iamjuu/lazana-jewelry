@@ -87,6 +87,17 @@ export default function OrdersPage() {
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedOrder) {
+        setSelectedOrder(null);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [selectedOrder]);
+
   useEffect(() => {
     // Reset to page 1 when filter changes, then fetch
     setCurrentPage(1);
@@ -785,7 +796,22 @@ export default function OrdersPage() {
 
       {/* Order Details Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={(e) => {
+            // Close modal when clicking on backdrop
+            if (e.target === e.currentTarget) {
+              setSelectedOrder(null);
+            }
+          }}
+          onKeyDown={(e) => {
+            // Close modal on ESC key
+            if (e.key === 'Escape') {
+              setSelectedOrder(null);
+            }
+          }}
+          tabIndex={-1}
+        >
           <div className="bg-zinc-800 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="sticky top-0 bg-zinc-900 p-6 border-b border-zinc-700">

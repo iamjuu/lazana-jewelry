@@ -18,6 +18,7 @@ type Product = {
   imageUrl?: string[];
   videoUrl?: string | string[];
   relativeproduct?: boolean;
+  bestSelling?: boolean;
 };
 
 export default function ProductsPage() {

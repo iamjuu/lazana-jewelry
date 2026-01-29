@@ -14,7 +14,42 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     
     const { id } = await context.params;
     const body = await req.json();
-    const { name, shortDescription, description, category, subcategory, price, discount, imageUrl, videoUrl, isSet, numberOfSets, newAddition, featured, tuning, octave, size, weight } = body;
+    const { name, shortDescription, description, category, subcategory, price, discount, imageUrl, videoUrl, isSet, numberOfSets, newAddition, featured, bestSelling, tuning, octave, size, weight } = body;
+
+    // Get current product to check if it's universal
+    const currentProduct = await Product.findById(id);
+    if (!currentProduct) {
+      return NextResponse.json(
+        { success: false, message: "Product not found" },
+        { status: 404 }
+      );
+    }
+    const isUniversalProduct = currentProduct.relativeproduct === true;
+
+    // Prevent universal products from being best selling
+    if (bestSelling !== undefined && bestSelling === true && isUniversalProduct) {
+      return NextResponse.json(
+        { success: false, message: "Universal products cannot be marked as best selling" },
+        { status: 400 }
+      );
+    }
+
+    // Validate max 4 best selling products (only if trying to set bestSelling to true)
+    if (bestSelling !== undefined && bestSelling === true && !isUniversalProduct) {
+      const currentBestSellingCount = await Product.countDocuments({ 
+        bestSelling: true, 
+        deleted: { $ne: true },
+        relativeproduct: { $ne: true }, // Exclude universal products
+        _id: { $ne: id } // Exclude current product
+      });
+      
+      if (currentBestSellingCount >= 4) {
+        return NextResponse.json(
+          { success: false, message: "Maximum 4 products can be marked as best selling. Please unmark another best selling product first." },
+          { status: 400 }
+        );
+      }
+    }
 
     // Validation
     if (name !== undefined && !name) {
@@ -227,6 +262,13 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     }
     if (newAddition !== undefined) updateData.newAddition = Boolean(newAddition);
     if (featured !== undefined) updateData.featured = Boolean(featured);
+    if (bestSelling !== undefined && !isUniversalProduct) {
+      updateData.bestSelling = Boolean(bestSelling);
+    } else if (bestSelling !== undefined && isUniversalProduct && bestSelling === true) {
+      // Don't allow setting bestSelling to true for universal products
+      // But allow setting it to false to unmark if somehow it was set before
+      updateData.bestSelling = false;
+    }
     if (tuning !== undefined) {
       if (tuning !== null && tuning !== "") {
         const tuningNum = typeof tuning === 'number' ? tuning : parseFloat(String(tuning));

@@ -86,17 +86,17 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-8 md:gap-[64px] items-center text-center">
-          <h3 className={`  ${theSeasonsBold.className}  text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#D5B584] italic`}>
+          <h3 className={`  ${theSeasonsBold.className}  text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#1c3163] `}>
             Ready To Begin Your
             <br className="hidden sm:block" /> Healing Journey?
           </h3>
 
           <div className="w-full max-w-[560px] flex flex-col gap-3 sm:gap-4">
             {/* Row 1 */}
-            <div className="grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4">
+            <div className={`grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4 ${touvloRegular.className}`}>
               <Link
                 href="/shop"
-                className="w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
+                className={`w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors ${touvloRegular.className}`}
               >
                 Shop Crystal Bowls
               </Link>
@@ -115,7 +115,7 @@ const Footer = () => {
             <div className="grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4">
               <Link
                 href="/book-a-session"
-                className="w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
+                className={`w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors ${touvloRegular.className}`}
               >
                 Book a Call
               </Link>
@@ -144,10 +144,10 @@ const Footer = () => {
 <div>
 <div className="max-w-6xl flex flex-col   md:flex-row py-[44px] mx-auto px-4 gap-8 md:gap-0">
 <div className="w-full  flex flex-col items-center justify-center">
-            <h2 className="text-[#D5B584] font-[400] text-center text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] mb-3 sm:mb-4">
+            <h2 className={`text-[#1c3163] font-[400] text-center text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] mb-3 sm:mb-4 ${theSeasonsBold.className}`}>
               Join our mailing list
             </h2>
-            <p className="text-black text-center  text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px]">
+            <p className={`text-[#545454] text-center  text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px] ${touvloRegular.className}`}>
               Be the first to know about special offers, new collections and stay up to date with all our magic!
             </p>
             <form onSubmit={handleSubscribe} className="w-full max-w-[500px] flex flex-col sm:flex-row gap-3 sm:gap-0">

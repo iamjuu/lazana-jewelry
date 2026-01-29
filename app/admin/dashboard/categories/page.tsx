@@ -102,7 +102,7 @@ export default function CategoriesPage() {
     // Clean up object URL if it was created from local file
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
-    }
+      }
     
     setFormData({ ...formData, image: "" });
     
@@ -110,7 +110,7 @@ export default function CategoriesPage() {
     if (editingCategory && originalImageUrl && !selectedImageFile) {
       setPreviewUrl(getImageUrl(originalImageUrl));
     } else {
-      setPreviewUrl("");
+    setPreviewUrl("");
     }
     
     setSelectedImageFile(null);
@@ -206,7 +206,7 @@ export default function CategoriesPage() {
         requestBody.imageUrl = originalImageUrl;
       }
       // Otherwise imageUrl stays as empty string (which will be saved in DB)
-
+      
       // Show saving toast
       const saveToastId = toast.loading(
         <div className="flex flex-col gap-2">
@@ -247,19 +247,19 @@ export default function CategoriesPage() {
       }
 
       toast.success(data.message || `Category ${isEdit ? 'updated' : 'created'} successfully`, { duration: 3000 });
-      setFormData({ name: "", image: "", isFeatured: false });
+        setFormData({ name: "", image: "", isFeatured: false });
       
       // Clean up object URL if it was created from local file
       if (previewUrl && previewUrl.startsWith('blob:')) {
         URL.revokeObjectURL(previewUrl);
       }
       
-      setPreviewUrl("");
-      setShowAddForm(false);
-      setEditingCategory(null);
+        setPreviewUrl("");
+        setShowAddForm(false);
+        setEditingCategory(null);
       setOriginalImageUrl("");
       setSelectedImageFile(null);
-      fetchCategories();
+        fetchCategories();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : `Failed to ${editingCategory ? 'update' : 'create'} category`;
       toast.error(errorMessage, { duration: 4000 });
@@ -331,7 +331,7 @@ export default function CategoriesPage() {
     if (!confirmed) return;
 
     const deletePromise = fetch(`/api/admin/categories/${categoryId}`, {
-      method: "DELETE",
+        method: "DELETE",
     }).then(async (response) => {
       const data = await response.json();
       if (!data.success) {
@@ -450,16 +450,16 @@ export default function CategoriesPage() {
                 {selectedImageFile && !formData.image && previewUrl && (
                   <div className="mt-2">
                     <div className="bg-zinc-700 border border-zinc-600 rounded-md p-3 mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1">
-                          <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
-                          <p className="text-xs text-zinc-400 mt-1">
-                            Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
-                          </p>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <p className="text-sm text-white font-medium">📁 {selectedImageFile.name}</p>
+                        <p className="text-xs text-zinc-400 mt-1">
+                          Size: {(selectedImageFile.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
                           <p className="text-xs text-yellow-500 mt-2">⚠️ Image will be uploaded when you save the form</p>
-                        </div>
-                        <button
-                          type="button"
+                      </div>
+                      <button
+                        type="button"
                           onClick={() => {
                             if (previewUrl && previewUrl.startsWith('blob:')) {
                               URL.revokeObjectURL(previewUrl);
@@ -472,9 +472,9 @@ export default function CategoriesPage() {
                             }
                           }}
                           className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
-                        >
+                      >
                           Remove
-                        </button>
+                      </button>
                       </div>
                     </div>
                     {/* Image Preview */}

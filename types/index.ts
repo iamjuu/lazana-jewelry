@@ -62,6 +62,7 @@ export interface Product extends WithTimestamps {
   numberOfSets?: number; // Number of sets (only if isSet is true)
   newAddition?: boolean; // New addition checkbox
   featured?: boolean; // Featured checkbox
+  bestSelling?: boolean; // Best selling checkbox (max 4 products)
   tuning?: number; // Hz value like 20, 30 (number in Hz)
   relativeproduct?: boolean; // Checkbox field (true/false)
   octave?: '3rd octave' | '4th octave'; // Dropdown: 3rd octave or 4th octave

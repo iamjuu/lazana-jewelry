@@ -1,13 +1,20 @@
 import React from "react";
 import Image from "next/image";
 import localFont from "next/font/local";
-import { AboutNew1 } from "@/public/assets";
+// import { AboutNew1 } from "@/public/assets";
+
+// Use public/ asset path (recommended) so Next serves it correctly
+const founderImageSrc = "/assets/images/about/founder.jpg";
 
 const theSeasonsBold = localFont({
   src: "../../../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/fonnts.com-513211/fonts/fonnts.com-theseasons-bd.otf",
   display: "swap",
 });
 
+const touvloRegular = localFont({
+  src: "../../../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/touvlo-regular-maisfontes.464c/touvlo-regular.otf",
+  display: "swap",
+});
 const AboutSectionComponent = () => {
   return (
     <section className="w-full  px-4 md:px-0 py-[4px] ">
@@ -15,14 +22,10 @@ const AboutSectionComponent = () => {
         <div className="flex   flex-col w-full ">
           {/* Section Title */}
           <h2
-  className={`${theSeasonsBold.className} text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal`}
->
-  Founder{" "}
-  <span style={{ fontFamily: "var(--font-montserrat)" }}>
-    '
-  </span>
-  s Note
-</h2>
+            className={`${theSeasonsBold.className} text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal`}
+          >
+            Founder's Note
+          </h2>
 
 
           {/* Content Container */}
@@ -56,27 +59,33 @@ const AboutSectionComponent = () => {
                   and aesthetic as a healer.
                 </p> */}
 
-                <p className="text-[#545454]">
-                  Crystal Bowl Studio was founded by Francesca Wong, a former
-                  corporate executive with experience at KPMG, Citibank, Alibaba,
-                  and Estée Lauder. After over a decade in global finance,
-                  ecommerce, and luxury beauty, she journeyed from boardrooms to a
-                  vision: &quot;To create a range of crystal singing bowls that honour
-                  beauty, premium crystal quality and sound, with powerful
-                  resonance, at a more affordable price.&quot; Her mission is to make the
-                  power of Sound Healing accessible to healers and practitioners all
-                  over the world, anywhere anytime. Crystal Bowl Studio was born
-                  from the belief that healing tools should be well-crafted,
-                  intentional, and accessible. Objects that support presence,
-                  ritual, and connection in everyday life. Each bowl is designed not
-                  only to aesthetically sound exquisite, but to feel purposeful in
-                  the hands of the person using it. This work is an offering to
-                  practitioners, teachers, and seekers around the world, who wish to
-                  experience and share the power of sound healing with ease,
-                  simplicity, beauty, and integrity.
+                <p className={`${touvloRegular.className} text-[#545454]`}>
+                  Welcome to Crystal Bowl Studio.
                 </p>
-                <p className="text-[#545454]">
-                  May these bowls be a bridge to your highest self. - Francesca
+
+                <p className={`${touvloRegular.className} text-[#545454]`}>
+                  Crystal Bowl Studio was founded by Francesca Wong, a former Corporate Executive with experience at
+                  KPMG, Citibank, Alibaba, and Estée Lauder. After over a decade in global finance, e-commerce, and
+                  luxury beauty, she embarked on a vision:
+                </p>
+
+                <p
+                  className={`${touvloRegular.className} text-[#545454] text-center font-semibold mt-2 mb-2`}
+                >
+                  "To make Sound Healing accessible, anywhere and anytime."
+                </p>
+
+                <p className={`${touvloRegular.className} text-[#545454]`}>
+                  Her mission is to make the power of Sound Healing accessible all over the world, anywhere anytime.
+                  Crystal Bowl Studio was born from the belief that healing tools should be well-crafted, intentional,
+                  and accessible. Each bowl is designed to aesthetically sound exquisite, and feel purposeful in the
+                  hands of the person using it. This work is an offering to practitioners and seekers around the world,
+                  who wish to experience and share the power of Sound Healing with ease, simplicity, beauty, and
+                  integrity.
+                </p>
+
+                <p className={`${touvloRegular.className} text-[#545454]`}>
+                  May these bowls be a bridge to your best self. - Francesca
                 </p>
               </div>
             </div>
@@ -85,8 +94,10 @@ const AboutSectionComponent = () => {
             <div className="relative w-full lg:w-[35%] xl:w-[40%] flex flex-row sm:flex-row  gap-2 ">
               <div className="w-full h-full lg:max-w-none">
                 <Image
-                  src={AboutNew1}
+                  src={founderImageSrc}
                   alt="about"
+                  width={900}
+                  height={1200}
                   className="w-full h-full max-h-[400px] lg:max-h-[500px] object-contain"
                 />
               </div>
@@ -99,17 +110,14 @@ const AboutSectionComponent = () => {
               </div> */}
             </div>
           </div>
-          <div className="">
-            {/* Read More Link */}
-            {/* <div className="flex pt-6 sm:pt-7 md:pt-8 lg:pt-9 items-center"> */}
-              {/* <Link
-                href="/about"
-                className="inline-flex text-[#D5B584] items-center gap-2 text-[15px] sm:text-[16px] md:text-[17px] lg:text-[18px] font-medium hover:opacity-80 transition-opacity"
-              >
-                Read More
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#D5B584]" />
-              </Link> */}
-            {/* </div> */}
+          <div className="flex pt-6 sm:pt-7 md:pt-8 lg:pt-9 items-center">
+            {/* Read Our Story link to About page */}
+            <a
+              href="/about"
+              className={`${touvloRegular.className} inline-flex items-center gap-2 text-[15px] sm:text-[16px] md:text-[17px] lg:text-[18px] font-normal hover:opacity-80 transition-opacity text-[#1c3163]`}
+            >
+              Read Our Story →
+            </a>
           </div>
         </div>
         {/* Original Founder's Note - Commented Out (duplicate) */}
@@ -147,7 +155,7 @@ const AboutSectionComponent = () => {
           </div>
         </div> */}
         <div className="mt-1">
-          <div>
+          {/* <div>
             <h1  className={`${theSeasonsBold.className} text-[24px] sm:text-[28px] md:text-[36px] lg:text-[32px] xl:text-[32px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal`}>About Crystal Bowl Studio</h1>
             <p 
                className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed md:leading-loose"
@@ -168,7 +176,7 @@ const AboutSectionComponent = () => {
               - offering sound healing tools that are as beautiful to behold as
               they are powerful to experience.
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

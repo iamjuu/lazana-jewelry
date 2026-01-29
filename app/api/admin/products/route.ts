@@ -11,10 +11,35 @@ export async function POST(req: NextRequest) {
     await connectDB();
     
     const body = await req.json();
-    const { name, shortDescription, description, category, subcategory, price, discount, imageUrl, videoUrl, isSet, numberOfSets, newAddition, featured, tuning, octave, size, weight, relativeproduct } = body;
+    const { name, shortDescription, description, category, subcategory, price, discount, imageUrl, videoUrl, isSet, numberOfSets, newAddition, featured, bestSelling, tuning, octave, size, weight, relativeproduct } = body;
 
     // Validation
     const isUniversalProduct = relativeproduct === true;
+    
+    // Prevent universal products from being best selling
+    if (isUniversalProduct && bestSelling === true) {
+      return NextResponse.json(
+        { success: false, message: "Universal products cannot be marked as best selling" },
+        { status: 400 }
+      );
+    }
+    
+    // Validate max 4 best selling products (only if trying to set bestSelling to true)
+    if (bestSelling === true && !isUniversalProduct) {
+      const currentBestSellingCount = await Product.countDocuments({ 
+        bestSelling: true, 
+        deleted: { $ne: true },
+        relativeproduct: { $ne: true } // Exclude universal products
+      });
+      
+      // Creating new product - check if we can add it
+      if (currentBestSellingCount >= 4) {
+        return NextResponse.json(
+          { success: false, message: "Maximum 4 products can be marked as best selling. Please unmark another best selling product first." },
+          { status: 400 }
+        );
+      }
+    }
     
     if (!name) {
       return NextResponse.json(
@@ -211,6 +236,7 @@ export async function POST(req: NextRequest) {
       }
       if (newAddition !== undefined) productData.newAddition = Boolean(newAddition);
       if (featured !== undefined) productData.featured = Boolean(featured);
+      if (bestSelling !== undefined) productData.bestSelling = Boolean(bestSelling);
       if (tuning !== undefined && tuning !== null) {
         const tuningNum = typeof tuning === 'number' ? tuning : parseFloat(String(tuning));
         if (!isNaN(tuningNum)) productData.tuning = tuningNum;

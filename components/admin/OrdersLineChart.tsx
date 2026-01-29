@@ -23,7 +23,7 @@ export default function OrdersLineChart({ data }: OrdersLineChartProps) {
   const pendingData = data.map(item => item.pending);
   const cancelledData = data.map(item => item.cancelled);
 
-  return (
+        return (
     <div className="w-full" style={{ height: '300px' }}>
       <LineChart
         width={undefined}

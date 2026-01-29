@@ -345,14 +345,14 @@ const Index = () => {
       if (data.success && data.data) {
         // Filter featured corporate sessions (limit 3)
         const corporate = data.data
-          .filter((session: Session) =>
+          .filter((session: Session) => 
             session.sessionType === "corporate" && session.featured === true
           )
           .slice(0, 3);
-
+        
         // Filter featured private sessions (limit 3)
         const privateSessions = data.data
-          .filter((session: Session) =>
+          .filter((session: Session) => 
             session.sessionType === "private" && session.featured === true
           )
           .slice(0, 3);
@@ -426,9 +426,12 @@ const Index = () => {
 
           <div className="relative">
             <h1
-              className={`${ivyMode.className} text-center pb-[60px] sm:pb-[80px] md:pb-[100px] lg:pb-[120px] px-4 text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[50px] italic leading-tight`}
+              className={`${theSeasonsBold.className} text-center pb-[60px] sm:pb-[80px] md:pb-[100px] lg:pb-[120px] px-4 text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[50px]  leading-tight`}
             >
-              The go-to crystal bowls for <br /> sound healers worldwide.
+
+             
+              Crystal Singing Bowls for 
+              <br /> Sound Healing  <span style={{ fontFamily: "var(--font-montserrat)" }}>{"&"}</span> Meditation.
             </h1>
 
             {/* Mute/Unmute Button */}
@@ -492,12 +495,12 @@ const Index = () => {
                           />
                         ) : (
                           <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#D5B584] to-[#FEC1A2] flex items-center justify-center">
-                            <span className="text-white text-lg font-medium text-center px-2">{category.name}</span>
+                            <span className="text-white text-lg font-medium text-center px-2 text-[#1c3163]">{category.name}</span>
                           </div>
                         )}
                       </div>
                     </Link>
-                    <p className={`${theSeasonsBold.className} pt-4 sm:pt-5 text-center text-[#2d2d2d] text-[14px] sm:text-[16px] md:text-[18px]`}>
+                    <p className={`${theSeasonsBold.className} pt-4 sm:pt-5 text-center  text-[14px] sm:text-[16px] md:text-[18px] text-[#1c3163]`}>
                       {category.name}
                     </p>
                   </div>
@@ -572,7 +575,7 @@ const Index = () => {
                     />
                   </div>
                   <div className="leading-5">
-                    <p className={`${theSeasonsBold.className} pt-4 sm:pt-6 md:pt-[28px] text-center font-normal text-[14px] sm:text-[16px] md:text-[18px] pb-4 sm:pb-6 md:pb-8`}>
+                    <p className={`${theSeasonsBold.className} pt-4 sm:pt-6 md:pt-[28px] text-center font-normal text-[14px] sm:text-[16px] md:text-[18px] pb-4 sm:pb-6 md:pb-8 text-[#1c3163]`}>
                       {item.title}
                     </p>
                     <p className="text-center text-[9px] sm:text-[9.5px] md:text-[16px] font-light leading-[14px] sm:leading-[15px] md:leading-[22px]">
@@ -666,7 +669,7 @@ const Index = () => {
 
 
 
-<section className="w-full py-10 md:py-16 bg-[#fbe7db]">
+<section className="w-full py-10 md:py-16 bg-[fee8dd]">
   <div className="max-w-6xl mx-auto px-4">
     <div className="flex flex-col gap-4 md:gap-6">
       <h1
@@ -686,6 +689,15 @@ const Index = () => {
         sound meditation.
         <span className="italic"> – National Library of Medicine</span>
       </p>
+      <div className="pt-4">
+        <Link
+          href="/about"
+          className={`${theSeasonsBold.className} inline-flex items-center gap-2 text-[14px] sm:text-[16px] md:text-[18px] text-[#1C3163] hover:opacity-80 transition-opacity`}
+        >
+          Learn more about Sound Healing
+          <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+        </Link>
+      </div>
     </div>
   </div>
 </section>
@@ -693,7 +705,7 @@ const Index = () => {
       
 
 
-        <section className="w-full py-[20px] md:py-[20px]  ">
+        <section className="w-full py-[20px] md:py-[0px]  ">
           <div className="max-w-6xl mx-auto px-4">
             {/* Header */}
             <div className="mb-8 md:mb-12 flex    flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]  ">
@@ -714,7 +726,7 @@ const Index = () => {
                       ? session.imageUrl
                       : `data:image/jpeg;base64,${session.imageUrl}`
                     : ServiceImage1;
-
+                  
                   return (
                     <div
                       key={session._id}
@@ -770,15 +782,15 @@ const Index = () => {
                       />
                     </div>
 
-                    {/* Content - Right Side */}
-                    <div className="flex w-[40%] h-full justify-between flex-col">
-                      <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
-                        {item.title}
-                      </h3>
-                      <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
-                        <p className="text-black text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed line-clamp-2">
+                      {/* Content - Right Side */}
+                      <div className="flex w-[40%] h-full justify-between flex-col">
+                        <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
+                          <p className="text-black text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed line-clamp-2">
                           {/* {item.description} */}
-                        </p>
+                          </p>
                         {/* Arrow Button */}
                         <Link href="/services">
                           <button className="size-[18px] sm:size-[20px] md:size-[22px] rounded-full border-1 border-[#1C3163] flex items-center justify-center hover:bg-[#1C3163] transition-colors group">
@@ -813,7 +825,7 @@ const Index = () => {
                       ? session.imageUrl
                       : `data:image/jpeg;base64,${session.imageUrl}`
                     : YogaSection1;
-
+                  
                   return (
                     <div
                       key={session._id}
@@ -866,13 +878,13 @@ const Index = () => {
                       />
                     </div>
 
-                    {/* Content - Right Side */}
-                    <div className="flex w-[40%] h-full justify-between flex-col">
-                      <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
-                        {item.title}
-                      </h3>
-                      <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
-                        {/* Arrow Button */}
+                      {/* Content - Right Side */}
+                      <div className="flex w-[40%] h-full justify-between flex-col">
+                        <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
+                          {/* Arrow Button */}
                         <Link href="/services">
                           <button className="size-[18px] sm:size-[20px] md:size-[22px] rounded-full border-1 border-[#1C3163] flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors group">
                             <ArrowRight
@@ -924,7 +936,7 @@ const Index = () => {
                       key={testimonial.id}
                       className="min-w-full flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center"
                     >
-
+                 
                       {/* Right Side - Testimonial Card */}
                       <div className="flex-1 w-full border border-[#D5B584] rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[200px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
                         <div className="animate-fadeIn">
@@ -1062,9 +1074,9 @@ const Index = () => {
                       key={index}
                       onClick={() => setTestimonialCurrentIndex(index)}
                       className={`h-2 rounded-full transition-all duration-300 ${index === testimonialCurrentIndex
-                        ? "bg-[#D5B584] w-8"
-                        : "bg-[#D5B584]/30 w-2"
-                        }`}
+                          ? "bg-[#D5B584] w-8"
+                          : "bg-[#D5B584]/30 w-2"
+                      }`}
                       aria-label={`Go to testimonial ${index + 1}`}
                     />
                   ))}
@@ -1081,8 +1093,8 @@ const Index = () => {
             <div className="flex w-full  justify-between items-center">
 
               <h2 className={`${theSeasonsBold.className} text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-12`}>
-                Upcoming Events
-              </h2>
+              Upcoming Events
+            </h2>
               <Link
                 href="/services"
                 className={`${theSeasonsBold.className} text-[#1C3163] inline-flex items-center gap-1 text-[14px] sm:text-[15px] md:text-[16px] font-normal`}
@@ -1158,7 +1170,7 @@ const Index = () => {
                         <h3 className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight mb-2 uppercase tracking-wide">
                           {event.title}
                         </h3>
-                        <p className="text-gray-700 text-[12px] sm:text-[13px] md:text-[14px] font-light">
+                        <p className="text-gray-700 text-[12px] sm:text-[13px] md:text-[14px] font-light text-[#545454]">
                           {formattedFullDate}
                           <span className="whitespace-nowrap">{timeDisplay}</span>
                         </p>

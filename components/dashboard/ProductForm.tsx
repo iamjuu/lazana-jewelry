@@ -31,6 +31,7 @@
       numberOfSets?: number;
       newAddition?: boolean;
       featured?: boolean;
+      bestSelling?: boolean;
       tuning?: string;
       octave?: '3rd octave' | '4th octave';
       size?: string;
@@ -73,6 +74,7 @@
       numberOfSets: initialData?.numberOfSets ? String(initialData.numberOfSets) : "",
       newAddition: initialData?.newAddition || false,
       featured: initialData?.featured || false,
+      bestSelling: initialData?.bestSelling || false,
       tuning: initialData?.tuning ? String(initialData.tuning) : "",
       octave: initialData?.octave || "",
       size: initialData?.size || "",
@@ -211,8 +213,8 @@
           newImages[index] = normalizeImageUrl(originalImages[index]);
           newFormImages[index] = originalImages[index];
         } else {
-          newImages.splice(index, 1);
-          newFormImages.splice(index, 1);
+        newImages.splice(index, 1);
+        newFormImages.splice(index, 1);
         }
         setUploadedImages(newImages);
         setFormData({ ...formData, images: newFormImages });
@@ -233,20 +235,20 @@
       setPendingImageFiles(newPendingFiles);
       
       // Clear existing image URL at this index (will be replaced after upload)
-      const newImages = [...uploadedImages];
-      const newFormImages = [...formData.images];
-      
-      while (newImages.length <= index) {
-        newImages.push("");
-        newFormImages.push("");
-      }
-      
+        const newImages = [...uploadedImages];
+        const newFormImages = [...formData.images];
+        
+        while (newImages.length <= index) {
+          newImages.push("");
+          newFormImages.push("");
+        }
+        
       // Use local file preview (not uploaded to S3 yet)
       newImages[index] = URL.createObjectURL(file);
       newFormImages[index] = ""; // Will be set to S3 URL after upload
-      
-      setUploadedImages(newImages);
-      setFormData({ ...formData, images: newFormImages });
+        
+        setUploadedImages(newImages);
+        setFormData({ ...formData, images: newFormImages });
     };
 
     const handleImageRemove = (index: number) => {
@@ -320,20 +322,20 @@
       setPendingVideoFiles(newPendingFiles);
       
       // Clear existing video URL at this index (will be replaced after upload)
-      const newVideos = [...uploadedVideos];
-      const newFormVideos = [...formData.videos];
-      
-      while (newVideos.length <= index) {
-        newVideos.push("");
-        newFormVideos.push("");
-      }
-      
+        const newVideos = [...uploadedVideos];
+        const newFormVideos = [...formData.videos];
+        
+        while (newVideos.length <= index) {
+          newVideos.push("");
+          newFormVideos.push("");
+        }
+        
       // Use local file preview (not uploaded to S3 yet)
       newVideos[index] = URL.createObjectURL(file);
       newFormVideos[index] = ""; // Will be set to S3 URL after upload
-      
-      setUploadedVideos(newVideos);
-      setFormData({ ...formData, videos: newFormVideos });
+        
+        setUploadedVideos(newVideos);
+        setFormData({ ...formData, videos: newFormVideos });
     };
 
     // Video upload removed - will happen during form submission only
@@ -352,8 +354,8 @@
         newVideos[index] = normalizeVideoUrl(originalVideos[index]);
         newFormVideos[index] = originalVideos[index];
       } else {
-        newVideos.splice(index, 1);
-        newFormVideos.splice(index, 1);
+      newVideos.splice(index, 1);
+      newFormVideos.splice(index, 1);
       }
       
       setUploadedVideos(newVideos);
@@ -602,6 +604,7 @@
             numberOfSets: isUniversalProduct ? undefined : (formData.isSet && formData.numberOfSets ? parseInt(formData.numberOfSets) : undefined),
             newAddition: isUniversalProduct ? undefined : (formData.newAddition || undefined),
             featured: isUniversalProduct ? undefined : (formData.featured || undefined),
+            bestSelling: isUniversalProduct ? undefined : (formData.bestSelling || undefined),
             tuning: isUniversalProduct ? undefined : (formData.tuning ? parseFloat(formData.tuning) : undefined),
             octave: isUniversalProduct ? undefined : (formData.octave || undefined),
             size: isUniversalProduct ? undefined : (formData.size.trim() || undefined),
@@ -899,6 +902,25 @@
             </div>
 
             <div className="space-y-1">
+              <label htmlFor="product-best-selling" className="flex items-center gap-2 text-sm font-medium text-white">
+                <input
+                  id="product-best-selling"
+                  type="checkbox"
+                  checked={formData.bestSelling}
+                  disabled={isUniversalProduct}
+                  onChange={(e) => setFormData({ ...formData, bestSelling: e.target.checked })}
+                  className="w-4 h-4 text-white bg-zinc-900 border-zinc-600 rounded focus:ring-white focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+                Best Selling
+              </label>
+              <p className="text-xs text-zinc-400">
+                {isUniversalProduct 
+                  ? "Universal products cannot be marked as best selling" 
+                  : "Mark this product as best selling (max 4 products)"}
+              </p>
+            </div>
+
+            <div className="space-y-1">
               <label htmlFor="product-tuning" className="text-sm font-medium text-white">
                 Tuning (Hz)
               </label>
@@ -1079,14 +1101,14 @@
                 {/* Show pending file preview */}
                 {pendingVideoFiles[index] && !formData.videos[index] && uploadedVideos[index] && (
                   <div className="space-y-2">
-                    <div className="p-3 bg-zinc-800 rounded-md border border-zinc-600">
-                      <p className="text-sm text-zinc-300">
-                        📁 Selected: <span className="text-white">{pendingVideoFiles[index]?.name}</span>
-                      </p>
-                      <p className="text-xs text-zinc-400 mt-1">
-                        Size: {((pendingVideoFiles[index]?.size || 0) / (1024 * 1024)).toFixed(2)} MB
-                      </p>
-                      <p className="text-xs text-yellow-400 mt-1">
+                  <div className="p-3 bg-zinc-800 rounded-md border border-zinc-600">
+                    <p className="text-sm text-zinc-300">
+                      📁 Selected: <span className="text-white">{pendingVideoFiles[index]?.name}</span>
+                    </p>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      Size: {((pendingVideoFiles[index]?.size || 0) / (1024 * 1024)).toFixed(2)} MB
+                    </p>
+                    <p className="text-xs text-yellow-400 mt-1">
                         ⚠️ Video will be uploaded when you save the form
                       </p>
                     </div>

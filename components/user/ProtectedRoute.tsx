@@ -43,10 +43,10 @@ export default function ProtectedRoute({
       if (!token && requireAuth) {
         // Only show toast and redirect if not already on the redirect page and toast not shown yet
         if (pathname !== redirectTo && !toastShownRef.current) {
-          toast.error("Please login to continue");
+        toast.error("Please login to continue");
           toastShownRef.current = true; // Mark toast as shown
           redirectingRef.current = true; // Mark as redirecting
-          router.push(redirectTo);
+        router.push(redirectTo);
         }
         return;
       }
