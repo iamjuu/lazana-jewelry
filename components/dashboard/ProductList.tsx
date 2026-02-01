@@ -18,6 +18,7 @@ type ProductListItem = {
   imageUrl?: string[];
   videoUrl?: string | string[];
   relativeproduct?: boolean;
+  bestSelling?: boolean;
 };
 
 type Props = {
@@ -137,6 +138,7 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
                         numberOfSets: (product as any).numberOfSets,
                         newAddition: (product as any).newAddition,
                         featured: (product as any).featured,
+                        bestSelling: (product as any).bestSelling,
                         tuning: (product as any).tuning,
                         octave: (product as any).octave,
                         size: (product as any).size,
@@ -144,6 +146,7 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
                       }}
                       onComplete={handleEditComplete}
                       onCancel={() => setEditingId(null)}
+                      isUniversalProduct={!!product.relativeproduct}
                     />
                   </td>
                 ) : (

@@ -77,14 +77,14 @@ const BlogPage = () => {
           {/* Gradient Overlay */}
           {/* <div className="absolute inset-0 bg-gradient-to-br from-[#D5B584]/80 via-[#FEC1A2]/70 to-[#FDECE2]/80"></div> */}
           {/* Content */}
-          <div className="relative z-10 h-full flex items-center justify-center">
+          <div className="relative z-10 h-full flex items-center justify-center font-seasons">
             <h1 className="text-white text-5xl md:text-6xl lg:text-7xl font-normal text-center drop-shadow-lg">
               Blog
             </h1>
           </div>
         </div>
 
-        <section className="w-full px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <section className="w-full px-4 sm:px-6 lg:px-8 py-12 md:py-16 font-touvlo">
           <div className="max-w-6xl mx-auto">
             {/* Blog Grid */}
             {loading ? (
@@ -117,7 +117,7 @@ const BlogPage = () => {
                                 src={imageUrl}
                                 alt={blog.title}
                                 fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                className="object-contain group-hover:scale-105 transition-transform duration-500"
                               />
                             )}
                           </div>
@@ -126,13 +126,13 @@ const BlogPage = () => {
                         {/* Blog Content */}
                         <div className="flex flex-col flex-1">
                           {/* Title */}
-                          <h2 className="text-[#1C3163] text-xl md:text-2xl font-bold mb-3 leading-tight group-hover:text-[#D5B584] transition-colors duration-200">
+                          <h2 className="text-[#1C3163] text-xl md:text-2xl font-bold mb-3 leading-tight group-hover:text-[#545454] transition-colors duration-200 font-seasons">
                             {blog.title}
                           </h2>
 
                           {/* Description with Read More aligned to right */}
                           <div className="flex items-start justify-between gap-2 ">
-                            <p className="text-black text-sm md:text-base leading-relaxed flex-1">
+                            <p className="text-[#545454] text-sm md:text-base leading-relaxed flex-1 text-[#545454] font-touvlo">
                               {excerpt}
                             </p>
                           
@@ -143,7 +143,7 @@ const BlogPage = () => {
                       <div className='flex justify-start'>
                       <Link 
                               href={`/blog/${blog._id}`}
-                              className="underline hover:text-[#D5B584] transition-colors duration-200 whitespace-nowrap flex-shrink-0 text-[#1C3163]"
+                              className="underline hover:text-[#545454] transition-colors duration-200 whitespace-nowrap flex-shrink-0 text-[#1C3163] font-touvlo"
                               onClick={(e) => e.stopPropagation()}
                             >
                               Read More

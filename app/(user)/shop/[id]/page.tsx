@@ -9,7 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/stores/useCart";
 import toast from "react-hot-toast";
-import localFont from "next/font/local";
+// Fonts are now defined in globals.css as font-seasons and font-touvlo
 
 type Product = {
   _id: string;
@@ -31,15 +31,6 @@ type MediaItem = {
   url: string;
   index: number;
 };
-const touvloRegular = localFont({
-  // From `app/(user)/shop/[id]` back to project root is `../../../../`
-  src: "../../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/touvlo-regular-maisfontes.464c/touvlo-regular.otf",
-  display: "swap",
-});
-const theSeasonsBold = localFont({
-  src: "../../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/fonnts.com-513211/fonts/fonnts.com-theseasons-bd.otf",
-  display: "swap",
-}); 
 // Magnifier Component
 const ImageMagnifier = ({ src, alt }: { src: string; alt: string }) => {
   const [magnifierStyle, setMagnifierStyle] = useState<React.CSSProperties>({});
@@ -396,22 +387,22 @@ const ProductDetailPage = () => {
       {/* Breadcrumb */}
       <div className="max-w-6xl mx-auto px-4 pt-4 pb-2">
         <nav className="flex items-center space-x-2 text-sm sm:text-base text-[#6B5D4F]">
-          <Link href="/" className="hover:text-[#D5B584] transition-colors ${theSeasonsBold.className} font-medium text-[#1c3163]">
-            <span className={`${theSeasonsBold.className} font-medium text-[#1c3163]`}>Home</span>
+          <Link href="/" className="font-seasons hover:text-[#D5B584] transition-colors font-medium text-[#1c3163]">
+            <span className="font-seasons font-medium text-[#1c3163]">Home</span>
           </Link>
           {product.category && typeof product.category === 'object' && product.category.name ? (
             <>
               <span>/</span>
               <Link 
                 href={`/shop?category=${product.category.slug}`} 
-                className={`hover:text-[#D5B584] text-[#1c3163] transition-colors ${theSeasonsBold.className}`}
+                className="font-seasons hover:text-[#D5B584] text-[#1c3163] transition-colors"
               >
                 {product.category.name}
               </Link>
               {product.subcategory && typeof product.subcategory === 'object' && product.subcategory.name && (
                 <>
                   <span>/</span>
-                  <span className={`text-[#1c3163] font-medium ${touvloRegular.className}`}>{product.subcategory.name}</span>
+                  <span className="font-touvlo text-[#1c3163] font-medium">{product.subcategory.name}</span>
                 </>
               )}
             </>
@@ -500,22 +491,22 @@ const ProductDetailPage = () => {
 
             {/* Right Side - Product Info */}
             <div className="flex flex-col">
-              <h1 className={`text-[#1C3163] text-[28px] sm:text-[32px] lg:text-[30px] font-normal mb-4 leading-tight ${theSeasonsBold.className}`}>
+              <h1 className="font-seasons text-[#1C3163] text-[28px] sm:text-[32px] lg:text-[30px] font-normal mb-4 leading-tight">
                 {product.name}
               </h1>
 
               <div className="mb-4">
                 {hasDiscount ? (
                   <div className="flex items-center gap-3">
-                    <p className={`text-gray-500 text-[24px] sm:text-[16px] line-through font-medium ${theSeasonsBold.className}`}>
+                    <p className="font-seasons text-gray-500 text-[24px] sm:text-[16px] line-through font-medium">
                       {originalPriceFormatted}
                     </p>
-                    <p className={`text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] font-medium ${theSeasonsBold.className}`}>
+                    <p className="font-seasons text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] font-medium">
                       {priceInDollars} USD
                     </p>
                   </div>
                 ) : (
-                  <p className={`text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] font-medium ${theSeasonsBold.className}`}>
+                  <p className="font-seasons text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] font-medium">
                     {priceInDollars} USD
                   </p>
                 )}
@@ -524,7 +515,7 @@ const ProductDetailPage = () => {
               {/* Short Description - Show after price */}
               {product.shortDescription && (
                 <div className="mb-6">
-                  <p className={`text-black text-[14px] sm:text-[15px] leading-relaxed ${touvloRegular.className}`}>
+                  <p className="font-touvlo text-black text-[14px] sm:text-[15px] leading-relaxed">
                     {product.shortDescription}
                   </p>
                 </div>
@@ -572,14 +563,14 @@ const ProductDetailPage = () => {
                 Learn how to play the crystal bowls
                 </h1> */}
               
-                  <h1 className={`text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[20px] font-medium mb-4 ${theSeasonsBold.className}`}>
+                  <h1 className="font-seasons text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[20px] font-medium mb-4">
                     Learn how to play the crystal bowls
                   </h1>
                   <Link href={`/shop/${relativeProduct._id}`}>
                 <div className="mb-8 border border-[#D5B584]/30 rounded-lg p-4 bg-white">
                   <div className="flex items-center gap-4">
                     {relativeProduct.imageUrl && relativeProduct.imageUrl.length > 0 && (
-                      <div className={`relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0 ${touvloRegular.className}`}>
+                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0">
                         <Image
                           src={normalizeImageUrl(relativeProduct.imageUrl[0])}
                           alt={relativeProduct.name}
@@ -590,10 +581,10 @@ const ProductDetailPage = () => {
                       </div>
                     )}
                     <div className="flex-1">
-                      <h4 className={`text-[#D5B584] text-[16px] font-medium mb-1 ${touvloRegular.className}`}>
+                      <h4 className="font-touvlo text-[#D5B584] text-[16px] font-medium mb-1">
                         {relativeProduct.name}
                       </h4>
-                      <p className={`text-[#D5B584] text-[14px] ${touvloRegular.className}`}>
+                      <p className="font-touvlo text-[#D5B584] text-[14px]">
                         {formatPrice(relativeProduct.price)}
                       </p>
                     </div>

@@ -1,30 +1,19 @@
 import React from "react";
 import Image from "next/image";
-import localFont from "next/font/local";
-// import { AboutNew1 } from "@/public/assets";
+// Fonts are now defined in globals.css as font-seasons and font-touvlo
 
 // Use public/ asset path (recommended) so Next serves it correctly
 const founderImageSrc = "/assets/images/about/founder.jpg";
-
-const theSeasonsBold = localFont({
-  src: "../../../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/fonnts.com-513211/fonts/fonnts.com-theseasons-bd.otf",
-  display: "swap",
-});
-
-const touvloRegular = localFont({
-  src: "../../../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/touvlo-regular-maisfontes.464c/touvlo-regular.otf",
-  display: "swap",
-});
 const AboutSectionComponent = () => {
   return (
-    <section className="w-full  px-4 md:px-0 py-[4px] ">
+    <section className="w-full  px-4 md:px-0 py-[0px] ">
       <div className="max-w-6xl mx-auto">
         <div className="flex   flex-col w-full ">
           {/* Section Title */}
           <h2
-            className={`${theSeasonsBold.className} text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal`}
+            className="font-seasons text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal"
           >
-            Founder's Note
+            Founder <span className="font-sans">'</span>s Note
           </h2>
 
 
@@ -59,23 +48,23 @@ const AboutSectionComponent = () => {
                   and aesthetic as a healer.
                 </p> */}
 
-                <p className={`${touvloRegular.className} text-[#545454]`}>
+                <p className="font-touvlo text-[#545454]">
                   Welcome to Crystal Bowl Studio.
                 </p>
 
-                <p className={`${touvloRegular.className} text-[#545454]`}>
+                <p className="font-touvlo text-[#545454]">
                   Crystal Bowl Studio was founded by Francesca Wong, a former Corporate Executive with experience at
                   KPMG, Citibank, Alibaba, and Estée Lauder. After over a decade in global finance, e-commerce, and
                   luxury beauty, she embarked on a vision:
                 </p>
 
                 <p
-                  className={`${touvloRegular.className} text-[#545454] text-center font-semibold mt-2 mb-2`}
+                  className="font-touvlo text-[#545454] text-center font-semibold mt-2 mb-2"
                 >
                   "To make Sound Healing accessible, anywhere and anytime."
                 </p>
 
-                <p className={`${touvloRegular.className} text-[#545454]`}>
+                <p className="font-touvlo text-[#545454]">
                   Her mission is to make the power of Sound Healing accessible all over the world, anywhere anytime.
                   Crystal Bowl Studio was born from the belief that healing tools should be well-crafted, intentional,
                   and accessible. Each bowl is designed to aesthetically sound exquisite, and feel purposeful in the
@@ -84,7 +73,7 @@ const AboutSectionComponent = () => {
                   integrity.
                 </p>
 
-                <p className={`${touvloRegular.className} text-[#545454]`}>
+                <p className="font-touvlo text-[#545454]">
                   May these bowls be a bridge to your best self. - Francesca
                 </p>
               </div>
@@ -110,11 +99,11 @@ const AboutSectionComponent = () => {
               </div> */}
             </div>
           </div>
-          <div className="flex pt-6 sm:pt-7 md:pt-8 lg:pt-9 items-center">
+          <div className="flex pt-6 sm:pt-7 md:pt-8 lg:pt-0 items-center">
             {/* Read Our Story link to About page */}
             <a
               href="/about"
-              className={`${touvloRegular.className} inline-flex items-center gap-2 text-[15px] sm:text-[16px] md:text-[17px] lg:text-[18px] font-normal hover:opacity-80 transition-opacity text-[#1c3163]`}
+              className="font-touvlo inline-flex items-center gap-2 text-[15px] sm:text-[16px] md:text-[17px] lg:text-[18px] font-normal hover:opacity-80 transition-opacity text-[#1c3163]"
             >
               Read Our Story →
             </a>

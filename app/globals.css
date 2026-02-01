@@ -98,3 +98,42 @@
   display: none;  /* Chrome, Safari and Opera */
 }
 
+/* Global Font Classes */
+/* The Seasons Bold Font */
+@font-face {
+  font-family: 'TheSeasons';
+  src: url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/fonnts.com-513211/fonts/fonnts.com-theseasons-bd.otf') format('opentype'),
+       url('/font/TheSeasons/TheSeasons-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Touvlo';
+  src: url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/touvlo-regular-maisfontes.464c/touvlo-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-season {
+  font-family: 'TheSeasons', serif;
+  font-weight: 700;
+}
+
+.font-touvlo {
+  font-family: 'Touvlo', sans-serif;
+  font-weight: 400;
+}
+/* Keep the old .font-seasons class for backward compatibility */
+.font-seasons {
+  font-family: "the-seasons", var(--font-playfair-display), serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.font-ivy {
+  font-family: var(--font-ivy-mode);
+}
+

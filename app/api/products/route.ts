@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
       mongoose.model('Subcategory');
     }
     const { searchParams } = new URL(req.url);
+    const bestSellingParam = searchParams.get("bestSelling");
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "20", 10);
     const skip = (page - 1) * limit;
@@ -67,6 +68,11 @@ export async function GET(req: NextRequest) {
     // New Addition filter
     if (newAddition === "true") {
       query.newAddition = true;
+    }
+
+    // Best Selling filter
+    if (bestSellingParam === "true") {
+      query.bestSelling = true;
     }
     
     // Weight filter

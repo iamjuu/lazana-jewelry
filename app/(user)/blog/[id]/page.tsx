@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { useParams, useRouter } from 'next/navigation'
-import Navbar from '@/components/user/Navbar'
-import Footer from '@/components/user/Footer'
-import { About2 } from '@/public/assets'
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import Navbar from "@/components/user/Navbar";
+import Footer from "@/components/user/Footer";
+import { About2 } from "@/public/assets";
 
 type ApiBlog = {
   _id: string;
@@ -19,21 +19,21 @@ type ApiBlog = {
 };
 
 const BlogDetailPage = () => {
-  const params = useParams()
-  const router = useRouter()
-  const blogId = params.id as string
-  const [blog, setBlog] = useState<ApiBlog | null>(null)
-  const [allBlogs, setAllBlogs] = useState<ApiBlog[]>([])
-  const [loading, setLoading] = useState(true)
-  const [currentIndex, setCurrentIndex] = useState(-1)
+  const params = useParams();
+  const router = useRouter();
+  const blogId = params.id as string;
+  const [blog, setBlog] = useState<ApiBlog | null>(null);
+  const [allBlogs, setAllBlogs] = useState<ApiBlog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(-1);
 
   // Format date like "Nov 14, 2025"
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      year: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
@@ -43,7 +43,7 @@ const BlogDetailPage = () => {
         setLoading(true);
         const response = await fetch(`/api/blogs/${blogId}`);
         const data = await response.json();
-        
+
         if (data.success && data.data) {
           setBlog(data.data);
         } else {
@@ -61,7 +61,7 @@ const BlogDetailPage = () => {
       try {
         const response = await fetch("/api/blogs");
         const data = await response.json();
-        
+
         if (data.success && data.data) {
           const blogs = data.data;
           setAllBlogs(blogs);
@@ -81,16 +81,15 @@ const BlogDetailPage = () => {
   }, [blogId, router]);
 
   // Get next and previous blogs
-  const nextBlog = currentIndex >= 0 && currentIndex < allBlogs.length - 1 
-    ? allBlogs[currentIndex + 1] 
-    : null;
-  const prevBlog = currentIndex > 0 
-    ? allBlogs[currentIndex - 1] 
-    : null;
+  const nextBlog =
+    currentIndex >= 0 && currentIndex < allBlogs.length - 1
+      ? allBlogs[currentIndex + 1]
+      : null;
+  const prevBlog = currentIndex > 0 ? allBlogs[currentIndex - 1] : null;
 
   if (loading) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
@@ -105,12 +104,15 @@ const BlogDetailPage = () => {
 
   if (!blog) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
             <p>Blog not found</p>
-            <Link href="/blog" className="text-[#D5B584] hover:underline mt-4 inline-block">
+            <Link
+              href="/blog"
+              className="text-[#D5B584] hover:underline mt-4 inline-block"
+            >
               Back to Blog
             </Link>
           </div>
@@ -123,10 +125,10 @@ const BlogDetailPage = () => {
   const formattedDate = formatDate(blog.createdAt);
 
   // Split description into paragraphs for better formatting
-  const paragraphs = blog.description.split('\n\n').filter(p => p.trim());
+  const paragraphs = blog.description.split("\n\n").filter((p) => p.trim());
 
   return (
-    <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <Navbar />
       <div className="w-full">
         <article className="w-full px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
@@ -149,7 +151,7 @@ const BlogDetailPage = () => {
                 <div className="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-[#D5B584]/30 group-hover:ring-[#D5B584] transition-all">
                   <Image
                     src={About2}
-                    alt={blog.name || 'Francesca Wong'}
+                    alt={blog.name || "Francesca Wong"}
                     width={56}
                     height={56}
                     className="w-full h-full object-cover"
@@ -157,44 +159,62 @@ const BlogDetailPage = () => {
                 </div>
                 <div>
                   <p className="text-[#1C3163] text-sm md:text-base">
-                    Written By <span className="text-[#D5B584] font-medium group-hover:underline">{ 'Francesca Wong'}</span>
+                    Written By{" "}
+                    <span className="text-[#D5B584] font-medium group-hover:underline">
+                      {"Francesca Wong"}
+                    </span>
                   </p>
                 </div>
               </Link>
             </div>
 
+            {/* Feature Image */}
+            {blog.imageUrl && (
+              <div className="w-full relative h-[300px] sm:h-[400px] md:h-[500px] mb-8 md:mb-6  overflow-hidden shadow-md">
+                <Image
+                  src={blog.imageUrl}
+                  alt={blog.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            )}
+
             {/* Content */}
             <div className="prose prose-lg max-w-none">
-              <div className="text-[#1C3163] text-base md:text-lg leading-relaxed space-y-6">
+              <div className="text-[#1C3163] text-base md:text-lg leading-relaxed space-y-4">
                 {paragraphs.length > 0 ? (
                   paragraphs.map((paragraph, index) => (
-                    <p key={index} className="whitespace-pre-line text-black">
+                    <p key={index} className="whitespace-pre-line text-touvlo text-[#545454]">
                       {paragraph}
                     </p>
                   ))
                 ) : (
-                  <p className="whitespace-pre-line text-black">{blog.description}</p>
+                  <p className="whitespace-pre-line text-[#545454] font-touvlo">
+                    {blog.description}
+                  </p>
                 )}
               </div>
             </div>
 
             {/* Author Signature */}
             <div className="mt-12 md:mt-16 pt-8 md:pt-12 border-t border-[#1C3163]/20">
-              <p className="text-[#1C3163] text-base md:text-lg font-medium">
-                {blog.name || 'Francesca Wong'}
+              <p className="text-[#1C3163] text-base md:text-lg font-medium ">
+                {blog.name || "Francesca Wong"}
               </p>
             </div>
 
             {/* Navigation to Next/Previous Blog */}
             {(nextBlog || prevBlog) && (
-              <div className="mt-12 md:mt-16 pt-8 md:pt-12 border-t border-[#1C3163]/20">
+              <div className="mt-12 md:mt-16 pt-6 md:pt-6 border-t border-[#1C3163]/20">
                 <div className="flex flex-col sm:flex-row justify-between gap-6">
                   {prevBlog ? (
-                    <Link 
+                    <Link
                       href={`/blog/${prevBlog._id}`}
                       className="group flex-1"
                     >
-                      <p className="text-[#1C3163] text-sm mb-2">Previous</p>
+                      <p className="text-[#1C3163] text-sm mb-2 font-seasons">Previous</p>
                       <p className="text-[#1C3163] text-lg md:text-xl font-medium group-hover:text-[#D5B584] transition-colors duration-200">
                         {prevBlog.title}
                       </p>
@@ -202,9 +222,9 @@ const BlogDetailPage = () => {
                   ) : (
                     <div className="flex-1"></div>
                   )}
-                  
+
                   {nextBlog && (
-                    <Link 
+                    <Link
                       href={`/blog/${nextBlog._id}`}
                       className="group flex-1 text-right sm:text-left sm:ml-auto"
                     >
@@ -222,7 +242,7 @@ const BlogDetailPage = () => {
       </div>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default BlogDetailPage
+export default BlogDetailPage;

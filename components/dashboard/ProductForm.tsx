@@ -604,7 +604,7 @@
             numberOfSets: isUniversalProduct ? undefined : (formData.isSet && formData.numberOfSets ? parseInt(formData.numberOfSets) : undefined),
             newAddition: isUniversalProduct ? undefined : (formData.newAddition || undefined),
             featured: isUniversalProduct ? undefined : (formData.featured || undefined),
-            bestSelling: isUniversalProduct ? undefined : (formData.bestSelling || undefined),
+            bestSelling: isUniversalProduct ? undefined : formData.bestSelling,
             tuning: isUniversalProduct ? undefined : (formData.tuning ? parseFloat(formData.tuning) : undefined),
             octave: isUniversalProduct ? undefined : (formData.octave || undefined),
             size: isUniversalProduct ? undefined : (formData.size.trim() || undefined),

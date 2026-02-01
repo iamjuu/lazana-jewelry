@@ -1,21 +1,25 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import localFont from "next/font/local";
+import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
-import { About1, About2, About3, HeroImage, UpcomingEvent1, AboutIMG6097, AboutCrystal } from "@/public/assets";
+import {
+  About1,
+  About2,
+  About3,
+  HeroImage,
+  UpcomingEvent1,
+  AboutIMG6097,
+  AboutCrystal,
+  PremiumQuality,
+  UniqueToYou,
+  Crystal,
+  Intention,
+} from "@/public/assets";
 import { AboutSkeleton, ImageWithShimmer } from "./components";
-
-const theSeasonsBold = localFont({
-  src: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/fonnts.com-513211/fonts/fonnts.com-theseasons-bd.otf",
-  display: "swap",
-});
-
-const touvloRegular = localFont({
-  src: "../../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/touvlo-regular-maisfontes.464c/touvlo-regular.otf",
-  display: "swap",
-});
+// Fonts are now defined in globals.css as font-seasons and font-touvlo
 
 const AboutPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -32,16 +36,16 @@ const AboutPage = () => {
   const Data = [
     {
       id: 1,
-      image: About1
+      image: About1,
     },
     {
       id: 2,
-      image: About2
+      image: About2,
     },
     {
       id: 3,
-      image: About3
-    }
+      image: About3,
+    },
   ];
 
   // // Show skeleton while loading
@@ -55,6 +59,35 @@ const AboutPage = () => {
   //   );
   // }
 
+  const Icons = [
+    {
+      id: 1,
+      image: PremiumQuality,
+      title: " Premium Craftsmanship",
+      para: "Each piece is precision-crafted, made from 100% pure clear quartz, our bowls produce quality sound and long-lasting resonance.",
+    },
+
+    {
+      id: 2,
+      image: UniqueToYou,
+      title: "Light Weight",
+      para: "Our bowls are light, durable, designed for travel-ready, portable anywhere, anytime in our protective cases",
+    },
+
+    {
+      id: 3,
+      image: Crystal,
+      title: "Made for You",
+      para: "Each bowl is unique and can be customised by chakra, note, frequency, colour, and design to make it uniquely yours.",
+    },
+    {
+      id: 4,
+      image: Intention,
+      title: "With Intention",
+      para: "Each Bowl is precisely tuned, intentionally crafted with it’s own energy, so you can match with your unique energy and purpose. ",
+    },
+  ];
+
   return (
     <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <div>
@@ -62,44 +95,70 @@ const AboutPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[40px] sm:py-[50px] md:py-[60px] lg:mt-[40px] lg:py-0">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center ">
           {/* Left Side - Content */}
           <div className="space-y-2 sm:space-y-3">
-            <h2
-              className={`${theSeasonsBold.className} text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight`}
-            >
+            <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight">
               About Crystal Singing Bowls
             </h2>
 
             <div className="space-y-4 sm:space-y-5 text-black">
-              <p
-                className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}
-              >
-                Crystal Singing Bowls are instruments of sound and vibration widely used in meditation, sound healing, yoga, and mindfulness practices. Unlike traditional metal singing bowls, which have centuries-old roots in the Himalayas, Crystal Singing Bowls are a more recent development. They emerged in the late twentieth century, drawing on advances in quartz crystal manufacturing and were later adopted by wellness practitioners for their clear, sustained tones and simplicity.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Crystal Singing Bowls are instruments of sound and vibration
+                widely used in meditation, sound healing, yoga, and mindfulness
+                practices. Unlike traditional metal singing bowls, which have
+                centuries-old roots in the Himalayas, Crystal Singing Bowls are
+                a more recent development. They emerged in the late twentieth
+                century, drawing on advances in quartz crystal manufacturing and
+                were later adopted by wellness practitioners for their clear,
+                sustained tones and simplicity.
               </p>
 
-              <p
-                className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}
-              >
-                Crystal singing bowls are made from quartz crystal, a material known for its stability and acoustic properties. When played, they produce long-lasting tones that fill a space evenly, creating a focused and immersive sound. Compared to metal bowls, which often generate layered and overtone-rich sounds, quartz crystal bowls are valued for their clarity and singular tone, supporting relaxation, mental focus, and a deeper sense of presence.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Crystal singing bowls are made from quartz crystal, a material
+                known for its stability and acoustic properties. When played,
+                they produce long-lasting tones that fill a space evenly,
+                creating a focused and immersive sound. Compared to metal bowls,
+                which often generate layered and overtone-rich sounds, quartz
+                crystal bowls are valued for their clarity and singular tone,
+                supporting relaxation, mental focus, and a deeper sense of
+                presence.
               </p>
 
-              <p
-                className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}
-              >
-                At Crystal Bowl Studio, our bowls are crafted with close attention to sound quality, material purity, and thoughtful design. Each bowl is crafted from <span className="font-semibold">99.9% pure quartz crystal sourced from North Carolina</span>, a region known for exceptionally high-quality quartz. This level of purity contributes to consistency in resonance and tonal clarity, allowing the sound to remain steady and balanced over time.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                At Crystal Bowl Studio, our bowls are crafted with close
+                attention to sound quality, material purity, and thoughtful
+                design. Each bowl is crafted from{" "}
+                <span className="font-semibold">
+                  99.9% pure quartz crystal sourced from North Carolina
+                </span>
+                , a region known for exceptionally high-quality quartz. This
+                level of purity contributes to consistency in resonance and
+                tonal clarity, allowing the sound to remain steady and balanced
+                over time.
               </p>
 
-              <p
-                className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}
-              >
-                The production process involves extremely high temperatures, reaching approximately 2,200 degrees celsius, during which the quartz crystal is shaped and tuned with precision. Because this process combines technical control with hands-on craftsmanship, subtle variations arise naturally in each bowl&apos;s tone, surface, and form. <span className="font-semibold">No two bowls are exactly alike.</span> Each develops its own character through the process and the skilled hands involved. The specialised production facility and experienced team ensure consistent quality, while their craftsmanship also makes it possible to customise bowls to suit individual preferences or professional needs.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                The production process involves extremely high temperatures,
+                reaching approximately 2,200 degrees celsius, during which the
+                quartz crystal is shaped and tuned with precision. Because this
+                process combines technical control with hands-on craftsmanship,
+                subtle variations arise naturally in each bowl&apos;s tone,
+                surface, and form.{" "}
+                <span className="font-semibold">
+                  No two bowls are exactly alike.
+                </span>{" "}
+                Each develops its own character through the process and the
+                skilled hands involved. The specialised production facility and
+                experienced team ensure consistent quality, while their
+                craftsmanship also makes it possible to customise bowls to suit
+                individual preferences or professional needs.
               </p>
 
-              <p
-                className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}
-              >
-                Designed to be both a sound healing instrument and a mindful companion, our crystal bowls are created to support personal practice, group sessions, or quiet moments of reflection.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Designed to be both a sound healing instrument and a mindful
+                companion, our crystal bowls are created to support personal
+                practice, group sessions, or quiet moments of reflection.
               </p>
             </div>
           </div>
@@ -134,8 +193,45 @@ const AboutPage = () => {
             </div>
           </div>
         </div>
-      </div>
 
+        <div className="w-full flex flex-col pt-12 pb-8">
+          <div className="flex w-full mb-8 justify-start ">
+
+
+  <h1 className="font-seasons text-[32px] sm:text-[36px] md:text-[40px] lg:text-[44px] text-[#e6b884] font-normal text-left">
+    What makes our Singing Bowls unique
+  </h1>
+
+
+          </div>
+          <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+            {Icons.map((item) => (
+              <Link
+                key={item.id}
+                href="/shop"
+                className="flex text-black flex-col items-center cursor-pointer hover:opacity-80 transition-opacity"
+              >
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 relative mb-4">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <div className="leading-snug">
+                  <p className="font-seasons text-center font-normal text-[16px] md:text-[20px] pb-2 text-[#1c3163]">
+                    {item.title}
+                  </p>
+                  <p className="text-center text-[12px] sm:text-[13px] md:text-[14px] font-light leading-relaxed font-touvlo text-[#545454]">
+                    {item.para}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[30px] sm:pt-[40px] md:pt-[50px] lg:pt-0 pb-[40px] sm:pb-[50px] md:pb-[60px] lg:pb-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
@@ -171,29 +267,62 @@ const AboutPage = () => {
 
           {/* Right Side - Content */}
           <div className="space-y-2 sm:space-y-3">
-            <h2 className={`${theSeasonsBold.className} text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight`}>
+            <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight">
               About Sound Healing
             </h2>
 
             <div className="space-y-4 text-black">
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                Sound Healing refers to a range of practices that use sound and vibration to support relaxation, focus, and overall well-being. These practices may include sound baths, sound meditation, and vibroacoustic therapy, and music-based mindfulness, using instruments such as singing bowls, gongs, tuning forks, and bells.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Sound Healing refers to a range of practices that use sound and
+                vibration to support relaxation, focus, and overall well-being.
+                These practices may include sound baths, sound meditation, and
+                vibroacoustic therapy, and music-based mindfulness, using
+                instruments such as singing bowls, gongs, tuning forks, and
+                bells.
               </p>
 
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                From a scientific perspective, Sound Healing is often discussed in relation to its effects on the nervous system and stress regulation. <span className="font-semibold">Research in psychology and neuroscience shows that long, sustained, continuous sounds can help activate the parasympathetic nervous system, which is the part of the nervous system responsible for rest, recovery, and regulation.</span>
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                From a scientific perspective, Sound Healing is often discussed
+                in relation to its effects on the nervous system and stress
+                regulation.{" "}
+                <span className="font-semibold">
+                  Research in psychology and neuroscience shows that long,
+                  sustained, continuous sounds can help activate the
+                  parasympathetic nervous system, which is the part of the
+                  nervous system responsible for rest, recovery, and regulation.
+                </span>
               </p>
 
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                Beyond these physiological effects, sound-based practices are also closely linked to mindfulness. The sound waves provides a simple, non-verbal focal point for attention, helping to reduce mental distractions and support present-moment awareness. <span className="font-semibold">Research on music and sound-based interventions has reported associations with reduced stress, improved mood, and greater emotional regulation.</span>
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Beyond these physiological effects, sound-based practices are
+                also closely linked to mindfulness. The sound waves provides a
+                simple, non-verbal focal point for attention, helping to reduce
+                mental distractions and support present-moment awareness.{" "}
+                <span className="font-semibold">
+                  Research on music and sound-based interventions has reported
+                  associations with reduced stress, improved mood, and greater
+                  emotional regulation.
+                </span>
               </p>
 
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                In addition, vibration also plays an important role in many sound healing approaches. Lower-frequency sound waves can be felt physically and heard, particularly when instruments such as singing bowls are played nearby. Studies of Sound Meditation and Sound Bath experiences have observed changes in breathing patterns, heart rate, and tension, all commonly associated with relaxation responses.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                In addition, vibration also plays an important role in many
+                sound healing approaches. Lower-frequency sound waves can be
+                felt physically and heard, particularly when instruments such as
+                singing bowls are played nearby. Studies of Sound Meditation and
+                Sound Bath experiences have observed changes in breathing
+                patterns, heart rate, and tension, all commonly associated with
+                relaxation responses.
               </p>
 
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                Sound Healing is best understood as a complementary practice, supporting well-being alongside meditation, movement, and therapeutic care. At Crystal Bowl Studio, we approach Sound Healing with this understanding, designing bowls that offer clear, sustained sound and gentle vibration to support listening, presence, and restorative calm in everyday modern life.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Sound Healing is best understood as a complementary practice,
+                supporting well-being alongside meditation, movement, and
+                therapeutic care. At Crystal Bowl Studio, we approach Sound
+                Healing with this understanding, designing bowls that offer
+                clear, sustained sound and gentle vibration to support
+                listening, presence, and restorative calm in everyday modern
+                life.
               </p>
             </div>
           </div>
@@ -201,37 +330,62 @@ const AboutPage = () => {
       </div>
 
       {/* About Our Founder Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[20px] sm:pt-[30px] md:pt-[40px] lg:pt-0 pb-[40px] sm:pb-[50px] md:pb-[60px] lg:pb-[40px] ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[20px] sm:pt-[30px] md:pt-[40px] lg:pt-6 pb-[40px] sm:pb-[50px] md:pb-[60px] lg:pb-[40px] ">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-2 sm:space-y-3">
-            <h2 className={`${theSeasonsBold.className} text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight`}>
+            <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight">
               About Our Founder
             </h2>
 
             <div className="space-y-4 text-black">
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                Crystal Bowl Studio was founded by Francesca Wong, whose work brings together international business experience and long-standing practice in Yoga and Sound Healing.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Crystal Bowl Studio was founded by Francesca Wong, whose work
+                brings together international business experience and
+                long-standing practice in Yoga and Sound Healing.
               </p>
 
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                Before establishing Crystal Bowl Studio, Francesca spent over a decade working across global finance, e-commerce, and luxury beauty, with experience at KPMG, Citibank, Alibaba, and Estée Lauder. While these international environments shaped her understanding of structure, quality, design, and consumer experience, she was drawn towards a more grounded and meaningful way of service.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Before establishing Crystal Bowl Studio, Francesca spent over a
+                decade working across global finance, e-commerce, and luxury
+                beauty, with experience at KPMG, Citibank, Alibaba, and Estée
+                Lauder. While these international environments shaped her
+                understanding of structure, quality, design, and consumer
+                experience, she was drawn towards a more grounded and meaningful
+                way of service.
               </p>
 
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                Her journey into Yoga and Sound began in 2011 and gradually deepened through years of study, practice, and teaching. Francesca trained extensively in India and Australia, spending over a year living and studying in Indian ashrams, in Rishikesh, Dharamshala, Bangalore, Delhi, and Varanasi.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Her journey into Yoga and Sound began in 2011 and gradually
+                deepened through years of study, practice, and teaching.
+                Francesca trained extensively in India and Australia, spending
+                over a year living and studying in Indian ashrams, in Rishikesh,
+                Dharamshala, Bangalore, Delhi, and Varanasi.
               </p>
 
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                Her approach is informed by classical yoga philosophy as well as broader healing traditions such as Ayurveda and Traditional Chinese Medicine. Rather than treating these systems as fixed doctrines, she approaches them as practical frameworks that support awareness, presence, and balance in everyday life.
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Her approach is informed by classical yoga philosophy as well as
+                broader healing traditions such as Ayurveda and Traditional
+                Chinese Medicine. Rather than treating these systems as fixed
+                doctrines, she approaches them as practical frameworks that
+                support awareness, presence, and balance in everyday life.
               </p>
 
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                Francesca&apos;s experience in consumer-facing industries reflects the way Crystal Bowl Studio approaches its products, the integration of craftsmanship, practicality and usability, creating sound healing instruments that are refined, approachable. The Studio was created with the aim of making Sound Healing practical and accessible to support and enhance modern life and The Vision:
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                Francesca&apos;s experience in consumer-facing industries
+                reflects the way Crystal Bowl Studio approaches its products,
+                the integration of craftsmanship, practicality and usability,
+                creating sound healing instruments that are refined,
+                approachable. The Studio was created with the aim of making
+                Sound Healing practical and accessible to support and enhance
+                modern life and The Vision:
               </p>
 
-              <p className={`${touvloRegular.className} text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]`}>
-                <span className="font-semibold">&quot;To make Sound Healing accessible, anywhere and anytime.&quot;</span>
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+                <span className="font-semibold">
+                  &quot;To make Sound Healing accessible, anywhere and
+                  anytime.&quot;
+                </span>
               </p>
             </div>
           </div>
@@ -262,4 +416,3 @@ const AboutPage = () => {
 };
 
 export default AboutPage;
- 

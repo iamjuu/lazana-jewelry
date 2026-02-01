@@ -14,10 +14,10 @@ const BookASessionPage = () => {
           <div className="max-w-6xl pb-[24px] mx-auto ">
             {/* Header */}
             <div className="mb-4">
-              <h1 className="text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] text-[#D5B584] font-medium leading-tight mb-3">
+              <h1 className="text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] text-[#D5B584] font-medium leading-tight mb-3 mt-[24px]">
                 Book a Call
               </h1>
-              <p className="text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-black leading-relaxed max-w-2xl">
+              <p className="text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] text-black leading-relaxed max-w-2xl mt-[24px]">
                 Choose from our available sessions and book your preferred
                 experience with us.
               </p>

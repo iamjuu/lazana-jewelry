@@ -15,18 +15,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUp } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import localFont from "next/font/local";
-
-
-const theSeasonsBold = localFont({
-  src: "../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/fonnts.com-513211/fonts/fonnts.com-theseasons-bd.otf",
-  display: "swap",
-});
-
-const touvloRegular = localFont({
-  src: "../../font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/touvlo-regular-maisfontes.464c/touvlo-regular.otf",
-  display: "swap",
-});
+// Fonts are now defined in globals.css as font-seasons and font-touvlo
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -75,8 +64,8 @@ const Footer = () => {
   };
 
   return (
-    <section className="w-full py-[40px] md:py-[68px] bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2]">
-      <div className="max-w-6xl border-b pb-[64px] border-black items-stretch flex flex-col md:flex-row justify-between mx-auto px-4 gap-6 md:gap-6">
+    <section className="w-full py-[40px] md:py-[8px] bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2] text-touvlo">
+      <div className="max-w-6xl border-b pb-[64px] border-black items-stretch flex flex-col md:flex-row justify-between mx-auto px-4 gap-6 md:gap-2 ">
         <div className="hidden md:flex items-start h-full">
           <Image
             src={FooterIcon1}
@@ -85,18 +74,18 @@ const Footer = () => {
           />
         </div>
 
-        <div className="flex flex-col gap-8 md:gap-[64px] items-center text-center">
-          <h3 className={`  ${theSeasonsBold.className}  text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-6 text-[#1c3163] `}>
+        <div className="flex flex-col gap-8 md:gap-[64px] items-center text-center ">
+          <h3 className="font-seasons text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-[0px] text-[#1c3163] ">
             Ready To Begin Your
             <br className="hidden sm:block" /> Healing Journey?
           </h3>
 
           <div className="w-full max-w-[560px] flex flex-col gap-3 sm:gap-4">
             {/* Row 1 */}
-            <div className={`grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4 ${touvloRegular.className}`}>
+            <div className="font-touvlo grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4">
               <Link
                 href="/shop"
-                className={`w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors ${touvloRegular.className}`}
+                className="font-touvlo w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
               >
                 Shop Crystal Bowls
               </Link>
@@ -115,7 +104,7 @@ const Footer = () => {
             <div className="grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4">
               <Link
                 href="/book-a-session"
-                className={`w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors ${touvloRegular.className}`}
+                className="font-touvlo w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
               >
                 Book a Call
               </Link>
@@ -144,10 +133,10 @@ const Footer = () => {
 <div>
 <div className="max-w-6xl flex flex-col   md:flex-row py-[44px] mx-auto px-4 gap-8 md:gap-0">
 <div className="w-full  flex flex-col items-center justify-center">
-            <h2 className={`text-[#1c3163] font-[400] text-center text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] mb-3 sm:mb-4 ${theSeasonsBold.className}`}>
+            <h2 className="font-seasons text-[#1c3163] font-[400] text-center text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] mb-3 sm:mb-4">
               Join our mailing list
             </h2>
-            <p className={`text-[#545454] text-center  text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px] ${touvloRegular.className}`}>
+            <p className="font-touvlo text-[#545454] text-center  text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px]">
               Be the first to know about special offers, new collections and stay up to date with all our magic!
             </p>
             <form onSubmit={handleSubscribe} className="w-full max-w-[500px] flex flex-col sm:flex-row gap-3 sm:gap-0">
@@ -174,9 +163,9 @@ const Footer = () => {
 
 
       <div>
-        <div className="max-w-6xl flex flex-col md:flex-row py-[44px] mx-auto px-4 gap-8 md:gap-0 relative">
+        <div className="max-w-6xl flex flex-col md:flex-row py-[0px] mx-auto px-4 gap-8 md:gap-0 relative">
           
-          <div className="w-full md:w-[50%] flex justify-center items-center md:justify-start absolute inset-0 opacity-30 md:opacity-100 md:relative md:inset-auto z-0 md:z-auto pointer-events-none md:pointer-events-auto">
+          <div className="w-full md:w-[50%] flex justify-center items-center md:justify-start absolute inset-0 opacity-30 md:opacity-100 md:relative md:inset-auto z-0 md:z-auto md:pointer-events-none">
             <Image
               src={FooterIcon3}
               alt="footer icon"
@@ -186,14 +175,14 @@ const Footer = () => {
 
  
 
-          <div className="w-full md:w-[50%] font-montserrat font-[200] text-[14px] md:text-[16px] relative z-10 md:z-auto">
+          <div className="w-full md:w-[50%] font-montserrat font-[200] text-[14px] md:text-[16px] relative z-10 md:z-auto ">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-4">
               <div>
                 <ul className="space-y-2">
                   <li>
                     <Link
                       href="/"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Home
                     </Link>
@@ -201,7 +190,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/shop"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Shop
                     </Link>
@@ -209,7 +198,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/services"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Services
                     </Link>
@@ -217,7 +206,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/about"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       About Us
                     </Link>
@@ -225,7 +214,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/faq"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       FAQs
                     </Link>
@@ -237,7 +226,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/events"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Events
                     </Link>
@@ -245,7 +234,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/blog"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Blog
                     </Link>
@@ -253,7 +242,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/book-a-session"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Book a Call
                     </Link>
@@ -261,7 +250,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/shipping-and-delivery"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Shipping & Delivery
                     </Link>
@@ -269,7 +258,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/returns-and-refund-policy"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Returns & Refund Policy
                     </Link>
@@ -281,14 +270,14 @@ const Footer = () => {
                   <li>
 
                     
-                    <span className="text-black break-words">
+                    <span className="text-touvlo break-words text-[#545454] ">
                       Based in Singapore
                     </span>
                   </li>
                   <li>
                     <a
                       href="mailto:hello@crystalbowlstudio.com"
-                      className="text-black hover:text-[black] transition-colors"
+                      className="text-[#545454] hover:text-[black] transition-colors text-touvlo"
                     >
                       hello@crystalbowlstudio.com
                     </a>
@@ -301,8 +290,8 @@ const Footer = () => {
 
 
 
-        <div className="w-full font-montserrat">
-          <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">
+        <div className="w-full font-touvlo ">
+          <div className="max-w-6xl mx-auto px-4 py-6 md:py-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
               {/* Left Section - Social Icons and Text */}
               <div className="flex flex-col gap-4">
@@ -374,6 +363,7 @@ const Footer = () => {
             </div>
           </div>
         </div>
+        
       </div>
     </section>
   );
