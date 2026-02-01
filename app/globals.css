@@ -111,7 +111,7 @@
 
 @font-face {
   font-family: 'Touvlo';
-  src: url('/font/Cinzel,DM_Sans,Inter,Manrope,Montserrat,etc (7)/touvlo-regular-maisfontes.464c/touvlo-regular.otf') format('opentype');
+  src: url('/fonts/touvlo/touvlo-regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -123,7 +123,7 @@
 }
 
 .font-touvlo {
-  font-family: 'Touvlo', sans-serif;
+  font-family: 'Touvlo', 'Bricolage Grotesque', sans-serif;
   font-weight: 400;
 }
 /* Keep the old .font-seasons class for backward compatibility */
