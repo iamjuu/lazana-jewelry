@@ -381,10 +381,10 @@ const ShopPageContent = () => {
       <Navbar />
 
       <>
-        <section className="w-full py-[40px] md:py-[68px] ">
+        <section className="w-full mt-[25px] ">
           <div className="max-w-6xl mx-auto px-4">
             {/* Header */}
-            <div className="mb-8 md:mb-12">
+            <div className="">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-[50px] mb-4 sm:mb-6">
                 <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
                   {categoryName}
@@ -400,7 +400,7 @@ const ShopPageContent = () => {
               </div>
 
               {/* Description Text */}
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[17px] leading-relaxed text-[#545454] mr-[calc(50%-40vw)] pr-[1px]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[17px] leading-relaxed text-[#545454]">
                 Thoughtfully crafted Crystal Bowls designed for clarity,
                 relaxation, modern mindful living, sound healing, meditation and
                 yoga. Made from 99.9% pure clear quartz crystal. Lightweight,
@@ -417,7 +417,10 @@ const ShopPageContent = () => {
               <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
                 {/* Filter Icon Button */}
                 <button
-                  onClick={() => setShowFilters(!showFilters)}
+                  onClick={() => {
+                    setShowFilters(!showFilters);
+                    setShowSortDropdown(false);
+                  }}
                   className="p-2 lg:p-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg shadow-md hover:shadow-lg transition-shadow"
                   aria-label={showFilters ? "Hide Filters" : "Show Filters"}
                 >
@@ -431,7 +434,10 @@ const ShopPageContent = () => {
                 {/* Sort Icon Button with Dropdown */}
                 <div className="relative" ref={sortDropdownRef}>
                   <button
-                    onClick={() => setShowSortDropdown(!showSortDropdown)}
+                    onClick={() => {
+                      setShowSortDropdown(!showSortDropdown);
+                      setShowFilters(false);
+                    }}
                     className="p-2 lg:p-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg shadow-md hover:shadow-lg transition-shadow"
                     aria-label="Sort Products"
                   >
@@ -535,26 +541,29 @@ const ShopPageContent = () => {
                           Weight
                         </h4>
                         {[
-                          "LESS THAN 1KG",
-                          "LESS THAN 6KG",
-                          "BETWEEN 1-3KG",
-                          "BETWEEN 3-5KG",
-                          "GREATER THAN 6KG",
+                          { label: "LESS THAN 1KG", value: "less than 1kg" },
+                          { label: "LESS THAN 6KG", value: "less than 6kg" },
+                          { label: "BETWEEN 1-3KG", value: "between 1-3kg" },
+                          { label: "BETWEEN 3-5KG", value: "3-5kg" },
+                          {
+                            label: "GREATER THAN 6KG",
+                            value: "greater than 6kg",
+                          },
                         ].map((weight) => (
                           <label
-                            key={weight}
+                            key={weight.value}
                             className="flex items-center justify-between cursor-pointer py-1"
                           >
                             <span className="text-sm text-[#1C3163]">
-                              {weight}
+                              {weight.label}
                             </span>
                             <input
                               type="checkbox"
-                              checked={filters.weight === weight}
+                              checked={filters.weight === weight.value}
                               onChange={(e) => {
                                 setFilters({
                                   ...filters,
-                                  weight: e.target.checked ? weight : "",
+                                  weight: e.target.checked ? weight.value : "",
                                 });
                                 setShowSortDropdown(false);
                               }}
@@ -569,21 +578,24 @@ const ShopPageContent = () => {
                         <h4 className="text-sm font-medium text-[#1C3163]">
                           Octave
                         </h4>
-                        {["3RD OCTAVE", "4TH OCTAVE"].map((octave) => (
+                        {[
+                          { label: "3RD OCTAVE", value: "3rd octave" },
+                          { label: "4TH OCTAVE", value: "4th octave" },
+                        ].map((octave) => (
                           <label
-                            key={octave}
+                            key={octave.value}
                             className="flex items-center justify-between cursor-pointer py-1"
                           >
                             <span className="text-sm text-[#1C3163]">
-                              {octave}
+                              {octave.label}
                             </span>
                             <input
                               type="checkbox"
-                              checked={filters.octave === octave}
+                              checked={filters.octave === octave.value}
                               onChange={(e) => {
                                 setFilters({
                                   ...filters,
-                                  octave: e.target.checked ? octave : "",
+                                  octave: e.target.checked ? octave.value : "",
                                 });
                                 setShowSortDropdown(false);
                               }}

@@ -6,76 +6,58 @@ import Image from "next/image";
 const founderImageSrc = "/assets/images/about/founder.jpg";
 const AboutSectionComponent = () => {
   return (
-    <section className="w-full  px-4 md:px-0 py-[0px] ">
-      <div className="max-w-6xl mx-auto">
+    <section className="w-full mt-[25px]">
+      <div className="max-w-6xl mx-auto px-4">
         <div className="flex   flex-col w-full ">
           {/* Section Title */}
-          <h2
-            className="font-seasons text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal"
-          >
+          <h2 className="font-seasons text-[20px] sm:text-[24px] md:text-[30px] lg:text-[30px] xl:text-[32px]  text-[#e6b884] font-normal">
             Founder's Note
           </h2>
 
-
           {/* Content Container */}
-          <div className="flex  flex-col lg:flex-row w-full gap-8 md:gap-10 lg:gap-12">
+          <div className="flex  flex-col lg:flex-row w-full gap-8 md:gap-10 lg:gap-12 mt-[25px]">
             {/* Left side - Text Content */}
             <div className="w-full lg:w-[65%] xl:w-[60%]">
-              <div
-               className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-black leading-relaxed sm:leading-relaxed md:leading-loose"
-               >
-                {/* Original About Content - Commented Out */}
-                {/* <p>
-                  Crystal Bowl Studio is created and designed by master sound
-                  and energy healer Francesca Wong, fulfilling her dream to
-                  create a range of crystal bowls that are beautifully designed,
-                  with premium crystal quality and sound, with a powerful
-                  resonance and energy, at a more affordable price to make sound
-                  healing more accessible to healers all over the world.
-                </p>
-
-                <p>
-                  Our Crystal Bowls are 100% clear quartz crystal, with some of
-                  our premium designs infused with other crystals, metals and
-                  earth elements. They are lightweight and come in the most
-                  magical designs and colors to really make your practice
-                  unique. Take them with you on your Travels!
-                </p>
-
-                <p>
-                  Each bowl carries its own unique energy and intention so you
-                  can choose yours to match your own unique intentions, energy
-                  and aesthetic as a healer.
-                </p> */}
-
-                <p className="font-touvlo text-[#545454]">
+              <div className="flex flex-col   text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-black leading-relaxed sm:leading-relaxed md:leading-loose">
+                <p className="font-touvlo text-[#545454] text-[16px]">
                   Welcome to Crystal Bowl Studio.
                 </p>
-
-                <p className="font-touvlo text-[#545454]">
-                  Crystal Bowl Studio was founded by Francesca Wong, a former Corporate Executive with experience at
-                  KPMG, Citibank, Alibaba, and Estée Lauder. After over a decade in global finance, e-commerce, and
-                  luxury beauty, she embarked on a vision:
+                <p className="font-touvlo text-[#545454] text-[16px]">
+                  Crystal Bowl Studio was founded by Francesca Wong, a former
+                  Corporate Executive with experience at KPMG, Citibank,
+                  Alibaba, and Estée Lauder. After over a decade in global
+                  finance, e-commerce, and luxury beauty, she embarked on a
+                  vision:
                 </p>
 
                 <p
                   className="font-touvlo text-[#545454] text-center font-semibold mt-2 mb-2"
+                  style={{ fontWeight: 600 }}
                 >
                   "To make Sound Healing accessible, anywhere and anytime."
                 </p>
 
                 <p className="font-touvlo text-[#545454]">
-                  Her mission is to make the power of Sound Healing accessible all over the world, anywhere anytime.
-                  Crystal Bowl Studio was born from the belief that healing tools should be well-crafted, intentional,
-                  and accessible. Each bowl is designed to aesthetically sound exquisite, and feel purposeful in the
-                  hands of the person using it. This work is an offering to practitioners and seekers around the world,
-                  who wish to experience and share the power of Sound Healing with ease, simplicity, beauty, and
-                  integrity.
+                  Her mission is to make the power of Sound Healing accessible
+                  all over the world, anywhere anytime. Crystal Bowl Studio was
+                  born from the belief that healing tools should be
+                  well-crafted, intentional, and accessible. Each bowl is
+                  designed to aesthetically sound exquisite, and feel purposeful
+                  in the hands of the person using it. This work is an offering
+                  to practitioners and seekers around the world, who wish to
+                  experience and share the power of Sound Healing with ease,
+                  simplicity, beauty, and integrity.
                 </p>
 
                 <p className="font-touvlo text-[#545454]">
                   May these bowls be a bridge to your best self. - Francesca
                 </p>
+                <a
+                  href="/about"
+                  className="font-seasons  inline-flex items-center gap-4 text-[14px] sm:text-[14px] md:text-[16px] lg:text-[16px] font-normal hover:opacity-80 transition-opacity text-[#1c3163] mt-[25px]"
+                >
+                  Read Our Story →
+                </a>
               </div>
             </div>
 
@@ -99,73 +81,6 @@ const AboutSectionComponent = () => {
               </div> */}
             </div>
           </div>
-          <div className="flex pt-6 sm:pt-7 md:pt-8 lg:pt-0 items-center">
-            {/* Read Our Story link to About page */}
-            <a
-              href="/about"
-              className="font-seasons  inline-flex items-center gap-2 text-[15px] sm:text-[16px] md:text-[17px] lg:text-[18px] font-normal hover:opacity-80 transition-opacity text-[#1c3163]"
-            >
-              Read Our Story →
-            </a>
-          </div>
-        </div>
-        {/* Original Founder's Note - Commented Out (duplicate) */}
-        {/* <div>
-          <div>
-            <h1  className="text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[22px] pb-4 sm:pb-5 md:pb-6 text-black font-normal">Founder's Note</h1>
-            <p  
-                           className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#6B5D4F] leading-relaxed sm:leading-relaxed md:leading-loose"
-
-            >
-              Crystal Bowl Studio was founded by Francesca Wong, a former
-              corporate executive with experience at KPMG, Citibank, Alibaba,
-              and Estée Lauder. After over a decade in global finance,
-              ecommerce, and luxury beauty, she journeyed from boardrooms to a
-              vision: "To create a range of crystal singing bowls that honour
-              beauty, premium crystal quality and sound, with powerful
-              resonance, at a more affordable price." Her mission is to make the
-              power of Sound Healing accessible to healers and practitioners all
-              over the world, anywhere anytime. Crystal Bowl Studio was born
-              from the belief that healing tools should be well-crafted,
-              intentional, and accessible. Objects that support presence,
-              ritual, and connection in everyday life. Each bowl is designed not
-              only to aesthetically sound exquisite, but to feel purposeful in
-              the hands of the person using it. This work is an offering to
-              practitioners, teachers, and seekers around the world, who wish to
-              experience and share the power of sound healing with ease,
-              simplicity, beauty, and integrity.{" "}
-            </p>
-            <p className="text-[#6B5D4F]">
-              May these bowls be a bridge to your highest self. - Francesca{" "}
-            </p>
-          </div>
-          <div className="mt-10">
-          
-          </div>
-        </div> */}
-        <div className="mt-1">
-          {/* <div>
-            <h1  className={`${theSeasonsBold.className} text-[24px] sm:text-[28px] md:text-[36px] lg:text-[32px] xl:text-[32px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal`}>About Crystal Bowl Studio</h1>
-            <p 
-               className="flex flex-col gap-4 sm:gap-5 md:gap-6 text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed md:leading-loose"
-               >
-              Crystal Bowl Studio is designed for modern, conscious living,
-              rooted in ancient traditions and wisdom. Each bowl is made from
-              100% clear quartz crystal, carefully handcrafted and
-              quality-checked, to produce clarity, rich, ethereal vibration that
-              supports meditation, relaxation and healing work. Our bowls are
-              lightweight, travel-friendly, and designed in the most elegant and
-              luminous colours to make your practice available and accessible,
-              anywhere and anytime. Take them with you on your travels! No two
-              bowls are ever the same. Each carries its own unique energy and
-              intention, so you can choose one that matches your unique energy,
-              intention, purpose, and aesthetic as a healer or practitioner.
-              Crystal Bowl Studio positions at the intersection of premium
-              craftsmanship, wellness, accessibility and scalable global impact
-              - offering sound healing tools that are as beautiful to behold as
-              they are powerful to experience.
-            </p>
-          </div> */}
         </div>
       </div>
     </section>

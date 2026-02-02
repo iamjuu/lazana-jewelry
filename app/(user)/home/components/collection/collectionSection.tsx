@@ -43,15 +43,16 @@ const CollectionSection: React.FC<CollectionSectionProps> = () => {
     <section className="w-full py-[40px] md:py-[0px] ">
 
 
-      <div className="max-w-6xl  py-10 gap-10  items-center flex  flex-col mx-auto px-4">
+      <div className="max-w-6xl  py-10 gap-[25px] md:py-0 items-center flex  flex-col mx-auto px-4 mt-[25px]">
         <div className=''>
-          <h1 className="font-seasons text-[24px] sm:text-[28px] md:text-[36px] lg:text-[32px] xl:text-[32px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal ">
+          <h1 className="font-seasons text-[24px] sm:text-[28px] md:text-[30px] lg:text-[30px] xl:text-[32px] pb-4  md:pb-0 text-[#e6b884] font-normal ">
             Stressed or overwhelmed, but no time?
           </h1>
           <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose"> Let Crystal Sound clear your mind in 1 minute. </p>
         </div>
         <div>
-          <h1 className="font-seasons text-[24px] sm:text-[28px] md:text-[36px] lg:text-[32px] xl:text-[32px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal ">
+
+          <h1 className="font-seasons text-[24px] sm:text-[28px] md:text-[30px] lg:text-[30px] xl:text-[32px]  text-[#e6b884] font-normal ">
             We make Crystal Singing Bowls for Sound Healing & Meditation</h1>
           <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose">Thoughtfully crafted Crystal Singing Bowls for clarity, relaxation, and modern mindful living.
             <br />

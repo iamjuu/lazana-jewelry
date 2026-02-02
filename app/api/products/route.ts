@@ -9,15 +9,17 @@ import mongoose from "mongoose";
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    
+
     // Ensure Subcategory model is registered before populate
     // Force the model to be loaded by referencing it and ensuring it's registered
     void Subcategory; // This ensures the import is executed
     // Double-check model is registered - if not, it means the import didn't execute properly
     if (!mongoose.models.Subcategory) {
-      console.error("Subcategory model not found in mongoose.models after import");
+      console.error(
+        "Subcategory model not found in mongoose.models after import",
+      );
       // Try to get the model directly - this will throw if not registered
-      mongoose.model('Subcategory');
+      mongoose.model("Subcategory");
     }
     const { searchParams } = new URL(req.url);
     const bestSellingParam = searchParams.get("bestSelling");
@@ -28,7 +30,7 @@ export async function GET(req: NextRequest) {
     const categoryParam = searchParams.get("category");
     const includeRelative = searchParams.get("includeRelative") === "true";
     const search = searchParams.get("search") || "";
-    
+
     // Filter parameters
     const featured = searchParams.get("featured");
     const newAddition = searchParams.get("newAddition");
@@ -36,19 +38,19 @@ export async function GET(req: NextRequest) {
     const octave = searchParams.get("octave");
     const size = searchParams.get("size");
     const tuning = searchParams.get("tuning");
-    
+
     // Sort parameters
     const sortBy = searchParams.get("sortBy"); // price, name
     const sortOrder = searchParams.get("sortOrder"); // asc, desc
 
     // Build query for filtering
     let query: any = {};
-    
+
     // Category filter
     if (categoryParam && categoryParam !== "all") {
       try {
         const category = await Category.findOne({
-          slug: categoryParam
+          slug: categoryParam,
         }).lean();
 
         if (category) {
@@ -59,12 +61,12 @@ export async function GET(req: NextRequest) {
         query.category = null;
       }
     }
-    
+
     // Featured filter
     if (featured === "true") {
       query.featured = true;
     }
-    
+
     // New Addition filter
     if (newAddition === "true") {
       query.newAddition = true;
@@ -74,22 +76,47 @@ export async function GET(req: NextRequest) {
     if (bestSellingParam === "true") {
       query.bestSelling = true;
     }
-    
+
     // Weight filter
     if (weight) {
       query.weight = weight;
     }
-    
+
     // Octave filter
     if (octave) {
       query.octave = octave;
     }
-    
-    // Size filter
+
+    // Size filter - handle various formats: exact (8), ranges (5-6, 6-5), decimals (6.2)
     if (size) {
-      query.size = size;
+      // Check if the filter is a range (e.g., "5-6")
+      const rangeMatch = size.match(/^(\d+)-(\d+)$/);
+
+      if (rangeMatch) {
+        const [_, min, max] = rangeMatch;
+
+        // Match products with size that:
+        // 1. Exactly matches the range string (5-6)
+        // 2. Matches the reverse range (6-5)
+        // 3. Is a single number within the range (5, 6, 5.5, 5.2, etc.)
+        const sizePattern = `^(${min}-${max}|${max}-${min}|${min}(\\.\\d+)?|${max}(\\.\\d+)?)$`;
+
+        // For ranges like 5-6, also match 5.x where x is any digit
+        const rangePatterns = [];
+        for (let i = parseInt(min); i <= parseInt(max); i++) {
+          rangePatterns.push(`${i}(\\.\\d+)?`);
+        }
+
+        query.size = {
+          $regex: `^(${min}-${max}|${max}-${min}|${rangePatterns.join("|")})$`,
+          $options: "i",
+        };
+      } else {
+        // Exact value match (e.g., "8" or "6.2")
+        query.size = size;
+      }
     }
-    
+
     // Tuning filter (exact match by Hz number)
     if (tuning) {
       const tuningNum = parseFloat(tuning);
@@ -97,7 +124,7 @@ export async function GET(req: NextRequest) {
         query.tuning = tuningNum;
       }
     }
-    
+
     // Exclude universal products (relativeproduct = true) from regular shop view
     // Only show regular products unless explicitly requested via includeRelative parameter
     if (!includeRelative) {
@@ -118,7 +145,7 @@ export async function GET(req: NextRequest) {
 
     // Build sort object
     let sort: any = { createdAt: -1 }; // Default sort
-    
+
     if (sortBy === "price") {
       sort = { price: sortOrder === "desc" ? -1 : 1 };
     } else if (sortBy === "name") {
@@ -127,8 +154,8 @@ export async function GET(req: NextRequest) {
 
     const [products, total] = await Promise.all([
       Product.find(query)
-        .populate('category', 'name slug')
-        .populate('subcategory', 'name slug category')
+        .populate("category", "name slug")
+        .populate("subcategory", "name slug category")
         .sort(sort)
         .skip(skip)
         .limit(limit)
@@ -158,7 +185,10 @@ export async function GET(req: NextRequest) {
     });
   } catch (error: any) {
     console.error("Error fetching products:", error);
-    return NextResponse.json({ success: false, message: error.message || "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: error.message || "Server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -167,7 +197,7 @@ export async function POST(req: NextRequest) {
     await requireAdmin(req);
     await connectDB();
     const body = await req.json();
-    
+
     // Validate and process category - must be a valid ObjectId or empty
     if (body.category) {
       const categoryStr = String(body.category).trim();
@@ -178,14 +208,15 @@ export async function POST(req: NextRequest) {
         body.category = undefined;
       }
     }
-    
+
     const created = await Product.create(body);
     return NextResponse.json({ success: true, data: created }, { status: 201 });
   } catch (e: any) {
-    const status = e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
-    return NextResponse.json({ success: false, message: e?.message || "Server error" }, { status });
+    const status =
+      e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
+    return NextResponse.json(
+      { success: false, message: e?.message || "Server error" },
+      { status },
+    );
   }
 }
-
-
-

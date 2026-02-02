@@ -473,10 +473,10 @@ const Index = () => {
         <CollectionSection categories={categories} loading={loading} />
 
         {/* Shop Crystal Bowls - design from screenshot */}
-        <section className="w-full  md:py-0  mt-[-6px]">
+        <section className="w-full  md:py-0  mt-[25px]">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex w-full items-center justify-between mb-6">
-              <h2 className="font-seasons text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] text-[#e6b884] font-normal">
+              <h2 className="font-seasons text-[24px] sm:text-[28px] md:text-[30px] lg:text-[30px] xl:text-[32px] text-[#e6b884] font-normal">
                 Shop Crystal Bowls
               </h2>
               <Link
@@ -490,9 +490,9 @@ const Index = () => {
                 />
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full mt-[25px]">
               {loading ? (
-                <div className="col-span-2 md:col-span-4 flex justify-center py-16">
+                <div className="col-span-2 md:col-span-4 flex justify-center ">
                   <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#D5B584] border-t-transparent" />
                 </div>
               ) : categories.length === 0 ? (
@@ -521,7 +521,7 @@ const Index = () => {
                         )}
                       </div>
                     </Link>
-                    <p className="font-seasons pt-4 sm:pt-5 text-left  text-[14px] sm:text-[16px] md:text-[18px] text-[#1c3163]">
+                    <p className="font-seasons pt-4 sm:pt-5 text-left  text-[14px] sm:text-[16px] md:text-[16px] text-[#1c3163]">
                       {category.name}
                     </p>
                   </div>
@@ -530,13 +530,13 @@ const Index = () => {
             </div>
           </div>
 
-          <section className="w-full py-[20px]">
+          <section className="w-full mt-[25px]">
             <div className="max-w-6xl mx-auto px-4">
-              <h2 className="font-seasons text-[32px] sm:text-[36px] md:text-[40px] lg:text-[44px] text-[#e6b884] font-normal mb-6">
+              <h2 className="font-seasons text-[24px] sm:text-[28px] md:text-[30px] lg:text-[30px] xl:text-[32px] text-[#e6b884] font-normal">
                 About Crystal Bowl Studio
               </h2>
               {/* Wrapped in a fragment to replace the div but keep structure clean if needed, or just standard p tags */}
-              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454] mb-5 mr-[calc(50%-50vw)] pr-[1px]">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454] mt-[25px]">
                 Crystal Bowl Studio is designed for modern, conscious living,
                 rooted in ancient traditions and wisdom. Each bowl is made from
                 99.9% pure clear quartz crystal, carefully handcrafted and
@@ -557,7 +557,7 @@ const Index = () => {
                   same.
                 </span>
               </p>
-              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454] mr-[calc(50%-50vw)] pr-[1px]">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">
                 Each Singing Bowl is crafted with its own unique energy and
                 intention, so you can choose one that matches your purpose, and
                 aesthetic. Crystal Bowl Studio designs beautifully crafted sound
@@ -567,18 +567,18 @@ const Index = () => {
             </div>
           </section>
 
-          <div className="max-w-6xl items-center flex flex-col mx-auto px-4 ">
-            <div className="flex w-full mb-4">
-              <h1 className="font-seasons text-[32px] sm:text-[36px] md:text-[40px] lg:text-[44px] text-[#e6b884] font-normal mb-6">
+          <div className="max-w-6xl flex flex-col mx-auto px-4 mt-[25px] ">
+            <div className="flex w-full ">
+              <h1 className=" font-seasons text-[24px] sm:text-[28px] md:text-[30px] lg:text-[30px] xl:text-[32px] text-[#e6b884] font-normal ">
                 What makes our Singing Bowls unique
               </h1>
             </div>
-            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-[54px] ">
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-[54px] mt-[25px] ">
               {Icons.map((item) => (
                 <Link
                   key={item.id}
                   href="/shop"
-                  className="flex text-black flex-col items-center cursor-pointer hover:opacity-80 transition-opacity"
+                  className="flex text-black flex-col items-start cursor-pointer hover:opacity-80 transition-opacity"
                 >
                   <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 relative">
                     <Image
@@ -589,10 +589,10 @@ const Index = () => {
                     />
                   </div>
                   <div className="leading-5">
-                    <p className="font-seasons pt-4 sm:pt-6 md:pt-[28px] text-center font-normal text-[14px] sm:text-[16px] md:text-[18px] pb-4 sm:pb-6 md:pb-8 text-[#1c3163]">
+                    <p className="font-seasons pt-4 sm:pt-6 md:pt-[28px] text-left font-normal text-[14px] sm:text-[16px] md:text-[18px] text-[#1c3163]">
                       {item.title}
                     </p>
-                    <p className="text-center text-[9px] sm:text-[9.5px] md:text-[16px] font-light leading-[14px] sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454]">
+                    <p className="text-left text-[9px] sm:text-[9.5px] md:text-[16px] font-light leading-[14px] sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454] mt-[25px]">
                       {item.para}
                     </p>
                   </div>
@@ -603,17 +603,17 @@ const Index = () => {
         </section>
         {/* holder  */}
 
-        <section className="w-full py-10 md:py-[20px] ">
+        <section className="w-full mt-[25px] ">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="flex w-full items-center justify-between mb-8 md:mb-10">
+            <div className="flex w-full items-center justify-between ">
               <h2
-                className={`font-seasons text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] text-[#e6b884] font-normal`}
+                className={`font-seasons text-[24px] sm:text-[28px] md:text-[30px] lg:text-[30px] xl:text-[32px] text-[#e6b884] font-normal`}
               >
                 Our Best Sellers
               </h2>
               <Link
                 href="/shop"
-                className={`font-seasons text-[#1c3163] flex items-center gap-1.5 text-[14px] sm:text-[16px] md:text-[18px] hover:opacity-80 transition-opacity`}
+                className={`font-seasons text-[#1c3163] flex items-center gap-1.5 text-[14px] sm:text-[16px] md:text-[16px] hover:opacity-80 transition-opacity`}
               >
                 Shop All
                 <ArrowRight
@@ -622,20 +622,20 @@ const Index = () => {
                 />
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full mt-[25px]">
               {bestLoading ? (
                 <div className="col-span-2 md:col-span-4 flex justify-center py-16">
                   <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#D5B584] border-t-transparent" />
                 </div>
               ) : bestSellers.length === 0 ? (
-                <div className="col-span-2 md:col-span-4 text-center py-12 text-[#2d2d2d]">
+                <div className="col-span-2 md:col-span-4 text-center py-12 text-[#545454]">
                   <p>No best sellers available</p>
                 </div>
               ) : (
                 bestSellers.slice(0, 4).map((product) => (
                   <div key={product._id} className="group">
                     <Link href={`/shop/${product._id}`}>
-                      <div className="relative w-full aspect-[4/5] md:aspect-square rounded-xl overflow-hidden bg-white/50">
+                      <div className="relative w-full aspect-[4/5] md:aspect-square rounded-xl overflow-hidden ">
                         {product.imageUrl &&
                         Array.isArray(product.imageUrl) &&
                         product.imageUrl.length > 0 ? (
@@ -656,11 +656,11 @@ const Index = () => {
                       </div>
                     </Link>
                     <p
-                      className={`font-touvlo pt-4 sm:pt-5 text-left text-[#1c3163] text-[14px] sm:text-[16px] md:text-[18px]`}
+                      className={`font-touvlo pt-4 sm:pt-5 text-left text-[#1c3163] text-[14px] sm:text-[16px] md:text-[16px]`}
                     >
                       {product.name}
                     </p>
-                    <p className="text-left text-[12px] text-[#545454] font-touvlo">
+                    <p className="text-left text-[15px] text-[#545454] font-touvlo">
                       {product.discount ? (
                         <>
                           <span className="line-through mr-2">
@@ -674,8 +674,8 @@ const Index = () => {
                           </span>
                         </>
                       ) : (
-                        <span className="font-semibold font-touvlo text-[#545454]">
-                          ${product.price}
+                        <span className="font-semibold font-touvlo text-[#545454] text-[15px]">
+                          ${product.price} USD
                         </span>
                       )}
                     </p>
@@ -687,9 +687,9 @@ const Index = () => {
         </section>
 
         <section>
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="flex w-full items-center py-1 gap-4 sm:gap-5 md:gap-6 flex-wrap sm:flex-nowrap">
-              <h1 className="font-seasons text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] text-[#e6b884] font-normal whitespace-nowrap">
+          <div className="max-w-6xl mx-auto px-4 mt-[25px]">
+            <div className="flex w-full items-center gap-4 sm:gap-5 md:gap-6 flex-wrap sm:flex-nowrap">
+              <h1 className="font-seasons text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] text-[#e6b884] font-normal whitespace-nowrap">
                 We Ship Globally.
               </h1>
               <Link
@@ -704,10 +704,10 @@ const Index = () => {
           </div>
         </section>
 
-        <section className="w-full py-10 md:py-[10px] bg-[fee8dd]">
+        <section className="w-full mt-[25px]">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="flex flex-col gap-4 md:gap-6">
-              <h1 className="font-seasons text-[32px] sm:text-[36px] md:text-[40px] lg:text-[44px] text-[#e6b884] font-normal">
+            <div className="flex flex-col gap-4 md:gap-[25px]">
+              <h1 className="font-seasons text-[16px] sm:text-[18px] md:text-[30px] lg:text-[32px] text-[#e6b884] font-normal">
                 What is Sound Healing?
               </h1>
               <p className="text-[#545454] text-[14px] sm:text-[16px] md:text-[16px] leading-relaxed font-light font-touvlo">
@@ -723,16 +723,16 @@ const Index = () => {
               <p className="text-[#545454] text-[14px] sm:text-[16px] md:text-[16px] leading-relaxed font-light font-touvlo">
                 Singing bowls can significantly reduce tension, anxiety,
                 fatigue, and depressed mood after a single session of sound
-                meditation.
+                meditation. <br />
                 <span className="italic font-touvlo">
                   {" "}
                   – National Library of Medicine
                 </span>
               </p>
-              <div className="pt-0">
+              <div className="">
                 <Link
                   href="/about"
-                  className="font-seasons inline-flex items-center gap-2 text-[14px] sm:text-[16px] md:text-[18px] text-[#1C3163] hover:opacity-80 transition-opacity"
+                  className="font-seasons inline-flex items-center gap-2 text-[14px] sm:text-[16px] md:text-[16px] text-[#1C3163] hover:opacity-80 transition-opacity"
                 >
                   Learn more about Sound Healing
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -744,21 +744,21 @@ const Index = () => {
 
         <AboutSectionComponent />
 
-        <section className="w-full py-[20px] md:py-[0px] mt-6 ">
+        <section className="w-full  md:py-[0px] mt-[25px] ">
           <div className="max-w-6xl mx-auto px-4">
             {/* Header */}
             <div className="mb-8 md:mb-6 flex justify-between items-center flex-wrap gap-4">
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]">
-                <h2 className="text-[#e6b884] text-[28px] sm:text-[32px] md:text-[40px] font-normal font-seasons">
+                <h2 className="text-[#e6b884] text-[28px] sm:text-[30px] md:text-[32px] font-normal font-seasons">
                   Services
                 </h2>
-                <p className="text-[#545454] text-[14px] mt-3 sm:text-[16px] md:text-[18px] font-light flex items-center justify-center font-touvlo">
+                <p className="text-[#545454] text-[16px] mt-3 sm:text-[16px] md:text-[16px] font-light flex items-center justify-center font-touvlo">
                   Private Sessions & Corporate Wellness
                 </p>
               </div>
               <Link
                 href="/services"
-                className="font-seasons text-[#1C3163] inline-flex items-center gap-1 text-[14px] sm:text-[15px] md:text-[16px] font-normal hover:opacity-80 transition-opacity"
+                className="font-seasons text-[#1C3163] inline-flex items-center gap-1 text-[14px] sm:text-[16px] md:text-[16px] font-normal hover:opacity-80 transition-opacity"
               >
                 <span>Explore our Services</span>
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#1C3163]" />
@@ -766,65 +766,26 @@ const Index = () => {
             </div>
 
             {/* First Row - Featured Corporate Sessions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-12 gap-y-8 md:gap-y-16 mb-12 md:mb-16 font-touvlo">
-              {featuredCorporateSessions.length > 0
-                ? featuredCorporateSessions.map((session) => {
-                    const imageUrl = session.imageUrl
-                      ? session.imageUrl.startsWith("data:") ||
-                        session.imageUrl.startsWith("http")
-                        ? session.imageUrl
-                        : `data:image/jpeg;base64,${session.imageUrl}`
-                      : ServiceImage1;
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-12 gap-y-8 md:gap-y-16  md:mb-16 font-touvlo">
+              {featuredCorporateSessions.length > 0 ? (
+                featuredCorporateSessions.map((session) => {
+                  const imageUrl = session.imageUrl
+                    ? session.imageUrl.startsWith("data:") ||
+                      session.imageUrl.startsWith("http")
+                      ? session.imageUrl
+                      : `data:image/jpeg;base64,${session.imageUrl}`
+                    : ServiceImage1;
 
-                    return (
-                      <div
-                        key={session._id}
-                        className="flex w-full items-end justify-between group"
-                      >
-                        {/* Image Container - Left Side */}
-                        <div className="relative aspect-3/4 w-[50%] rounded-2xl md:rounded-3xl overflow-hidden shrink-0 font-touvlo">
-                          <Image
-                            src={imageUrl}
-                            alt={session.title || "Corporate Session"}
-                            fill
-                            className="object-cover group-hover:scale-110 group-hover:brightness-110 transition-all duration-500 ease-out"
-                          />
-                        </div>
-
-                        {/* Content - Right Side */}
-                        <div className="flex w-[40%] h-full justify-between flex-col">
-                          <h3 className="text-[#545454] pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
-                            {session.title || "Corporate Session"}
-                          </h3>
-                          <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
-                            <p className="text-[#545454] text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed line-clamp-2">
-                              {/* {session.description || ""} */}
-                            </p>
-                            {/* Arrow Button */}
-                            <Link href="/services">
-                              <button className="size-[18px] sm:size-[20px] md:size-[22px] rounded-full border-1 border-[#1C3163] flex items-center justify-center hover:bg-[#1C3163] transition-colors group">
-                                <ArrowRight
-                                  className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-black hover:text-white"
-                                  strokeWidth={0.9}
-                                />
-                              </button>
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                : // Fallback to static data if no featured corporate sessions
-                  YogaImage.map((item) => (
+                  return (
                     <div
-                      key={item.id}
+                      key={session._id}
                       className="flex w-full items-end justify-between group"
                     >
                       {/* Image Container - Left Side */}
-                      <div className="relative aspect-3/4 w-[50%] rounded-2xl md:rounded-3xl overflow-hidden shrink-0">
+                      <div className="relative aspect-3/4 w-[50%] rounded-2xl md:rounded-3xl overflow-hidden shrink-0 font-touvlo">
                         <Image
-                          src={item.image}
-                          alt={item.title}
+                          src={imageUrl}
+                          alt={session.title || "Corporate Session"}
                           fill
                           className="object-cover group-hover:scale-110 group-hover:brightness-110 transition-all duration-500 ease-out"
                         />
@@ -832,12 +793,12 @@ const Index = () => {
 
                       {/* Content - Right Side */}
                       <div className="flex w-[40%] h-full justify-between flex-col">
-                        <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
-                          {item.title}
+                        <h3 className="text-[#545454] pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
+                          {session.title || "Corporate Session"}
                         </h3>
                         <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
-                          <p className="text-black text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed line-clamp-2">
-                            {/* {item.description} */}
+                          <p className="text-[#545454] text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed line-clamp-2">
+                            {/* {session.description || ""} */}
                           </p>
                           {/* Arrow Button */}
                           <Link href="/services">
@@ -851,75 +812,40 @@ const Index = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
+                  );
+                })
+              ) : (
+                <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center py-12">
+                  <p className="text-[#545454] text-[14px] sm:text-[16px] font-touvlo">
+                    No corporate sessions found
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Second Section Header */}
-            <div className="mb-8 md:mb-12 mt-12 md:mt-20">
-              {/* <h2 className="text-black text-[13px] sm:text-[14px] md:text-[16px] font-normal leading-tight">
-                Journey to Healing:
-                <br />
-                Sound & Music for Creatives
-              </h2> */}
-            </div>
 
             {/* Second Row - Featured Private Sessions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-12 gap-y-8 md:gap-y-16 mb-12 md:mb-1  ">
-              {featuredPrivateSessions.length > 0
-                ? featuredPrivateSessions.map((session) => {
-                    const imageUrl = session.imageUrl
-                      ? session.imageUrl.startsWith("data:") ||
-                        session.imageUrl.startsWith("http")
-                        ? session.imageUrl
-                        : `data:image/jpeg;base64,${session.imageUrl}`
-                      : YogaSection1;
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-12 gap-y-8 md:gap-y-16 md:mb-1  ">
+              {featuredPrivateSessions.length > 0 ? (
+                featuredPrivateSessions.map((session) => {
+                  const imageUrl = session.imageUrl
+                    ? session.imageUrl.startsWith("data:") ||
+                      session.imageUrl.startsWith("http")
+                      ? session.imageUrl
+                      : `data:image/jpeg;base64,${session.imageUrl}`
+                    : YogaSection1;
 
-                    return (
-                      <div
-                        key={session._id}
-                        className="flex w-full items-end justify-between group"
-                      >
-                        {/* Image Container - Left Side */}
-                        <div className="relative aspect-3/4 w-[50%] rounded-2xl md:rounded-3xl overflow-hidden shrink-0">
-                          <Image
-                            src={imageUrl}
-                            alt={session.title || "Private Session"}
-                            fill
-                            className="object-cover group-hover:scale-125 group-hover:rotate-2 group-hover:opacity-90 transition-all duration-700 ease-in-out"
-                          />
-                        </div>
-
-                        {/* Content - Right Side */}
-                        <div className="flex w-[40%] h-full justify-between flex-col">
-                          <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
-                            {session.title || "Private Session"}
-                          </h3>
-                          <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
-                            {/* Arrow Button */}
-                            <Link href="/services">
-                              <button className="size-[18px] sm:size-[20px] md:size-[22px] rounded-full border-1 border-[#1C3163] flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors group">
-                                <ArrowRight
-                                  className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 hover:text-white"
-                                  strokeWidth={0.9}
-                                />
-                              </button>
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                : // Fallback to static data if no featured private sessions
-                  CreativeJourneyData.map((item) => (
+                  return (
                     <div
-                      key={item.id}
+                      key={session._id}
                       className="flex w-full items-end justify-between group"
                     >
                       {/* Image Container - Left Side */}
                       <div className="relative aspect-3/4 w-[50%] rounded-2xl md:rounded-3xl overflow-hidden shrink-0">
                         <Image
-                          src={item.image}
-                          alt={item.title}
+                          src={imageUrl}
+                          alt={session.title || "Private Session"}
                           fill
                           className="object-cover group-hover:scale-125 group-hover:rotate-2 group-hover:opacity-90 transition-all duration-700 ease-in-out"
                         />
@@ -927,8 +853,8 @@ const Index = () => {
 
                       {/* Content - Right Side */}
                       <div className="flex w-[40%] h-full justify-between flex-col">
-                        <h3 className="text-[#545454] pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
-                          {item.title}
+                        <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
+                          {session.title || "Private Session"}
                         </h3>
                         <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
                           {/* Arrow Button */}
@@ -943,16 +869,24 @@ const Index = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
+                  );
+                })
+              ) : (
+                <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center ">
+                  <p className="text-[#545454] text-[14px] sm:text-[16px] font-touvlo">
+                    No private sessions found
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </section>
 
         {/* testimonials section  */}
 
-        <section className="w-full py-[0px] md:py-[0px]  relative mt-8">
+        <section className="w-full py-[0px] md:py-[0px]  relative mt-[25px] ">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="font-seasons text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-6 text-nowrap ">
+            <h2 className="font-seasons text-[#e6b884]  text-[28px] sm:text-[16px] md:text-[30px] lg:text-[32px] font-normal  text-nowrap ">
               What our Clients are saying
             </h2>
           </div>
@@ -967,7 +901,7 @@ const Index = () => {
             }}
             className="absolute md:block hidden inset-0 top-36 md:pointer-events-none"
           />
-          <div className="max-w-6xl mx-auto px-4 relative z-10">
+          <div className="max-w-6xl mx-auto px-4 relative z-10 mt-[25px]">
             <div className="relative">
               {/* Carousel Container */}
               <div className="overflow-hidden">
@@ -1134,10 +1068,10 @@ const Index = () => {
 
         {/* Upcoming Events section */}
 
-        <section className="w-full py-[40px] md:py-[10px] ">
+        <section className="w-full ">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex w-full  justify-between items-center">
-              <h2 className="font-seasons text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal mb-8 md:mb-6">
+              <h2 className="font-seasons text-[#e6b884]  text-[28px] sm:text-[32px] md:text-[40px] font-normal ">
                 Upcoming Events
               </h2>
               <Link
@@ -1154,7 +1088,7 @@ const Index = () => {
                 <p className="text-[16px]">No upcoming events at the moment</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 md:mt-[25px]">
                 {upcomingEvents.map((event) => {
                   const eventDate = new Date(event.date);
                   const monthNames = [
@@ -1191,7 +1125,7 @@ const Index = () => {
                     : Yoga1;
 
                   return (
-                    <div key={event._id} className="flex flex-col group">
+                    <div key={event._id} className="flex flex-col group ">
                       <Link href={`/events/${event._id}`}>
                         <div className="relative w-full aspect-[4/3]  overflow-hidden mb-0 group-hover:shadow-2xl transition-all duration-500">
                           <Image
@@ -1213,8 +1147,8 @@ const Index = () => {
                         </div>
                       </Link>
                       {/* Event Details - Light Beige Background */}
-                      <div className="px-4 py-5 md:px-5 md:py-6 -mt-2 relative z-10">
-                        <h3 className=" font-seasons text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight mb-2 uppercase tracking-wide">
+                      <div className="px-4  md:px-5  mt-2 relative z-10">
+                        <h3 className=" font-seasons text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight mb-2  tracking-wide">
                           {event.title}
                         </h3>
                         <p className="text-gray-700 text-[12px] sm:text-[13px] md:text-[14px] font-light text-[#545454] font-touvlo">

@@ -64,7 +64,7 @@ const Footer = () => {
   };
 
   return (
-    <section className="w-full py-[40px] md:py-[8px] bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2] text-touvlo">
+    <section className="w-full py-[40px] md:py-[8px] bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2] text-touvlo mt-[35px] bg-red-500">
       <div className="max-w-6xl border-b pb-[64px] border-black items-stretch flex flex-col md:flex-row justify-between mx-auto px-4 gap-6 md:gap-2 ">
         <div className="hidden md:flex items-start h-full">
           <Image
