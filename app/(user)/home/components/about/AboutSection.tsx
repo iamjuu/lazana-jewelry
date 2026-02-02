@@ -13,7 +13,7 @@ const AboutSectionComponent = () => {
           <h2
             className="font-seasons text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-0 text-[#e6b884] font-normal"
           >
-            Founder <span className="font-sans">'</span>s Note
+            Founder's Note
           </h2>
 
 
@@ -103,7 +103,7 @@ const AboutSectionComponent = () => {
             {/* Read Our Story link to About page */}
             <a
               href="/about"
-              className="font-touvlo inline-flex items-center gap-2 text-[15px] sm:text-[16px] md:text-[17px] lg:text-[18px] font-normal hover:opacity-80 transition-opacity text-[#1c3163]"
+              className="font-seasons  inline-flex items-center gap-2 text-[15px] sm:text-[16px] md:text-[17px] lg:text-[18px] font-normal hover:opacity-80 transition-opacity text-[#1c3163]"
             >
               Read Our Story →
             </a>
