@@ -131,17 +131,17 @@ const BlogDetailPage = () => {
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <Navbar />
       <div className="w-full">
-        <article className="w-full px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
+        <article className="w-full px-4 sm:px-6 mt-[45px]">
           <div className="max-w-4xl mx-auto">
             {/* Date */}
-            <div className="mb-4">
-              <p className="text-[#1C3163] text-sm md:text-base">
+            <div className="">
+              <p className="text-[#1C3163] text-sm md:text-[16px] font-touvlo">
                 {formattedDate}
               </p>
             </div>
 
             {/* Title */}
-            <h1 className="text-[#1C3163] text-3xl md:text-4xl lg:text-5xl font-normal mb-6 md:mb-8 leading-tight">
+            <h1 className="text-[#1C3163] text-3xl md:text-[30px] lg:text-[32px] font-seasons  font-normal leading-relaxed">
               {blog.title}
             </h1>
 
@@ -158,9 +158,9 @@ const BlogDetailPage = () => {
                   />
                 </div>
                 <div>
-                  <p className="text-[#1C3163] text-sm md:text-base">
+                  <p className="text-[#1C3163] text-[14px] md:text-[16px] font-touvlo">
                     Written By{" "}
-                    <span className="text-[#D5B584] font-medium group-hover:underline">
+                    <span className="text-[#D5B584] font-600 group-hover:underline font-touvlo">
                       {"Francesca Wong"}
                     </span>
                   </p>
@@ -183,7 +183,7 @@ const BlogDetailPage = () => {
 
             {/* Content */}
             <div className="prose prose-lg max-w-none">
-              <div className="text-[#1C3163] text-base md:text-lg leading-relaxed space-y-4">
+              <div className="text-[#1C3163] text-[16px] md:text-lg leading-relaxed space-y-4">
                 {paragraphs.length > 0 ? (
                   paragraphs.map((paragraph, index) => (
                     <p key={index} className="whitespace-pre-line text-touvlo text-[#545454]">
@@ -191,7 +191,7 @@ const BlogDetailPage = () => {
                     </p>
                   ))
                 ) : (
-                  <p className="whitespace-pre-line text-[#545454] font-touvlo">
+                  <p className="whitespace-pre-line text-[#545454] font-touvlo md:text-[16px]">
                     {blog.description}
                   </p>
                 )}
@@ -199,23 +199,23 @@ const BlogDetailPage = () => {
             </div>
 
             {/* Author Signature */}
-            <div className="mt-12 md:mt-16 pt-8 md:pt-12 border-t border-[#1C3163]/20">
-              <p className="text-[#1C3163] text-base md:text-lg font-medium ">
-                {blog.name || "Francesca Wong"}
+            <div className="mt-[25px] md:pt-[25px]  border-[#1C3163]/20">
+              <p className="text-[#545454] text-base md:text-lg font-medium text-center ">
+              *******************  {blog.name || "Francesca Wong"} *******************
               </p>
             </div>
 
             {/* Navigation to Next/Previous Blog */}
             {(nextBlog || prevBlog) && (
-              <div className="mt-12 md:mt-16 pt-6 md:pt-6 border-t border-[#1C3163]/20">
+              <div className="mt-[25px] md:mt-[25px] pt-[25px] md:pt-[25px] border-t border-[#1C3163]/20 pt-[25px]">
                 <div className="flex flex-col sm:flex-row justify-between gap-6">
                   {prevBlog ? (
                     <Link
                       href={`/blog/${prevBlog._id}`}
                       className="group flex-1"
                     >
-                      <p className="text-[#1C3163] text-sm mb-2 font-seasons">Previous</p>
-                      <p className="text-[#1C3163] text-lg md:text-xl font-medium group-hover:text-[#D5B584] transition-colors duration-200">
+                      <p className="text-[#1C3163] text-sm mb-2 md:text-[16px] font-touvlo">Previous</p>
+                      <p className="text-[#1C3163] text-lg md:text-[18px] font-medium group-hover:text-[#D5B584] transition-colors duration-200 font-seasons">
                         {prevBlog.title}
                       </p>
                     </Link>

@@ -92,6 +92,13 @@ const ShopPageContent = () => {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrev, setHasPrev] = useState(false);
+
   // Close filters when category changes
   useEffect(() => {
     setShowFilters(false);
@@ -209,6 +216,10 @@ const ShopPageContent = () => {
           params.append("sortOrder", filters.sortOrder);
         }
 
+        // Add pagination parameters
+        params.append("page", currentPage.toString());
+        params.append("limit", "20");
+
         if (params.toString()) {
           apiUrl += `?${params.toString()}`;
         }
@@ -233,6 +244,14 @@ const ShopPageContent = () => {
         // Always set products, even if empty array
         if (isMounted) {
           setProducts(data.data || []);
+
+          // Update pagination state from API response
+          if (data.pagination) {
+            setTotalPages(data.pagination.totalPages || 1);
+            setTotalProducts(data.pagination.total || 0);
+            setHasNext(data.pagination.hasNext || false);
+            setHasPrev(data.pagination.hasPrev || false);
+          }
         }
 
         // Set category name immediately with a default, then try to fetch the real name
@@ -317,7 +336,37 @@ const ShopPageContent = () => {
     filters.tuning,
     filters.sortBy,
     filters.sortOrder,
+    currentPage,
   ]); // Re-fetch when category or specific filter values change
+
+  // Reset to page 1 when filters or category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    categoryParam,
+    filters.weight,
+    filters.octave,
+    filters.size,
+    filters.tuning,
+    filters.featured,
+    filters.newAddition,
+    filters.sortBy,
+  ]);
+
+  // Pagination navigation functions
+  const handlePreviousPage = () => {
+    if (hasPrev) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleNextPage = () => {
+    if (hasNext) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   // Helper function to normalize image URL
   const normalizeImageUrl = (url: string): string => {
@@ -385,22 +434,13 @@ const ShopPageContent = () => {
           <div className="max-w-6xl mx-auto px-4">
             {/* Header */}
             <div className="">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-[50px] mb-4 sm:mb-6">
-                <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-[50px] ">
+                <h2 className="font-seasons text-[#D5B584] text-[16px] sm:text-[28px] md:text-[30px] font-normal m-0 leading-none">
                   {categoryName}
                 </h2>
-                {/* <div>
-                    <Link
-                      href="/about"
-                      className="text-[14px] sm:text-[15px] md:text-[16px] font-normal text-red-500 hover:opacity-80 transition-opacity"
-                    >
-                      Read Our Story →
-                    </Link>
-                  </div> */}
               </div>
-
               {/* Description Text */}
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[17px] leading-relaxed text-[#545454]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] mt-[25px]">
                 Thoughtfully crafted Crystal Bowls designed for clarity,
                 relaxation, modern mindful living, sound healing, meditation and
                 yoga. Made from 99.9% pure clear quartz crystal. Lightweight,
@@ -412,7 +452,7 @@ const ShopPageContent = () => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 mt-[35px]">
               {/* Left Side Icons - Filter and Sort */}
               <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
                 {/* Filter Icon Button */}
@@ -739,39 +779,21 @@ const ShopPageContent = () => {
                           </div>
                           <div className="pt-4 sm:pt-6 md:pt-[28px] flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
-                              <p className="font-touvlo text-[14px] sm:text-[16px] md:text-[18px] line-clamp-2 min-h-[2.5em] mb-3 sm:mb-4 md:mb-[18px] text-[#1C3163] font-medium">
-                                {Array.from(displayName).map((ch, idx) => {
-                                  const forceMontserrat =
-                                    ch === "-" || (ch >= "0" && ch <= "9");
-                                  return forceMontserrat ? (
-                                    <span
-                                      key={idx}
-                                      style={{
-                                        fontFamily:
-                                          "var(--font-montserrat), sans-serif",
-                                      }}
-                                    >
-                                      {ch}
-                                    </span>
-                                  ) : (
-                                    <React.Fragment key={idx}>
-                                      {ch}
-                                    </React.Fragment>
-                                  );
-                                })}
+                              <p className="font-touvlo text-[14px] sm:text-[14px] md:text-[15.5px]  text-[#1C3163] font-medium">
+                                {displayName}
                               </p>
-                              <div className="text-[10px] sm:text-[11px] md:text-[12px] text-black flex items-center gap-2 font-touvlo ">
+                              <div className="text-[10px] sm:text-[11px] md:text-[12px] text-black flex items-center gap-0 font-touvlo ">
                                 {hasDiscount ? (
                                   <>
-                                    <span className="text-[#545454] font-light line-through text-[18px]">
+                                    <span className="text-[#545454] font-light line-through text-[14.5px]">
                                       {displayOriginalPrice}
                                     </span>
-                                    <span className="text-[#545454] font-light text-[18px] whitespace-nowrap">
+                                    <span className="text-[#545454] font-light text-[14.5px] whitespace-nowrap">
                                       {displayPrice} USD
                                     </span>
                                   </>
                                 ) : (
-                                  <span className="text-[#545454] font-light text-[18px] whitespace-nowrap">
+                                  <span className="text-[#545454] font-light text-[14.5px] whitespace-nowrap">
                                     {displayPrice} USD
                                   </span>
                                 )}
@@ -791,6 +813,42 @@ const ShopPageContent = () => {
                   </div>
                 )}
               </div>
+
+              {/* Pagination Controls */}
+              {totalProducts > 20 && (
+                <div className="flex items-center justify-center gap-6 mt-12 mb-8">
+                  {/* Previous Button */}
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={!hasPrev}
+                    className={`px-6 py-2 rounded-lg font-touvlo text-[14px] sm:text-[15px] md:text-[16px] transition-all ${
+                      hasPrev
+                        ? "bg-[#1C3163] text-white hover:opacity-90 cursor-pointer"
+                        : "bg-[#1C3163] text-white opacity-50 cursor-not-allowed"
+                    }`}
+                  >
+                    Previous
+                  </button>
+
+                  {/* Page Indicator */}
+                  <span className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] text-[#1C3163]">
+                    Page {currentPage} of {totalPages}
+                  </span>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={handleNextPage}
+                    disabled={!hasNext}
+                    className={`px-6 py-2 rounded-lg font-touvlo text-[14px] sm:text-[15px] md:text-[16px] transition-all ${
+                      hasNext
+                        ? "bg-[#1C3163] text-white hover:opacity-90 cursor-pointer"
+                        : "bg-[#1C3163] text-white opacity-50 cursor-not-allowed"
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </section>

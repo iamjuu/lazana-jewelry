@@ -233,8 +233,8 @@ const EventDetailPage = () => {
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
-            <p className="mb-4">Event not found</p>
-            <Link href="/events" className="text-[#D5B584] hover:underline">
+            <p className="mb-4 font-touvlo md:text-[16px]">Event not found</p>
+            <Link href="/events" className="text-[#1C3163] hover:underline font-touvlo md:text-[32px]">
               Back to Events
             </Link>
           </div>
@@ -263,15 +263,15 @@ const EventDetailPage = () => {
     <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
       <Navbar />
       
-      <div className="w-full py-[30px] sm:py-[35px] md:py-[38px] lg:py-[40px]">
+      <div className="w-full] lg:py-[0px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
           <Link 
             href="/events"
             className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-6 sm:mb-8 transition-colors text-[13px] sm:text-[14px] md:text-[16px]"
           >
-            <ArrowLeft className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5" />
-            <span>Back to All Events</span>
+            <ArrowLeft className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 font-seasons text-[16px]" />
+            <span className='font-seasons text-[16px]'>Back to All Events</span>
           </Link>
 
           {/* Top Section: Image and Booking Info Side by Side */}
@@ -293,12 +293,12 @@ const EventDetailPage = () => {
             <div className="order-2">
               <div className="space-y-2 sm:space-y-3 mt-0 sm:mt-4">
                 {/* Event Title */}
-                <h1 className="text-[#1C3163] text-[20px] sm:text-[22px] md:text-[24px] lg:text-[26px] font-light leading-tight">
+                <h1 className="text-[#1C3163] text-[20px] sm:text-[22px] md:text-[30px] lg:text-[32px] font-light leading-tight font-seasons">
                   {event.title}
                 </h1>
 
                 {/* Event Details */}
-                <div className="space-y-1 sm:space-y-1.5 text-[#1C3163] text-[12px] sm:text-[13px] md:text-[14px]">
+                <div className="space-y-1 sm:space-y-1.5 text-[#1C3163] text-[12px] sm:text-[13px] md:text-[14px] font-touvlo">
                   <p className="font-normal">{event.day}, {formattedDate}</p>
                   <p className="font-light">{event.time}</p>
                   <p className="font-light">{event.location}</p>
@@ -312,18 +312,18 @@ const EventDetailPage = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
+                  <div className="mt-[25px]">
                     {/* Price */}
                     {price > 0 && (
-                      <div className="pb-1 sm:pb-2">
-                        <p className="text-[#1C3163] text-[18px] sm:text-[20px] md:text-[22px] font-light">
-                          SGD {price.toFixed(2)}
+                      <div className="">
+                        <p className="text-[#1C3163] text-[16px] sm:text-[18px] md:text-[18px] font-light font-touvlo">
+                         ${price.toFixed(2)}USD
                         </p>
                       </div>
                     )}
 
                     {/* Quantity Selector */}
-                    <div className="flex items-center border border-[#1C3163] w-fit">
+                    <div className="flex items-center border border-[#1C3163] w-fit mt-[25px]">
                       <button
                         type="button"
                         onClick={() => handleQuantityChange(quantity - 1)}
@@ -333,7 +333,7 @@ const EventDetailPage = () => {
                       >
                         −
                       </button>
-                      <span className="px-3 sm:px-4 border-x border-[#1C3163] h-9 sm:h-10 flex items-center justify-center text-[#1C3163] text-[14px] sm:text-[16px] font-medium min-w-[45px] sm:min-w-[50px]">
+                      <span className="px-3 sm:px-4 border-x border-[#1C3163] h-9 sm:h-10 flex items-center justify-center text-[#1C3163] text-[14px] sm:text-[16px] font-medium min-w-[45px] sm:min-w-[50px] font-touvlo">
                         {quantity}
                       </span>
                       <button
@@ -348,7 +348,7 @@ const EventDetailPage = () => {
                     </div>
 
                     {/* Coupon Code */}
-                    <div className="space-y-1.5">
+                    <div className="space-y-1.5 mt-[10px]">
                       {appliedCoupon ? (
                         <div className="p-2.5 bg-green-50 border border-green-200 rounded">
                           <div className="flex items-center justify-between">
@@ -379,7 +379,7 @@ const EventDetailPage = () => {
                               setCouponError("");
                             }}
                             placeholder="Coupon code"
-                            className="flex-1 border border-[#1C3163] px-3 py-2 text-[13px] text-[#1C3163] focus:border-[#D5B584] focus:ring-1 focus:ring-[#D5B584] outline-none transition-all"
+                            className="flex-1 border border-[#1C3163] px-3 py-2 text-[13px] text-[#1C3163] focus:border-black focus:ring-[#1C3163] focus:ring-1  outline-none transition-all"
                             disabled={couponLoading}
                           />
                           <button
@@ -412,7 +412,7 @@ const EventDetailPage = () => {
                           <span className="text-green-600">Discount:</span>
                           <span className="text-green-600">-${appliedCoupon.discountAmount.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between pt-2 border-t border-[#1C3163]/10">
+                        <div className="flex justify-between pt-2 border-t border-[#1C3163]">
                           <span className="text-[#1C3163] font-medium">Total:</span>
                           <span className="text-[#1C3163] font-medium">
                             ${Math.max(0, (price * quantity) - appliedCoupon.discountAmount).toFixed(2)}
@@ -425,13 +425,13 @@ const EventDetailPage = () => {
                     <button
                       onClick={handleBooking}
                       disabled={bookingLoading}
-                      className="w-full bg-[#1C3163] text-white px-5 sm:px-6 py-2.5 text-[12px] sm:text-[13px] md:text-[14px] font-medium uppercase tracking-wider hover:bg-[#D5B584] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className=" mt-[12px] w-full bg-[#1C3163] text-white px-5 sm:px-6 py-2.5 text-[12px] sm:text-[13px] md:text-[14px] font-medium uppercase tracking-wider hover:bg-[#D5B584] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {bookingLoading ? "Processing..." : "Reserve Your Spot"}
                     </button>
 
                     {/* Availability Info */}
-                    <p className="text-[#6B5D4F] text-[11px] sm:text-[12px] font-light">
+                    <p className="text-[#1C3163] md:text-[16px] sm:text-[12px] font-light text-touvlo mt-[12px]">
                       {availableSlots} spot{availableSlots !== 1 ? 's' : ''} remaining
                     </p>
                   </div>
@@ -441,8 +441,8 @@ const EventDetailPage = () => {
           </div>
 
           {/* Description Section - Full Width Below Image */}
-          <div className="max-w-4xl mt-6 sm:mt-8 md:mt-10 lg:mt-12">
-            <div className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-light leading-[1.7] sm:leading-[1.75] whitespace-pre-line">
+          <div className="max-w-4xl font-touvlo">
+            <div className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-light leading-[1.7] sm:leading-[1.75] whitespace-pre-line text-[#545454]">
               {event.description}
             </div>
           </div>

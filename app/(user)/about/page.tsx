@@ -94,16 +94,16 @@ const AboutPage = () => {
         <Navbar />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[40px] sm:py-[50px] md:py-[60px] lg:mt-[40px] lg:py-0">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-[25px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-start">
           {/* Left Side - Content */}
-          <div className="space-y-2 sm:space-y-3">
-            <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight">
+          <div className="">
+            <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
               About Crystal Singing Bowls
             </h2>
 
-            <div className="space-y-4 sm:space-y-5 text-black">
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+            <div className=" text-[#545454] mt-[25px]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left">
                 Crystal Singing Bowls are instruments of sound and vibration
                 widely used in meditation, sound healing, yoga, and mindfulness
                 practices. Unlike traditional metal singing bowls, which have
@@ -114,7 +114,7 @@ const AboutPage = () => {
                 sustained tones and simplicity.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
                 Crystal singing bowls are made from quartz crystal, a material
                 known for its stability and acoustic properties. When played,
                 they produce long-lasting tones that fill a space evenly,
@@ -125,7 +125,7 @@ const AboutPage = () => {
                 presence.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
                 At Crystal Bowl Studio, our bowls are crafted with close
                 attention to sound quality, material purity, and thoughtful
                 design. Each bowl is crafted from{" "}
@@ -138,7 +138,7 @@ const AboutPage = () => {
                 over time.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
                 The production process involves extremely high temperatures,
                 reaching approximately 2,200 degrees celsius, during which the
                 quartz crystal is shaped and tuned with precision. Because this
@@ -155,7 +155,7 @@ const AboutPage = () => {
                 individual preferences or professional needs.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
                 Designed to be both a sound healing instrument and a mindful
                 companion, our crystal bowls are created to support personal
                 practice, group sessions, or quiet moments of reflection.
@@ -164,9 +164,9 @@ const AboutPage = () => {
           </div>
 
           {/* Right Side - Two Stacked Images */}
-          <div className="relative w-full flex flex-col justify-center lg:justify-end pt-6 sm:pt-8 md:pt-12 lg:pt-16 gap-4 sm:gap-6">
+          <div className="relative w-full flex flex-col gap-4 sm:gap-6 md-[75px] lg:mt-[85px]">
             {/* First Image */}
-            <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto lg:mx-0 group">
+            <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto lg:ml-auto lg:mr-0 group">
               <div className="relative w-full overflow-hidden shadow-lg">
                 <ImageWithShimmer
                   src="/assets/images/about/IMG_6097.jpeg"
@@ -179,7 +179,7 @@ const AboutPage = () => {
               </div>
             </div>
             {/* Second Image */}
-            <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto lg:mx-0 group">
+            <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto lg:ml-auto lg:mr-0 group">
               <div className="relative w-full overflow-hidden shadow-lg">
                 <ImageWithShimmer
                   src="/assets/images/about/s-l1600 (1) 2.jpeg"
@@ -194,17 +194,13 @@ const AboutPage = () => {
           </div>
         </div>
 
-        <div className="w-full flex flex-col pt-12 pb-8">
-          <div className="flex w-full mb-8 justify-start ">
-
-
-  <h1 className="font-seasons text-[32px] sm:text-[36px] md:text-[40px] lg:text-[44px] text-[#e6b884] font-normal text-left">
-    What makes our Singing Bowls unique
-  </h1>
-
-
+        <div className="w-full flex flex-col mt-[25px] ml-[45px]">
+          <div className="flex w-full  justify-start ">
+            <h1 className="font-seasons text-[16px] sm:text-[18px] md:text-[30px] lg:text-[32px] text-[#e6b884] font-normal text-left leading-none ">
+              What makes our Singing Bowls unique
+            </h1>
           </div>
-          <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-[25px]">
             {Icons.map((item) => (
               <Link
                 key={item.id}
@@ -220,10 +216,10 @@ const AboutPage = () => {
                   />
                 </div>
                 <div className="leading-snug">
-                  <p className="font-seasons text-center font-normal text-[16px] md:text-[20px] pb-2 text-[#1c3163]">
+                  <p className="font-seasons text-center font-normal text-[16px] md:text-[18px] pb-2 text-[#1c3163]">
                     {item.title}
                   </p>
-                  <p className="text-center text-[12px] sm:text-[13px] md:text-[14px] font-light leading-relaxed font-touvlo text-[#545454]">
+                  <p className="text-center text-[12px] sm:text-[13px] md:text-[16px] font-light leading-relaxed font-touvlo text-[#545454]">
                     {item.para}
                   </p>
                 </div>
@@ -233,10 +229,10 @@ const AboutPage = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[30px] sm:pt-[40px] md:pt-[50px] lg:pt-0 pb-[40px] sm:pb-[50px] md:pb-[60px] lg:pb-0">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-[25px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-start">
           {/* Left Side - Two Stacked Images */}
-          <div className="relative w-full flex flex-col justify-center lg:justify-start pt-6 sm:pt-8 md:pt-12 lg:pt-16 gap-4 sm:gap-6">
+          <div className="relative w-full flex flex-col gap-4 sm:gap-6 mt-[40px] lg:mt-[40px]">
             {/* First Image */}
             <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto lg:mx-0 group">
               <div className="relative w-full overflow-hidden shadow-lg">
@@ -251,8 +247,8 @@ const AboutPage = () => {
               </div>
             </div>
             {/* Second Image */}
-            <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto lg:mx-0 group">
-              <div className="relative w-full overflow-hidden shadow-lg">
+            <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto group">
+              <div className="relative w-[350] overflow-hidden shadow-lg max-h-[350px] lg:max-h-[400px]">
                 <ImageWithShimmer
                   src="/assets/images/about/97FA431C-FA5F-4E86-B42D-2CD52185DB1B_1_105_c.jpeg"
                   alt="Crystal singing bowls with mallet"
@@ -266,13 +262,13 @@ const AboutPage = () => {
           </div>
 
           {/* Right Side - Content */}
-          <div className="space-y-2 sm:space-y-3">
-            <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight">
+          <div className="">
+            <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
               About Sound Healing
             </h2>
 
-            <div className="space-y-4 text-black">
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+            <div className="text-[#545454] mt-[25px]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left">
                 Sound Healing refers to a range of practices that use sound and
                 vibration to support relaxation, focus, and overall well-being.
                 These practices may include sound baths, sound meditation, and
@@ -281,7 +277,7 @@ const AboutPage = () => {
                 bells.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
                 From a scientific perspective, Sound Healing is often discussed
                 in relation to its effects on the nervous system and stress
                 regulation.{" "}
@@ -293,7 +289,7 @@ const AboutPage = () => {
                 </span>
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
                 Beyond these physiological effects, sound-based practices are
                 also closely linked to mindfulness. The sound waves provides a
                 simple, non-verbal focal point for attention, helping to reduce
@@ -305,7 +301,7 @@ const AboutPage = () => {
                 </span>
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
                 In addition, vibration also plays an important role in many
                 sound healing approaches. Lower-frequency sound waves can be
                 felt physically and heard, particularly when instruments such as
@@ -315,7 +311,7 @@ const AboutPage = () => {
                 relaxation responses.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
                 Sound Healing is best understood as a complementary practice,
                 supporting well-being alongside meditation, movement, and
                 therapeutic care. At Crystal Bowl Studio, we approach Sound
@@ -330,15 +326,15 @@ const AboutPage = () => {
       </div>
 
       {/* About Our Founder Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[20px] sm:pt-[30px] md:pt-[40px] lg:pt-6 pb-[40px] sm:pb-[50px] md:pb-[60px] lg:pb-[40px] ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-[25px] ">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Content */}
-          <div className="space-y-2 sm:space-y-3">
-            <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] font-normal leading-tight">
+          <div className="">
+            <h2 className="font-seasons text-[#D5B584] text-[16px] sm:text-[14px] md:text-[30px] lg:text-[32px] font-normal leading-tight">
               About Our Founder
             </h2>
 
-            <div className="space-y-4 text-black">
+            <div className="space-y-4 text-black mt-[25px]">
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
                 Crystal Bowl Studio was founded by Francesca Wong, whose work
                 brings together international business experience and
@@ -381,7 +377,7 @@ const AboutPage = () => {
                 modern life and The Vision:
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-center">
                 <span className="font-semibold">
                   &quot;To make Sound Healing accessible, anywhere and
                   anytime.&quot;

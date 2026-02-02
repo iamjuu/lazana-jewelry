@@ -299,6 +299,7 @@ const Navbar = () => {
                           bg-zinc-900/95 backdrop-blur-md
                           shadow-lg border border-[#D5B584]/40
                           rounded-lg z-[100] pointer-events-auto py-3
+                          !text-[16px]
                         "
                         onMouseEnter={() => {
                           if (shopHoverTimeoutRef.current)
@@ -357,7 +358,7 @@ const Navbar = () => {
                       className={`text-[#D5B584] hover:text-[#1C3163] transition ${
                         pathname.startsWith("/services") ||
                         pathname.startsWith("/events")
-                          ? "text-white font-semibold scale-110"
+                          ? "text-white font-semibold scale-110 !text-[16px] " 
                           : ""
                       }`}
                     >
@@ -386,7 +387,7 @@ const Navbar = () => {
                       >
                         <Link
                           href="/events"
-                          className="block py-3 px-4 text-[#D5B584] hover:text-white hover:bg-[#D5B584]/10 transition hover:translate-x-2 rounded-md"
+                          className="block py-3 px-4 text-[#D5B584]  hover:text-white hover:bg-[#D5B584]/10 transition hover:translate-x-2 rounded-md"
                         >
                           Events
                         </Link>

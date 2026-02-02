@@ -23,11 +23,18 @@ type Product = {
   videoUrl?: string | string[];
   relativeproduct?: boolean;
   category?: string | { _id: string; name: string; slug: string };
-  subcategory?: string | { _id: string; name: string; slug: string; category?: string | { _id: string; name: string; slug: string } };
+  subcategory?:
+    | string
+    | {
+        _id: string;
+        name: string;
+        slug: string;
+        category?: string | { _id: string; name: string; slug: string };
+      };
 };
 
 type MediaItem = {
-  type: 'image' | 'video';
+  type: "image" | "video";
   url: string;
   index: number;
 };
@@ -53,7 +60,7 @@ const ImageMagnifier = ({ src, alt }: { src: string; alt: string }) => {
 
   const updateMagnifier = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imgRef.current) return;
-    
+
     const rect = imgRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -70,7 +77,7 @@ const ImageMagnifier = ({ src, alt }: { src: string; alt: string }) => {
       top: `${magnifierY}px`,
       backgroundImage: `url(${src})`,
       backgroundPosition: `${percentX}% ${percentY}%`,
-      backgroundSize: "200%",
+      backgroundSize: "400%",
     });
   };
 
@@ -102,7 +109,8 @@ const ImageMagnifier = ({ src, alt }: { src: string; alt: string }) => {
             transform: "translate(-50%, -50%)",
             borderRadius: "50%",
             border: "4px solid rgba(255, 255, 255, 0.9)",
-            boxShadow: "0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.1)",
+            boxShadow:
+              "0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.1)",
             backgroundRepeat: "no-repeat",
           }}
         />
@@ -115,13 +123,21 @@ const ProductDetailPage = () => {
   const params = useParams();
   const router = useRouter();
   const productId = params.id as string;
-  const [selectedMedia, setSelectedMedia] = useState<MediaItem>({ type: 'image', url: '', index: 0 });
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem>({
+    type: "image",
+    url: "",
+    index: 0,
+  });
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [relativeProduct, setRelativeProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [buyingNow, setBuyingNow] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(),
+  );
+  const [showFullShortDesc, setShowFullShortDesc] = useState(false);
+  const [showFullLongDesc, setShowFullLongDesc] = useState(false);
   const { addItem } = useCart();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -159,11 +175,15 @@ const ProductDetailPage = () => {
   const fetchRelativeProduct = async () => {
     try {
       // Fetch products including relative products
-      const response = await fetch("/api/products?includeRelative=true&limit=100");
+      const response = await fetch(
+        "/api/products?includeRelative=true&limit=100",
+      );
       const data = await response.json();
       if (data.success && data.data) {
         // Look for a relative product that's not the current one
-        const relative = data.data.find((p: Product) => p.relativeproduct === true && p._id !== productId);
+        const relative = data.data.find(
+          (p: Product) => p.relativeproduct === true && p._id !== productId,
+        );
         if (relative) {
           setRelativeProduct(relative);
         }
@@ -200,18 +220,19 @@ const ProductDetailPage = () => {
     if (product && product.relativeproduct) {
       setRelativeProduct(null);
     }
-    
+
     // Set initial selected media when product loads
     if (product) {
-      const productImages = Array.isArray(product.imageUrl) && product.imageUrl.length > 0 
-        ? product.imageUrl 
-        : [];
-      
+      const productImages =
+        Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+          ? product.imageUrl
+          : [];
+
       if (productImages.length > 0) {
         setSelectedMedia({
-          type: 'image',
+          type: "image",
           url: normalizeImageUrl(productImages[0]),
-          index: 0
+          index: 0,
         });
       }
     }
@@ -250,20 +271,32 @@ const ProductDetailPage = () => {
   }
 
   // Get product images and videos
-  const productImages = Array.isArray(product.imageUrl) && product.imageUrl.length > 0 
-    ? product.imageUrl 
+  const productImages =
+    Array.isArray(product.imageUrl) && product.imageUrl.length > 0
+      ? product.imageUrl
+      : [];
+
+  const productVideos = product.videoUrl
+    ? (Array.isArray(product.videoUrl)
+        ? product.videoUrl
+        : [product.videoUrl]
+      ).filter((v) => v && v.trim())
     : [];
-  
-  const productVideos = product.videoUrl 
-    ? (Array.isArray(product.videoUrl) ? product.videoUrl : [product.videoUrl]).filter(v => v && v.trim())
-    : [];
-  
+
   // Combine images and videos into media items
   const mediaItems: MediaItem[] = [
-    ...productImages.map((url, index) => ({ type: 'image' as const, url: normalizeImageUrl(url), index })),
-    ...productVideos.map((url, index) => ({ type: 'video' as const, url: url, index }))
+    ...productImages.map((url, index) => ({
+      type: "image" as const,
+      url: normalizeImageUrl(url),
+      index,
+    })),
+    ...productVideos.map((url, index) => ({
+      type: "video" as const,
+      url: url,
+      index,
+    })),
   ];
-  
+
   // Format price to show decimals only if needed
   const formatPrice = (price: number) => {
     const rounded = Math.round(price * 100) / 100;
@@ -274,7 +307,10 @@ const ProductDetailPage = () => {
   };
   const hasDiscount = product.discount && product.discount > 0;
   const originalPrice = product.price;
-  const discountedPrice = hasDiscount && product.discount ? product.price - product.discount : product.price;
+  const discountedPrice =
+    hasDiscount && product.discount
+      ? product.price - product.discount
+      : product.price;
   const priceInDollars = formatPrice(discountedPrice);
   const originalPriceFormatted = formatPrice(originalPrice);
 
@@ -289,9 +325,8 @@ const ProductDetailPage = () => {
     }
 
     // Get first image URL for cart
-    const imageUrl = productImages.length > 0 
-      ? normalizeImageUrl(productImages[0])
-      : "";
+    const imageUrl =
+      productImages.length > 0 ? normalizeImageUrl(productImages[0]) : "";
 
     addItem({
       id: product._id,
@@ -306,7 +341,7 @@ const ProductDetailPage = () => {
   // Handle Add Relative Product to Cart
   const handleAddRelativeProductToCart = () => {
     if (!relativeProduct) return;
-    
+
     // Check if user is logged in
     const token = sessionStorage.getItem("userToken");
     if (!token) {
@@ -316,15 +351,18 @@ const ProductDetailPage = () => {
     }
 
     // Calculate discounted price if applicable
-    const hasRelativeDiscount = relativeProduct.discount && relativeProduct.discount > 0;
-    const relativeDiscountedPrice = hasRelativeDiscount && relativeProduct.discount 
-      ? relativeProduct.price - relativeProduct.discount 
-      : relativeProduct.price;
+    const hasRelativeDiscount =
+      relativeProduct.discount && relativeProduct.discount > 0;
+    const relativeDiscountedPrice =
+      hasRelativeDiscount && relativeProduct.discount
+        ? relativeProduct.price - relativeProduct.discount
+        : relativeProduct.price;
 
     // Get first image URL for cart
-    const imageUrl = relativeProduct.imageUrl && relativeProduct.imageUrl.length > 0
-      ? normalizeImageUrl(relativeProduct.imageUrl[0])
-      : "";
+    const imageUrl =
+      relativeProduct.imageUrl && relativeProduct.imageUrl.length > 0
+        ? normalizeImageUrl(relativeProduct.imageUrl[0])
+        : "";
 
     addItem({
       id: relativeProduct._id,
@@ -347,14 +385,16 @@ const ProductDetailPage = () => {
     }
 
     // Calculate discounted price if discount exists
-    const itemDiscountedPrice = item.discount && item.discount > 0 
-      ? item.price - item.discount 
-      : item.price;
+    const itemDiscountedPrice =
+      item.discount && item.discount > 0
+        ? item.price - item.discount
+        : item.price;
 
     // Get first image URL for cart
-    const itemImageUrl = item.imageUrl && item.imageUrl.length > 0
-      ? normalizeImageUrl(item.imageUrl[0])
-      : "";
+    const itemImageUrl =
+      item.imageUrl && item.imageUrl.length > 0
+        ? normalizeImageUrl(item.imageUrl[0])
+        : "";
 
     addItem({
       id: item._id,
@@ -377,7 +417,9 @@ const ProductDetailPage = () => {
     }
 
     // Redirect to order confirmation with instant buy params
-    router.push(`/order-confirmation?type=instant&productId=${product._id}&quantity=1`);
+    router.push(
+      `/order-confirmation?type=instant&productId=${product._id}&quantity=1`,
+    );
   };
 
   return (
@@ -385,56 +427,93 @@ const ProductDetailPage = () => {
       <Navbar />
 
       {/* Breadcrumb */}
-      <div className="max-w-6xl mx-auto px-4 pt-4 pb-2">
+      <div className="max-w-6xl mx-auto px-4 mt-[25px]">
         <nav className="flex items-center space-x-2 text-sm sm:text-base text-[#6B5D4F]">
-          <Link href="/" className="font-seasons hover:text-[#D5B584] transition-colors font-medium text-[#1c3163]">
-            <span className="font-seasons font-medium text-[#1c3163]">Home</span>
+          <Link
+            href="/"
+            className="font-seasons hover:text-[#D5B584] transition-colors text-[#1c3163]"
+            style={{ fontWeight: 700, textShadow: "0.5px 0 0 currentColor" }}
+          >
+            <span
+              className="font-seasons text-[#1c3163] text-[16px]"
+              style={{ fontWeight: 700, textShadow: "0.5px 0 0 currentColor" }}
+            >
+              Home
+            </span>
           </Link>
-          {product.category && typeof product.category === 'object' && product.category.name ? (
+          {product.category &&
+          typeof product.category === "object" &&
+          product.category.name ? (
             <>
-              <span>/</span>
-              <Link 
-                href={`/shop?category=${product.category.slug}`} 
-                className="font-seasons hover:text-[#D5B584] text-[#1c3163] transition-colors"
+              <span style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
+              <Link
+                href={`/shop?category=${product.category.slug}`}
+                className="font-seasons hover:text-[#D5B584] text-[#1c3163] transition-colors text-[16px]"
+                style={{
+                  fontWeight: 700,
+                  textShadow: "0.5px 0 0 currentColor",
+                }}
               >
                 {product.category.name}
               </Link>
-              {product.subcategory && typeof product.subcategory === 'object' && product.subcategory.name && (
-                <>
-                  <span>/</span>
-                  <span className="font-touvlo text-[#1c3163] font-medium">{product.subcategory.name}</span>
-                </>
-              )}
+              {product.subcategory &&
+                typeof product.subcategory === "object" &&
+                product.subcategory.name && (
+                  <>
+                    <span style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
+                    <span
+                      className="font-seasons text-[#1c3163] text-[16px]"
+                      style={{
+                        fontWeight: 700,
+                        textShadow: "0.5px 0 0 currentColor",
+                      }}
+                    >
+                      {product.subcategory.name}
+                    </span>
+                  </>
+                )}
             </>
           ) : (
             <>
-              <span>/</span>
-              <span>All Products</span>
+              <span style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
+              <span
+                className="font-seasons text-[#1c3163] text-[16px]"
+                style={{
+                  fontWeight: 700,
+                  textShadow: "0.5px 0 0 currentColor",
+                }}
+              >
+                All Products
+              </span>
             </>
           )}
         </nav>
       </div>
 
-      <section className="w-full py-[40px] md:py-[68px]">
+      <section className="w-full mt-[25px]">
         <div className="max-w-6xl mx-auto px-4">
           {/* Product Detail Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16 lg:mb-24 lg:items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 lg:items-start">
             {/* Left Side - Images and Videos */}
-            <div className="flex flex-col-reverse sm:flex-row gap-4">
+            <div className="flex flex-row gap-4">
               {/* Thumbnail Images and Videos */}
               {mediaItems.length > 1 && (
-                <div className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible">
+                <div
+                  className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible"
+                  style={{ marginTop: "40px" }}
+                >
                   {mediaItems.map((media, index) => (
                     <button
                       key={`${media.type}-${index}`}
                       onClick={() => setSelectedMedia(media)}
                       className={`relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
-                        selectedMedia.type === media.type && selectedMedia.index === media.index
+                        selectedMedia.type === media.type &&
+                        selectedMedia.index === media.index
                           ? "border-[#1C3163]"
                           : "border-transparent opacity-60 hover:opacity-100"
                       }`}
                     >
-                      {media.type === 'image' ? (
+                      {media.type === "image" ? (
                         <Image
                           src={media.url}
                           alt={`Product view ${index + 1}`}
@@ -450,7 +529,11 @@ const ProductDetailPage = () => {
                             muted
                           />
                           <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <svg
+                              className="w-8 h-8 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
                               <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
                             </svg>
                           </div>
@@ -463,7 +546,7 @@ const ProductDetailPage = () => {
 
               {/* Main Display Area - Fixed Height */}
               <div className="relative w-full h-[400px] sm:h-[450px] md:h-[500px] rounded-lg overflow-hidden ">
-                {selectedMedia.type === 'image' ? (
+                {selectedMedia.type === "image" ? (
                   selectedMedia.url ? (
                     <ImageMagnifier
                       src={selectedMedia.url}
@@ -491,22 +574,34 @@ const ProductDetailPage = () => {
 
             {/* Right Side - Product Info */}
             <div className="flex flex-col">
-              <h1 className="font-seasons text-[#1C3163] text-[28px] sm:text-[32px] lg:text-[30px] font-normal mb-4 leading-tight">
+              <h1
+                className="font-seasons text-[#1C3163] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none"
+                style={{ textShadow: "0.5px 0 0 currentColor" }}
+              >
                 {product.name}
               </h1>
 
-              <div className="mb-4">
+              <div className="">
                 {hasDiscount ? (
                   <div className="flex items-center gap-3">
-                    <p className="font-seasons text-gray-500 text-[24px] sm:text-[16px] line-through font-medium">
+                    <p
+                      className="font-seasons text-gray-500 text-[24px] sm:text-[16px] md:text-[24px] lg:text-[24px] line-through font-medium"
+                      style={{ textShadow: "0.5px 0 0 currentColor" }}
+                    >
                       {originalPriceFormatted}
                     </p>
-                    <p className="font-seasons text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] font-medium">
+                    <p
+                      className="font-seasons text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] font-medium"
+                      style={{ textShadow: "0.5px 0 0 currentColor" }}
+                    >
                       {priceInDollars} USD
                     </p>
                   </div>
                 ) : (
-                  <p className="font-seasons text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] font-medium">
+                  <p
+                    className="font-seasons text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] font-medium"
+                    style={{ textShadow: "0.5px 0 0 currentColor" }}
+                  >
                     {priceInDollars} USD
                   </p>
                 )}
@@ -514,26 +609,36 @@ const ProductDetailPage = () => {
 
               {/* Short Description - Show after price */}
               {product.shortDescription && (
-                <div className="mb-6">
-                  <p className="font-touvlo text-black text-[14px] sm:text-[15px] leading-relaxed">
+                <div className="mt-[25px]">
+                  <p
+                    className={`font-touvlo text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed ${!showFullShortDesc ? "line-clamp-4" : ""}`}
+                  >
                     {product.shortDescription}
                   </p>
+                  {product.shortDescription.length > 200 && (
+                    <button
+                      onClick={() => setShowFullShortDesc(!showFullShortDesc)}
+                      className="text-[#1C3163] md:text-[16px] sm:text-[15px] font-semibold mt-2 hover:text-[#D5B584] transition-colors font-touvlo"
+                    >
+                      {showFullShortDesc ? "Read Less" : "Read More"}
+                    </button>
+                  )}
                 </div>
               )}
 
               {/* Add to Cart Button */}
-              <button 
+              <button
                 onClick={handleAddToCart}
-                className="w-full bg-[#2C3E50] hover:bg-[#1C3163] text-white py-4 rounded-lg mb-4 transition-colors text-[16px] font-medium"
+                className="w-full bg-[#2C3E50] hover:bg-[#1C3163] text-white py-4 rounded-lg  transition-colors text-[16px] font-medium mt-[25px] font-touvlo"
               >
                 Add to Cart
               </button>
 
               {/* Buy Now with Stripe Button */}
-              <button 
+              <button
                 onClick={handleBuyNow}
                 disabled={buyingNow}
-                className="w-full bg-[#FFC439] hover:bg-[#F0B429] text-[#1C3163] py-4 rounded-lg mb-6 transition-colors text-[16px] font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-[#FFC439] font-touvlo hover:bg-[#F0B429] text-[#1C3163] py-4 rounded-lg mb-[25px] transition-colors text-[16px] font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-[25px]"
               >
                 {buyingNow ? (
                   <>
@@ -549,9 +654,17 @@ const ProductDetailPage = () => {
               </button>
 
               {/* Secure Payment Badge */}
-              <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mb-8">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mb-[25px] ">
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 <span>Secure payment powered by Stripe</span>
               </div>
@@ -559,57 +672,67 @@ const ProductDetailPage = () => {
               {/* Relative Product - Show after cart button if current product is NOT a relative product */}
               {relativeProduct && !product.relativeproduct && (
                 <>
-                {/* <h1 className="text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[20px] font-medium mb-4">
+                  {/* <h1 className="text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[20px] font-medium mb-4">
                 Learn how to play the crystal bowls
                 </h1> */}
-              
-                  <h1 className="font-seasons text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[20px] font-medium mb-4">
+
+                  <h1
+                    className="font-seasons text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[18px] font-medium mb-[25px] "
+                    style={{ textShadow: "0.5px 0 0 currentColor" }}
+                  >
                     Learn how to play the crystal bowls
                   </h1>
                   <Link href={`/shop/${relativeProduct._id}`}>
-                <div className="mb-8 border border-[#D5B584]/30 rounded-lg p-4 bg-white">
-                  <div className="flex items-center gap-4">
-                    {relativeProduct.imageUrl && relativeProduct.imageUrl.length > 0 && (
-                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0">
-                        <Image
-                          src={normalizeImageUrl(relativeProduct.imageUrl[0])}
-                          alt={relativeProduct.name}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
+                    <div className="mb-8 border border-[#D5B584]/30 rounded-lg p-4 bg-white">
+                      <div className="flex items-center gap-4">
+                        {relativeProduct.imageUrl &&
+                          relativeProduct.imageUrl.length > 0 && (
+                            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0">
+                              <Image
+                                src={normalizeImageUrl(
+                                  relativeProduct.imageUrl[0],
+                                )}
+                                alt={relativeProduct.name}
+                                fill
+                                className="object-cover"
+                                unoptimized
+                              />
+                            </div>
+                          )}
+                        <div className="flex-1">
+                          <h4
+                            className="font-touvlo text-[#D5B584] text-[16px] font-medium mb-1"
+                            style={{ textShadow: "0.5px 0 0 currentColor" }}
+                          >
+                            {relativeProduct.name}
+                          </h4>
+                          <p
+                            className="font-touvlo text-[#D5B584] text-[14px]"
+                            style={{ textShadow: "0.5px 0 0 currentColor" }}
+                          >
+                            {formatPrice(relativeProduct.price)} USD
+                          </p>
+                        </div>
+                        <button
+                          onClick={handleAddRelativeProductToCart}
+                          className="bg-[#D5B584] hover:bg-[#C4A573] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shrink-0 font-touvlo"
+                        >
+                          + Add
+                        </button>
                       </div>
-                    )}
-                    <div className="flex-1">
-                      <h4 className="font-touvlo text-[#D5B584] text-[16px] font-medium mb-1">
-                        {relativeProduct.name}
-                      </h4>
-                      <p className="font-touvlo text-[#D5B584] text-[14px]">
-                        {formatPrice(relativeProduct.price)}
-                      </p>
                     </div>
-                    <button
-                      onClick={handleAddRelativeProductToCart}
-                      className="bg-[#D5B584] hover:bg-[#C4A573] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shrink-0"
-                    >
-                      + Add
-                    </button>
-                  </div>
-                </div>
-
-
-                </Link>
+                  </Link>
                 </>
               )}
 
               {/* Description Section - Accordion Style */}
               {product.description && (
-                <div className="mb-6 border-t border-b border-[#D5B584]/30">
+                <div className=" border-t border-b border-[#D5B584]/30">
                   <button
                     onClick={() => toggleSection("description")}
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
-                    <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium">
+                    <h3 className="font-seasons text-[#1C3163] md:text-[18px] sm:text-[20px] font-medium">
                       Description
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
@@ -618,23 +741,33 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("description") && (
                     <div className="pb-4">
-                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed whitespace-pre-wrap">
+                      <p
+                        className={`text-[#545454] md:text-[16px] sm:text-[15px] font-touvlo leading-relaxed whitespace-pre-wrap ${!showFullLongDesc ? "line-clamp-2" : ""}`}
+                      >
                         {product.description}
                       </p>
+                      {product.description.length > 150 && (
+                        <button
+                          onClick={() => setShowFullLongDesc(!showFullLongDesc)}
+                          className="text-[#1C3163] md:text-[16px] sm:text-[14px] font-semibold mt-2 hover:text-[#D5B584] transition-colors"
+                        >
+                          {showFullLongDesc ? "Read Less" : "Read More"}
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
               )}
 
               {/* Additional Information Sections - Accordion Style */}
-              <div className="mb-6 space-y-0">
+              <div className="space-y-0 ">
                 {/* Bowl Sizing */}
                 <div className="border-t border-[#D5B584]/30">
                   <button
                     onClick={() => toggleSection("bowlSizing")}
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
-                    <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium">
+                    <h3 className="text-[#1C3163] md:text-[18px] sm:text-[20px] font-medium font-seasons">
                       Bowl Sizing
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
@@ -643,8 +776,16 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("bowlSizing") && (
                     <div className="pb-4">
-                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed">
-                        Our crystal bowls come in various sizes to suit different healing practices. We offer bowls ranging from small (4-6 inches) for personal use to large (12-14 inches) for group sessions. Each size is carefully crafted to produce specific frequencies and resonances. The size you choose depends on your intended use - smaller bowls are perfect for individual meditation and chakra work, while larger bowls create powerful sound waves ideal for group healing sessions.
+                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
+                        Our crystal bowls come in various sizes to suit
+                        different healing practices. We offer bowls ranging from
+                        small (4-6 inches) for personal use to large (12-14
+                        inches) for group sessions. Each size is carefully
+                        crafted to produce specific frequencies and resonances.
+                        The size you choose depends on your intended use -
+                        smaller bowls are perfect for individual meditation and
+                        chakra work, while larger bowls create powerful sound
+                        waves ideal for group healing sessions.
                       </p>
                     </div>
                   )}
@@ -656,7 +797,7 @@ const ProductDetailPage = () => {
                     onClick={() => toggleSection("shipping")}
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
-                    <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium">
+                    <h3 className="text-[#1C3163] md:text-[18px] sm:text-[20px] font-medium font-seasons ">
                       Shipping and Delivery
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
@@ -665,32 +806,52 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("shipping") && (
                     <div className="pb-4">
-                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed mb-3">
-                        We offer Air Express shipping to ensure your crystal bowls arrive safely and promptly. Shipping charges are calculated based on the total number of bowls in your order:
+                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mb-3">
+                        We offer Air Express shipping to ensure your crystal
+                        bowls arrive safely and promptly. Shipping charges are
+                        calculated based on the total number of bowls in your
+                        order:
                       </p>
-                      <ul className="list-disc list-inside text-black text-[14px] sm:text-[15px] space-y-2 ml-2">
+                      <ul className="list-disc list-inside text-[#545454] md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo">
                         <li>1 Bowl: SGD $65</li>
                         <li>2-3 Bowls: SGD $111</li>
                         <li>4-7 Bowls: SGD $155</li>
-                        <li>8+ Bowls: Rates continue in cycles (8 = $65, 9-10 = $111, 11-14 = $155, and so on)</li>
+                        <li>
+                          8+ Bowls: Rates continue in cycles (8 = $65, 9-10 =
+                          $111, 11-14 = $155, and so on)
+                        </li>
                       </ul>
-                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed mt-3">
-                        All orders are carefully packaged to protect your bowls during transit. Delivery times vary by location, typically 7-14 business days for international orders.
+                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mt-3">
+                        All orders are carefully packaged to protect your bowls
+                        during transit. Delivery times vary by location,
+                        typically 7-14 business days for international orders.
                       </p>
-                      
+
                       {/* Additional Information */}
                       <div className="mt-6 space-y-4 pt-4 border-t border-[#D5B584]/30">
                         <div>
-                          <h4 className="text-black font-semibold text-[14px] sm:text-[15px] mb-1">Return Policy</h4>
-                          <p className="text-black text-[13px] sm:text-[14px]">No Returns unless it&apos;s broken</p>
+                          <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
+                            Return Policy
+                          </h4>
+                          <p className="text-[#545454] md:text-[16px] sm:text-[14px] font-touvlo">
+                            No Returns unless it&apos;s broken
+                          </p>
                         </div>
                         <div>
-                          <h4 className="text-black font-semibold text-[14px] sm:text-[15px] mb-1">Care Instructions</h4>
-                          <p className="text-black text-[13px] sm:text-[14px]">Wipe with soft cloth, avoid water contact</p>
+                          <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
+                            Care Instructions
+                          </h4>
+                          <p className="text-[#545454] md:text-[16px] sm:text-[14px] font-touvlo">
+                            Wipe with soft cloth, avoid water contact
+                          </p>
                         </div>
                         <div>
-                          <h4 className="text-black font-semibold text-[14px] sm:text-[15px] mb-1">Includes Accessories</h4>
-                          <p className="text-black text-[13px] sm:text-[14px]">Rubber ring + suede mallet</p>
+                          <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
+                            Includes Accessories
+                          </h4>
+                          <p className="text-[#545454] md:text-[16px] sm:text-[14px] font-touvlo">
+                            Rubber ring + suede mallet
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -703,7 +864,7 @@ const ProductDetailPage = () => {
                     onClick={() => toggleSection("octave")}
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
-                    <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium">
+                    <h3 className="text-[#1C3163] md:text-[18px] sm:text-[20px] font-medium font-seasons">
                       What's the difference between 3rd and 4th Octave bowls?
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
@@ -712,8 +873,20 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("octave") && (
                     <div className="pb-4">
-                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed">
-                        The 3rd octave bowls produce deeper, more grounding frequencies that are ideal for root chakra work and deep meditation. These bowls create a rich, resonant sound that helps anchor you to the earth and promotes feelings of stability and security. The 4th octave bowls have higher, more ethereal frequencies that are perfect for crown chakra activation and spiritual connection. These bowls produce lighter, more uplifting tones that can help elevate consciousness and facilitate connection with higher realms. Each octave offers unique healing properties, and many practitioners use both in their healing sessions for a complete chakra balancing experience.
+                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
+                        The 3rd octave bowls produce deeper, more grounding
+                        frequencies that are ideal for root chakra work and deep
+                        meditation. These bowls create a rich, resonant sound
+                        that helps anchor you to the earth and promotes feelings
+                        of stability and security. The 4th octave bowls have
+                        higher, more ethereal frequencies that are perfect for
+                        crown chakra activation and spiritual connection. These
+                        bowls produce lighter, more uplifting tones that can
+                        help elevate consciousness and facilitate connection
+                        with higher realms. Each octave offers unique healing
+                        properties, and many practitioners use both in their
+                        healing sessions for a complete chakra balancing
+                        experience.
                       </p>
                     </div>
                   )}
@@ -725,7 +898,7 @@ const ProductDetailPage = () => {
                     onClick={() => toggleSection("tuning")}
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
-                    <h3 className="text-[#1C3163] text-[18px] sm:text-[20px] font-medium">
+                    <h3 className="text-[#1C3163] md:text-[18px] sm:text-[20px] font-medium font-seasons">
                       Which tuning system are Our Bowls made in?
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
@@ -733,93 +906,103 @@ const ProductDetailPage = () => {
                     </span>
                   </button>
                   {expandedSections.has("tuning") && (
-                    <div className="pb-4">
-                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed mb-3">
-                        Our bowls are available in multiple tuning frequencies to suit your preferences:
+                    <div className="">
+                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed mb-3 font-touvlo">
+                        Our bowls are available in multiple tuning frequencies
+                        to suit your preferences:
                       </p>
-                      <ul className="list-disc list-inside text-black text-[14px] sm:text-[15px] space-y-2 ml-2">
-                        <li><strong>432 Hz:</strong> The healing frequency of nature, known for its calming and harmonizing effects. This is our standard tuning and is believed to resonate with the natural frequency of the universe.</li>
-                        <li><strong>440 Hz:</strong> Western standard tuning, commonly used in modern music. This frequency is familiar to most ears and works well for general sound healing.</li>
-                        <li><strong>528 Hz:</strong> The miracle frequency of unconditional love, known for its transformative and healing properties. This frequency is said to repair DNA and promote positive transformation.</li>
+                      <ul className="list-disc list-inside  md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo text-[#545454]">
+                        <li>
+                          <strong>432 Hz:</strong> The healing frequency of
+                          nature, known for its calming and harmonizing effects.
+                          This is our standard tuning and is believed to
+                          resonate with the natural frequency of the universe.
+                        </li>
+                        <li>
+                          <strong>440 Hz:</strong> Western standard tuning,
+                          commonly used in modern music. This frequency is
+                          familiar to most ears and works well for general sound
+                          healing.
+                        </li>
+                        <li>
+                          <strong>528 Hz:</strong> The miracle frequency of
+                          unconditional love, known for its transformative and
+                          healing properties. This frequency is said to repair
+                          DNA and promote positive transformation.
+                        </li>
                       </ul>
-                      <p className="text-black text-[14px] sm:text-[15px] leading-relaxed mt-3">
-                        If you would like your bowls in an alternative frequency, please leave a note on your order at checkout and we can customize your order to your preferred frequency.
+                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed mt-3 font-touvlo">
+                        If you would like your bowls in an alternative
+                        frequency, please leave a note on your order at checkout
+                        and we can customize your order to your preferred
+                        frequency.
                       </p>
                     </div>
                   )}
                 </div>
               </div>
-
-              {/* Product Information */}
-              {/* <div className=" border border-[#D5B584]/40 rounded-lg p-4 sm:p-6 space-y-3">
-                <div>
-                  <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Return Policy</h4>
-                  <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">No Returns unless it's broken</p>
-                </div>
-                <div>
-                  <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Care Instructions</h4>
-                  <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">Wipe with soft cloth, avoid water contact</p>
-                </div>
-                <div>
-                  <h4 className="text-[#1C3163] font-semibold text-[14px] sm:text-[15px] mb-1">Includes Accessories</h4>
-                  <p className="text-[#2C3E50] text-[13px] sm:text-[14px]">Rubber ring + suede mallet</p>
-                </div>
-              </div> */}
             </div>
           </div>
 
           {/* Related Products Section - Only show if current product is NOT a relative product */}
           {!product.relativeproduct && (
-            <div>
-              <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] lg:text-[40px] font-normal mb-8 lg:mb-12">
+            <div className="">
+              <h2 className="text-[#D5B584] text-[28px] sm:text-[30px] lg:text-[32px] font-normal font-seasons mb-[25px]">
                 Related Products
               </h2>
 
               {relatedProducts.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                {relatedProducts.map((item) => {
-                  const itemImageUrl = item.imageUrl && item.imageUrl.length > 0 
-                    ? normalizeImageUrl(item.imageUrl[0])
-                    : null;
-                  const itemPriceInDollars = formatPrice(item.price);
-                  
-                  return (
-                    <div key={item._id} className="group">
-                      <div className="relative w-full aspect-square rounded-lg overflow-hidden  mb-4">
-                        {itemImageUrl ? (
-                          <Link href={`/shop/${item._id}`} className="block w-full h-full">
-                            <Image
-                              src={itemImageUrl}
-                              alt={item.name}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-300"
-                              unoptimized
-                            />
-                          </Link>
-                        ) : (
-                          <Link href={`/shop/${item._id}`} className="block w-full h-full">
-                            <Image
-                              src={Bucket1}
-                              alt={item.name}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          </Link>
-                        )}
-                      </div>
-                      <Link
-                        href={`/shop/${item._id}`}
-                        className="block cursor-pointer"
-                      >
-                        <div>
-                          <p className="text-[#1C3163] text-[14px] sm:text-[16px] font-medium mb-2">
-                            {item.name}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <p className="text-[#1C3163] text-[12px] sm:text-[14px]">
-                              {itemPriceInDollars}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                  {relatedProducts.map((item) => {
+                    const itemImageUrl =
+                      item.imageUrl && item.imageUrl.length > 0
+                        ? normalizeImageUrl(item.imageUrl[0])
+                        : null;
+                    const itemPriceInDollars = formatPrice(item.price);
+
+                    return (
+                      <div key={item._id} className="group">
+                        <div className="relative w-full aspect-square rounded-lg overflow-hidden  mb-4">
+                          {itemImageUrl ? (
+                            <Link
+                              href={`/shop/${item._id}`}
+                              className="block w-full h-full"
+                            >
+                              <Image
+                                src={itemImageUrl}
+                                alt={item.name}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                unoptimized
+                              />
+                            </Link>
+                          ) : (
+                            <Link
+                              href={`/shop/${item._id}`}
+                              className="block w-full h-full"
+                            >
+                              <Image
+                                src={Bucket1}
+                                alt={item.name}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            </Link>
+                          )}
+                        </div>
+                        <Link
+                          href={`/shop/${item._id}`}
+                          className="block cursor-pointer"
+                        >
+                          <div>
+                            <p className="text-[#1C3163] md:text-[15.5px] sm:text-[16px] font-medium font-touvlo ">
+                              {item.name}
                             </p>
-                            {/* <button 
+                            <div className="flex items-center justify-between font-touvlo">
+                              <p className="text-[#1C3163] md:text-[13.5px] sm:text-[14px] font-touvlo">
+                                {itemPriceInDollars} USD
+                              </p>
+                              {/* <button 
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -829,15 +1012,17 @@ const ProductDetailPage = () => {
                             >
                               <Plus size={16} />
                             </button> */}
+                            </div>
                           </div>
-                        </div>
-                      </Link>
-                    </div>
-                  );
-                })}
-              </div>
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
               ) : (
-                <p className="text-[#1C3163] text-center py-8">No related products available</p>
+                <p className="text-[#1C3163] text-center py-8">
+                  No related products available
+                </p>
               )}
             </div>
           )}
@@ -850,4 +1035,3 @@ const ProductDetailPage = () => {
 };
 
 export default ProductDetailPage;
-

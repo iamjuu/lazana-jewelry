@@ -853,7 +853,7 @@ const Index = () => {
 
                       {/* Content - Right Side */}
                       <div className="flex w-[40%] h-full justify-between flex-col">
-                        <h3 className="text-black pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
+                        <h3 className="text-[#545454] pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2 font-touvlo">
                           {session.title || "Private Session"}
                         </h3>
                         <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">

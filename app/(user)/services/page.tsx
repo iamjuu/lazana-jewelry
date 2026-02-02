@@ -25,7 +25,7 @@ const ServicesPage = () => {
   const [privateCurrentIndex, setPrivateCurrentIndex] = useState(0);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
-  
+
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     if (typeof window !== "undefined") {
       return !!sessionStorage.getItem("userToken");
@@ -52,7 +52,9 @@ const ServicesPage = () => {
     fetchSessions();
   }, []);
 
-  const corporateSessions = sessions.filter((s) => s.sessionType === "corporate");
+  const corporateSessions = sessions.filter(
+    (s) => s.sessionType === "corporate",
+  );
   const privateSessions = sessions.filter((s) => s.sessionType === "private");
 
   const [itemsPerPage, setItemsPerPage] = useState(1);
@@ -67,31 +69,40 @@ const ServicesPage = () => {
   }, []);
 
   // Handlers for Carousel Navigation
-  const handlePrev = (index: number, setIndex: React.Dispatch<React.SetStateAction<number>>, length: number) => {
-    setIndex((prev) => (prev === 0 ? Math.max(0, Math.ceil(length / itemsPerPage) - 1) : prev - 1));
+  const handlePrev = (
+    index: number,
+    setIndex: React.Dispatch<React.SetStateAction<number>>,
+    length: number,
+  ) => {
+    setIndex((prev) =>
+      prev === 0 ? Math.max(0, Math.ceil(length / itemsPerPage) - 1) : prev - 1,
+    );
   };
 
-  const handleNext = (index: number, setIndex: React.Dispatch<React.SetStateAction<number>>, length: number) => {
+  const handleNext = (
+    index: number,
+    setIndex: React.Dispatch<React.SetStateAction<number>>,
+    length: number,
+  ) => {
     const maxPage = Math.max(0, Math.ceil(length / itemsPerPage) - 1);
     setIndex((prev) => (prev === maxPage ? 0 : prev + 1));
   };
 
   return (
-    <div className="bg-[#FDF2E9] min-h-screen">
+    <div className="bg-[#FDF2E9] min-h-screen ">
       <Navbar />
-      
-      <main className="w-full pt-12 pb-0 b">
+
+      <main className="w-full  ">
         {/* HERO / TOP SECTION - Matches your design image */}
-        <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+        <section className="max-w-7xl mx-auto px-6 md:px-6 lg:px-0">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center lg:items-start">
-            
             {/* Left Column - Text Content */}
-            <div className="w-full lg:w-1/2 space-y-6">
-              <div className="space-y-4">
-                <h2 className="font-seasons text-[32px] md:text-[44px] text-[#D4A373] font-normal">
+            <div className="w-full lg:w-1/2 mt-[25px] ">
+              <div className="">
+                <h2 className="font-seasons text-[16px] md:text-[30px] lg:text-[32px] text-[#D4A373] font-normal  leading-none">
                   Services
                 </h2>
-                <p className="font-touvlo text-[16px] md:text-[18px] text-[#545454] leading-relaxed max-w-xl">
+                <p className="font-touvlo text-[16px] md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px] ">
                   Whether through a guided sound bath, meditation or private
                   session, Yoga and Sound Healing offers a powerful way to
                   reconnect with your inner self, reduce stress, and achieve
@@ -99,31 +110,32 @@ const ServicesPage = () => {
                 </p>
               </div>
 
-              <div className="space-y-6">
-                <h2 className="font-seasons text-[32px] md:text-[44px] text-[#D4A373] font-normal">
+              <div className="mt-[25px]">
+                <h2 className="font-seasons text-[16px] md:text-[30px] lg:text-[32px] text-[#D4A373] font-normal leading-none">
                   Work with Me
                 </h2>
-                <div className="space-y-4">
-                  <h3 className="font-seasons text-[22px] md:text-[28px] text-[#1C3163] leading-tight">
-                    Healing & Transformation through Sound, Movement & Energy Work
+                <div className="mt-[25px]">
+                  <h3 className="font-seasons text-[20px] md:text-[18px] text-[#1C3163] leading-relaxed text-wrap">
+                    Healing & Transformation through Sound, Movement & Energy
+                    Work
                   </h3>
-                  <p className="font-touvlo text-[16px] md:text-[18px] text-[#545454] leading-relaxed max-w-xl">
-                    I offer tailored experiences for individuals, groups,
-                    and organizations seeking a deeper transformation
-                    through Yoga, Sound Healing, and Meditation.
+                  <p className="font-touvlo text-[16px] md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px]">
+                    I offer tailored experiences for individuals, groups, and
+                    organizations seeking a deeper transformation through Yoga,
+                    Sound Healing, and Meditation.
                   </p>
                 </div>
               </div>
 
-              <div className="pt-4">
-                <h2 className="font-seasons text-[32px] md:text-[44px] text-[#D4A373] font-normal">
+              <div className="mt-[25px]">
+                <h2 className="font-seasons text-[16px] md:text-[30px] lg:text-[32px] text-[#D4A373] font-normal leading-none">
                   For Corporate & Group
                 </h2>
               </div>
             </div>
 
             {/* Right Column - Hero Image (Fixed Aspect Ratio) */}
-            <div className="w-full lg:w-1/2 mt-18">
+            <div className="w-full lg:w-1/2 mt-[44px]">
               <div className="relative w-full aspect-[4/3] md:aspect-[3/2] lg:aspect-[4/5] xl:aspect-square overflow-hidden  w-[450px] h-[350px]">
                 <Image
                   src="/assets/images/about/2025Frankie374.jpg"
@@ -138,17 +150,24 @@ const ServicesPage = () => {
         </section>
 
         {/* 1. CORPORATE SESSIONS LOOP */}
-        <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 mt-6 font-seasons">
+        <section className="max-w-7xl mx-auto px-6 md:px-6 lg:px-0 mt-[25px] font-seasons">
           {sessionsLoading ? (
-            <div className="text-center py-12 text-[#D5B584]">Loading sessions...</div>
+            <div className="text-center py-12 text-[#D5B584]">
+              Loading sessions...
+            </div>
           ) : (
             <div className="relative overflow-hidden">
               <div
                 className="flex gap-6 transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${corporateCurrentIndex * 100}%)` }}
+                style={{
+                  transform: `translateX(-${corporateCurrentIndex * 100}%)`,
+                }}
               >
                 {corporateSessions.map((item) => (
-                  <div key={item._id} className="min-w-full md:min-w-[calc(33.333%-1rem)]">
+                  <div
+                    key={item._id}
+                    className="min-w-full md:min-w-[calc(33.333%-1rem)]"
+                  >
                     <div className="relative group aspect-[3/4] overflow-hidden rounded-2xl shadow-sm">
                       {item.imageUrl && (
                         <Image
@@ -158,13 +177,15 @@ const ServicesPage = () => {
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6 font-touvlo" >
-                        <h3 className="text-white text-xl font-medium mb-3">{item.title}</h3>
-                        <button 
-                          onClick={() => router.push("/corporate-session")} 
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6 font-touvlo">
+                        <h3 className="text-white text-[18px] font-medium mb-3 text-touvlo">
+                          {item.title}
+                        </h3>
+                        <button
+                          onClick={() => router.push("/corporate-session")}
                           className="text-white text-sm flex items-center gap-2 hover:gap-3 transition-all text-touvlo"
                         >
-                          Enquire Now <span className="text-lg">→</span>
+                          Enquire Now <span className="text-[16px] text-touvlo">→</span>
                         </button>
                       </div>
                     </div>
@@ -176,82 +197,93 @@ const ServicesPage = () => {
         </section>
 
         {/* 2. PRIVATE & GROUP OFFERINGS SECTION */}
-     <section className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 mt-6">
-  <h2 className="font-seasons text-[32px] md:text-[40px] text-[#D4A373] font-normal mb-8">
-    Private & Group Offerings
-  </h2>
+        <section className="max-w-7xl mx-auto px-6 md:px-6 lg:px-0 mt-[25px] font-seasons">
+          <h2 className="font-seasons text-[32px] md:text-[30px] lg:text-[32px] text-[#D4A373] font-normal ">
+            Private & Group Offerings
+          </h2>
 
-  {sessionsLoading ? (
-    <div className="text-center py-12 text-[#D5B584] animate-pulse">
-      Loading sessions...
-    </div>
-  ) : privateSessions.length > 0 ? (
-    <div className="relative overflow-hidden">
-      <div
-        className="flex gap-6 transition-transform duration-500 ease-in-out"
-        /* We use 100% to slide by one full container width */
-        style={{ transform: `translateX(-${privateCurrentIndex * 100}%)` }}
-      >
-        {privateSessions.map((item) => (
-          <div 
-            key={item._id} 
-            className="min-w-full md:min-w-[calc(33.333%-1rem)] flex-shrink-0"
-          >
-            <div className="relative group aspect-[3/4] overflow-hidden rounded-2xl shadow-sm bg-white/10">
-              {item.imageUrl ? (
-                <Image
-                  src={item.imageUrl}
-                  alt={item.title || "Private Session"}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-[#D4A373]/50 italic">
-                  Image coming soon
+          {sessionsLoading ? (
+            <div className="text-center mt-[25px] text-[#D5B584] animate-pulse">
+              Loading sessions...
+            </div>
+          ) : privateSessions.length > 0 ? (
+            <div className="relative overflow-hidden mt-[25px]">
+              <div
+                className="flex gap-6 transition-transform duration-500 ease-in-out"
+                /* We use 100% to slide by one full container width */
+                style={{
+                  transform: `translateX(-${privateCurrentIndex * 100}%)`,
+                }}
+              >
+                {privateSessions.map((item) => (
+                  <div
+                    key={item._id}
+                    className="min-w-full md:min-w-[calc(33.333%-1rem)] flex-shrink-0"
+                  >
+                    <div className="relative group aspect-[3/4] overflow-hidden rounded-2xl shadow-sm bg-white/10">
+                      {item.imageUrl ? (
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.title || "Private Session"}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[#D4A373]/50 italic">
+                          Image coming soon
+                        </div>
+                      )}
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+                        <h3 className="text-white text-[18px] text-touvlo font-medium mb-3">
+                          {item.title || "Private Session"}
+                        </h3>
+                        <button
+                          onClick={() =>
+                            router.push(
+                              isLoggedIn ? "/privateappointment" : "/login",
+                            )
+                          }
+                          className="text-white text-sm flex items-center gap-2 hover:gap-3 transition-all"
+                        >
+                          Book Now <span className="text-[16px] text-touvlo">→</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Pagination Dots - Only show if there is more than one page */}
+              {privateSessions.length > itemsPerPage && (
+                <div className="flex justify-center gap-2 mt-8">
+                  {Array.from({
+                    length: Math.ceil(privateSessions.length / itemsPerPage),
+                  }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setPrivateCurrentIndex(i)}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        i === privateCurrentIndex
+                          ? "bg-[#D4A373] w-8"
+                          : "bg-[#D4A373]/30 w-2"
+                      }`}
+                      aria-label={`Go to slide ${i + 1}`}
+                    />
+                  ))}
                 </div>
               )}
-              
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
-                <h3 className="text-white text-xl font-medium mb-3">
-                  {item.title || "Private Session"}
-                </h3>
-                <button 
-                  onClick={() => router.push(isLoggedIn ? "/privateappointment" : "/login")} 
-                  className="text-white text-sm flex items-center gap-2 hover:gap-3 transition-all"
-                >
-                  Book Now <span className="text-lg">→</span>
-                </button>
-              </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Pagination Dots - Only show if there is more than one page */}
-      {privateSessions.length > itemsPerPage && (
-        <div className="flex justify-center gap-2 mt-8">
-          {Array.from({ length: Math.ceil(privateSessions.length / itemsPerPage) }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setPrivateCurrentIndex(i)}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === privateCurrentIndex ? 'bg-[#D4A373] w-8' : 'bg-[#D4A373]/30 w-2'
-              }`}
-              aria-label={`Go to slide ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  ) : (
-    /* Fallback if length is 0 */
-    <div className="text-center py-20 rounded-2xl">
-      <p className="font-touvlo text-[#545454]">
-        No private sessions are currently scheduled. Please check back soon.
-      </p>
-    </div>
-  )}
-</section>
+          ) : (
+            /* Fallback if length is 0 */
+            <div className="text-center py-20 rounded-2xl">
+              <p className="font-touvlo text-[#545454]">
+                No private sessions are currently scheduled. Please check back
+                soon.
+              </p>
+            </div>
+          )}
+        </section>
       </main>
 
       <Footer />

@@ -67,11 +67,11 @@ const FAQPage = () => {
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <Navbar />
 
-      <section className="w-full py-[40px] md:py-[24px]">
+      <section className="w-full mt-[25px]">
         <div className="max-w-6xl mx-auto px-4">
           {/* Header */}
-          <div className="mb-8 flex flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[6px] items-start">
-            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] font-normal">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[6px] items-start">
+            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] font-normal font-seasons leading-none">
               FAQs
             </h2>
             {/* <p className="text-[#1C3163] text-[14px] sm:text-[16px] md:text-[18px] font-light max-w-md">
@@ -90,7 +90,7 @@ const FAQPage = () => {
                     onClick={() => toggleFAQ(index)}
                     className="w-full py-6 md:py-8 flex items-center justify-between gap-4 text-left hover:opacity-80 transition-opacity"
                   >
-                    <h3 className="text-[#1C3163] text-[14px] sm:text-[16px] md:text-[18px] font-normal flex-1 font-seasons">
+                    <h3 className="text-[#1C3163] md:text-[19px] sm:text-[16px] md:text-[18px] font-normal flex-1 font-seasons">
                       {faq.question}
                     </h3>
                     <div className="shrink-0">
@@ -104,7 +104,7 @@ const FAQPage = () => {
                   
                   {isOpen && (
                     <div className="pb-6 md:pb-8 animate-fadeIn">
-                      <div className="text-black text-[12px] sm:text-[14px] md:text-[16px] font-light leading-relaxed pr-12 sm:pr-16 font-toulov">
+                      <div className="text-[#545454] text-[12px] sm:text-[14px] md:text-[14px] font-light leading-relaxed pr-12 sm:pr-16 font-toulov">
                         {faq.answer}
                       </div>
                     </div>
