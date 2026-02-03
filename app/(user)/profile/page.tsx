@@ -484,7 +484,7 @@ function ProfilePageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#FDECE2] via-[#FEC1A2] to-[#D5B584] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#FDECE2] via-[#FEC1A2] to-[#D5B584] flex items-center justify-center font-touvlo">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
           <p className="text-white text-lg">Loading profile...</p>
@@ -505,7 +505,7 @@ function ProfilePageContent() {
     <div className="min-h-screen bg-gradient-to-br from-[#FDECE2] via-[#FEC1A2] to-[#D5B584]">
       <Navbar />
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 font-touvlo">
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
           {/* Header Section */}
           <div className="bg-gradient-to-r from-[#D5B584] to-[#FEC1A2] px-6 sm:px-8 lg:px-12 py-8 sm:py-10">
@@ -548,7 +548,7 @@ function ProfilePageContent() {
               {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
+                className="flex items-center gap-2 bg-white/20 hover:bg-[#1c3163] text-white px-4 py-2 rounded-lg transition-colors backdrop-blur-sm bg-[#1c3163]"
               >
                 <LogOut size={18} />
                 <span className="text-sm sm:text-base">Logout</span>
@@ -621,7 +621,7 @@ function ProfilePageContent() {
               <form onSubmit={handleSave} className="space-y-6">
               {/* Personal Information */}
               <div>
-                <h2 className="text-2xl font-bold text-[#1C3163] mb-6 flex items-center gap-2">
+                <h2 className="text-[18px] font-bold text-[#1C3163] mb-6 flex items-center gap-2">
                   <User size={24} />
                   Personal Information
                 </h2>
@@ -654,7 +654,7 @@ function ProfilePageContent() {
 
               {/* Address Information */}
               <div>
-                <h2 className="text-2xl font-bold text-[#1C3163] mb-6 flex items-center gap-2">
+                <h2 className="text-[18px] font-bold text-[#1C3163] mb-6 flex items-center gap-2">
                   <MapPin size={24} />
                   Address Information
                 </h2>
@@ -726,7 +726,7 @@ function ProfilePageContent() {
             {/* Orders Tab */}
             {activeTab === "orders" && (
               <div>
-                <h2 className="text-2xl font-bold text-[#1C3163] mb-6 flex items-center gap-2">
+                <h2 className="text-[18px] font-bold text-[#1C3163] mb-6 flex items-center gap-2">
                   <Package size={24} />
                   My Orders
                 </h2>
@@ -940,7 +940,7 @@ function ProfilePageContent() {
             {/* Bookings Tab */}
             {activeTab === "bookings" && (
               <div>
-                <h2 className="text-2xl font-bold text-[#1C3163] mb-6 flex items-center gap-2">
+                <h2 className="text-[18px] font-bold text-[#1C3163] mb-6 flex items-center gap-2">
                   <Calendar size={24} />
                   Booked Yoga Sessions
                 </h2>
@@ -1028,7 +1028,7 @@ function ProfilePageContent() {
             {/* Booked Events Tab */}
             {activeTab === "bookedEvents" && (
               <div>
-                <h2 className="text-2xl font-bold text-[#1C3163] mb-6 flex items-center gap-2">
+                <h2 className="text-[18px] font-bold text-[#1C3163] mb-6 flex items-center gap-2">
                   <Calendar size={24} />
                   Booked Events
                 </h2>

@@ -25,7 +25,7 @@ const ShippingAndDeliveryPage = () => {
               <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
                 Shipping Coverage
               </h3>
-              <div className=" text-[#1C3163] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
+              <div className=" text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
                 <p>
                   We ship internationally to all countries worldwide, except Switzerland, Africa, South America, India.
                 </p>
@@ -37,7 +37,7 @@ const ShippingAndDeliveryPage = () => {
               <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
                 Shipping Rates (Calculated at Checkout)
               </h3>
-              <div className="text-[#1C3163] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
+              <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
                 <p>
                   Shipping fees are based on the number of bowls in your order and will be automatically calculated at checkout.
                 </p>
@@ -77,7 +77,7 @@ const ShippingAndDeliveryPage = () => {
               <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
                 Additional Bowls
               </h3>
-              <div className="text-[#1C3163] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
+              <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
                 <p>
                   For orders of more than 7 bowls, shipping fees will continue to increase according to the tiered structure above and will be calculated automatically at checkout.
                 </p>
@@ -89,7 +89,7 @@ const ShippingAndDeliveryPage = () => {
               <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
                 Customs & Duties
               </h3>
-              <div className="text-[#1C3163] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
+              <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
                 <p>
                   International orders may be subject to customs duties, import taxes, or other fees depending on your country of residence.
                 </p>
@@ -104,7 +104,7 @@ const ShippingAndDeliveryPage = () => {
               <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
                 Production & Delivery Timeline
               </h3>
-              <div className="text-[#1C3163] md:text-[14px] sm:text-[16px] font-touvlo font -light leading-relaxed">
+              <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font -light leading-relaxed">
                 <p>
                   All Crystal Bowl Studio bowls are custom made to order.
                 </p>
@@ -122,7 +122,7 @@ const ShippingAndDeliveryPage = () => {
               <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
                 Packaging & Insurance
               </h3>
-              <div className="text-[#1C3163] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
+              <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
                 <p>
                   Each bowl is carefully packaged using protective materials and includes its own padded crystal bowl travel case to ensure maximum safety during transit.
                 </p>

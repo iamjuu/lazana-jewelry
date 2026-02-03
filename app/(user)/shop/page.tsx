@@ -779,21 +779,21 @@ const ShopPageContent = () => {
                           </div>
                           <div className="pt-4 sm:pt-6 md:pt-[28px] flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
-                              <p className="font-touvlo text-[14px] sm:text-[14px] md:text-[15.5px]  text-[#1C3163] font-medium">
+                              <p className="font-touvlo text-[14px] sm:text-[14px] md:text-[16px]  text-[#1C3163] font-medium">
                                 {displayName}
                               </p>
-                              <div className="text-[10px] sm:text-[11px] md:text-[12px] text-black flex items-center gap-0 font-touvlo ">
+                              <div className="text-[10px] sm:text-[11px] md:text-[14px] text-black flex items-center gap-0 font-touvlo ">
                                 {hasDiscount ? (
                                   <>
-                                    <span className="text-[#545454] font-light line-through text-[14.5px]">
+                                    <span className="text-[#545454] font-light line-through text-[14px]">
                                       {displayOriginalPrice}
                                     </span>
-                                    <span className="text-[#545454] font-light text-[14.5px] whitespace-nowrap">
+                                    <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
                                       {displayPrice} USD
                                     </span>
                                   </>
                                 ) : (
-                                  <span className="text-[#545454] font-light text-[14.5px] whitespace-nowrap">
+                                  <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
                                     {displayPrice} USD
                                   </span>
                                 )}

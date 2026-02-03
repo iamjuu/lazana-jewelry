@@ -104,7 +104,7 @@ const FAQPage = () => {
                   
                   {isOpen && (
                     <div className="pb-6 md:pb-8 animate-fadeIn">
-                      <div className="text-[#545454] text-[12px] sm:text-[14px] md:text-[14px] font-light leading-relaxed pr-12 sm:pr-16 font-toulov">
+                      <div className="text-[#545454] text-[12px] sm:text-[14px] md:text-[14px] font-light leading-relaxed pr-12 sm:pr-16 font-touvlo">
                         {faq.answer}
                       </div>
                     </div>

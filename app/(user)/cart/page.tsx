@@ -108,15 +108,15 @@ const CartPageContent = () => {
             <div className="mb-6 flex justify-center">
               <ShoppingBag size={80} className="text-[#1C3163] opacity-30" />
             </div>
-            <h2 className="text-[#1C3163] text-2xl md:text-3xl font-medium mb-4">
+            <h2 className="text-[#1C3163] text-2xl md:text-[32px] font-[400] mb-4 font-seasons font-semibold text-[#e6b884]">
               Your Cart is Empty
             </h2>
-            <p className="text-[#2C3E50] mb-8">
+            <p className="text-[#2C3E50] mb-8 font-[400] font-touvlo whitespace-nowrap">
               Looks like you haven&apos;t added anything to your cart yet.
             </p>
             <Link
               href="/shop"
-              className="inline-block bg-[#2C3E50] hover:bg-[#1C3163] text-white px-8 py-3 rounded-lg transition-colors"
+              className="inline-block bg-[#2C3E50] hover:bg-[#1C3163] text-white px-8 py-3 font-[400] font-touvlo rounded-lg transition-colors"
             >
               Continue Shopping
             </Link>
@@ -131,14 +131,14 @@ const CartPageContent = () => {
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <Navbar />
 
-      <section className="w-full py-8 md:py-12">
+      <section className="w-full mt-[25px]">
         <div className="max-w-7xl mx-auto px-4">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-[#1C3163] text-3xl md:text-4xl font-medium mb-2">
+            <h1 className="text-[#e6b884] text-3xl md:[30px] lg:[32px] font-medium mb-2 font-seasons">
               Shopping Cart
             </h1>
-            <p className="text-[#2C3E50]">
+            <p className="text-[#2C3E50] font-[400] font-touvlo">
               {totalQuantity()} {totalQuantity() === 1 ? "item" : "items"} in your cart
             </p>
           </div>
@@ -173,7 +173,7 @@ const CartPageContent = () => {
 
                       {/* Product Details */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex justify-between gap-4 mb-2">
+                        <div className="flex justify-between gap-4 mb-2 font-touvlo">
                           <h3 className="text-[#1C3163] text-base md:text-lg font-medium line-clamp-2">
                             {item.name}
                           </h3>
@@ -189,7 +189,7 @@ const CartPageContent = () => {
                           </button>
                         </div>
 
-                        <div className="mb-3">
+                        <div className="mb-3 font-touvlo">
                           {productDetails.get(item.id)?.hasDiscount ? (
                             <div className="flex items-center gap-2">
                               <p className="text-[#2C3E50] text-lg md:text-xl font-semibold">
@@ -200,7 +200,7 @@ const CartPageContent = () => {
                               </p>
                             </div>
                           ) : (
-                            <p className="text-[#2C3E50] text-lg md:text-xl font-semibold">
+                            <p className="text-[#2C3E50] text-lg md:text-[16px] font-semibold font-touvlo">
                           ${item.price.toLocaleString("en-US")}
                         </p>
                           )}
@@ -239,7 +239,7 @@ const CartPageContent = () => {
               </div>
 
               {/* Continue Shopping Link */}
-              <div className="mt-6">
+              <div className="mt-[25px] font-touvlo">
                 <Link
                   href="/shop"
                   className="text-[#1C3163] hover:text-[#2C3E50] font-medium inline-flex items-center gap-2"
@@ -252,17 +252,17 @@ const CartPageContent = () => {
             {/* Order Summary Section */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-                <h2 className="text-[#1C3163] text-xl font-semibold mb-6">
+                <h2 className="text-[#1C3163] text-xl font-semibold mb-6 font-touvlo">
                   Order Summary
                 </h2>
 
                 <div className="space-y-4 mb-6">
-                  <div className="flex justify-between text-[#2C3E50]">
+                  <div className="flex justify-between text-[#2C3E50] font-touvlo">
                     <span>Subtotal ({totalQuantity()} items)</span>
                     <span>${itemsSubtotal.toLocaleString("en-US")}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-4">
-                    <div className="flex justify-between text-[#1C3163] text-lg font-semibold">
+                    <div className="flex justify-between text-[#1C3163] text-[16px] font-semibold font-touvlo">
                       <span>Total</span>
                       <span>${totalAmount.toLocaleString("en-US")}</span>
                     </div>
@@ -289,26 +289,26 @@ const CartPageContent = () => {
                 </button>
 
                 {/* Stripe Badge */}
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mb-4">
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mb-4 font-touvlo text-[#545454">
                   <Lock size={16} />
                   <span>Secured by Stripe</span>
                 </div>
 
                 {/* Trust Badges */}
-                <div className="border-t border-gray-200 pt-4 space-y-2 text-sm text-gray-600">
+                <div className="border-t border-gray-200 pt-4 space-y-2 text-sm text-gray-600 font-touvlo text-[#545454]">
                   <div className="flex items-center gap-2">
                     <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <span>Secure checkout</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 font-touvlo text-[#545454]">
                     <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <span>Easy returns</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 font-touvlo text-[#545454]">
                     <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>

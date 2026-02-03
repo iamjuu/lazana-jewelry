@@ -958,7 +958,17 @@ const ProductDetailPage = () => {
                       item.imageUrl && item.imageUrl.length > 0
                         ? normalizeImageUrl(item.imageUrl[0])
                         : null;
-                    const itemPriceInDollars = formatPrice(item.price);
+
+                    // Check if item has discount
+                    const itemHasDiscount = item.discount && item.discount > 0;
+                    const itemOriginalPrice = item.price;
+                    const itemDiscountedPrice =
+                      itemHasDiscount && item.discount
+                        ? item.price - item.discount
+                        : item.price;
+                    const itemDisplayPrice = formatPrice(itemDiscountedPrice);
+                    const itemDisplayOriginalPrice =
+                      formatPrice(itemOriginalPrice);
 
                     return (
                       <div key={item._id} className="group">
@@ -995,13 +1005,24 @@ const ProductDetailPage = () => {
                           className="block cursor-pointer"
                         >
                           <div>
-                            <p className="text-[#1C3163] md:text-[15.5px] sm:text-[16px] font-medium font-touvlo ">
+                            <p className="text-[#1C3163] md:text-[16px] sm:text-[16px] font-medium font-touvlo ">
                               {item.name}
                             </p>
-                            <div className="flex items-center justify-between font-touvlo">
-                              <p className="text-[#1C3163] md:text-[13.5px] sm:text-[14px] font-touvlo">
-                                {itemPriceInDollars} USD
-                              </p>
+                            <div className="flex items-center gap-2 font-touvlo">
+                              {itemHasDiscount ? (
+                                <>
+                                  <span className="text-[#545454] font-light line-through text-[14px]">
+                                    {itemDisplayOriginalPrice}
+                                  </span>
+                                  <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
+                                    {itemDisplayPrice} USD
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
+                                  {itemDisplayPrice} USD
+                                </span>
+                              )}
                               {/* <button 
                               onClick={(e) => {
                                 e.preventDefault();

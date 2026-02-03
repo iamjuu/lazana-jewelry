@@ -17,6 +17,7 @@ import {
   UniqueToYou,
   Crystal,
   Intention,
+  FooterIcon3,
 } from "@/public/assets";
 import { AboutSkeleton, ImageWithShimmer } from "./components";
 // Fonts are now defined in globals.css as font-seasons and font-touvlo
@@ -389,8 +390,15 @@ const AboutPage = () => {
           {/* Right Image */}
           <div className="relative w-full flex justify-center lg:justify-end pt-6 sm:pt-8 md:pt-12 lg:pt-16">
             <div className="relative w-full max-w-[200px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[320px] xl:max-w-[400px] group">
-              {/* Horizontal Card - Rotated 90 degrees */}
-              <div className="absolute top-1/2 left-1/2 w-full aspect-[3/4] bg-[#D5B584] rounded-[12px] sm:rounded-[15px] md:rounded-[18px] lg:rounded-[20px] -translate-x-[50%] -translate-y-1/2 rotate-90 group-hover:rotate-60 transition-transform duration-300 ease-out shadow-lg"></div>
+              {/* Background Image - Rotated with FooterIcon3 */}
+              <div className="absolute top-1/2 left-1/2 w-[170%] h-[170%] -translate-x-[50%] -translate-y-1/2 rotate-90 group-hover:rotate-60 transition-transform duration-300 ease-out z-0 mt-10">
+                <Image
+                  src={FooterIcon3}
+                  alt="Background decoration"
+                  fill
+                  className="object-contain"
+                />
+              </div>
 
               {/* Main Image */}
               <div className="relative w-full aspect-[2/3] max-w-[200px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[320px] xl:max-w-[400px] rounded-[12px] sm:rounded-[15px] md:rounded-[18px] lg:rounded-[20px] overflow-hidden z-10">

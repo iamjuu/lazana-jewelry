@@ -121,7 +121,7 @@ const OrdersPageContent = () => {
         <div className="max-w-6xl mx-auto px-4">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-[#1C3163] text-3xl md:text-4xl font-medium mb-2">
+            <h1 className="text-[#1C3163] text-[18px] md:text-[18px] font-medium mb-2">
               My Orders
             </h1>
             <p className="text-[#2C3E50]">

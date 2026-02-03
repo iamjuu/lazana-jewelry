@@ -296,11 +296,12 @@ const Navbar = () => {
                       <div
                         className="
                           absolute left-0 top-full mt-2 w-56
-                          bg-zinc-900/95 backdrop-blur-md
-                          shadow-lg border border-[#D5B584]/40
+                          backdrop-blur-sm
+                          shadow-lg border border-white/20
                           rounded-lg z-[100] pointer-events-auto py-3
                           !text-[16px]
                         "
+                        style={{ backgroundColor: "#fef9fe" }}
                         onMouseEnter={() => {
                           if (shopHoverTimeoutRef.current)
                             clearTimeout(shopHoverTimeoutRef.current);
@@ -315,7 +316,7 @@ const Navbar = () => {
                       >
                         <Link
                           href="/shop?category=all"
-                          className="block py-3 px-4 text-[#D5B584] hover:text-white hover:bg-[#D5B584]/10 transition hover:translate-x-2 rounded-md"
+                          className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md"
                         >
                           All Crystal singing bowls
                         </Link>
@@ -324,7 +325,7 @@ const Navbar = () => {
                           <Link
                             key={cat._id}
                             href={`/shop?category=${cat.slug}`}
-                            className="block py-3 px-4 text-[#D5B584] hover:text-white hover:bg-[#D5B584]/10 transition hover:translate-x-2 rounded-md font-touvlo"
+                            className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md font-touvlo"
                           >
                             {cat.name}
                           </Link>
@@ -358,7 +359,7 @@ const Navbar = () => {
                       className={`text-[#D5B584] hover:text-[#1C3163] transition ${
                         pathname.startsWith("/services") ||
                         pathname.startsWith("/events")
-                          ? "text-white font-semibold scale-110 !text-[16px] " 
+                          ? "text-white font-semibold scale-110 !text-[16px] "
                           : ""
                       }`}
                     >
@@ -369,10 +370,11 @@ const Navbar = () => {
                       <div
                         className="
                           absolute left-0 top-full mt-2 w-56
-                          bg-zinc-900/95 backdrop-blur-md
-                          shadow-lg border border-[#D5B584]/40
+                          backdrop-blur-sm
+                          shadow-lg border border-white/20
                           rounded-lg z-[100] pointer-events-auto py-3
                         "
+                        style={{ backgroundColor: "#fef9fe" }}
                         onMouseEnter={() => {
                           if (offeringHoverTimeoutRef.current)
                             clearTimeout(offeringHoverTimeoutRef.current);
@@ -387,13 +389,13 @@ const Navbar = () => {
                       >
                         <Link
                           href="/events"
-                          className="block py-3 px-4 text-[#D5B584]  hover:text-white hover:bg-[#D5B584]/10 transition hover:translate-x-2 rounded-md"
+                          className="block py-3 px-4 text-[#1C3163]  hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md"
                         >
                           Events
                         </Link>
                         <Link
                           href="/services"
-                          className="block py-3 px-4 text-[#D5B584] hover:text-white hover:bg-[#D5B584]/10 transition hover:translate-x-2 rounded-md"
+                          className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md"
                         >
                           Services
                         </Link>
@@ -457,7 +459,7 @@ const Navbar = () => {
             >
               <ShoppingCart size={24} />
               {mounted && cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                <span className="absolute -top-2 font-touvlo  -right-2 bg-[#1c3163] text-xs w-5 h-5 rounded-full flex items-center justify-center text-white">
                   {cartCount}
                 </span>
               )}

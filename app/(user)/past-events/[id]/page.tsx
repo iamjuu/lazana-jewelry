@@ -82,7 +82,7 @@ const PastEventDetailPage = () => {
 
   if (!pastEvent) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen font-touvlo'>
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
@@ -115,36 +115,36 @@ const PastEventDetailPage = () => {
     <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen w-full overflow-x-hidden'>
       <Navbar />
       
-      <div className="w-full py-[30px] sm:py-[35px] md:py-[40px] lg:py-[50px]">
+      <div className="w-full mt-[25px]">
         <div className="w-full min-w-0 px-4 sm:px-5 md:px-6 lg:px-8 xl:max-w-7xl xl:mx-auto">
           {/* Back Button */}
           <Link 
             href="/events"
-            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-4 sm:mb-6 transition-colors"
+            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] text-[16px] transition-colors font-touvlo"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Events</span>
           </Link>
 
            {/* Event Header */}
-           <div className="mb-3 sm:mb-4">
+           <div className="">
              {/* Title and Details - Side by Side on Desktop (950px+) */}
              <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4 xl:gap-8 mb-3 sm:mb-4">
                {/* Title - Left Side */}
-               <h1 className="text-[#D5B584] text-[32px] sm:text-[36px] md:text-[40px] lg:text-[48px] font-normal leading-tight xl:flex-1 xl:min-w-0 break-words">
+               <h1 className="text-[#D5B584]  md:text-[30px] lg:text-[32px] font-normal leading-tight xl:flex-1 xl:min-w-0 break-words mt-[25px] font-seasons">
                {pastEvent.title}
              </h1>
              
              {/* Date and Time Details - Right Aligned */}
                <div className="flex justify-end xl:justify-end xl:flex-shrink-0">
-               <div className="space-y-2 text-right">
-                   <p className="text-[#1C3163] text-[16px] md:text-[18px] font-normal whitespace-nowrap">
+               <div className="space-y-2 text-right font-touvlo">
+                   <p className="text-[#1C3163] text-[16px] md:text-[16 px] font-normal whitespace-nowrap">
                    {pastEvent.location}
                  </p>
-                   <p className="text-[#1C3163] text-[16px] md:text-[18px] font-light whitespace-nowrap">
+                   <p className="text-[#1C3163] text-[16px] md:text-[16px] font-light whitespace-nowrap">
                    {formattedDate}
                  </p>
-                   <p className="text-[#1C3163] text-[16px] md:text-[18px] font-light whitespace-nowrap">
+                   <p className="text-[#1C3163] text-[16px] md:text-[16px] font-light whitespace-nowrap">
                    {pastEvent.day} {pastEvent.time}
                  </p>
                  </div>
@@ -154,7 +154,7 @@ const PastEventDetailPage = () => {
 
            {/* Main Thumbnail Image */}
            {thumbnailUrl && (
-             <div className="mb-6 sm:mb-8 md:mb-10">
+             <div className="">
                <div className="relative w-full aspect-[7/3] overflow-hidden">
                  <img
                    src={thumbnailUrl}
@@ -166,17 +166,17 @@ const PastEventDetailPage = () => {
            )}
 
           {/* Content with Flexible Layout */}
-          <div className="space-y-6 sm:space-y-8 md:space-y-10">
+          <div className="">
             {/* Description */}
-            <div className="prose prose-lg max-w-none">
-              <div className="text-[#6B5D4F] text-[16px] md:text-[18px] font-light leading-relaxed whitespace-pre-line">
+            <div className="prose prose-lg max-w-none mt-[25px]">
+              <div className="text-[#545454] text-[16px] md:text-[16px] font-light font-touvlo leading-relaxed whitespace-pre-line">
                 {pastEvent.description}
               </div>
             </div>
 
             {/* Media Gallery - Unified Grid Layout */}
             {(photos.length > 0 || videos.length > 0) && (
-              <div className="space-y-6 sm:space-y-8 md:space-y-10">
+              <div className="mt-[25px]">
                 {/* Unified Grid: Photos and Videos together */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   {/* Render Photos */}

@@ -414,7 +414,7 @@ const EventsPage = () => {
           <div className="max-w-6xl mx-auto px-4 mt-[25px]">
             {/* Header Section */}
             <div className="flex gap-[48px]">
-              <h2 className="text-[#D5B584] text-[28px] sm:text-[18px] md:text-[32px] font-normal font-seasons">
+              <h2 className="text-[#D5B584] text-[28px] sm:text-[18px] md:text-[30px] lg:text-[32px] font-normal font-seasons">
                 Past Events
               </h2>
             </div>
@@ -555,7 +555,7 @@ const EventsPage = () => {
                                 </Link>
                                 {/* Event Details - Light Beige Background */}
                                 <div className="px-4 md:px-5  -mt-2 relative z-10 mt-[25px]">
-                                  <h3 className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight  uppercase tracking-wide font-seasons">
+                                  <h3 className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight   tracking-wide font-seasons">
                                     {event.title}
                                   </h3>
                                   <p className="text-[#545454] text-[12px] sm:text-[13px] md:text-[14px] font-light font-touvlo whitespace-nowrap">

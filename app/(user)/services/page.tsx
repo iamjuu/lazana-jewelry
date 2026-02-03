@@ -89,7 +89,7 @@ const ServicesPage = () => {
   };
 
   return (
-    <div className="bg-[#FDF2E9] min-h-screen ">
+    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]  min-h-screen ">
       <Navbar />
 
       <main className="w-full  ">

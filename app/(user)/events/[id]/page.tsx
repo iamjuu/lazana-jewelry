@@ -268,7 +268,7 @@ const EventDetailPage = () => {
           {/* Back Button */}
           <Link 
             href="/events"
-            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-6 sm:mb-8 transition-colors text-[13px] sm:text-[14px] md:text-[16px]"
+            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-6 sm:mb-8 transition-colors text-[13px] sm:text-[14px] md:text-[16px] mt-[25px]"
           >
             <ArrowLeft className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 font-seasons text-[16px]" />
             <span className='font-seasons text-[16px]'>Back to All Events</span>
