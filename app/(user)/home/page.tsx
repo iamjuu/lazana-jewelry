@@ -575,9 +575,9 @@ const Index = () => {
             </div>
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-[54px] mt-[25px] ">
               {Icons.map((item) => (
-                <Link
+                <div
                   key={item.id}
-                  href="/shop"
+                  
                   className="flex text-black flex-col items-start cursor-pointer hover:opacity-80 transition-opacity"
                 >
                   <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 relative">
@@ -596,7 +596,7 @@ const Index = () => {
                       {item.para}
                     </p>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>

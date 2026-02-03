@@ -149,17 +149,12 @@ const AboutPage = () => {
                 <span className="font-semibold">
                   No two bowls are exactly alike.
                 </span>{" "}
-                Each develops its own character through the process and the
-                skilled hands involved. The specialised production facility and
-                experienced team ensure consistent quality, while their
-                craftsmanship also makes it possible to customise bowls to suit
-                individual preferences or professional needs.
+                Each develops its own character through the process.
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
-                Designed to be both a sound healing instrument and a mindful
-                companion, our crystal bowls are created to support personal
-                practice, group sessions, or quiet moments of reflection.
+               The specialised production facility and experienced team ensure consistent quality. Their craftsmanship also makes it possible to customise bowls to suit individual preferences or professional needs. Designed as a Sound Healing instrument and a mindful companion, our Crystal Singing Bowls are created to support personal practice, group sessions, or quiet moments of meditation. 
+
               </p>
             </div>
           </div>
@@ -203,9 +198,8 @@ const AboutPage = () => {
           </div>
           <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-[25px]">
             {Icons.map((item) => (
-              <Link
+              <div
                 key={item.id}
-                href="/shop"
                 className="flex text-black flex-col items-center cursor-pointer hover:opacity-80 transition-opacity"
               >
                 <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 relative mb-4">
@@ -224,7 +218,7 @@ const AboutPage = () => {
                     {item.para}
                   </p>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
@@ -343,21 +337,12 @@ const AboutPage = () => {
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
-                Before establishing Crystal Bowl Studio, Francesca spent over a
-                decade working across global finance, e-commerce, and luxury
-                beauty, with experience at KPMG, Citibank, Alibaba, and Estée
-                Lauder. While these international environments shaped her
-                understanding of structure, quality, design, and consumer
-                experience, she was drawn towards a more grounded and meaningful
-                way of service.
+              Before establishing Crystal Bowl Studio, Francesca spent over a decade working across global finance, e-commerce, and luxury beauty, with experience at KPMG, Citibank, Alibaba, and Estée Lauder. These environments shaped her understanding of structure, quality, design, and consumer experience, while also leading her toward a more grounded and meaningful way of service - one that aligned more closely with her values and lived experience. 
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
-                Her journey into Yoga and Sound began in 2011 and gradually
-                deepened through years of study, practice, and teaching.
-                Francesca trained extensively in India and Australia, spending
-                over a year living and studying in Indian ashrams, in Rishikesh,
-                Dharamshala, Bangalore, Delhi, and Varanasi.
+             Her journey into Yoga and Sound began in 2011, and deepened through years of study, practice, and teaching. Francesca trained extensively in India and Australia, spending over a year living and studying in Indian ashrams, in Rishikesh, Dharamshala, Bangalore, Delhi, and Varanasi.
+
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
@@ -369,13 +354,7 @@ const AboutPage = () => {
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
-                Francesca&apos;s experience in consumer-facing industries
-                reflects the way Crystal Bowl Studio approaches its products,
-                the integration of craftsmanship, practicality and usability,
-                creating sound healing instruments that are refined,
-                approachable. The Studio was created with the aim of making
-                Sound Healing practical and accessible to support and enhance
-                modern life and The Vision:
+               Francesca's experience in consumer-facing industries reflects the way Crystal Bowl Studio approaches its products, the integration of craftsmanship, practicality and usability, creating sound healing instruments that are refined, approachable. The Studio was created with the aim of making Sound Healing practical and accessible to support and enhance modern life and <b>The Vision:</b> 
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-center">

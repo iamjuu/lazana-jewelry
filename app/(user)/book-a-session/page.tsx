@@ -14,7 +14,7 @@ const BookASessionPage = () => {
           <div className="max-w-6xl  mx-auto ">
             {/* Header */}
             <div className="">
-              <h1 className="text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] text-[#D5B584] font-medium leading-tight ">
+              <h1 className="text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] text-[#D5B584] font-medium leading-tight font-seasons ">
                 Book a Call
               </h1>
               <p className="text-[#545454] text-[13px] sm:text-[14px] md:text-[16px] lg:text-[16px] leading-relaxed max-w-2xl mt-[25px] font-touvlo">

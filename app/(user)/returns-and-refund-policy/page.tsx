@@ -22,10 +22,10 @@ const ReturnsAndRefundPolicyPage = () => {
           <div className="flex flex-col gap-[1px]">
             {/* Custom-Made to Order */}
             <div className="mt-[25px]">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[20px] font-normal">
+              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
                 Custom-Made to Order
               </h3>
-              <div className="mt-[25px] text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[16px] font-light leading-relaxed font-touvlo">
+              <div className="text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[14px] font-light leading-relaxed font-touvlo">
                 <p>
                   All Crystal Bowl Studio bowls are custom made to order. Due to
                   the unique and handcrafted nature of each piece, we do not
@@ -37,10 +37,10 @@ const ReturnsAndRefundPolicyPage = () => {
 
             {/* Order Cancellations */}
             <div className="mt-[25px]">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[20px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
                 Order Cancellations
               </h3>
-              <div className="mt-[25px] text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[16px] font-light leading-relaxed font-touvlo">
+              <div className=" text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[14px] font-light leading-relaxed font-touvlo">
                 <p>
                   Once an order is placed and confirmed, it immediately enters
                   our production process.
@@ -73,10 +73,10 @@ const ReturnsAndRefundPolicyPage = () => {
 
             {/* Damaged or Defective Items */}
             <div className="mt-[25px]">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[20px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
                 Damaged or Defective Items
               </h3>
-              <div className="mt-[25px] text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[16px] font-light leading-relaxed font-touvlo">
+              <div className=" text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[14px] font-light leading-relaxed font-touvlo">
                 <p>
                   We take great care in packaging each bowl to ensure safe
                   delivery. If your order arrives damaged or defective, please:
@@ -106,10 +106,10 @@ const ReturnsAndRefundPolicyPage = () => {
 
             {/* Need Help */}
             <div className="mt-[25px]">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[20px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
                 Need Help?
               </h3>
-              <div className="mt-[25px] text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[16px] font-light leading-relaxed font-touvlo">
+              <div className=" text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[14px] font-light leading-relaxed font-touvlo">
                 <p>
                   If you have any questions about your order, shipping, or this
                   policy, please don&apos;t hesitate to contact us at:

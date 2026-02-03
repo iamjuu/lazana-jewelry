@@ -87,7 +87,7 @@ const BlogPage = () => {
         </div>
 
         {/* Introductory Content Section */}
-        <section className="w-full px-4 sm:px-6 lg:px-8 mt-[25px]">
+        {/* <section className="w-full px-4 sm:px-6 lg:px-8 mt-[25px]">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-[25px]">
               <h2 className="text-[#1C3163] text-[30px] lg:text-[32px] font-seasons font-normal mb-[25px]">
@@ -102,7 +102,7 @@ const BlogPage = () => {
               </p>
             </div>
 
-            {/* Feature Cards */}
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-[25px] mb-[25px]">
               <div className="bg-white/50 backdrop-blur-sm rounded-lg p-6 text-center">
                 <div className="w-16 h-16 bg-[#D5B584]/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -178,7 +178,7 @@ const BlogPage = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         <section className="w-full px-4 sm:px-6 lg:px-8 font-touvlo">
           <div className="max-w-6xl mx-auto">

@@ -301,7 +301,7 @@ const Navbar = () => {
                           rounded-lg z-[100] pointer-events-auto py-3
                           !text-[16px]
                         "
-                        style={{ backgroundColor: "#fef9fe" }}
+                        style={{ backgroundColor: "#fde9dd" }}
                         onMouseEnter={() => {
                           if (shopHoverTimeoutRef.current)
                             clearTimeout(shopHoverTimeoutRef.current);
@@ -374,7 +374,7 @@ const Navbar = () => {
                           shadow-lg border border-white/20
                           rounded-lg z-[100] pointer-events-auto py-3
                         "
-                        style={{ backgroundColor: "#fef9fe" }}
+                        style={{ backgroundColor: "#fde9dd" }}
                         onMouseEnter={() => {
                           if (offeringHoverTimeoutRef.current)
                             clearTimeout(offeringHoverTimeoutRef.current);

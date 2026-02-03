@@ -725,10 +725,14 @@ const ShopPageContent = () => {
                 ) : (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-[18px] w-full">
                     {products.map((item) => {
-                      // Get first image or use placeholder
+                      // Get first and second images
                       const imageUrl =
                         item.imageUrl && item.imageUrl.length > 0
                           ? item.imageUrl[0]
+                          : null;
+                      const secondImageUrl =
+                        item.imageUrl && item.imageUrl.length > 1
+                          ? item.imageUrl[1]
                           : null;
                       // Price is already in dollars - format to always show 2 decimals for consistency
                       const formatPrice = (price: number) => {
@@ -754,26 +758,44 @@ const ShopPageContent = () => {
                           key={item._id}
                           className="text-black group cursor-pointer"
                         >
-                          <div className="relative w-full aspect-square">
+                          <div className="relative w-full aspect-square overflow-hidden rounded-lg">
                             {imageUrl ? (
-                              <Image
-                                src={
-                                  imageUrl.startsWith("data:") ||
-                                  imageUrl.startsWith("http")
-                                    ? imageUrl
-                                    : `data:image/jpeg;base64,${imageUrl}`
-                                }
-                                alt={displayName}
-                                fill
-                                className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                                unoptimized
-                              />
+                              <>
+                                {/* First Image */}
+                                <Image
+                                  src={
+                                    imageUrl.startsWith("data:") ||
+                                    imageUrl.startsWith("http")
+                                      ? imageUrl
+                                      : `data:image/jpeg;base64,${imageUrl}`
+                                  }
+                                  alt={displayName}
+                                  fill
+                                  className="object-cover transition-all duration-500 group-hover:opacity-0 group-hover:scale-110"
+                                  unoptimized
+                                />
+                                {/* Second Image - only show if it exists */}
+                                {secondImageUrl && (
+                                  <Image
+                                    src={
+                                      secondImageUrl.startsWith("data:") ||
+                                      secondImageUrl.startsWith("http")
+                                        ? secondImageUrl
+                                        : `data:image/jpeg;base64,${secondImageUrl}`
+                                    }
+                                    alt={`${displayName} - alternate view`}
+                                    fill
+                                    className="object-cover transition-all duration-500 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-105"
+                                    unoptimized
+                                  />
+                                )}
+                              </>
                             ) : (
                               <Image
                                 src={Bucket1}
                                 alt={displayName}
                                 fill
-                                className="object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                                className="object-cover transition-transform duration-300 group-hover:scale-105"
                               />
                             )}
                           </div>
@@ -785,15 +807,15 @@ const ShopPageContent = () => {
                               <div className="text-[10px] sm:text-[11px] md:text-[14px] text-black flex items-center gap-0 font-touvlo ">
                                 {hasDiscount ? (
                                   <>
-                                    <span className="text-[#545454] font-light line-through text-[14px]">
+                                    <span className="text-[#545454] font-light line-through text-[13px]">
                                       {displayOriginalPrice}
                                     </span>
-                                    <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
+                                    <span className="text-[#545454] font-light text-[13px] whitespace-nowrap">
                                       {displayPrice} USD
                                     </span>
                                   </>
                                 ) : (
-                                  <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
+                                  <span className="text-[#545454] font-light text-[13px] whitespace-nowrap">
                                     {displayPrice} USD
                                   </span>
                                 )}

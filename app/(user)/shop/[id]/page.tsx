@@ -807,7 +807,7 @@ const ProductDetailPage = () => {
                   {expandedSections.has("shipping") && (
                     <div className="pb-4">
                       <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mb-3">
-                        We offer Air Express shipping to ensure your crystal
+                        We offer Air Economy shipping to ensure your crystal
                         bowls arrive safely and promptly. Shipping charges are
                         calculated based on the total number of bowls in your
                         order:
@@ -1011,15 +1011,15 @@ const ProductDetailPage = () => {
                             <div className="flex items-center gap-2 font-touvlo">
                               {itemHasDiscount ? (
                                 <>
-                                  <span className="text-[#545454] font-light line-through text-[14px]">
+                                  <span className="text-[#545454] font-light line-through text-[12px]">
                                     {itemDisplayOriginalPrice}
                                   </span>
-                                  <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
+                                  <span className="text-[#545454] font-light text-[12px] whitespace-nowrap">
                                     {itemDisplayPrice} USD
                                   </span>
                                 </>
                               ) : (
-                                <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
+                                <span className="text-[#545454] font-light text-[12px] whitespace-nowrap">
                                   {itemDisplayPrice} USD
                                 </span>
                               )}
