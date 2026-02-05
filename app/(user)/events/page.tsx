@@ -16,6 +16,7 @@ type ApiEvent = {
   day: string;
   time: string;
   date: string;
+  endDate?: string;
   description: string;
   imageUrl?: string;
   createdAt: string;
@@ -32,6 +33,7 @@ type DisplayEvent = {
   title: string;
   location: string;
   time: string;
+  formattedDate: string;
   description: string;
 };
 
@@ -43,6 +45,7 @@ type ApiPastEvent = {
   day: string;
   time: string;
   date: string;
+  endDate?: string;
   description: string;
   thumbnailImage: string;
   photos?: string[];
@@ -67,9 +70,12 @@ const EventsPage = () => {
   const MAX_DESCRIPTION_LENGTH = 450; // Maximum characters to show before truncation
 
   // Helper function to parse date and extract month and day
-  const parseDate = (dateString: string): { month: string; day: string } => {
+  const parseEventDate = (
+    dateString: string,
+    endDateString?: string,
+  ): { month: string; day: string } => {
     try {
-      const date = new Date(dateString);
+      const startDate = new Date(dateString);
       const months = [
         "January",
         "February",
@@ -84,34 +90,40 @@ const EventsPage = () => {
         "November",
         "December",
       ];
+      const startMonth = months[startDate.getMonth()] || "Unknown";
+      const startDay = startDate.getDate().toString().padStart(2, "0");
+
+      if (endDateString) {
+        const endDate = new Date(endDateString);
+        const endMonth = months[endDate.getMonth()] || "Unknown";
+        const endDay = endDate.getDate().toString().padStart(2, "0");
+
+        if (
+          startDate.getMonth() === endDate.getMonth() &&
+          startDate.getFullYear() === endDate.getFullYear()
+        ) {
+          // Same month: "January", "10-12"
+          return {
+            month: startMonth,
+            day: `${startDate.getDate()}-${endDate.getDate()}`,
+          };
+        } else {
+          // Different month: "Jan - Feb", "28 - 02"
+          const shortStartMonth = startMonth.substring(0, 3);
+          const shortEndMonth = endMonth.substring(0, 3);
+          return {
+            month: `${shortStartMonth} - ${shortEndMonth}`,
+            day: `${startDay} - ${endDay}`,
+          };
+        }
+      }
+
       return {
-        month: months[date.getMonth()] || "Unknown",
-        day: date.getDate().toString().padStart(2, "0"),
+        month: startMonth,
+        day: startDay,
       };
     } catch {
       // Fallback if date parsing fails
-      const parts = dateString.split("-");
-      if (parts.length >= 2) {
-        const monthNum = parseInt(parts[1], 10);
-        const months = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ];
-        return {
-          month: months[monthNum - 1] || "Unknown",
-          day: parts[2] || "01",
-        };
-      }
       return { month: "Unknown", day: "01" };
     }
   };
@@ -125,8 +137,58 @@ const EventsPage = () => {
     return `data:image/jpeg;base64,${imageUrl}`;
   };
 
-  // Helper function to format time with day
-  const formatTime = (day: string, time: string): string => {
+  // Helper function to format time with day/date
+  const formatTime = (
+    day: string,
+    time: string,
+    dateString: string,
+    endDateString?: string,
+  ): string => {
+    // If no endDate, fallback to standard "Day, Time" or "Date, Time"
+    if (!endDateString) {
+      // Optional: You could format this as "Feb 03, 9:00 AM - 5:00 PM" if desired
+      return `${day} ${time}`;
+    }
+
+    // Try to split time into start and end
+    // Expected format: "9:00 AM - 5:00 PM"
+    const timeParts = time.split("-").map((t) => t.trim());
+    const startTime = timeParts[0] || time;
+    const endTime = timeParts[1] || "";
+
+    const startDate = new Date(dateString);
+    const endDate = new Date(endDateString);
+
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const startMonth = months[startDate.getMonth()];
+    const startDay = startDate.getDate();
+    const endMonth = months[endDate.getMonth()];
+    const endDay = endDate.getDate();
+
+    // Check if it's actually a multi-day event (different dates)
+    const isMultiDay =
+      startDate.getDate() !== endDate.getDate() ||
+      startDate.getMonth() !== endDate.getMonth() ||
+      startDate.getFullYear() !== endDate.getFullYear();
+
+    // "8:00 AM - 8:00 PM" (simplified only for multi-day)
+    if (endTime && isMultiDay) {
+      return `${startTime} - ${endTime}`;
+    }
+
     return `${day} ${time}`;
   };
 
@@ -141,15 +203,59 @@ const EventsPage = () => {
         const apiEvents: ApiEvent[] = data.data;
 
         // Transform API events to display format
-        const transformedEvents: DisplayEvent[] = apiEvents.map((event) => ({
-          id: event._id,
-          date: parseDate(event.date),
-          image: getImageUrl(event.imageUrl),
-          title: event.title,
-          location: event.location,
-          time: formatTime(event.day, event.time),
-          description: event.description,
-        }));
+        const transformedEvents: DisplayEvent[] = apiEvents.map((event) => {
+          const dateObj = parseEventDate(event.date, event.endDate);
+          // Helper to get simple formatted full date string for text display
+          let fullDateStr = "";
+          const startDate = new Date(event.date);
+          const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ];
+          const month = months[startDate.getMonth()];
+          const day = startDate.getDate();
+          const year = startDate.getFullYear();
+
+          if (event.endDate) {
+            const endDate = new Date(event.endDate);
+            const endMonth = months[endDate.getMonth()];
+            const endDay = endDate.getDate();
+            const endYear = endDate.getFullYear();
+
+            if (year === endYear) {
+              if (startDate.getMonth() === endDate.getMonth()) {
+                fullDateStr = `${month} ${day} - ${endDay}, ${year}`;
+              } else {
+                fullDateStr = `${month} ${day} - ${endMonth} ${endDay}, ${year}`;
+              }
+            } else {
+              fullDateStr = `${month} ${day}, ${year} - ${endMonth} ${endDay}, ${endYear}`;
+            }
+          } else {
+            fullDateStr = `${month} ${day}, ${year}`;
+          }
+
+          return {
+            id: event._id,
+            date: dateObj,
+            image: getImageUrl(event.imageUrl),
+            title: event.title,
+            location: event.location,
+            time: formatTime(event.day, event.time, event.date, event.endDate),
+            formattedDate: fullDateStr,
+            description: event.description,
+          };
+        });
 
         // Separate into upcoming and past events
         const today = new Date();
@@ -157,10 +263,14 @@ const EventsPage = () => {
 
         const upcoming = transformedEvents.filter((event) => {
           try {
-            const eventDate = new Date(
-              apiEvents.find((e) => e._id === event.id)?.date || "",
-            );
+            const apiEvent = apiEvents.find((e) => e._id === event.id);
+            // Use endDate if available for checking if event is past
+            const checkDateStr = apiEvent?.endDate || apiEvent?.date || "";
+            const eventDate = new Date(checkDateStr);
             eventDate.setHours(0, 0, 0, 0);
+
+            // If it has an endDate, it's upcoming if endDate >= today
+            // If single date, it's upcoming if date >= today
             return eventDate >= today;
           } catch {
             return true; // Include if date parsing fails
@@ -169,9 +279,9 @@ const EventsPage = () => {
 
         const past = transformedEvents.filter((event) => {
           try {
-            const eventDate = new Date(
-              apiEvents.find((e) => e._id === event.id)?.date || "",
-            );
+            const apiEvent = apiEvents.find((e) => e._id === event.id);
+            const checkDateStr = apiEvent?.endDate || apiEvent?.date || "";
+            const eventDate = new Date(checkDateStr);
             eventDate.setHours(0, 0, 0, 0);
             return eventDate < today;
           } catch {
@@ -209,11 +319,11 @@ const EventsPage = () => {
         const transformedPastEvents: DisplayEvent[] = apiPastEvents.map(
           (event) => ({
             id: event._id,
-            date: parseDate(event.date),
+            date: parseEventDate(event.date, event.endDate),
             image: getImageUrl(event.thumbnailImage),
             title: event.title,
             location: event.location,
-            time: formatTime(event.day, event.time),
+            time: formatTime(event.day, event.time, event.date, event.endDate),
             description: event.description,
           }),
         );
@@ -339,9 +449,9 @@ const EventsPage = () => {
                     </div>
 
                     {/* Event Card */}
-                    <div className="flex-1 flex flex-col md:flex-row gap-6 md:gap-8 group/card">
+                    <div className="flex-1 flex flex-col md:flex-row gap-6 md:gap-8 group/card mb-4 ">
                       {/* Event Image */}
-                      <div className="md:w-[45%] lg:w-[40%] flex-shrink-0">
+                      <div className="md:w-[45%] lg:w-[40%] flex-shrink-0 mt-1">
                         <div className="relative w-full aspect-[4/3] rounded-[20px] overflow-hidden group/image">
                           {typeof event.image === "string" ? (
                             <img
@@ -373,7 +483,8 @@ const EventsPage = () => {
                               {event.location}
                             </p>
                             <p className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-light">
-                              {event.time}
+                              {/* Show full date in text for clarity on mobile/simplified views */}
+                              {event.formattedDate} · {event.time}
                             </p>
                           </div>
 

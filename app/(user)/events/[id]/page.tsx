@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import Navbar from '@/components/user/Navbar'
-import Footer from '@/components/user/Footer'
-import { Calendar, Clock, MapPin, ArrowLeft } from 'lucide-react'
-import toast from 'react-hot-toast'
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import Navbar from "@/components/user/Navbar";
+import Footer from "@/components/user/Footer";
+import { Calendar, Clock, MapPin, ArrowLeft } from "lucide-react";
+import toast from "react-hot-toast";
 
 type ApiEvent = {
   _id: string;
@@ -16,6 +16,7 @@ type ApiEvent = {
   day: string;
   time: string;
   date: string;
+  endDate?: string;
   description: string;
   imageUrl?: string;
   totalSeats?: number;
@@ -23,31 +24,32 @@ type ApiEvent = {
   price?: number;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 const EventDetailPage = () => {
-  const params = useParams()
-  const router = useRouter()
-  const eventId = params.id as string
-  const [event, setEvent] = useState<ApiEvent | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [bookingLoading, setBookingLoading] = useState(false)
-  const [quantity, setQuantity] = useState(1)
-  const [couponCode, setCouponCode] = useState("")
-  const [couponLoading, setCouponLoading] = useState(false)
+  const params = useParams();
+  const router = useRouter();
+  const eventId = params.id as string;
+  const [event, setEvent] = useState<ApiEvent | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
     discountPercent: number;
     discountAmount: number;
     couponId: string;
-  } | null>(null)
-  const [couponError, setCouponError] = useState("")
+  } | null>(null);
+  const [couponError, setCouponError] = useState("");
 
   // Helper function to get image URL
   const getImageUrl = (imageUrl?: string): string => {
     if (!imageUrl) return "";
     if (imageUrl.startsWith("data:image")) return imageUrl;
-    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return imageUrl;
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))
+      return imageUrl;
     return `data:image/jpeg;base64,${imageUrl}`;
   };
 
@@ -57,7 +59,7 @@ const EventDetailPage = () => {
         setLoading(true);
         const response = await fetch(`/api/events/${eventId}`);
         const data = await response.json();
-        
+
         if (data.success && data.data) {
           setEvent(data.data);
           setQuantity(1); // Reset quantity when event changes
@@ -102,7 +104,9 @@ const EventDetailPage = () => {
     }
 
     if (quantity > availableSlots) {
-      toast.error(`Only ${availableSlots} slot${availableSlots > 1 ? 's' : ''} available`);
+      toast.error(
+        `Only ${availableSlots} slot${availableSlots > 1 ? "s" : ""} available`,
+      );
       return;
     }
 
@@ -192,7 +196,9 @@ const EventDetailPage = () => {
           couponId: data.data.coupon._id,
         });
         setCouponCode("");
-        toast.success(data.data.coupon?.couponName || "Coupon applied successfully!");
+        toast.success(
+          data.data.coupon?.couponName || "Coupon applied successfully!",
+        );
       } else {
         setCouponError("Invalid coupon");
         setAppliedCoupon(null);
@@ -214,7 +220,7 @@ const EventDetailPage = () => {
 
   if (loading) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
@@ -229,12 +235,15 @@ const EventDetailPage = () => {
 
   if (!event) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
             <p className="mb-4 font-touvlo md:text-[16px]">Event not found</p>
-            <Link href="/events" className="text-[#1C3163] hover:underline font-touvlo md:text-[32px]">
+            <Link
+              href="/events"
+              className="text-[#1C3163] hover:underline font-touvlo md:text-[32px]"
+            >
               Back to Events
             </Link>
           </div>
@@ -246,32 +255,116 @@ const EventDetailPage = () => {
 
   const eventDate = new Date(event.date);
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   const monthName = monthNames[eventDate.getMonth()];
   const dayNumber = eventDate.getDate();
   const year = eventDate.getFullYear();
-  const formattedDate = `${monthName} ${dayNumber}, ${year}`;
+
+  let formattedDate = `${monthName} ${dayNumber}, ${year}`;
+
+  if (event.endDate) {
+    const endDate = new Date(event.endDate);
+    const endMonthName = monthNames[endDate.getMonth()];
+    const endDayNumber = endDate.getDate();
+    const endYear = endDate.getFullYear();
+
+    if (year === endYear) {
+      if (eventDate.getMonth() === endDate.getMonth()) {
+        // Same month: "February 10 - 12, 2025"
+        formattedDate = `${monthName} ${dayNumber} - ${endDayNumber}, ${year}`;
+      } else {
+        // Different month: "February 28 - March 02, 2025"
+        formattedDate = `${monthName} ${dayNumber} - ${endMonthName} ${endDayNumber}, ${year}`;
+      }
+    } else {
+      // Different year: "December 30, 2025 - January 02, 2026"
+      formattedDate = `${monthName} ${dayNumber}, ${year} - ${endMonthName} ${endDayNumber}, ${endYear}`;
+    }
+  }
 
   const imageUrl = event.imageUrl ? getImageUrl(event.imageUrl) : "";
   const availableSlots = (event.totalSeats || 0) - (event.bookedSeats || 0);
   const isFullyBooked = availableSlots <= 0;
   const price = event.price || 0;
 
+  const formatPrice = (p: number) => {
+    const rounded = Math.round(p * 100) / 100;
+    return rounded % 1 === 0 ? rounded.toString() : rounded.toFixed(2);
+  };
+
+  const formatTimeWithDate = (
+    day: string,
+    time: string,
+    dateString: string,
+    endDateString?: string,
+  ): string => {
+    if (!endDateString) {
+      return time; // Just show time for single day as date is shown above
+    }
+
+    const timeParts = time.split("-").map((t) => t.trim());
+    const startTime = timeParts[0] || time;
+    const endTime = timeParts[1] || "";
+
+    const startDate = new Date(dateString);
+    const endDate = new Date(endDateString);
+
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const startMonth = months[startDate.getMonth()];
+    const startDay = startDate.getDate();
+    const endMonth = months[endDate.getMonth()];
+    const endDay = endDate.getDate();
+
+    const isMultiDay =
+      startDate.getDate() !== endDate.getDate() ||
+      startDate.getMonth() !== endDate.getMonth() ||
+      startDate.getFullYear() !== endDate.getFullYear();
+
+    if (endTime && isMultiDay) {
+      return `${startTime} - ${endTime}`;
+    }
+
+    return time;
+  };
+
   return (
-    <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <Navbar />
-      
+
       <div className="w-full] lg:py-[0px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
-          <Link 
+          <Link
             href="/events"
             className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-6 sm:mb-8 transition-colors text-[13px] sm:text-[14px] md:text-[16px] mt-[25px]"
           >
             <ArrowLeft className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 font-seasons text-[16px]" />
-            <span className='font-seasons text-[16px]'>Back to All Events</span>
+            <span className="font-seasons text-[16px]">Back to All Events</span>
           </Link>
 
           {/* Top Section: Image and Booking Info Side by Side */}
@@ -299,8 +392,17 @@ const EventDetailPage = () => {
 
                 {/* Event Details */}
                 <div className="space-y-1 sm:space-y-1.5 text-[#1C3163] text-[12px] sm:text-[13px] md:text-[14px] font-touvlo">
-                  <p className="font-normal">{event.day}, {formattedDate}</p>
-                  <p className="font-light">{event.time}</p>
+                  <p className="font-normal">
+                    {event.day}, {formattedDate}
+                  </p>
+                  <p className="font-light">
+                    {formatTimeWithDate(
+                      event.day,
+                      event.time,
+                      event.date,
+                      event.endDate,
+                    )}
+                  </p>
                   <p className="font-light">{event.location}</p>
                 </div>
 
@@ -308,7 +410,8 @@ const EventDetailPage = () => {
                 {isFullyBooked ? (
                   <div className="bg-white/50 rounded-lg p-3 sm:p-4 text-center mt-4 sm:mt-6">
                     <p className="text-[#6B5D4F] text-[13px] sm:text-[14px] font-light">
-                      This event has reached its capacity. Please check back for future events.
+                      This event has reached its capacity. Please check back for
+                      future events.
                     </p>
                   </div>
                 ) : (
@@ -317,7 +420,7 @@ const EventDetailPage = () => {
                     {price > 0 && (
                       <div className="">
                         <p className="text-[#1C3163] text-[16px] sm:text-[18px] md:text-[18px] font-light font-touvlo">
-                         ${price.toFixed(2)}USD
+                          ${formatPrice(price)} USD
                         </p>
                       </div>
                     )}
@@ -354,7 +457,8 @@ const EventDetailPage = () => {
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-green-700 text-[12px] font-medium">
-                                {appliedCoupon.code} - {appliedCoupon.discountPercent || 'Fixed'} off
+                                {appliedCoupon.code} -{" "}
+                                {appliedCoupon.discountPercent || "Fixed"} off
                               </p>
                               <p className="text-green-600 text-[11px]">
                                 Save ${appliedCoupon.discountAmount.toFixed(2)}
@@ -397,7 +501,9 @@ const EventDetailPage = () => {
                         </div>
                       )}
                       {couponError && (
-                        <p className="text-red-600 text-[11px]">Invalid coupon</p>
+                        <p className="text-red-600 text-[11px]">
+                          Invalid coupon
+                        </p>
                       )}
                     </div>
 
@@ -406,16 +512,28 @@ const EventDetailPage = () => {
                       <div className="space-y-1 text-[13px] pt-2 border-t border-[#1C3163]/10">
                         <div className="flex justify-between">
                           <span className="text-[#6B5D4F]">Subtotal:</span>
-                          <span className="text-[#1C3163]">${(price * quantity).toFixed(2)}</span>
+                          <span className="text-[#1C3163]">
+                            ${formatPrice(price * quantity)}
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-green-600">Discount:</span>
-                          <span className="text-green-600">-${appliedCoupon.discountAmount.toFixed(2)}</span>
+                          <span className="text-green-600">
+                            -${formatPrice(appliedCoupon.discountAmount)}
+                          </span>
                         </div>
                         <div className="flex justify-between pt-2 border-t border-[#1C3163]">
-                          <span className="text-[#1C3163] font-medium">Total:</span>
                           <span className="text-[#1C3163] font-medium">
-                            ${Math.max(0, (price * quantity) - appliedCoupon.discountAmount).toFixed(2)}
+                            Total:
+                          </span>
+                          <span className="text-[#1C3163] font-medium">
+                            $
+                            {formatPrice(
+                              Math.max(
+                                0,
+                                price * quantity - appliedCoupon.discountAmount,
+                              ),
+                            )}
                           </span>
                         </div>
                       </div>
@@ -432,7 +550,8 @@ const EventDetailPage = () => {
 
                     {/* Availability Info */}
                     <p className="text-[#1C3163] md:text-[16px] sm:text-[12px] font-light text-touvlo mt-[12px]">
-                      {availableSlots} spot{availableSlots !== 1 ? 's' : ''} remaining
+                      {availableSlots} spot{availableSlots !== 1 ? "s" : ""}{" "}
+                      remaining
                     </p>
                   </div>
                 )}
@@ -451,8 +570,7 @@ const EventDetailPage = () => {
 
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default EventDetailPage
-
+export default EventDetailPage;

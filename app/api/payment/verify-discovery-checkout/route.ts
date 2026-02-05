@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import Stripe from "stripe";
 import connectDB from "@/lib/mongodb";
-import Booking from "@/models/Booking";
-import DiscoverySession from "@/models/DiscoverySession";
 import User from "@/models/User";
-import { sendDiscoverySessionConfirmation, sendDiscoverySessionNotificationToAdmin } from "@/lib/email";
+import SessionEnquiry from "@/models/SessionEnquiry";
+import DiscoverySession from "@/models/DiscoverySession";
+import {
+  sendDiscoverySessionConfirmation,
+  sendDiscoverySessionNotificationToAdmin,
+} from "@/lib/email";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2025-10-29.clover",
@@ -17,12 +20,16 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     // Fetch full user document to get email and phone
-    const user = await User.findById(authUser._id).lean() as { email?: string; phone?: string; name?: string } | null;
+    const user = (await User.findById(authUser._id).lean()) as {
+      email?: string;
+      phone?: string;
+      name?: string;
+    } | null;
 
     if (!user) {
       return NextResponse.json(
         { success: false, message: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -32,7 +39,7 @@ export async function POST(req: NextRequest) {
     if (!sessionId) {
       return NextResponse.json(
         { success: false, message: "Session ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -42,40 +49,48 @@ export async function POST(req: NextRequest) {
     if (session.payment_status !== "paid") {
       return NextResponse.json(
         { success: false, message: "Payment not completed" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Verify metadata
     const metadata = session.metadata;
-    if (!metadata || metadata.sessionType !== "discovery" || !metadata.sessionId || metadata.userId !== String(authUser._id)) {
+    if (
+      !metadata ||
+      metadata.sessionType !== "discovery" ||
+      !metadata.sessionId ||
+      metadata.userId !== String(authUser._id)
+    ) {
       return NextResponse.json(
         { success: false, message: "Invalid session metadata" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const discoverySessionId = metadata.sessionId;
 
     // Fetch discovery session
-    const discoverySession = await DiscoverySession.findById(discoverySessionId);
+    const discoverySession =
+      await DiscoverySession.findById(discoverySessionId);
     if (!discoverySession) {
       return NextResponse.json(
         { success: false, message: "Discovery session not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // Check if session still has available seats
-    if ((discoverySession.bookedSeats || 0) >= (discoverySession.totalSeats || 1)) {
+    if (
+      (discoverySession.bookedSeats || 0) >= (discoverySession.totalSeats || 1)
+    ) {
       return NextResponse.json(
         { success: false, message: "This session is already fully booked" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Check if booking already exists
-    const existingBooking = await Booking.findOne({
+    // Check if session enquiry already exists
+    const existingBooking = await SessionEnquiry.findOne({
       userId: authUser._id,
       sessionId: discoverySessionId,
       sessionType: "discovery",
@@ -86,21 +101,40 @@ export async function POST(req: NextRequest) {
     if (existingBooking) {
       booking = existingBooking;
     } else {
-      // Create booking
+      // Create session enquiry
       const bookingAmount = (session.amount_total || 0) / 100; // Convert from cents
-      
-      booking = await Booking.create({
+
+      // Extract form data from metadata
+      let formDataObj = {};
+      try {
+        formDataObj = JSON.parse(metadata.formData || "{}");
+      } catch (e) {
+        console.error("Error parsing formData from metadata:", e);
+      }
+
+      const commentData = {
+        date: discoverySession.date || "TBD",
+        time: discoverySession.startTime || "TBD",
+        answers: formDataObj,
+      };
+
+      booking = await SessionEnquiry.create({
         userId: authUser._id,
         sessionId: discoverySessionId,
         sessionType: "discovery",
         seats: 1,
         amount: bookingAmount,
-        status: "confirmed",
+        status: "pending",
         paymentProvider: "stripe",
         paymentRef: sessionId,
         paymentStatus: "paid",
+        fullName: user.name || "User",
+        email: user.email || "N/A",
         phone: user.phone || "N/A",
-        comment: `Discovery Session - ${discoverySession.date || 'TBD'} at ${discoverySession.startTime || 'TBD'}`,
+        services: `Discovery Session - ${discoverySession.date || "TBD"}`,
+        comment: JSON.stringify(commentData),
+        bookedDate: discoverySession.date,
+        bookedTime: discoverySession.startTime,
       });
 
       // Update discovery session booked seats
@@ -110,25 +144,31 @@ export async function POST(req: NextRequest) {
       // Send confirmation email to user
       if (user.email) {
         sendDiscoverySessionConfirmation({
-          selectedDate: discoverySession.date || 'TBD',
-          selectedTime: discoverySession.startTime || 'TBD',
+          selectedDate: discoverySession.date || "TBD",
+          selectedTime: discoverySession.startTime || "TBD",
           email: user.email,
-          userName: user.name || 'User',
+          userName: user.name || "User",
         }).catch((error) => {
-          console.error("Failed to send discovery session confirmation email to user:", error);
+          console.error(
+            "Failed to send discovery session confirmation email to user:",
+            error,
+          );
         });
       }
 
       // Send notification email to admin
       sendDiscoverySessionNotificationToAdmin({
-        userName: user.name || 'User',
-        userEmail: user.email || 'N/A',
-        userPhone: user.phone || 'N/A',
-        selectedDate: discoverySession.date || 'TBD',
-        selectedTime: discoverySession.startTime || 'TBD',
+        userName: user.name || "User",
+        userEmail: user.email || "N/A",
+        userPhone: user.phone || "N/A",
+        selectedDate: discoverySession.date || "TBD",
+        selectedTime: discoverySession.startTime || "TBD",
         amount: bookingAmount,
       }).catch((error) => {
-        console.error("Failed to send discovery session notification email to admin:", error);
+        console.error(
+          "Failed to send discovery session notification email to admin:",
+          error,
+        );
       });
     }
 
@@ -141,8 +181,7 @@ export async function POST(req: NextRequest) {
     const status = e?.message === "UNAUTHORIZED" ? 401 : 500;
     return NextResponse.json(
       { success: false, message: e?.message || "Server error" },
-      { status }
+      { status },
     );
   }
 }
-

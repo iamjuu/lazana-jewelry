@@ -8,6 +8,7 @@ import Event from "@/models/Event";
 import CorporateSession from "@/models/CorporateSession";
 import PrivateSession from "@/models/PrivateSession";
 import DiscoverySession from "@/models/DiscoverySession";
+import SessionEnquiry from "@/models/SessionEnquiry";
 
 export type DashboardStats = {
   revenue: {
@@ -55,7 +56,12 @@ export type DashboardStats = {
   };
   recentOrders: any[];
   recentBookings: any[];
-  revenueData: { date: string; revenue: number; orders: number; bookings: number }[];
+  revenueData: {
+    date: string;
+    revenue: number;
+    orders: number;
+    bookings: number;
+  }[];
   orderStatusData: { name: string; value: number; color: string }[];
   bookingStatusData: { name: string; value: number; color: string }[];
   productSalesData: { name: string; sales: number; revenue: number }[];
@@ -63,13 +69,31 @@ export type DashboardStats = {
   eventData: { date: string; count: number; participants: number }[];
   yogaSessionData: { date: string; sessions: number; bookings: number }[];
   userData: { date: string; count: number }[];
-  ordersData: { date: string; paid: number; pending: number; cancelled: number }[];
+  ordersData: {
+    date: string;
+    paid: number;
+    pending: number;
+    cancelled: number;
+  }[];
 };
 
 export async function getDashboardStats(): Promise<DashboardStats> {
   await connectDB();
 
-  const [orders, bookings, users, totalUsers, verifiedUsers, totalProducts, blogs, events, corporateSessions, privateSessions, discoverySessions] = await Promise.all([
+  const [
+    orders,
+    bookings,
+    users,
+    totalUsers,
+    verifiedUsers,
+    totalProducts,
+    blogs,
+    events,
+    corporateSessions,
+    privateSessions,
+    discoverySessions,
+    enquiries,
+  ] = await Promise.all([
     Order.find().lean(),
     Booking.find().lean(),
     User.find().lean(),
@@ -81,43 +105,99 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     CorporateSession.find().lean(),
     PrivateSession.find().lean(),
     DiscoverySession.find().lean(),
+    SessionEnquiry.find().lean(),
   ]);
+
+  // Use allBookings for stats, but handle potential duplicates if migrated data exists in both places
+  // Since we migrated data but didn't delete original bookings, we might have duplicates if we include both.
+  // However, the migration script was run.
+  // Safety check: Filter out Booking records that have sessionType != 'event' IF we are including enquiries
+
+  const eventBookings = bookings.filter(
+    (b: any) => b.sessionType === "event" || !b.sessionType,
+  );
+  const yogaBookings = (enquiries as any[]).map((e: any) => ({
+    ...e,
+    // Map Enquiry fields to Booking fields
+    status:
+      e.status === "completed"
+        ? "confirmed"
+        : e.paymentStatus === "paid"
+          ? "confirmed"
+          : e.status, // Map completed/paid to confirmed
+    seats: e.seats || 1, // Default to 1 seat if not specified
+    amount: e.amount || 0,
+    createdAt: e.createdAt,
+    isEnquiry: true,
+  }));
+
+  const usedBookings = [...eventBookings, ...yogaBookings];
 
   // Combine all sessions for yoga session data
   const yogaSessions = [
-    ...(corporateSessions as any[]).map((s: any) => ({ ...s, sessionType: "corporate" })),
-    ...(privateSessions as any[]).map((s: any) => ({ ...s, sessionType: "private" })),
-    ...(discoverySessions as any[]).map((s: any) => ({ ...s, sessionType: "discovery" })),
+    ...(corporateSessions as any[]).map((s: any) => ({
+      ...s,
+      sessionType: "corporate",
+    })),
+    ...(privateSessions as any[]).map((s: any) => ({
+      ...s,
+      sessionType: "private",
+    })),
+    ...(discoverySessions as any[]).map((s: any) => ({
+      ...s,
+      sessionType: "discovery",
+    })),
   ];
 
-  const totalRevenue = orders.filter((o) => o.status === "paid").reduce((sum, o) => sum + o.amount, 0);
-  const bookingRevenue = bookings.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + b.amount, 0);
+  const totalRevenue = orders
+    .filter((o) => o.status === "paid")
+    .reduce((sum, o) => sum + o.amount, 0);
+  const bookingRevenue = usedBookings
+    .filter((b) => b.status === "confirmed")
+    .reduce((sum, b) => sum + b.amount, 0);
 
-  const [recentOrders, recentBookings] = await Promise.all([
+  const [recentOrders] = await Promise.all([
     Order.find().sort({ createdAt: -1 }).limit(10).lean(),
-    Booking.find().sort({ createdAt: -1 }).limit(10).lean(),
   ]);
 
+  const recentBookings = usedBookings
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .slice(0, 10);
+
   // Generate revenue data for last 30 days
-  const revenueData: { date: string; revenue: number; orders: number; bookings: number }[] = [];
+  const revenueData: {
+    date: string;
+    revenue: number;
+    orders: number;
+    bookings: number;
+  }[] = [];
   const today = new Date();
   for (let i = 29; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
     const dateStr = date.toISOString().split("T")[0];
-    
+
     const dayOrders = orders.filter((o: any) => {
       const orderDate = new Date(o.createdAt).toISOString().split("T")[0];
       return orderDate === dateStr && o.status === "paid";
     });
-    const dayBookings = bookings.filter((b: any) => {
+    const dayBookings = usedBookings.filter((b: any) => {
       const bookingDate = new Date(b.createdAt).toISOString().split("T")[0];
       return bookingDate === dateStr && b.status === "confirmed";
     });
-    
-    const dayOrderRevenue = dayOrders.reduce((sum: number, o: any) => sum + o.amount, 0);
-    const dayBookingRevenue = dayBookings.reduce((sum: number, b: any) => sum + b.amount, 0);
-    
+
+    const dayOrderRevenue = dayOrders.reduce(
+      (sum: number, o: any) => sum + o.amount,
+      0,
+    );
+    const dayBookingRevenue = dayBookings.reduce(
+      (sum: number, b: any) => sum + b.amount,
+      0,
+    );
+
     revenueData.push({
       date: dateStr,
       revenue: dayOrderRevenue + dayBookingRevenue,
@@ -128,29 +208,58 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
   // Order status data for pie chart
   const orderStatusData = [
-    { name: "Paid", value: orders.filter((o) => o.status === "paid").length, color: "#10b981" },
-    { name: "Pending", value: orders.filter((o) => o.status === "pending").length, color: "#f59e0b" },
-    { name: "Cancelled", value: orders.filter((o) => o.status === "cancelled").length, color: "#ef4444" },
+    {
+      name: "Paid",
+      value: orders.filter((o) => o.status === "paid").length,
+      color: "#10b981",
+    },
+    {
+      name: "Pending",
+      value: orders.filter((o) => o.status === "pending").length,
+      color: "#f59e0b",
+    },
+    {
+      name: "Cancelled",
+      value: orders.filter((o) => o.status === "cancelled").length,
+      color: "#ef4444",
+    },
   ].filter((item) => item.value > 0);
 
   // Booking status data for pie chart
   const bookingStatusData = [
-    { name: "Confirmed", value: bookings.filter((b) => b.status === "confirmed").length, color: "#10b981" },
-    { name: "Pending", value: bookings.filter((b) => b.status === "pending").length, color: "#f59e0b" },
-    { name: "Cancelled", value: bookings.filter((b) => b.status === "cancelled").length, color: "#ef4444" },
+    {
+      name: "Confirmed",
+      value: usedBookings.filter((b) => b.status === "confirmed").length,
+      color: "#10b981",
+    },
+    {
+      name: "Pending",
+      value: usedBookings.filter((b) => b.status === "pending").length,
+      color: "#f59e0b",
+    },
+    {
+      name: "Cancelled",
+      value: usedBookings.filter((b) => b.status === "cancelled").length,
+      color: "#ef4444",
+    },
   ].filter((item) => item.value > 0);
 
   // Product sales data (top products by revenue)
   const productSalesMap = new Map<string, { sales: number; revenue: number }>();
-  orders.filter((o: any) => o.status === "paid").forEach((order: any) => {
-    order.items?.forEach((item: any) => {
-      const existing = productSalesMap.get(item.name) || { sales: 0, revenue: 0 };
-      productSalesMap.set(item.name, {
-        sales: existing.sales + item.quantity,
-        revenue: existing.revenue + item.price * item.quantity,
+  orders
+    .filter((o: any) => o.status === "paid")
+    .forEach((order: any) => {
+      order.items?.forEach((item: any) => {
+        const existing = productSalesMap.get(item.name) || {
+          sales: 0,
+          revenue: 0,
+        };
+        productSalesMap.set(item.name, {
+          sales: existing.sales + item.quantity,
+          revenue: existing.revenue + item.price * item.quantity,
+        });
       });
     });
-  });
   const productSalesData = Array.from(productSalesMap.entries())
     .map(([name, data]) => ({ name, ...data }))
     .sort((a, b) => b.revenue - a.revenue)
@@ -177,28 +286,34 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     date.setDate(date.getDate() - i);
     const dateStr = date.toISOString().split("T")[0];
     const dayEvents = (events as any[]).filter((e: any) => e.date === dateStr);
-    eventData.push({ 
-      date: dateStr, 
+    eventData.push({
+      date: dateStr,
       count: dayEvents.length,
-      participants: dayEvents.length * 10 // Placeholder - you can add actual participant tracking later
+      participants: dayEvents.length * 10, // Placeholder - you can add actual participant tracking later
     });
   }
 
   // Yoga session data for last 30 days
-  const yogaSessionData: { date: string; sessions: number; bookings: number }[] = [];
+  const yogaSessionData: {
+    date: string;
+    sessions: number;
+    bookings: number;
+  }[] = [];
   for (let i = 29; i >= 0; i--) {
     const date = new Date(todayDate);
     date.setDate(date.getDate() - i);
     const dateStr = date.toISOString().split("T")[0];
-    const daySessions = (yogaSessions as any[]).filter((s: any) => s.date === dateStr);
-    const dayBookings = (bookings as any[]).filter((b: any) => {
+    const daySessions = (yogaSessions as any[]).filter(
+      (s: any) => s.date === dateStr,
+    );
+    const dayBookings = (usedBookings as any[]).filter((b: any) => {
       const bookingDate = new Date(b.createdAt).toISOString().split("T")[0];
       return bookingDate === dateStr;
     });
-    yogaSessionData.push({ 
-      date: dateStr, 
+    yogaSessionData.push({
+      date: dateStr,
       sessions: daySessions.length,
-      bookings: dayBookings.length
+      bookings: dayBookings.length,
     });
   }
 
@@ -208,69 +323,106 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
     const dateStr = date.toISOString().split("T")[0];
-    
+
     const dayUsers = (users as any[]).filter((u: any) => {
       const userDate = new Date(u.createdAt).toISOString().split("T")[0];
       return userDate === dateStr;
     });
-    
+
     userData.push({ date: dateStr, count: dayUsers.length });
   }
 
   // Generate orders data for last 30 days
-  const ordersData: { date: string; paid: number; pending: number; cancelled: number }[] = [];
+  const ordersData: {
+    date: string;
+    paid: number;
+    pending: number;
+    cancelled: number;
+  }[] = [];
   for (let i = 29; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
     const dateStr = date.toISOString().split("T")[0];
-    
+
     const dayOrders = orders.filter((o: any) => {
       const orderDate = new Date(o.createdAt).toISOString().split("T")[0];
       return orderDate === dateStr;
     });
-    
+
     const paidCount = dayOrders.filter((o: any) => o.status === "paid").length;
-    const pendingCount = dayOrders.filter((o: any) => o.status === "pending").length;
-    const cancelledCount = dayOrders.filter((o: any) => o.status === "cancelled").length;
-    
-    ordersData.push({ 
-      date: dateStr, 
+    const pendingCount = dayOrders.filter(
+      (o: any) => o.status === "pending",
+    ).length;
+    const cancelledCount = dayOrders.filter(
+      (o: any) => o.status === "cancelled",
+    ).length;
+
+    ordersData.push({
+      date: dateStr,
       paid: paidCount,
       pending: pendingCount,
-      cancelled: cancelledCount
+      cancelled: cancelledCount,
     });
   }
 
   // Calculate upcoming and past events
   const now = new Date();
-  const upcomingEvents = (events as any[]).filter((e: any) => new Date(e.date) >= now);
-  const pastEvents = (events as any[]).filter((e: any) => new Date(e.date) < now);
+  const upcomingEvents = (events as any[]).filter(
+    (e: any) => new Date(e.date) >= now,
+  );
+  const pastEvents = (events as any[]).filter(
+    (e: any) => new Date(e.date) < now,
+  );
 
   // Calculate yoga session stats
-  const totalBookings = bookings.length;
-  const totalSeats = (yogaSessions as any[]).reduce((sum, s: any) => sum + (s.totalSeats || 0), 0);
-  const bookedSeats = (yogaSessions as any[]).reduce((sum, s: any) => sum + (s.bookedSeats || 0), 0);
+  const totalBookings = usedBookings.length;
+  const totalSeats = (yogaSessions as any[]).reduce(
+    (sum, s: any) => sum + (s.totalSeats || 0),
+    0,
+  );
+  const bookedSeats = (yogaSessions as any[]).reduce(
+    (sum, s: any) => sum + (s.bookedSeats || 0),
+    0,
+  );
 
   // Calculate stats by session type
-  const regularSessions = (discoverySessions as any[]); // Discovery sessions are "regular"
-  const corporateSessionsFiltered = (corporateSessions as any[]);
-  const privateSessionsFiltered = (privateSessions as any[]);
+  const regularSessions = discoverySessions as any[]; // Discovery sessions are "regular"
+  const corporateSessionsFiltered = corporateSessions as any[];
+  const privateSessionsFiltered = privateSessions as any[];
 
   const yogaSessionsByType = {
     regular: {
       count: regularSessions.length,
-      bookedSeats: regularSessions.reduce((sum: number, s: any) => sum + (s.bookedSeats || 0), 0),
-      totalSeats: regularSessions.reduce((sum: number, s: any) => sum + (s.totalSeats || 0), 0),
+      bookedSeats: regularSessions.reduce(
+        (sum: number, s: any) => sum + (s.bookedSeats || 0),
+        0,
+      ),
+      totalSeats: regularSessions.reduce(
+        (sum: number, s: any) => sum + (s.totalSeats || 0),
+        0,
+      ),
     },
     corporate: {
       count: corporateSessionsFiltered.length,
-      bookedSeats: corporateSessionsFiltered.reduce((sum: number, s: any) => sum + (s.bookedSeats || 0), 0),
-      totalSeats: corporateSessionsFiltered.reduce((sum: number, s: any) => sum + (s.totalSeats || 0), 0),
+      bookedSeats: corporateSessionsFiltered.reduce(
+        (sum: number, s: any) => sum + (s.bookedSeats || 0),
+        0,
+      ),
+      totalSeats: corporateSessionsFiltered.reduce(
+        (sum: number, s: any) => sum + (s.totalSeats || 0),
+        0,
+      ),
     },
     private: {
       count: privateSessionsFiltered.length,
-      bookedSeats: privateSessionsFiltered.reduce((sum: number, s: any) => sum + (s.bookedSeats || 0), 0),
-      totalSeats: privateSessionsFiltered.reduce((sum: number, s: any) => sum + (s.totalSeats || 0), 0),
+      bookedSeats: privateSessionsFiltered.reduce(
+        (sum: number, s: any) => sum + (s.bookedSeats || 0),
+        0,
+      ),
+      totalSeats: privateSessionsFiltered.reduce(
+        (sum: number, s: any) => sum + (s.totalSeats || 0),
+        0,
+      ),
     },
   };
 
@@ -287,10 +439,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       cancelled: orders.filter((o) => o.status === "cancelled").length,
     },
     bookings: {
-      total: bookings.length,
-      pending: bookings.filter((b) => b.status === "pending").length,
-      confirmed: bookings.filter((b) => b.status === "confirmed").length,
-      cancelled: bookings.filter((b) => b.status === "cancelled").length,
+      total: usedBookings.length,
+      pending: usedBookings.filter((b) => b.status === "pending").length,
+      confirmed: usedBookings.filter((b) => b.status === "confirmed").length,
+      cancelled: usedBookings.filter((b) => b.status === "cancelled").length,
     },
     users: {
       total: totalUsers,
@@ -327,6 +479,3 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     ordersData,
   };
 }
-
-
-

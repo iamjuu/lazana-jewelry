@@ -432,11 +432,11 @@ const ProductDetailPage = () => {
           <Link
             href="/"
             className="font-seasons hover:text-[#D5B584] transition-colors text-[#1c3163]"
-            style={{ fontWeight: 700, textShadow: "0.5px 0 0 currentColor" }}
+            // style={{ fontWeight: 700, textShadow: "0.5px 0 0 currentColor" }}
           >
             <span
               className="font-seasons text-[#1c3163] text-[16px]"
-              style={{ fontWeight: 700, textShadow: "0.5px 0 0 currentColor" }}
+              // style={{ fontWeight: 700, textShadow: "0.5px 0 0 currentColor" }}
             >
               Home
             </span>
@@ -449,10 +449,10 @@ const ProductDetailPage = () => {
               <Link
                 href={`/shop?category=${product.category.slug}`}
                 className="font-seasons hover:text-[#D5B584] text-[#1c3163] transition-colors text-[16px]"
-                style={{
-                  fontWeight: 700,
-                  textShadow: "0.5px 0 0 currentColor",
-                }}
+                // style={{
+                //   fontWeight: 700,
+                //   textShadow: "0.5px 0 0 currentColor",
+                // }}
               >
                 {product.category.name}
               </Link>
@@ -463,10 +463,10 @@ const ProductDetailPage = () => {
                     <span style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
                     <span
                       className="font-seasons text-[#1c3163] text-[16px]"
-                      style={{
-                        fontWeight: 700,
-                        textShadow: "0.5px 0 0 currentColor",
-                      }}
+                      // style={{
+                      //   fontWeight: 700,
+                      //   textShadow: "0.5px 0 0 currentColor",
+                      // }}
                     >
                       {product.subcategory.name}
                     </span>
@@ -611,7 +611,7 @@ const ProductDetailPage = () => {
               {product.shortDescription && (
                 <div className="mt-[25px]">
                   <p
-                    className={`font-touvlo text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed ${!showFullShortDesc ? "line-clamp-4" : ""}`}
+                    className={`font-touvlo text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed whitespace-pre-wrap ${!showFullShortDesc ? "line-clamp-4" : ""}`}
                   >
                     {product.shortDescription}
                   </p>
@@ -813,9 +813,9 @@ const ProductDetailPage = () => {
                         order:
                       </p>
                       <ul className="list-disc list-inside text-[#545454] md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo">
-                        <li>1 Bowl: SGD $65</li>
-                        <li>2-3 Bowls: SGD $111</li>
-                        <li>4-7 Bowls: SGD $155</li>
+                        <li>1 Bowl: USD $65</li>
+                        <li>2-3 Bowls: USD $111</li>
+                        <li>4-7 Bowls:  USD $155</li>
                         <li>
                           8+ Bowls: Rates continue in cycles (8 = $65, 9-10 =
                           $111, 11-14 = $155, and so on)
@@ -824,8 +824,15 @@ const ProductDetailPage = () => {
                       <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mt-3">
                         All orders are carefully packaged to protect your bowls
                         during transit. Delivery times vary by location,
-                        typically 7-14 business days for international orders.
+                        typically 25-28 business days for international orders.
                       </p>
+
+                      <Link
+                        href="/shipping-delivery"
+                        className="text-[#1C3163] hover:underline font-touvlo text-[14px] sm:text-[15px] block mt-2 mb-4"
+                      >
+                        Read more about Shipping & Delivery
+                      </Link>
 
                       {/* Additional Information */}
                       <div className="mt-6 space-y-4 pt-4 border-t border-[#D5B584]/30">
@@ -836,6 +843,7 @@ const ProductDetailPage = () => {
                           <p className="text-[#545454] md:text-[16px] sm:text-[14px] font-touvlo">
                             No Returns unless it&apos;s broken
                           </p>
+                        
                         </div>
                         <div>
                           <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
@@ -852,6 +860,18 @@ const ProductDetailPage = () => {
                           <p className="text-[#545454] md:text-[16px] sm:text-[14px] font-touvlo">
                             Rubber ring + suede mallet
                           </p>
+                          {/* <Link
+                            href="/contact"
+                            className="text-[#1C3163] hover:underline font-touvlo text-[14px] sm:text-[15px] mt-2 block"
+                          >
+                            Any doubts? Contact us
+                          </Link> */}
+  <Link
+                            href="/returns-and-refund-policy"
+                            className="text-[#1C3163] hover:underline font-touvlo text-[14px] sm:text-[15px] block mt-2"
+                          >
+                            Read our Returns & Refund Policy
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -1014,12 +1034,12 @@ const ProductDetailPage = () => {
                                   <span className="text-[#545454] font-light line-through text-[12px]">
                                     {itemDisplayOriginalPrice}
                                   </span>
-                                  <span className="text-[#545454] font-light text-[12px] whitespace-nowrap">
+                                  <span className="text-[#545454] font-light text-[13px] whitespace-nowrap">
                                     {itemDisplayPrice} USD
                                   </span>
                                 </>
                               ) : (
-                                <span className="text-[#545454] font-light text-[12px] whitespace-nowrap">
+                                <span className="text-[#545454] font-light text-[13px] whitespace-nowrap">
                                   {itemDisplayPrice} USD
                                 </span>
                               )}

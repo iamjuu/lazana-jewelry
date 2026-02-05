@@ -339,7 +339,7 @@ export default function EventBookingsPage() {
                 <div>
                   <div className="text-sm text-zinc-400 mb-1">Amount</div>
                   <div className="text-white font-medium">
-                    SGD ${selectedBooking.amount.toFixed(2)}
+                    USD${selectedBooking.amount.toFixed(2)}
                   </div>
                 </div>
 

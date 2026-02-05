@@ -38,24 +38,46 @@ export async function GET(req: NextRequest) {
       const allSessions: any[] = [];
 
       if (!sessionType || sessionType === "discovery") {
-        const sessions = await DiscoverySession.find(searchQuery).sort({ createdAt: -1 }).lean();
-        allSessions.push(...sessions.map((s: any) => ({ ...s, sessionType: "discovery" })));
+        const sessions = await DiscoverySession.find(searchQuery)
+          .sort({ createdAt: -1 })
+          .lean();
+        allSessions.push(
+          ...sessions.map((s: any) => ({ ...s, sessionType: "discovery" })),
+        );
       }
       if (!sessionType || sessionType === "private") {
-        const sessions = await PrivateSession.find(searchQuery).sort({ createdAt: -1 }).lean();
-        allSessions.push(...sessions.map((s: any) => ({ ...s, sessionType: "private" })));
+        const sessions = await PrivateSession.find(searchQuery)
+          .sort({ createdAt: -1 })
+          .lean();
+        allSessions.push(
+          ...sessions.map((s: any) => ({ ...s, sessionType: "private" })),
+        );
       }
       if (!sessionType || sessionType === "corporate") {
-        const sessions = await CorporateSession.find(searchQuery).sort({ createdAt: -1 }).lean();
-        allSessions.push(...sessions.map((s: any) => ({ ...s, sessionType: "corporate" })));
+        const sessions = await CorporateSession.find(searchQuery)
+          .sort({ createdAt: -1 })
+          .lean();
+        allSessions.push(
+          ...sessions.map((s: any) => ({ ...s, sessionType: "corporate" })),
+        );
       }
       if (!sessionType || sessionType === "freeStudioVisit") {
-        const sessions = await FreeStudioVisit.find(searchQuery).sort({ createdAt: -1 }).lean();
-        allSessions.push(...sessions.map((s: any) => ({ ...s, sessionType: "freeStudioVisit" })));
+        const sessions = await FreeStudioVisit.find(searchQuery)
+          .sort({ createdAt: -1 })
+          .lean();
+        allSessions.push(
+          ...sessions.map((s: any) => ({
+            ...s,
+            sessionType: "freeStudioVisit",
+          })),
+        );
       }
 
       // Sort all by createdAt (newest first)
-      allSessions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      allSessions.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
       return allSessions;
     };
 
@@ -64,21 +86,25 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * limit;
     const paginatedSessions = allSessions.slice(skip, skip + limit);
 
-    return NextResponse.json({
-      success: true,
-      data: paginatedSessions,
-      pagination: {
-        total,
-        page,
-        limit,
-        pages: Math.ceil(total / limit),
+    return NextResponse.json(
+      {
+        success: true,
+        data: paginatedSessions,
+        pagination: {
+          total,
+          page,
+          limit,
+          pages: Math.ceil(total / limit),
+        },
       },
-    }, { status: 200 });
+      { status: 200 },
+    );
   } catch (e: any) {
-    const status = e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
+    const status =
+      e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
     return NextResponse.json(
       { success: false, message: e?.message || "Server error" },
-      { status }
+      { status },
     );
   }
 }
@@ -87,15 +113,15 @@ export async function POST(req: NextRequest) {
   try {
     await requireAdmin(req);
     await connectDB();
-    
+
     const body = await req.json();
-    const { 
-      title, 
-      description, 
-      sessionType, 
-      imageUrl, 
-      videoUrl, 
-      format, 
+    const {
+      title,
+      description,
+      sessionType,
+      imageUrl,
+      videoUrl,
+      format,
       benefits,
       instructorName, // New field for discovery/private
       duration, // New field (in minutes)
@@ -109,14 +135,14 @@ export async function POST(req: NextRequest) {
     if (!title || !description) {
       return NextResponse.json(
         { success: false, message: "Title and description are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!imageUrl && !videoUrl) {
       return NextResponse.json(
         { success: false, message: "Either image or video is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -124,19 +150,19 @@ export async function POST(req: NextRequest) {
     let s3ImageUrl: string | undefined;
     if (imageUrl) {
       const imageStr = String(imageUrl).trim();
-      if (imageStr.startsWith('https://')) {
+      if (imageStr.startsWith("https://")) {
         s3ImageUrl = imageStr;
       } else {
         try {
           const filename = `session-${sessionType}-${Date.now()}.webp`;
-          const result = await uploadToS3(imageStr, filename, 'images');
+          const result = await uploadToS3(imageStr, filename, "images");
           s3ImageUrl = result.url;
           console.log(`✓ Uploaded session image to S3 as WebP: ${result.url}`);
         } catch (uploadError) {
-          console.error('Failed to upload session image:', uploadError);
+          console.error("Failed to upload session image:", uploadError);
           return NextResponse.json(
-            { success: false, message: 'Failed to upload session image to S3' },
-            { status: 500 }
+            { success: false, message: "Failed to upload session image to S3" },
+            { status: 500 },
           );
         }
       }
@@ -146,48 +172,62 @@ export async function POST(req: NextRequest) {
     let s3VideoUrl: string | undefined;
     if (videoUrl) {
       const videoStr = String(videoUrl).trim();
-      if (videoStr.startsWith('https://') || videoStr.startsWith('http://')) {
+      if (videoStr.startsWith("https://") || videoStr.startsWith("http://")) {
         s3VideoUrl = videoStr;
       } else {
         try {
           const filename = `session-${sessionType}-video-${Date.now()}.mp4`;
-          const result = await uploadToS3(videoStr, filename, 'videos');
+          const result = await uploadToS3(videoStr, filename, "videos");
           s3VideoUrl = result.url;
           console.log(`✓ Uploaded session video to S3: ${result.url}`);
         } catch (uploadError) {
-          console.error('Failed to upload session video:', uploadError);
+          console.error("Failed to upload session video:", uploadError);
           return NextResponse.json(
-            { success: false, message: 'Failed to upload session video to S3' },
-            { status: 500 }
+            { success: false, message: "Failed to upload session video to S3" },
+            { status: 500 },
           );
         }
       }
     }
 
     // Filter out empty benefits
-    const filteredBenefits = Array.isArray(benefits) 
-      ? benefits.filter((b: string) => b && b.trim().length > 0).map((b: string) => String(b).trim())
+    const filteredBenefits = Array.isArray(benefits)
+      ? benefits
+          .filter((b: string) => b && b.trim().length > 0)
+          .map((b: string) => String(b).trim())
       : [];
 
     // Validate featured count for private and corporate sessions (separate limits for each type)
     if (featured === true && sessionType === "private") {
-      const featuredPrivateCount = await PrivateSession.countDocuments({ featured: true });
-      
+      const featuredPrivateCount = await PrivateSession.countDocuments({
+        featured: true,
+      });
+
       if (featuredPrivateCount >= 3) {
         return NextResponse.json(
-          { success: false, message: "Maximum 3 featured sessions allowed for private sessions. Please unfeature another private session first." },
-          { status: 400 }
+          {
+            success: false,
+            message:
+              "Maximum 3 featured sessions allowed for private sessions. Please unfeature another private session first.",
+          },
+          { status: 400 },
         );
       }
     }
-    
+
     if (featured === true && sessionType === "corporate") {
-      const featuredCorporateCount = await CorporateSession.countDocuments({ featured: true });
-      
+      const featuredCorporateCount = await CorporateSession.countDocuments({
+        featured: true,
+      });
+
       if (featuredCorporateCount >= 3) {
         return NextResponse.json(
-          { success: false, message: "Maximum 3 featured sessions allowed for corporate sessions. Please unfeature another corporate session first." },
-          { status: 400 }
+          {
+            success: false,
+            message:
+              "Maximum 3 featured sessions allowed for corporate sessions. Please unfeature another corporate session first.",
+          },
+          { status: 400 },
         );
       }
     }
@@ -198,36 +238,39 @@ export async function POST(req: NextRequest) {
       // Validation for discovery
       if (!instructorName) {
         return NextResponse.json(
-          { success: false, message: "Instructor name is required for discovery sessions" },
-          { status: 400 }
+          {
+            success: false,
+            message: "Instructor name is required for discovery sessions",
+          },
+          { status: 400 },
         );
       }
       if (!duration || duration <= 0) {
         return NextResponse.json(
           { success: false, message: "Duration is required (in minutes)" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       if (!date) {
         return NextResponse.json(
           { success: false, message: "Date is required" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       if (!startTime) {
         return NextResponse.json(
           { success: false, message: "Start time is required" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       // Calculate endTime from startTime and duration
-      const [hours, minutes] = startTime.split(':').map(Number);
+      const [hours, minutes] = startTime.split(":").map(Number);
       const startMinutes = hours * 60 + minutes;
       const endMinutes = startMinutes + Number(duration);
       const endHours = Math.floor(endMinutes / 60);
       const endMins = endMinutes % 60;
-      const endTime = `${String(endHours).padStart(2, '0')}:${String(endMins).padStart(2, '0')}`;
+      const endTime = `${String(endHours).padStart(2, "0")}:${String(endMins).padStart(2, "0")}`;
 
       // Check for existing sessions at the same date and time (discovery or private)
       const existingDiscovery = await DiscoverySession.findOne({
@@ -243,11 +286,11 @@ export async function POST(req: NextRequest) {
       if (existingDiscovery || existingPrivate) {
         const existingSession = existingDiscovery || existingPrivate;
         return NextResponse.json(
-          { 
-            success: false, 
-            message: `A session already exists on ${date} at ${startTime}. Please choose a different date or time.` 
+          {
+            success: false,
+            message: `A session already exists on ${date} at ${startTime}. Please choose a different date or time.`,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -265,12 +308,20 @@ export async function POST(req: NextRequest) {
       // Check for time overlap
       for (const existingSession of allSessions) {
         // Type guard: ensure session has startTime and endTime
-        if (!('startTime' in existingSession) || !('endTime' in existingSession) || 
-            !existingSession.startTime || !existingSession.endTime) {
+        if (
+          !("startTime" in existingSession) ||
+          !("endTime" in existingSession) ||
+          !existingSession.startTime ||
+          !existingSession.endTime
+        ) {
           continue; // Skip sessions without time info
         }
-        const existingStart = (existingSession.startTime as string).split(':').map(Number);
-        const existingEnd = (existingSession.endTime as string).split(':').map(Number);
+        const existingStart = (existingSession.startTime as string)
+          .split(":")
+          .map(Number);
+        const existingEnd = (existingSession.endTime as string)
+          .split(":")
+          .map(Number);
         const existingStartMinutes = existingStart[0] * 60 + existingStart[1];
         const existingEndMinutes = existingEnd[0] * 60 + existingEnd[1];
         const newStartMinutes = hours * 60 + minutes;
@@ -278,18 +329,21 @@ export async function POST(req: NextRequest) {
 
         // Check if times overlap
         if (
-          (newStartMinutes >= existingStartMinutes && newStartMinutes < existingEndMinutes) ||
-          (newEndMinutes > existingStartMinutes && newEndMinutes <= existingEndMinutes) ||
-          (newStartMinutes <= existingStartMinutes && newEndMinutes >= existingEndMinutes)
+          (newStartMinutes >= existingStartMinutes &&
+            newStartMinutes < existingEndMinutes) ||
+          (newEndMinutes > existingStartMinutes &&
+            newEndMinutes <= existingEndMinutes) ||
+          (newStartMinutes <= existingStartMinutes &&
+            newEndMinutes >= existingEndMinutes)
         ) {
           const sessionStartTime = existingSession.startTime as string;
           const sessionEndTime = existingSession.endTime as string;
           return NextResponse.json(
-            { 
-              success: false, 
-              message: `Time conflict: A session already exists on ${date} from ${sessionStartTime} to ${sessionEndTime}. Please choose a different time.` 
+            {
+              success: false,
+              message: `Time conflict: A session already exists on ${date} from ${sessionStartTime} to ${sessionEndTime}. Please choose a different time.`,
             },
-            { status: 400 }
+            { status: 400 },
           );
         }
       }
@@ -304,7 +358,7 @@ export async function POST(req: NextRequest) {
         endTime,
         totalSeats: 1, // One-on-one
         bookedSeats: 0,
-        price: 0, // No payment
+        price: price ? Number(price) : 0,
         imageUrl: s3ImageUrl,
         videoUrl: s3VideoUrl,
         format: format ? String(format).trim() : undefined,
@@ -314,35 +368,38 @@ export async function POST(req: NextRequest) {
       // Validation for private
       if (!instructorName) {
         return NextResponse.json(
-          { success: false, message: "Instructor name is required for private sessions" },
-          { status: 400 }
+          {
+            success: false,
+            message: "Instructor name is required for private sessions",
+          },
+          { status: 400 },
         );
       }
       if (!duration || duration <= 0) {
         return NextResponse.json(
           { success: false, message: "Duration is required (in minutes)" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       // Date and time are now optional for private sessions
-      
+
       // Calculate endTime from startTime and duration (only if both are provided)
       let endTime: string | undefined;
       if (startTime && duration) {
-        const [hours, minutes] = startTime.split(':').map(Number);
+        const [hours, minutes] = startTime.split(":").map(Number);
         const startMinutes = hours * 60 + minutes;
         const endMinutes = startMinutes + Number(duration);
         const endHours = Math.floor(endMinutes / 60);
         const endMins = endMinutes % 60;
-        endTime = `${String(endHours).padStart(2, '0')}:${String(endMins).padStart(2, '0')}`;
+        endTime = `${String(endHours).padStart(2, "0")}:${String(endMins).padStart(2, "0")}`;
       }
 
       // Only check for conflicts if date and startTime are provided
       if (date && startTime && endTime) {
         // Parse the new session's start time for overlap checking
-        const [hours, minutes] = startTime.split(':').map(Number);
-        const [endHours, endMins] = endTime.split(':').map(Number);
-        
+        const [hours, minutes] = startTime.split(":").map(Number);
+        const [endHours, endMins] = endTime.split(":").map(Number);
+
         // Check for existing sessions at the same date and time (discovery or private)
         const existingDiscovery = await DiscoverySession.findOne({
           date: String(date).trim(),
@@ -357,11 +414,11 @@ export async function POST(req: NextRequest) {
         if (existingDiscovery || existingPrivate) {
           const existingSession = existingDiscovery || existingPrivate;
           return NextResponse.json(
-            { 
-              success: false, 
-              message: `A session already exists on ${date} at ${startTime}. Please choose a different date or time.` 
+            {
+              success: false,
+              message: `A session already exists on ${date} at ${startTime}. Please choose a different date or time.`,
             },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -379,12 +436,20 @@ export async function POST(req: NextRequest) {
         // Check for time overlap
         for (const existingSession of allSessions) {
           // Type guard: ensure session has startTime and endTime
-          if (!('startTime' in existingSession) || !('endTime' in existingSession) || 
-              !existingSession.startTime || !existingSession.endTime) {
+          if (
+            !("startTime" in existingSession) ||
+            !("endTime" in existingSession) ||
+            !existingSession.startTime ||
+            !existingSession.endTime
+          ) {
             continue; // Skip sessions without time info
           }
-          const existingStart = (existingSession.startTime as string).split(':').map(Number);
-          const existingEnd = (existingSession.endTime as string).split(':').map(Number);
+          const existingStart = (existingSession.startTime as string)
+            .split(":")
+            .map(Number);
+          const existingEnd = (existingSession.endTime as string)
+            .split(":")
+            .map(Number);
           const existingStartMinutes = existingStart[0] * 60 + existingStart[1];
           const existingEndMinutes = existingEnd[0] * 60 + existingEnd[1];
           const newStartMinutes = hours * 60 + minutes;
@@ -392,18 +457,21 @@ export async function POST(req: NextRequest) {
 
           // Check if times overlap
           if (
-            (newStartMinutes >= existingStartMinutes && newStartMinutes < existingEndMinutes) ||
-            (newEndMinutes > existingStartMinutes && newEndMinutes <= existingEndMinutes) ||
-            (newStartMinutes <= existingStartMinutes && newEndMinutes >= existingEndMinutes)
+            (newStartMinutes >= existingStartMinutes &&
+              newStartMinutes < existingEndMinutes) ||
+            (newEndMinutes > existingStartMinutes &&
+              newEndMinutes <= existingEndMinutes) ||
+            (newStartMinutes <= existingStartMinutes &&
+              newEndMinutes >= existingEndMinutes)
           ) {
             const sessionStartTime = existingSession.startTime as string;
             const sessionEndTime = existingSession.endTime as string;
             return NextResponse.json(
-              { 
-                success: false, 
-                message: `Time conflict: A session already exists on ${date} from ${sessionStartTime} to ${sessionEndTime}. Please choose a different time.` 
+              {
+                success: false,
+                message: `Time conflict: A session already exists on ${date} from ${sessionStartTime} to ${sessionEndTime}. Please choose a different time.`,
               },
-              { status: 400 }
+              { status: 400 },
             );
           }
         }
@@ -419,13 +487,13 @@ export async function POST(req: NextRequest) {
           const parsedDate = new Date(formattedDate);
           if (!isNaN(parsedDate.getTime())) {
             const year = parsedDate.getFullYear();
-            const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
-            const day = String(parsedDate.getDate()).padStart(2, '0');
+            const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+            const day = String(parsedDate.getDate()).padStart(2, "0");
             formattedDate = `${year}-${month}-${day}`;
           }
         }
       }
-      
+
       session = await PrivateSession.create({
         title: String(title).trim(),
         description: String(description).trim(),
@@ -470,8 +538,11 @@ export async function POST(req: NextRequest) {
       // Free Studio Visit - save to FreeStudioVisit collection
       if (!duration) {
         return NextResponse.json(
-          { success: false, message: "Duration is required for Free Studio Visit" },
-          { status: 400 }
+          {
+            success: false,
+            message: "Duration is required for Free Studio Visit",
+          },
+          { status: 400 },
         );
       }
       session = await FreeStudioVisit.create({
@@ -484,19 +555,17 @@ export async function POST(req: NextRequest) {
     } else {
       return NextResponse.json(
         { success: false, message: "Invalid session type" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    return NextResponse.json(
-      { success: true, data: session },
-      { status: 201 }
-    );
+    return NextResponse.json({ success: true, data: session }, { status: 201 });
   } catch (e: any) {
-    const status = e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
+    const status =
+      e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
     return NextResponse.json(
       { success: false, message: e?.message || "Server error" },
-      { status }
+      { status },
     );
   }
 }

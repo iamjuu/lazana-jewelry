@@ -3,7 +3,11 @@ import connectDB from "@/lib/mongodb";
 import SessionEnquiry from "@/models/SessionEnquiry";
 import DiscoverySession from "@/models/DiscoverySession";
 import PrivateSession from "@/models/PrivateSession";
-import { sendEnquiryNotificationToAdmin, sendEnquiryConfirmationToUser, sendDiscoverySessionConfirmation } from "@/lib/email";
+import {
+  sendEnquiryNotificationToAdmin,
+  sendEnquiryConfirmationToUser,
+  sendDiscoverySessionConfirmation,
+} from "@/lib/email";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
@@ -14,12 +18,12 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const body = await req.json();
-    const { 
-      fullName, 
-      services, 
-      phone, 
-      email, 
-      comment, 
+    const {
+      fullName,
+      services,
+      phone,
+      email,
+      comment,
       sessionType,
       sessionId, // For private sessions - the PrivateSession ID
       userId, // Optional - if user is logged in
@@ -44,7 +48,7 @@ export async function POST(req: NextRequest) {
       if (!fullName || !services || !phone || !email) {
         return NextResponse.json(
           { success: false, message: "All required fields must be provided" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -53,8 +57,11 @@ export async function POST(req: NextRequest) {
     if (sessionType === "private") {
       if (!sessionId) {
         return NextResponse.json(
-          { success: false, message: "Session ID is required for private sessions" },
-          { status: 400 }
+          {
+            success: false,
+            message: "Session ID is required for private sessions",
+          },
+          { status: 400 },
         );
       }
 
@@ -62,14 +69,16 @@ export async function POST(req: NextRequest) {
       if (!privateSession) {
         return NextResponse.json(
           { success: false, message: "Private session not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
-      if ((privateSession.bookedSeats ?? 0) >= (privateSession.totalSeats ?? 1)) {
+      if (
+        (privateSession.bookedSeats ?? 0) >= (privateSession.totalSeats ?? 1)
+      ) {
         return NextResponse.json(
           { success: false, message: "Session is already fully booked" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -82,6 +91,7 @@ export async function POST(req: NextRequest) {
         comment: comment || "",
         status: "pending",
         sessionType: "private",
+        userId: userId,
         sessionId: sessionId,
         bookedDate: privateSession.date,
         bookedTime: privateSession.startTime,
@@ -90,14 +100,19 @@ export async function POST(req: NextRequest) {
       // Create Stripe checkout session for private session
       let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
       if (!baseUrl) {
-        const origin = req.headers.get('origin');
-        if (origin && (origin.startsWith('http://') || origin.startsWith('https://'))) {
+        const origin = req.headers.get("origin");
+        if (
+          origin &&
+          (origin.startsWith("http://") || origin.startsWith("https://"))
+        ) {
           baseUrl = origin;
         } else {
-          const host = req.headers.get('host') || req.headers.get('x-forwarded-host');
-          const protocol = req.headers.get('x-forwarded-proto') || 
-                          (host?.includes('localhost') ? 'http' : 'https');
-          baseUrl = host ? `${protocol}://${host}` : 'http://localhost:3000';
+          const host =
+            req.headers.get("host") || req.headers.get("x-forwarded-host");
+          const protocol =
+            req.headers.get("x-forwarded-proto") ||
+            (host?.includes("localhost") ? "http" : "https");
+          baseUrl = host ? `${protocol}://${host}` : "http://localhost:3000";
         }
       }
 
@@ -110,7 +125,9 @@ export async function POST(req: NextRequest) {
               currency: "usd",
               product_data: {
                 name: privateSession.title || "Private Yoga Session",
-                description: privateSession.description || `Private Session on ${privateSession.date} at ${privateSession.startTime}`,
+                description:
+                  privateSession.description ||
+                  `Private Session on ${privateSession.date} at ${privateSession.startTime}`,
               },
               unit_amount: Math.round((privateSession.price ?? 0) * 100), // Convert to smallest currency unit
             },
@@ -143,15 +160,16 @@ export async function POST(req: NextRequest) {
       });
 
       return NextResponse.json(
-        { 
-          success: true, 
-          message: "Enquiry created. Please complete payment to confirm booking.",
+        {
+          success: true,
+          message:
+            "Enquiry created. Please complete payment to confirm booking.",
           data: enquiry,
           requiresPayment: true,
           checkoutUrl: checkoutSession.url,
           checkoutSessionId: checkoutSession.id,
         },
-        { status: 201 }
+        { status: 201 },
       );
     }
 
@@ -159,73 +177,110 @@ export async function POST(req: NextRequest) {
     if (sessionType === "discovery") {
       let discoveryDate: string | null = null;
       let discoveryTime: string | null = null;
-      
+
       // Parse date and time from comment or services
       try {
         if (comment) {
           const parsed = JSON.parse(comment);
-          console.log('Parsed comment data:', parsed);
-          
+          console.log("Parsed comment data:", parsed);
+
           // Prefer ISO format if available
           if (parsed.selectedDateISO && parsed.selectedTime) {
             discoveryDate = parsed.selectedDateISO.trim();
             // Normalize time to HH:mm format
-            const timeParts = parsed.selectedTime.trim().split(':');
+            const timeParts = parsed.selectedTime.trim().split(":");
             if (timeParts.length >= 2) {
-              discoveryTime = `${String(parseInt(timeParts[0])).padStart(2, '0')}:${String(parseInt(timeParts[1])).padStart(2, '0')}`;
+              discoveryTime = `${String(parseInt(timeParts[0])).padStart(2, "0")}:${String(parseInt(timeParts[1])).padStart(2, "0")}`;
             } else {
               discoveryTime = parsed.selectedTime.trim();
             }
-            console.log('Using ISO date format:', { discoveryDate, discoveryTime });
+            console.log("Using ISO date format:", {
+              discoveryDate,
+              discoveryTime,
+            });
           } else if (parsed.selectedDate && parsed.selectedTime) {
             // Convert formatted date back to YYYY-MM-DD
-            const dateMatch = parsed.selectedDate.match(/(\w+)\s+(\d+),?\s+(\d+)/);
+            const dateMatch = parsed.selectedDate.match(
+              /(\w+)\s+(\d+),?\s+(\d+)/,
+            );
             if (dateMatch) {
-              const monthNames = ["January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"];
+              const monthNames = [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+              ];
               const month = monthNames.indexOf(dateMatch[1]);
               const day = parseInt(dateMatch[2]);
               const year = parseInt(dateMatch[3]);
               if (month !== -1) {
-                discoveryDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                discoveryDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
               }
             }
             // Normalize time to HH:mm format
-            const timeParts = parsed.selectedTime.trim().split(':');
+            const timeParts = parsed.selectedTime.trim().split(":");
             if (timeParts.length >= 2) {
-              discoveryTime = `${String(parseInt(timeParts[0])).padStart(2, '0')}:${String(parseInt(timeParts[1])).padStart(2, '0')}`;
+              discoveryTime = `${String(parseInt(timeParts[0])).padStart(2, "0")}:${String(parseInt(timeParts[1])).padStart(2, "0")}`;
             } else {
               discoveryTime = parsed.selectedTime.trim();
             }
-            console.log('Using formatted date:', { discoveryDate, discoveryTime });
+            console.log("Using formatted date:", {
+              discoveryDate,
+              discoveryTime,
+            });
           }
         }
       } catch (e) {
-        console.error('Error parsing comment JSON:', e);
+        console.error("Error parsing comment JSON:", e);
         // Try parsing from services string
-        const servicesMatch = services.match(/Discovery Session - (.+) at (.+)/);
+        const servicesMatch = services.match(
+          /Discovery Session - (.+) at (.+)/,
+        );
         if (servicesMatch) {
-          console.log('Parsing from services string:', servicesMatch);
+          console.log("Parsing from services string:", servicesMatch);
           // Parse date from formatted string
           const dateMatch = servicesMatch[1].match(/(\w+)\s+(\d+),?\s+(\d+)/);
           if (dateMatch) {
-            const monthNames = ["January", "February", "March", "April", "May", "June",
-              "July", "August", "September", "October", "November", "December"];
+            const monthNames = [
+              "January",
+              "February",
+              "March",
+              "April",
+              "May",
+              "June",
+              "July",
+              "August",
+              "September",
+              "October",
+              "November",
+              "December",
+            ];
             const month = monthNames.indexOf(dateMatch[1]);
             const day = parseInt(dateMatch[2]);
             const year = parseInt(dateMatch[3]);
             if (month !== -1) {
-              discoveryDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+              discoveryDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
             }
           }
           // Normalize time to HH:mm format
-          const timeParts = servicesMatch[2].trim().split(':');
+          const timeParts = servicesMatch[2].trim().split(":");
           if (timeParts.length >= 2) {
-            discoveryTime = `${String(parseInt(timeParts[0])).padStart(2, '0')}:${String(parseInt(timeParts[1])).padStart(2, '0')}`;
+            discoveryTime = `${String(parseInt(timeParts[0])).padStart(2, "0")}:${String(parseInt(timeParts[1])).padStart(2, "0")}`;
           } else {
             discoveryTime = servicesMatch[2].trim();
           }
-          console.log('Parsed from services:', { discoveryDate, discoveryTime });
+          console.log("Parsed from services:", {
+            discoveryDate,
+            discoveryTime,
+          });
         }
       }
 
@@ -233,20 +288,24 @@ export async function POST(req: NextRequest) {
       let discoverySession = null;
       if (discoveryDate && discoveryTime) {
         // Normalize time format (ensure HH:mm format, remove any seconds)
-        const normalizedTime = discoveryTime.includes(':') 
-          ? discoveryTime.split(':').slice(0, 2).map(n => String(parseInt(n)).padStart(2, '0')).join(':')
+        const normalizedTime = discoveryTime.includes(":")
+          ? discoveryTime
+              .split(":")
+              .slice(0, 2)
+              .map((n) => String(parseInt(n)).padStart(2, "0"))
+              .join(":")
           : discoveryTime;
 
         const normalizedDate = discoveryDate.trim();
         const normalizedTimeStr = normalizedTime.trim();
 
-        console.log('Looking for discovery session:', { 
-          discoveryDate: normalizedDate, 
+        console.log("Looking for discovery session:", {
+          discoveryDate: normalizedDate,
           discoveryTime: normalizedTimeStr,
           originalDate: discoveryDate,
-          originalTime: discoveryTime
+          originalTime: discoveryTime,
         });
-        
+
         // Try exact match first
         discoverySession = await DiscoverySession.findOne({
           date: normalizedDate,
@@ -256,104 +315,146 @@ export async function POST(req: NextRequest) {
         // If not found, try without trimming (in case of whitespace issues)
         if (!discoverySession) {
           discoverySession = await DiscoverySession.findOne({
-            date: { $regex: new RegExp(`^${normalizedDate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`) },
-            startTime: { $regex: new RegExp(`^${normalizedTimeStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`) },
+            date: {
+              $regex: new RegExp(
+                `^${normalizedDate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+              ),
+            },
+            startTime: {
+              $regex: new RegExp(
+                `^${normalizedTimeStr.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+              ),
+            },
           });
         }
 
-        console.log('Found discovery session:', discoverySession ? { 
-          id: discoverySession._id, 
-          date: discoverySession.date, 
-          startTime: discoverySession.startTime,
-          bookedSeats: discoverySession.bookedSeats,
-          totalSeats: discoverySession.totalSeats
-        } : 'NOT FOUND');
+        console.log(
+          "Found discovery session:",
+          discoverySession
+            ? {
+                id: discoverySession._id,
+                date: discoverySession.date,
+                startTime: discoverySession.startTime,
+                bookedSeats: discoverySession.bookedSeats,
+                totalSeats: discoverySession.totalSeats,
+              }
+            : "NOT FOUND",
+        );
 
         if (discoverySession) {
           // Check if already booked
-          if ((discoverySession.bookedSeats ?? 0) >= (discoverySession.totalSeats ?? 1)) {
-            console.log('Session already booked - rejecting enquiry');
+          if (
+            (discoverySession.bookedSeats ?? 0) >=
+            (discoverySession.totalSeats ?? 1)
+          ) {
+            console.log("Session already booked - rejecting enquiry");
             return NextResponse.json(
               { success: false, message: "This session is already booked" },
-              { status: 400 }
+              { status: 400 },
             );
           }
 
           // Mark as booked
-          discoverySession.bookedSeats = (discoverySession.bookedSeats ?? 0) + 1;
+          discoverySession.bookedSeats =
+            (discoverySession.bookedSeats ?? 0) + 1;
           const saved = await discoverySession.save();
-          console.log('Session marked as booked successfully:', {
+          console.log("Session marked as booked successfully:", {
             id: saved._id,
             bookedSeats: saved.bookedSeats,
-            totalSeats: saved.totalSeats
+            totalSeats: saved.totalSeats,
           });
         } else {
-          console.error('Discovery session not found for:', { 
-            date: normalizedDate, 
+          console.error("Discovery session not found for:", {
+            date: normalizedDate,
             time: normalizedTimeStr,
-            'Available sessions on this date:': 'Checking...'
+            "Available sessions on this date:": "Checking...",
           });
-          
+
           // List all sessions on this date for debugging
-          const allSessionsOnDate = await DiscoverySession.find({ date: normalizedDate }).lean();
-          console.log('All sessions on date', normalizedDate, ':', allSessionsOnDate.map(s => ({
-            id: s._id,
-            date: s.date,
-            startTime: s.startTime,
-            bookedSeats: s.bookedSeats
-          })));
-          
+          const allSessionsOnDate = await DiscoverySession.find({
+            date: normalizedDate,
+          }).lean();
+          console.log(
+            "All sessions on date",
+            normalizedDate,
+            ":",
+            allSessionsOnDate.map((s) => ({
+              id: s._id,
+              date: s.date,
+              startTime: s.startTime,
+              bookedSeats: s.bookedSeats,
+            })),
+          );
+
           // Don't fail the enquiry creation, but log the issue
         }
       } else {
-        console.error('Missing date or time:', { discoveryDate, discoveryTime, comment, services });
+        console.error("Missing date or time:", {
+          discoveryDate,
+          discoveryTime,
+          comment,
+          services,
+        });
       }
 
       // Create enquiry with session details
-    const enquiry = await SessionEnquiry.create({
-      fullName: fullName || "Discovery Appointment",
-      services: services || "Discovery Session",
-      phone: phone || "N/A",
-      email: email || "discovery@example.com",
-      comment: comment || "",
-      status: "pending",
+      const enquiry = await SessionEnquiry.create({
+        fullName: fullName || "Discovery Appointment",
+        services: services || "Discovery Session",
+        phone: phone || "N/A",
+        email: email || "discovery@example.com",
+        comment: comment || "",
+        status: "pending",
         sessionType: "discovery",
+        userId: userId,
         sessionId: discoverySession?._id.toString(),
         bookedDate: discoveryDate || undefined,
         bookedTime: discoveryTime || undefined,
-    });
+      });
 
-    // Send emails (don't wait for them to complete - send in background)
-    sendEnquiryNotificationToAdmin({
-      fullName: enquiry.fullName,
-      email: enquiry.email,
-      phone: enquiry.phone,
-      services: enquiry.services,
-      sessionType: enquiry.sessionType,
-      comment: enquiry.comment,
-      createdAt: enquiry.createdAt.toISOString(),
-    }).catch((error) => {
-      console.error("Failed to send admin notification email:", error);
-    });
+      // Send emails (don't wait for them to complete - send in background)
+      sendEnquiryNotificationToAdmin({
+        fullName: enquiry.fullName,
+        email: enquiry.email,
+        phone: enquiry.phone,
+        services: enquiry.services,
+        sessionType: enquiry.sessionType,
+        comment: enquiry.comment,
+        createdAt: enquiry.createdAt.toISOString(),
+      }).catch((error) => {
+        console.error("Failed to send admin notification email:", error);
+      });
 
-    // For discovery sessions, send special confirmation email
-      let discoveryData: { selectedDate?: string; selectedTime?: string; email?: string } = {};
+      // For discovery sessions, send special confirmation email
+      let discoveryData: {
+        selectedDate?: string;
+        selectedTime?: string;
+        email?: string;
+      } = {};
       try {
         if (comment) {
           const parsed = JSON.parse(comment);
           discoveryData = {
             selectedDate: parsed.selectedDate,
             selectedTime: parsed.selectedTime,
-            email: enquiry.email !== "discovery@example.com" ? enquiry.email : undefined,
+            email:
+              enquiry.email !== "discovery@example.com"
+                ? enquiry.email
+                : undefined,
           };
         }
       } catch (e) {
-        const servicesMatch = services.match(/Discovery Session - (.+) at (.+)/);
+        const servicesMatch = services.match(
+          /Discovery Session - (.+) at (.+)/,
+        );
         if (servicesMatch) {
           discoveryData = {
             selectedDate: servicesMatch[1],
             selectedTime: servicesMatch[2],
-            email: enquiry.email !== "discovery@example.com" ? enquiry.email : undefined,
+            email:
+              enquiry.email !== "discovery@example.com"
+                ? enquiry.email
+                : undefined,
           };
         }
       }
@@ -363,17 +464,20 @@ export async function POST(req: NextRequest) {
         selectedTime: discoveryData.selectedTime || "Time not specified",
         email: discoveryData.email,
       }).catch((error) => {
-        console.error("Failed to send discovery session confirmation email:", error);
+        console.error(
+          "Failed to send discovery session confirmation email:",
+          error,
+        );
       });
 
       return NextResponse.json(
-        { 
-          success: true, 
-          message: "Discovery session booked successfully", 
+        {
+          success: true,
+          message: "Discovery session booked successfully",
           data: enquiry,
           requiresPayment: false,
         },
-        { status: 201 }
+        { status: 201 },
       );
     }
 
@@ -387,6 +491,7 @@ export async function POST(req: NextRequest) {
         comment: comment || "",
         status: "pending",
         sessionType: "corporate",
+        userId: userId,
         // Corporate session specific fields
         companyName: companyName || "",
         jobTitle: jobTitle || "",
@@ -397,9 +502,13 @@ export async function POST(req: NextRequest) {
         enquiryTypes: Array.isArray(enquiryTypes) ? enquiryTypes : [],
         preferredDates: preferredDates || "",
         preferredLocation: preferredLocation || "",
-        estimatedParticipants: estimatedParticipants ? Number(estimatedParticipants) : undefined,
+        estimatedParticipants: estimatedParticipants
+          ? Number(estimatedParticipants)
+          : undefined,
         preferredDuration: preferredDuration || "",
-        sessionObjectives: Array.isArray(sessionObjectives) ? sessionObjectives : [],
+        sessionObjectives: Array.isArray(sessionObjectives)
+          ? sessionObjectives
+          : [],
       });
 
       // Send regular confirmation to user for corporate sessions
@@ -413,13 +522,13 @@ export async function POST(req: NextRequest) {
       });
 
       return NextResponse.json(
-        { 
-          success: true, 
-          message: "Enquiry submitted successfully", 
+        {
+          success: true,
+          message: "Enquiry submitted successfully",
           data: enquiry,
           requiresPayment: false,
         },
-        { status: 201 }
+        { status: 201 },
       );
     }
 
@@ -433,6 +542,7 @@ export async function POST(req: NextRequest) {
         comment: comment || "",
         status: "pending",
         sessionType: "freeStudioVisit",
+        userId: userId,
       });
 
       // Send notification to admin
@@ -459,26 +569,26 @@ export async function POST(req: NextRequest) {
       });
 
       return NextResponse.json(
-        { 
-          success: true, 
-          message: "Free Studio Visit enquiry submitted successfully", 
+        {
+          success: true,
+          message: "Free Studio Visit enquiry submitted successfully",
           data: enquiry,
           requiresPayment: false,
         },
-        { status: 201 }
+        { status: 201 },
       );
     }
 
     // If sessionType doesn't match any known type
     return NextResponse.json(
       { success: false, message: "Invalid session type" },
-      { status: 400 }
+      { status: 400 },
     );
   } catch (error) {
     console.error("Error creating enquiry:", error);
     return NextResponse.json(
       { success: false, message: "Failed to submit enquiry" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -504,13 +614,13 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { success: true, data: enquiries },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching enquiries:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch enquiries" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

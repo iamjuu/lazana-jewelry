@@ -422,8 +422,8 @@ function OrderConfirmationContent() {
     <div className="min-h-screen bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
       <Navbar />
       
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
-        <h1 className="text-[28px] sm:text-[36px] lg:text-[44px] font-normal text-[#1C3163] mb-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 font-touvlo">
+        <h1 className="text-[28px] sm:text-[36px] lg:text-[32px] font-normal text-[#e6b884] mb-8 font-seasons">
           Order Confirmation
         </h1>
 
@@ -701,7 +701,7 @@ function OrderConfirmationContent() {
 
               <div className="border-t border-zinc-200 pt-2 mt-2">
                 <div className="flex justify-between text-lg font-semibold">
-                  <span className="text-[#1C3163]">Total (SGD):</span>
+                  <span className="text-[#1C3163]">Total (USD):</span>
                   <span className="text-[#1C3163]">${totalAmount.toFixed(2)}</span>
                 </div>
               </div>

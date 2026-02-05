@@ -299,7 +299,8 @@ const Navbar = () => {
                           backdrop-blur-sm
                           shadow-lg border border-white/20
                           rounded-lg z-[100] pointer-events-auto py-3
-                          !text-[16px]
+                          !text-[18px]
+
                         "
                         style={{ backgroundColor: "#fde9dd" }}
                         onMouseEnter={() => {
@@ -316,7 +317,7 @@ const Navbar = () => {
                       >
                         <Link
                           href="/shop?category=all"
-                          className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md"
+                          className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md font-seasons"
                         >
                           All Crystal singing bowls
                         </Link>
@@ -325,7 +326,7 @@ const Navbar = () => {
                           <Link
                             key={cat._id}
                             href={`/shop?category=${cat.slug}`}
-                            className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md font-touvlo"
+                            className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md font-seasons"
                           >
                             {cat.name}
                           </Link>
@@ -356,10 +357,10 @@ const Navbar = () => {
                   >
                     <Link
                       href={item.href}
-                      className={`text-[#D5B584] hover:text-[#1C3163] transition ${
+                      className={`text-[#D5B584] hover:text-[#1C3163] transition font-seasons ${
                         pathname.startsWith("/services") ||
                         pathname.startsWith("/events")
-                          ? "text-white font-semibold scale-110 !text-[16px] "
+                          ? "text-white font-semibold scale-110 !text-[18px] "
                           : ""
                       }`}
                     >

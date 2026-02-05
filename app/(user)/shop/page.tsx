@@ -737,7 +737,9 @@ const ShopPageContent = () => {
                       // Price is already in dollars - format to always show 2 decimals for consistency
                       const formatPrice = (price: number) => {
                         const rounded = Math.round(price * 100) / 100;
-                        return `$${rounded.toFixed(2)}`;
+                        return rounded % 1 === 0
+                          ? `$${rounded}`
+                          : `$${rounded.toFixed(2)}`;
                       };
                       const hasDiscount = item.discount && item.discount > 0;
                       const originalPrice = item.price;

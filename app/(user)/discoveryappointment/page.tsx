@@ -123,18 +123,11 @@ const DiscoveryAppointmentPage = () => {
               },
               parsedDates[0],
             );
-
             console.log("Earliest date found:", earliest);
 
-            // Always navigate to earliest date's month to show available slots
-            setCurrentMonth(earliest.month);
-            setCurrentYear(earliest.year);
-            console.log(
-              "Navigated to month:",
-              earliest.month + 1,
-              "year:",
-              earliest.year,
-            );
+            // AUTO-NAVIGATION REMOVED: Always stay on current month initially per user request
+            // setCurrentMonth(earliest.month);
+            // setCurrentYear(earliest.year);
           }
         } else {
           console.error("Failed to fetch slots:", data.message);
@@ -401,6 +394,13 @@ const DiscoveryAppointmentPage = () => {
         },
         body: JSON.stringify({
           sessionId: selectedSlotId,
+          formData: {
+            hasCrystalBowls,
+            notesAndAlchemies,
+            experienceLevel,
+            mainIntention,
+            soundOrEnergy,
+          },
         }),
       });
 
@@ -462,7 +462,16 @@ const DiscoveryAppointmentPage = () => {
                               setCurrentMonth(currentMonth - 1);
                             }
                           }}
-                          className="px-3 py-1 text-[#5B7C99] hover:text-[#1E3A8A] transition-colors"
+                          disabled={
+                            currentMonth === new Date().getMonth() &&
+                            currentYear === new Date().getFullYear()
+                          }
+                          className={`px-3 py-1 transition-colors ${
+                            currentMonth === new Date().getMonth() &&
+                            currentYear === new Date().getFullYear()
+                              ? "text-gray-300 cursor-not-allowed"
+                              : "text-[#5B7C99] hover:text-[#1E3A8A]"
+                          }`}
                           aria-label="Previous month"
                         >
                           ←
@@ -647,19 +656,15 @@ const DiscoveryAppointmentPage = () => {
               {/* Bowl Discovery Form */}
               <div
                 ref={formRef}
-                className={`mt-12 transition-all duration-700 ease-out ${
-                  selectedTime
-                    ? "opacity-100 translate-y-0 scale-100"
-                    : "opacity-60 translate-y-4 scale-[0.98]"
-                }`}
+                className="mt-12 transition-all duration-700 ease-out opacity-100 translate-y-0 scale-100"
               >
                 <div className="rounded-[24px] p-6 md:p-8 lg:p-10 bg-white shadow-lg transition-shadow duration-500 hover:shadow-2xl">
                   <h2 className="text-[32px] text-[#D5B584] font-seasons leading-tight mb-[25px]">
                     Discovery Form
                   </h2>
                   <p className="text-[16px] text-[#545454] font-touvlo mb-2">
-                    Here Are A Few Questions For You To Fill Out So We Can
-                    Better Support You In Finding Your Right Bowl Family.
+                    Here are a few questions for you to fill out so we can
+                    better support you in finding your right bowl family.
                   </p>
                   <p className="text-[14px] text-[#545454] font-touvlo mb-8 italic">
                     You can skip this section and submit your appointment with
@@ -669,8 +674,8 @@ const DiscoveryAppointmentPage = () => {
                   <div className="space-y-8">
                     {/* Question 1: Do You Have Any Crystal Bowls? */}
                     <div>
-                      <label className="block text-[16px] sm:text-[18px] text-black font-normal mb-4">
-                        Do You Have Any Crystal Bowls?
+                      <label className="block text-[16px] sm:text-[18px] text-[#1C3163] font-normal mb-4">
+                        Do you have any crystal bowls?
                       </label>
                       <div className="flex gap-6">
                         <label className="flex items-center cursor-pointer">
@@ -682,7 +687,7 @@ const DiscoveryAppointmentPage = () => {
                             onChange={(e) => setHasCrystalBowls(e.target.value)}
                             className="w-5 h-5 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2"
                           />
-                          <span className="ml-2 text-[16px] text-black">
+                          <span className="ml-2 text-[16px] text-[#545454]">
                             Yes
                           </span>
                         </label>
@@ -695,7 +700,7 @@ const DiscoveryAppointmentPage = () => {
                             onChange={(e) => setHasCrystalBowls(e.target.value)}
                             className="w-5 h-5 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2"
                           />
-                          <span className="ml-2 text-[16px] text-black">
+                          <span className="ml-2 text-[16px] text-[#545454]">
                             No
                           </span>
                         </label>
@@ -705,9 +710,9 @@ const DiscoveryAppointmentPage = () => {
                     {/* Question 2: If Yes - Notes and Alchemies */}
                     {hasCrystalBowls === "yes" && (
                       <div>
-                        <label className="block text-[16px] sm:text-[18px] text-black font-normal mb-4">
-                          If Yes: Please List The Notes And Alchemies (If
-                          Known):
+                        <label className="block text-[16px] sm:text-[18px] text-[#1C3163] font-normal mb-4">
+                          If yes: Please list the notes and alchemies (if
+                          known):
                         </label>
                         <textarea
                           value={notesAndAlchemies}
@@ -721,9 +726,9 @@ const DiscoveryAppointmentPage = () => {
 
                     {/* Question 3: Experience Level */}
                     <div>
-                      <label className="block text-[16px] sm:text-[18px] text-black font-normal mb-4">
-                        How Would You Describe Your Experience Level?{" "}
-                        <span className="text-gray-600 text-[14px]">
+                      <label className="block text-[16px] sm:text-[18px] text-[#1C3163] font-normal mb-4">
+                        How would you describe your experience level?{" "}
+                        <span className="text-[#545454] text-[14px]">
                           (Optional)
                         </span>
                       </label>
@@ -737,8 +742,8 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-black">
-                            Beginner - I&apos;m New To Crystal Bowls Studio
+                          <span className="ml-3 text-[16px] text-[#545454]">
+                            Beginner - I&apos;m new to crystal bowls studio
                           </span>
                         </label>
                         <label className="flex items-start cursor-pointer">
@@ -752,9 +757,9 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-black">
-                            Some Experience - I&apos;ve Played Or Attended
-                            Sessions
+                          <span className="ml-3 text-[16px] text-[#545454]">
+                            Some experience - I&apos;ve played or attended
+                            sessions
                           </span>
                         </label>
                         <label className="flex items-start cursor-pointer">
@@ -766,8 +771,8 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-black">
-                            Experienced - I Own/Play Bowls Regularly
+                          <span className="ml-3 text-[16px] text-[#545454]">
+                            Experienced - I own/play bowls regularly
                           </span>
                         </label>
                       </div>
@@ -775,10 +780,9 @@ const DiscoveryAppointmentPage = () => {
 
                     {/* Question 4: Main Intention */}
                     <div>
-                      <label className="block text-[16px] sm:text-[18px] text-black font-normal mb-4">
-                        What Is Your Main Intention For Your Your Discovery
-                        Session?{" "}
-                        <span className="text-gray-600 text-[14px]">
+                      <label className="block text-[16px] sm:text-[18px] text-[#1C3163] font-normal mb-4">
+                        What is your main intention for your discovery session?{" "}
+                        <span className="text-[#545454] text-[14px]">
                           (Optional)
                         </span>
                       </label>
@@ -792,8 +796,8 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-black">
-                            I&apos;m Looking For A Specific Note/Crystal Studio
+                          <span className="ml-3 text-[16px] text-[#545454]">
+                            I&apos;m looking for a specific note/crystal studio
                           </span>
                         </label>
                         <label className="flex items-start cursor-pointer">
@@ -805,8 +809,8 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-black">
-                            I Want To Complete Or Expand A Set
+                          <span className="ml-3 text-[16px] text-[#545454]">
+                            I want to complete or expand a set
                           </span>
                         </label>
                         <label className="flex items-start cursor-pointer">
@@ -818,8 +822,8 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] rounded"
                           />
-                          <span className="ml-3 text-[16px] text-black">
-                            I Am Ready To Purchase If I Find The Right Bowl
+                          <span className="ml-3 text-[16px] text-[#545454]">
+                            I am ready to purchase if I find the right bowl
                           </span>
                         </label>
                         <label className="flex items-start cursor-pointer">
@@ -833,8 +837,8 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-black">
-                            I Am Gathering Inspiration
+                          <span className="ml-3 text-[16px] text-[#545454]">
+                            I am gathering inspiration
                           </span>
                         </label>
                       </div>
@@ -842,10 +846,10 @@ const DiscoveryAppointmentPage = () => {
 
                     {/* Question 5: Sound or Energy */}
                     <div>
-                      <label className="block text-[16px] sm:text-[18px] text-black font-normal mb-4">
-                        What Kind Of Sound Or Energy Are You Looking For? (E.G.
-                        Grounding, Heart-Opening, Masculine/Feminine Balance..){" "}
-                        <span className="text-gray-600 text-[14px]">
+                      <label className="block text-[16px] sm:text-[18px] text-[#1C3163] font-normal mb-4">
+                        What kind of sound or energy are you looking for? (e.g.
+                        grounding, heart-opening, masculine/feminine balance..){" "}
+                        <span className="text-[#545454] text-[14px]">
                           (Optional)
                         </span>
                       </label>

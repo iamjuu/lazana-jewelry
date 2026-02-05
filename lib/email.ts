@@ -7,7 +7,9 @@ let transporter: nodemailer.Transporter | null = null;
 function getTransporter(): nodemailer.Transporter {
   // Validate email configuration
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    throw new Error("Email configuration missing: EMAIL_USER and EMAIL_PASS must be set in environment variables");
+    throw new Error(
+      "Email configuration missing: EMAIL_USER and EMAIL_PASS must be set in environment variables",
+    );
   }
 
   // Reuse transporter if already created
@@ -49,21 +51,31 @@ async function sendEmail(to: string, subject: string, html: string) {
     return info;
   } catch (error: any) {
     console.error(`❌ Failed to send email to ${to}:`, error.message);
-    
+
     if (error.code === "EAUTH") {
       // Reset transporter on auth error to force reconnection
       transporter = null;
-      
+
       console.error("💡 Gmail Authentication Error - Common fixes:");
       console.error("   1. Check if App Password was revoked by Google");
-      console.error("   2. Generate a NEW App Password at: https://myaccount.google.com/apppasswords");
-      console.error("   3. Update EMAIL_PASS in .env.local with the new 16-character password");
+      console.error(
+        "   2. Generate a NEW App Password at: https://myaccount.google.com/apppasswords",
+      );
+      console.error(
+        "   3. Update EMAIL_PASS in .env.local with the new 16-character password",
+      );
       console.error("   4. Ensure 2FA is enabled on your Google account");
-      console.error("   5. Check Google Security: https://myaccount.google.com/security");
-      console.error("   6. Look for 'Recent security activity' - Google may have blocked access");
-      console.error("   7. Restart your development server after updating credentials");
+      console.error(
+        "   5. Check Google Security: https://myaccount.google.com/security",
+      );
+      console.error(
+        "   6. Look for 'Recent security activity' - Google may have blocked access",
+      );
+      console.error(
+        "   7. Restart your development server after updating credentials",
+      );
     }
-    
+
     throw error;
   }
 }
@@ -137,7 +149,7 @@ export async function sendEventBookingConfirmationToUser(bookingData: {
             </div>
             <div class="detail-row">
               <span class="detail-label">Total Amount:</span>
-              <span class="detail-value" style="font-weight: bold; color: #D5B584;">SGD $${bookingData.amount.toFixed(2)}</span>
+              <span class="detail-value" style="font-weight: bold; color: #D5B584;">USD $${bookingData.amount.toFixed(2)}</span>
             </div>
           </div>
           
@@ -155,10 +167,15 @@ export async function sendEventBookingConfirmationToUser(bookingData: {
 
   try {
     const result = await sendEmail(bookingData.email, subject, html);
-    console.log(`✅ Event booking confirmation email sent to ${bookingData.email}`);
+    console.log(
+      `✅ Event booking confirmation email sent to ${bookingData.email}`,
+    );
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send event booking confirmation email to ${bookingData.email}:`, error);
+    console.error(
+      `❌ Failed to send event booking confirmation email to ${bookingData.email}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -177,7 +194,7 @@ export async function sendEventBookingNotificationToAdmin(bookingData: {
   bookingId: string;
 }) {
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-  
+
   if (!adminEmail) {
     throw new Error("Admin email not configured");
   }
@@ -251,7 +268,7 @@ export async function sendEventBookingNotificationToAdmin(bookingData: {
             </tr>
             <tr>
               <td>Total Amount</td>
-              <td style="font-weight: bold; color: #10b981;">SGD $${bookingData.amount.toFixed(2)}</td>
+              <td style="font-weight: bold; color: #10b981;">USD $${bookingData.amount.toFixed(2)}</td>
             </tr>
           </table>
           
@@ -270,10 +287,15 @@ export async function sendEventBookingNotificationToAdmin(bookingData: {
 
   try {
     const result = await sendEmail(adminEmail, subject, html);
-    console.log(`✅ Event booking notification email sent to admin: ${adminEmail}`);
+    console.log(
+      `✅ Event booking notification email sent to admin: ${adminEmail}`,
+    );
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send event booking notification email to ${adminEmail}:`, error);
+    console.error(
+      `❌ Failed to send event booking notification email to ${adminEmail}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -338,7 +360,10 @@ export async function sendSubscriptionConfirmationToUser(email: string) {
     console.log(`✅ Subscription confirmation email sent to ${email}`);
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send subscription confirmation email to ${email}:`, error);
+    console.error(
+      `❌ Failed to send subscription confirmation email to ${email}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -349,7 +374,7 @@ export async function sendSubscriptionNotificationToAdmin(subscriptionData: {
   subscribedAt: string;
 }) {
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-  
+
   if (!adminEmail) {
     throw new Error("Admin email not configured");
   }
@@ -388,13 +413,16 @@ export async function sendSubscriptionNotificationToAdmin(subscriptionData: {
             </tr>
             <tr>
               <td>Subscribed At</td>
-              <td>${new Date(subscriptionData.subscribedAt).toLocaleString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })}</td>
+              <td>${new Date(subscriptionData.subscribedAt).toLocaleString(
+                "en-US",
+                {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                },
+              )}</td>
             </tr>
           </table>
           
@@ -413,10 +441,15 @@ export async function sendSubscriptionNotificationToAdmin(subscriptionData: {
 
   try {
     const result = await sendEmail(adminEmail, subject, html);
-    console.log(`✅ Subscription notification email sent to admin: ${adminEmail}`);
+    console.log(
+      `✅ Subscription notification email sent to admin: ${adminEmail}`,
+    );
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send subscription notification email to ${adminEmail}:`, error);
+    console.error(
+      `❌ Failed to send subscription notification email to ${adminEmail}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -504,8 +537,8 @@ export async function sendEnquiryConfirmationToUser(data: {
             <h2 style="margin-top: 0; color: #10b981;">✅ Thank You for Your Enquiry!</h2>
             <p>Dear ${data.fullName},</p>
             <p>We have received your enquiry for <strong>${data.services}</strong>.</p>
-            ${data.sessionType === 'corporate' ? '<p style="margin-top: 15px; font-weight: 500;">Our team will review your enquiry and respond within 2–3 business days.</p>' : '<p>Our team will get back to you soon. We appreciate your interest in Crystal Bowl Studio!</p>'}
-            ${data.sessionType === 'corporate' ? '<p style="margin-top: 15px;">We appreciate your interest in Crystal Bowl Studio!</p>' : ''}
+            ${data.sessionType === "corporate" ? '<p style="margin-top: 15px; font-weight: 500;">Our team will review your enquiry and respond within 2–3 business days.</p>' : "<p>Our team will get back to you soon. We appreciate your interest in Crystal Bowl Studio!</p>"}
+            ${data.sessionType === "corporate" ? '<p style="margin-top: 15px;">We appreciate your interest in Crystal Bowl Studio!</p>' : ""}
           </div>
         </div>
         <div class="footer">
@@ -521,7 +554,10 @@ export async function sendEnquiryConfirmationToUser(data: {
     console.log(`✅ Enquiry confirmation email sent to ${data.email}`);
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send enquiry confirmation email to ${data.email}:`, error);
+    console.error(
+      `❌ Failed to send enquiry confirmation email to ${data.email}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -537,7 +573,7 @@ export async function sendEnquiryNotificationToAdmin(data: {
   createdAt?: string;
 }) {
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-  
+
   if (!adminEmail) {
     throw new Error("Admin email not configured");
   }
@@ -587,8 +623,8 @@ export async function sendEnquiryNotificationToAdmin(data: {
               <td>Session Type</td>
               <td>${data.sessionType}</td>
             </tr>
-            ${data.comment ? `<tr><td>Comment</td><td>${data.comment}</td></tr>` : ''}
-            ${data.createdAt ? `<tr><td>Submitted At</td><td>${new Date(data.createdAt).toLocaleString()}</td></tr>` : ''}
+            ${data.comment ? `<tr><td>Comment</td><td>${data.comment}</td></tr>` : ""}
+            ${data.createdAt ? `<tr><td>Submitted At</td><td>${new Date(data.createdAt).toLocaleString()}</td></tr>` : ""}
           </table>
         </div>
         <div class="footer">
@@ -604,7 +640,10 @@ export async function sendEnquiryNotificationToAdmin(data: {
     console.log(`✅ Enquiry notification email sent to admin: ${adminEmail}`);
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send enquiry notification email to ${adminEmail}:`, error);
+    console.error(
+      `❌ Failed to send enquiry notification email to ${adminEmail}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -659,10 +698,15 @@ export async function sendDiscoverySessionConfirmation(data: {
 
   try {
     const result = await sendEmail(data.email, subject, html);
-    console.log(`✅ Discovery session confirmation email sent to ${data.email}`);
+    console.log(
+      `✅ Discovery session confirmation email sent to ${data.email}`,
+    );
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send discovery session confirmation email to ${data.email}:`, error);
+    console.error(
+      `❌ Failed to send discovery session confirmation email to ${data.email}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -677,7 +721,7 @@ export async function sendDiscoverySessionNotificationToAdmin(data: {
   amount: number;
 }) {
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-  
+
   if (!adminEmail) {
     throw new Error("Admin email not configured");
   }
@@ -746,7 +790,10 @@ export async function sendDiscoverySessionNotificationToAdmin(data: {
     console.log(`✅ Discovery session notification email sent to admin`);
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send discovery session notification email to admin:`, error);
+    console.error(
+      `❌ Failed to send discovery session notification email to admin:`,
+      error,
+    );
     throw error;
   }
 }
@@ -770,9 +817,9 @@ export async function sendPrivateSessionConfirmationToUser(data: {
   comment?: string;
 }) {
   const subject = "Private Session Request - Crystal Bowl Studio";
-  
+
   // Build session details section
-  let sessionDetailsHtml = '';
+  let sessionDetailsHtml = "";
   if (data.sessionTitle) {
     sessionDetailsHtml += `<p><strong>Session:</strong> ${data.sessionTitle}</p>`;
   }
@@ -780,9 +827,9 @@ export async function sendPrivateSessionConfirmationToUser(data: {
   //   sessionDetailsHtml += `<p><strong>Date:</strong> ${data.date}</p>`;
   //   sessionDetailsHtml += `<p><strong>Time:</strong> ${data.time}</p>`;
   // }
-  
+
   // Build form details section
-  let formDetailsHtml = '';
+  let formDetailsHtml = "";
   if (data.preferredDates) {
     formDetailsHtml += `<p><strong>Preferred Date(s):</strong> ${data.preferredDates}</p>`;
   }
@@ -808,12 +855,12 @@ export async function sendPrivateSessionConfirmationToUser(data: {
     formDetailsHtml += `<p><strong>Company Size:</strong> ${data.companySize}</p>`;
   }
   if (data.sessionObjectives && data.sessionObjectives.length > 0) {
-    formDetailsHtml += `<p><strong>Session Objectives:</strong> ${data.sessionObjectives.join(', ')}</p>`;
+    formDetailsHtml += `<p><strong>Session Objectives:</strong> ${data.sessionObjectives.join(", ")}</p>`;
   }
   if (data.comment) {
     formDetailsHtml += `<p><strong>Additional Notes:</strong> ${data.comment}</p>`;
   }
-  
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -840,8 +887,8 @@ export async function sendPrivateSessionConfirmationToUser(data: {
             <h2 style="margin-top: 0; color: #10b981;">✅ Your Private Session is Confirmed!</h2>
             <p>Dear ${data.fullName},</p>
             <p>Your private session has been confirmed.</p>
-            ${sessionDetailsHtml ? `<div class="details-section"><h3 style="margin-top: 0; color: #1C3163;">Session Details</h3>${sessionDetailsHtml}</div>` : ''}
-            ${formDetailsHtml ? `<div class="details-section"><h3 style="margin-top: 0; color: #1C3163;">Your Booking Details</h3>${formDetailsHtml}</div>` : ''}
+            ${sessionDetailsHtml ? `<div class="details-section"><h3 style="margin-top: 0; color: #1C3163;">Session Details</h3>${sessionDetailsHtml}</div>` : ""}
+            ${formDetailsHtml ? `<div class="details-section"><h3 style="margin-top: 0; color: #1C3163;">Your Booking Details</h3>${formDetailsHtml}</div>` : ""}
             <p style="margin-top: 20px;">We look forward to seeing you!</p>
           </div>
         </div>
@@ -858,7 +905,10 @@ export async function sendPrivateSessionConfirmationToUser(data: {
     console.log(`✅ Private session confirmation email sent to ${data.email}`);
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send private session confirmation email to ${data.email}:`, error);
+    console.error(
+      `❌ Failed to send private session confirmation email to ${data.email}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -883,7 +933,7 @@ export async function sendPrivateSessionNotificationToAdmin(data: {
   comment?: string;
 }) {
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-  
+
   if (!adminEmail) {
     throw new Error("Admin email not configured");
   }
@@ -925,19 +975,19 @@ export async function sendPrivateSessionNotificationToAdmin(data: {
               <td>Phone</td>
               <td><a href="tel:${data.phone}">${data.phone}</a></td>
             </tr>
-            ${data.sessionTitle ? `<tr><td>Session Title</td><td>${data.sessionTitle}</td></tr>` : ''}
-            ${data.date ? `<tr><td>Date</td><td>${data.date}</td></tr>` : ''}
-            ${data.time ? `<tr><td>Time</td><td>${data.time}</td></tr>` : ''}
-            ${data.preferredDates ? `<tr><td>Preferred Date(s)</td><td>${data.preferredDates}</td></tr>` : ''}
-            ${data.preferredLocation ? `<tr><td>Preferred Location</td><td>${data.preferredLocation}</td></tr>` : ''}
-            ${data.preferredDuration ? `<tr><td>Preferred Duration</td><td>${data.preferredDuration}</td></tr>` : ''}
-            ${data.companyName ? `<tr><td>Company Name</td><td>${data.companyName}</td></tr>` : ''}
-            ${data.jobTitle ? `<tr><td>Job Title / Role</td><td>${data.jobTitle}</td></tr>` : ''}
-            ${data.workEmail ? `<tr><td>Work Email</td><td><a href="mailto:${data.workEmail}">${data.workEmail}</a></td></tr>` : ''}
-            ${data.industry ? `<tr><td>Industry</td><td>${data.industry}</td></tr>` : ''}
-            ${data.companySize ? `<tr><td>Company Size</td><td>${data.companySize}</td></tr>` : ''}
-            ${data.sessionObjectives && data.sessionObjectives.length > 0 ? `<tr><td>Session Objectives</td><td>${data.sessionObjectives.join(', ')}</td></tr>` : ''}
-            ${data.comment ? `<tr><td>Additional Notes</td><td>${data.comment}</td></tr>` : ''}
+            ${data.sessionTitle ? `<tr><td>Session Title</td><td>${data.sessionTitle}</td></tr>` : ""}
+            ${data.date ? `<tr><td>Date</td><td>${data.date}</td></tr>` : ""}
+            ${data.time ? `<tr><td>Time</td><td>${data.time}</td></tr>` : ""}
+            ${data.preferredDates ? `<tr><td>Preferred Date(s)</td><td>${data.preferredDates}</td></tr>` : ""}
+            ${data.preferredLocation ? `<tr><td>Preferred Location</td><td>${data.preferredLocation}</td></tr>` : ""}
+            ${data.preferredDuration ? `<tr><td>Preferred Duration</td><td>${data.preferredDuration}</td></tr>` : ""}
+            ${data.companyName ? `<tr><td>Company Name</td><td>${data.companyName}</td></tr>` : ""}
+            ${data.jobTitle ? `<tr><td>Job Title / Role</td><td>${data.jobTitle}</td></tr>` : ""}
+            ${data.workEmail ? `<tr><td>Work Email</td><td><a href="mailto:${data.workEmail}">${data.workEmail}</a></td></tr>` : ""}
+            ${data.industry ? `<tr><td>Industry</td><td>${data.industry}</td></tr>` : ""}
+            ${data.companySize ? `<tr><td>Company Size</td><td>${data.companySize}</td></tr>` : ""}
+            ${data.sessionObjectives && data.sessionObjectives.length > 0 ? `<tr><td>Session Objectives</td><td>${data.sessionObjectives.join(", ")}</td></tr>` : ""}
+            ${data.comment ? `<tr><td>Additional Notes</td><td>${data.comment}</td></tr>` : ""}
           </table>
 
           <p style="margin-top: 30px;">
@@ -955,10 +1005,15 @@ export async function sendPrivateSessionNotificationToAdmin(data: {
 
   try {
     const result = await sendEmail(adminEmail, subject, html);
-    console.log(`✅ Private session notification email sent to admin: ${adminEmail}`);
+    console.log(
+      `✅ Private session notification email sent to admin: ${adminEmail}`,
+    );
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send private session notification email to ${adminEmail}:`, error);
+    console.error(
+      `❌ Failed to send private session notification email to ${adminEmail}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -970,18 +1025,23 @@ export async function sendOrderStatusUpdateToUser(data: {
   customerEmail: string;
   deliveryStatus: string;
   message?: string;
-  items: Array<{ name: string; quantity: number; price: number; isSet?: boolean }>;
+  items: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+    isSet?: boolean;
+  }>;
   shippingAddress?: any;
   totalAmount?: number;
 }) {
   const subject = `Order Update - ${data.deliveryStatus}`;
   const statusMessages: Record<string, string> = {
-    "processing": "Your order is being processed",
+    processing: "Your order is being processed",
     "ready to ship": "Your order is ready to ship",
     "reached to your country": "Your order has reached your country",
-    "delivered": "Your order has been delivered",
+    delivered: "Your order has been delivered",
   };
-  
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -1008,7 +1068,7 @@ export async function sendOrderStatusUpdateToUser(data: {
             <p>Dear ${data.customerName},</p>
             <p>Your order #${data.orderId.slice(-8).toUpperCase()} status has been updated:</p>
             <p><strong>Status:</strong> ${data.deliveryStatus}</p>
-            ${data.message ? `<p>${data.message}</p>` : ''}
+            ${data.message ? `<p>${data.message}</p>` : ""}
           </div>
         </div>
         <div class="footer">
@@ -1024,16 +1084,21 @@ export async function sendOrderStatusUpdateToUser(data: {
     console.log(`✅ Order status update email sent to ${data.customerEmail}`);
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send order status update email to ${data.customerEmail}:`, error);
+    console.error(
+      `❌ Failed to send order status update email to ${data.customerEmail}:`,
+      error,
+    );
     throw error;
   }
 }
 
 // Send universal product order confirmation email to user
-export async function sendUniversalProductOrderConfirmationToUser(orderData: any) {
+export async function sendUniversalProductOrderConfirmationToUser(
+  orderData: any,
+) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const orderLink = `${baseUrl}/profile?tab=orders`;
-  
+
   // Format shipping address
   const formatAddress = (addr: any) => {
     if (!addr) return "N/A";
@@ -1043,28 +1108,30 @@ export async function sendUniversalProductOrderConfirmationToUser(orderData: any
       addr.city,
       addr.state,
       addr.postalCode,
-      addr.country
+      addr.country,
     ].filter(Boolean);
     return parts.join(", ");
   };
 
   // Build product items HTML
-  const itemsHtml = orderData.items.map((item: any) => {
-    const imageHtml = item.imageUrl 
-      ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
-      : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
-    
-    return `
+  const itemsHtml = orderData.items
+    .map((item: any) => {
+      const imageHtml = item.imageUrl
+        ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
+        : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
+
+      return `
       <div style="display: flex; padding: 15px; border-bottom: 1px solid #e0e0e0; align-items: center;">
         ${imageHtml}
         <div style="flex: 1;">
           <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
           <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
-          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">SGD $${(item.price * item.quantity).toFixed(2)}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">USD $${(item.price * item.quantity).toFixed(2)}</p>
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   const subject = "Session Order Confirmed - Crystal Bowl Studio";
   const html = `
@@ -1102,7 +1169,7 @@ export async function sendUniversalProductOrderConfirmationToUser(orderData: any
             <h3>Order Items</h3>
             ${itemsHtml}
             <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
-              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: SGD $${orderData.totalAmount.toFixed(2)}</p>
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: USD $${orderData.totalAmount.toFixed(2)}</p>
             </div>
           </div>
 
@@ -1120,19 +1187,26 @@ export async function sendUniversalProductOrderConfirmationToUser(orderData: any
 
   try {
     const result = await sendEmail(orderData.customerEmail, subject, html);
-    console.log(`✅ Universal product order confirmation email sent to ${orderData.customerEmail}`);
+    console.log(
+      `✅ Universal product order confirmation email sent to ${orderData.customerEmail}`,
+    );
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send universal product order confirmation email to ${orderData.customerEmail}:`, error);
+    console.error(
+      `❌ Failed to send universal product order confirmation email to ${orderData.customerEmail}:`,
+      error,
+    );
     throw error;
   }
 }
 
 // Send regular product order confirmation email to user
-export async function sendRegularProductOrderConfirmationToUser(orderData: any) {
+export async function sendRegularProductOrderConfirmationToUser(
+  orderData: any,
+) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const orderLink = `${baseUrl}/profile?tab=orders`;
-  
+
   // Format shipping address
   const formatAddress = (addr: any) => {
     if (!addr) return "N/A";
@@ -1142,28 +1216,30 @@ export async function sendRegularProductOrderConfirmationToUser(orderData: any) 
       addr.city,
       addr.state,
       addr.postalCode,
-      addr.country
+      addr.country,
     ].filter(Boolean);
     return parts.join(", ");
   };
 
   // Build product items HTML
-  const itemsHtml = orderData.items.map((item: any) => {
-    const imageHtml = item.imageUrl 
-      ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
-      : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
-    
-    return `
+  const itemsHtml = orderData.items
+    .map((item: any) => {
+      const imageHtml = item.imageUrl
+        ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
+        : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
+
+      return `
       <div style="display: flex; padding: 15px; border-bottom: 1px solid #e0e0e0; align-items: center;">
         ${imageHtml}
         <div style="flex: 1;">
           <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
           <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
-          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">SGD $${(item.price * item.quantity).toFixed(2)}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">USD $${(item.price * item.quantity).toFixed(2)}</p>
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   const subject = "Order Confirmed - Crystal Bowl Studio";
   const html = `
@@ -1200,17 +1276,21 @@ export async function sendRegularProductOrderConfirmationToUser(orderData: any) 
           <div class="info-box">
             <h3>Order Items</h3>
             ${itemsHtml}
-            ${orderData.couponCode ? `
+            ${
+              orderData.couponCode
+                ? `
               <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px;">
                 <p style="margin: 5px 0; color: #10b981;">Coupon Applied: ${orderData.couponCode}</p>
-                <p style="margin: 5px 0; color: #10b981;">Discount: SGD $${orderData.discountAmount.toFixed(2)}</p>
+                <p style="margin: 5px 0; color: #10b981;">Discount: USD $${orderData.discountAmount.toFixed(2)}</p>
               </div>
-            ` : ""}
+            `
+                : ""
+            }
             <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
-              <p style="margin: 5px 0; color: #666;">Product Total: SGD $${orderData.productTotal.toFixed(2)}</p>
-              <p style="margin: 5px 0; color: #666;">Delivery Charges: SGD $${orderData.deliveryCharges.toFixed(2)}</p>
-              ${orderData.discountAmount > 0 ? `<p style="margin: 5px 0; color: #10b981;">Discount: -SGD $${orderData.discountAmount.toFixed(2)}</p>` : ""}
-              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: SGD $${orderData.totalAmount.toFixed(2)}</p>
+              <p style="margin: 5px 0; color: #666;">Product Total: USD $${orderData.productTotal.toFixed(2)}</p>
+              <p style="margin: 5px 0; color: #666;">Delivery Charges: USD $${orderData.deliveryCharges.toFixed(2)}</p>
+              ${orderData.discountAmount > 0 ? `<p style="margin: 5px 0; color: #10b981;">Discount: -USD $${orderData.discountAmount.toFixed(2)}</p>` : ""}
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: USD $${orderData.totalAmount.toFixed(2)}</p>
             </div>
           </div>
 
@@ -1233,18 +1313,25 @@ export async function sendRegularProductOrderConfirmationToUser(orderData: any) 
 
   try {
     const result = await sendEmail(orderData.customerEmail, subject, html);
-    console.log(`✅ Regular product order confirmation email sent to ${orderData.customerEmail}`);
+    console.log(
+      `✅ Regular product order confirmation email sent to ${orderData.customerEmail}`,
+    );
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send regular product order confirmation email to ${orderData.customerEmail}:`, error);
+    console.error(
+      `❌ Failed to send regular product order confirmation email to ${orderData.customerEmail}:`,
+      error,
+    );
     throw error;
   }
 }
 
 // Send universal product order notification email to admin
-export async function sendUniversalProductOrderNotificationToAdmin(orderData: any) {
+export async function sendUniversalProductOrderNotificationToAdmin(
+  orderData: any,
+) {
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-  
+
   if (!adminEmail) {
     throw new Error("Admin email not configured");
   }
@@ -1258,28 +1345,30 @@ export async function sendUniversalProductOrderNotificationToAdmin(orderData: an
       addr.city,
       addr.state,
       addr.postalCode,
-      addr.country
+      addr.country,
     ].filter(Boolean);
     return parts.join(", ");
   };
 
   // Build product items HTML
-  const itemsHtml = orderData.items.map((item: any) => {
-    const imageHtml = item.imageUrl 
-      ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
-      : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
-    
-    return `
+  const itemsHtml = orderData.items
+    .map((item: any) => {
+      const imageHtml = item.imageUrl
+        ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
+        : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
+
+      return `
       <div style="display: flex; padding: 15px; border-bottom: 1px solid #e0e0e0; align-items: center;">
         ${imageHtml}
         <div style="flex: 1;">
           <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
           <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
-          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">SGD $${(item.price * item.quantity).toFixed(2)}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">USD $${(item.price * item.quantity).toFixed(2)}</p>
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   const subject = `New Session Order - ${orderData.customerName}`;
   const html = `
@@ -1327,7 +1416,7 @@ export async function sendUniversalProductOrderNotificationToAdmin(orderData: an
             </tr>
             <tr>
               <td>Total Amount</td>
-              <td style="font-weight: bold; color: #10b981;">SGD $${orderData.totalAmount.toFixed(2)}</td>
+              <td style="font-weight: bold; color: #10b981;">USD $${orderData.totalAmount.toFixed(2)}</td>
             </tr>
           </table>
 
@@ -1335,7 +1424,7 @@ export async function sendUniversalProductOrderNotificationToAdmin(orderData: an
             <h3>Order Items</h3>
             ${itemsHtml}
             <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
-              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: SGD $${orderData.totalAmount.toFixed(2)}</p>
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: USD $${orderData.totalAmount.toFixed(2)}</p>
             </div>
           </div>
 
@@ -1344,12 +1433,16 @@ export async function sendUniversalProductOrderNotificationToAdmin(orderData: an
             <p style="color: #666; margin: 5px 0; white-space: pre-line;">${formatAddress(orderData.shippingAddress)}</p>
           </div>
 
-          ${orderData.customerComments ? `
+          ${
+            orderData.customerComments
+              ? `
             <div class="info-box">
               <h3>Customer Comments</h3>
               <p style="color: #666; margin: 5px 0;">${orderData.customerComments}</p>
             </div>
-          ` : ""}
+          `
+              : ""
+          }
         </div>
         <div class="footer">
           <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
@@ -1361,10 +1454,15 @@ export async function sendUniversalProductOrderNotificationToAdmin(orderData: an
 
   try {
     const result = await sendEmail(adminEmail, subject, html);
-    console.log(`✅ Universal product order notification email sent to admin: ${adminEmail}`);
+    console.log(
+      `✅ Universal product order notification email sent to admin: ${adminEmail}`,
+    );
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send universal product order notification email to ${adminEmail}:`, error);
+    console.error(
+      `❌ Failed to send universal product order notification email to ${adminEmail}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -1372,7 +1470,7 @@ export async function sendUniversalProductOrderNotificationToAdmin(orderData: an
 // Send order placement notification email to admin
 export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-  
+
   if (!adminEmail) {
     throw new Error("Admin email not configured");
   }
@@ -1386,28 +1484,30 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
       addr.city,
       addr.state,
       addr.postalCode,
-      addr.country
+      addr.country,
     ].filter(Boolean);
     return parts.join(", ");
   };
 
   // Build product items HTML
-  const itemsHtml = orderData.items.map((item: any) => {
-    const imageHtml = item.imageUrl 
-      ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
-      : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
-    
-    return `
+  const itemsHtml = orderData.items
+    .map((item: any) => {
+      const imageHtml = item.imageUrl
+        ? `<img src="${item.imageUrl}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />`
+        : `<div style="width: 80px; height: 80px; background-color: #f0f0f0; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">No Image</div>`;
+
+      return `
       <div style="display: flex; padding: 15px; border-bottom: 1px solid #e0e0e0; align-items: center;">
         ${imageHtml}
         <div style="flex: 1;">
           <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
           <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
-          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">SGD $${(item.price * item.quantity).toFixed(2)}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">USD $${(item.price * item.quantity).toFixed(2)}</p>
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   const subject = `New Order - ${orderData.customerName}`;
   const html = `
@@ -1454,24 +1554,28 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
             </tr>
             <tr>
               <td>Total Amount</td>
-              <td style="font-weight: bold; color: #10b981;">SGD $${orderData.totalAmount.toFixed(2)}</td>
+              <td style="font-weight: bold; color: #10b981;">USD $${orderData.totalAmount.toFixed(2)}</td>
             </tr>
           </table>
 
           <div class="info-box">
             <h3>Order Items</h3>
             ${itemsHtml}
-            ${orderData.couponCode ? `
+            ${
+              orderData.couponCode
+                ? `
               <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px;">
                 <p style="margin: 5px 0; color: #10b981;">Coupon Applied: ${orderData.couponCode}</p>
-                <p style="margin: 5px 0; color: #10b981;">Discount: SGD $${(orderData.discountAmount || 0).toFixed(2)}</p>
+                <p style="margin: 5px 0; color: #10b981;">Discount: USD $${(orderData.discountAmount || 0).toFixed(2)}</p>
               </div>
-            ` : ""}
+            `
+                : ""
+            }
             <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
-              <p style="margin: 5px 0; color: #666;">Product Total: SGD $${orderData.productTotal.toFixed(2)}</p>
-              <p style="margin: 5px 0; color: #666;">Delivery Charges: SGD $${orderData.deliveryCharges.toFixed(2)}</p>
-              ${(orderData.discountAmount || 0) > 0 ? `<p style="margin: 5px 0; color: #10b981;">Discount: -SGD $${orderData.discountAmount.toFixed(2)}</p>` : ""}
-              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: SGD $${orderData.totalAmount.toFixed(2)}</p>
+              <p style="margin: 5px 0; color: #666;">Product Total: USD $${orderData.productTotal.toFixed(2)}</p>
+              <p style="margin: 5px 0; color: #666;">Delivery Charges: USD $${orderData.deliveryCharges.toFixed(2)}</p>
+              ${(orderData.discountAmount || 0) > 0 ? `<p style="margin: 5px 0; color: #10b981;">Discount: -USD $${orderData.discountAmount.toFixed(2)}</p>` : ""}
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: USD $${orderData.totalAmount.toFixed(2)}</p>
             </div>
           </div>
 
@@ -1480,12 +1584,16 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
             <p style="color: #666; margin: 5px 0; white-space: pre-line;">${formatAddress(orderData.shippingAddress)}</p>
           </div>
 
-          ${orderData.customerComments ? `
+          ${
+            orderData.customerComments
+              ? `
             <div class="info-box">
               <h3>Customer Comments</h3>
               <p style="color: #666; margin: 5px 0;">${orderData.customerComments}</p>
             </div>
-          ` : ""}
+          `
+              : ""
+          }
         </div>
         <div class="footer">
           <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
@@ -1497,10 +1605,15 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
 
   try {
     const result = await sendEmail(adminEmail, subject, html);
-    console.log(`✅ Order placement notification email sent to admin: ${adminEmail}`);
+    console.log(
+      `✅ Order placement notification email sent to admin: ${adminEmail}`,
+    );
     return result;
   } catch (error) {
-    console.error(`❌ Failed to send order placement notification email to ${adminEmail}:`, error);
+    console.error(
+      `❌ Failed to send order placement notification email to ${adminEmail}:`,
+      error,
+    );
     throw error;
   }
 }

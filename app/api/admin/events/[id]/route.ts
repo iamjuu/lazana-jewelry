@@ -12,14 +12,38 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     await connectDB();
     const body = await req.json();
     const { id } = await context.params;
-    
-    const { name, title, location, day, time, date, description, imageUrl, totalSeats, price } = body;
+
+    const {
+      name,
+      title,
+      location,
+      day,
+      time,
+      date,
+      endDate,
+      description,
+      imageUrl,
+      totalSeats,
+      price,
+    } = body;
 
     // Validation
-    if (!name || !title || !location || !day || !time || !date || !description) {
+    if (
+      !name ||
+      !title ||
+      !location ||
+      !day ||
+      !time ||
+      !date ||
+      !description
+    ) {
       return NextResponse.json(
-        { success: false, message: "Name, title, location, day, time, date, and description are required" },
-        { status: 400 }
+        {
+          success: false,
+          message:
+            "Name, title, location, day, time, date, and description are required",
+        },
+        { status: 400 },
       );
     }
 
@@ -28,7 +52,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     if (!currentEvent) {
       return NextResponse.json(
         { success: false, message: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -38,14 +62,17 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       const seatsNum = Number(totalSeats);
       if (seatsNum < currentBookedSeats) {
         return NextResponse.json(
-          { success: false, message: `Cannot reduce total seats below ${currentBookedSeats} (already booked)` },
-          { status: 400 }
+          {
+            success: false,
+            message: `Cannot reduce total seats below ${currentBookedSeats} (already booked)`,
+          },
+          { status: 400 },
         );
       }
       if (seatsNum <= 0) {
         return NextResponse.json(
           { success: false, message: "Total seats must be greater than 0" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -53,7 +80,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     if (price !== undefined && price !== null && price < 0) {
       return NextResponse.json(
         { success: false, message: "Price must be 0 or greater" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -62,22 +89,22 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     if (imageUrl !== undefined) {
       if (imageUrl) {
         const imageStr = String(imageUrl).trim();
-        
+
         // Check if it's already an S3 URL
-        if (imageStr.startsWith('https://')) {
+        if (imageStr.startsWith("https://")) {
           s3ImageUrl = imageStr;
         } else {
           // Upload base64 image to S3 (will be converted to WebP)
           try {
             const filename = `event-${id}-${Date.now()}.webp`;
-            const result = await uploadToS3(imageStr, filename, 'images');
+            const result = await uploadToS3(imageStr, filename, "images");
             s3ImageUrl = result.url;
             console.log(`✓ Updated event image to S3 as WebP: ${result.url}`);
           } catch (uploadError) {
-            console.error('Failed to upload event image:', uploadError);
+            console.error("Failed to upload event image:", uploadError);
             return NextResponse.json(
-              { success: false, message: 'Failed to upload event image to S3' },
-              { status: 500 }
+              { success: false, message: "Failed to upload event image to S3" },
+              { status: 500 },
             );
           }
         }
@@ -93,6 +120,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       day: String(day).trim(),
       time: String(time).trim(),
       date: String(date).trim(),
+      endDate: endDate ? String(endDate).trim() : undefined,
       description: String(description).trim(),
     };
 
@@ -107,25 +135,24 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       updateData.price = Number(price);
     }
 
-    const updated = await Event.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    );
-    
+    const updated = await Event.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
     if (!updated) {
       return NextResponse.json(
         { success: false, message: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
-    
+
     return NextResponse.json({ success: true, data: updated });
   } catch (e: any) {
-    const status = e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
+    const status =
+      e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
     return NextResponse.json(
       { success: false, message: e?.message || "Server error" },
-      { status }
+      { status },
     );
   }
 }
@@ -135,38 +162,23 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     await requireAdmin(req);
     await connectDB();
     const { id } = await context.params;
-    
+
     const deleted = await Event.findByIdAndDelete(id);
-    
+
     if (!deleted) {
       return NextResponse.json(
         { success: false, message: "Event not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
-    
+
     return NextResponse.json({ success: true });
   } catch (e: any) {
-    const status = e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
+    const status =
+      e?.message === "FORBIDDEN" || e?.message === "UNAUTHORIZED" ? 403 : 500;
     return NextResponse.json(
       { success: false, message: e?.message || "Server error" },
-      { status }
+      { status },
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

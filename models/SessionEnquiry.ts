@@ -25,6 +25,17 @@ export interface SessionEnquiryType {
   estimatedParticipants?: number;
   preferredDuration?: string;
   sessionObjectives?: string[]; // Array of selected objectives
+  // User and Payment details
+  userId?: string;
+  amount?: number;
+  paymentRef?: string;
+  paymentStatus?: "pending" | "paid" | "failed";
+  paymentProvider?: "stripe" | "paypal" | "bank_transfer";
+  seats?: number;
+  slotId?: string;
+  couponCode?: string;
+  couponId?: string;
+  discountAmount?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -36,15 +47,15 @@ const SessionEnquirySchema = new Schema<SessionEnquiryType>(
     phone: { type: String, required: true },
     email: { type: String, required: true },
     comment: { type: String },
-    status: { 
-      type: String, 
-      enum: ["pending", "contacted", "completed"], 
-      default: "pending" 
+    status: {
+      type: String,
+      enum: ["pending", "contacted", "completed"],
+      default: "pending",
     },
-    sessionType: { 
-      type: String, 
-      enum: ["discovery", "private", "corporate", "freeStudioVisit"], 
-      default: "discovery" 
+    sessionType: {
+      type: String,
+      enum: ["discovery", "private", "corporate", "freeStudioVisit"],
+      default: "discovery",
     },
     sessionId: { type: String }, // Reference to session
     bookedDate: { type: String }, // Date of booked session
@@ -62,8 +73,26 @@ const SessionEnquirySchema = new Schema<SessionEnquiryType>(
     estimatedParticipants: { type: Number },
     preferredDuration: { type: String },
     sessionObjectives: { type: [String] }, // Array of selected objectives
+    // User and Payment details
+    userId: { type: String, index: true },
+    amount: { type: Number },
+    paymentRef: { type: String },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed"],
+      default: "pending",
+    },
+    paymentProvider: {
+      type: String,
+      enum: ["stripe", "paypal", "bank_transfer"],
+    },
+    seats: { type: Number },
+    slotId: { type: String },
+    couponCode: { type: String },
+    couponId: { type: String },
+    discountAmount: { type: Number },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Delete the cached model if it exists to ensure fresh schema
@@ -71,5 +100,7 @@ if (models.SessionEnquiry) {
   delete models.SessionEnquiry;
 }
 
-export default model<SessionEnquiryType>("SessionEnquiry", SessionEnquirySchema);
-
+export default model<SessionEnquiryType>(
+  "SessionEnquiry",
+  SessionEnquirySchema,
+);

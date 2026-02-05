@@ -177,16 +177,50 @@ const ServicesPage = () => {
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6 font-touvlo">
+                      {/* Default Overlay - Fades out on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6 font-touvlo transition-opacity duration-300 group-hover:opacity-0 pointer-events-none">
                         <h3 className="text-white text-[18px] font-medium mb-3 text-touvlo">
                           {item.title}
                         </h3>
-                        <button
-                          onClick={() => router.push("/corporate-session")}
-                          className="text-white text-sm flex items-center gap-2 hover:gap-3 transition-all text-touvlo"
-                        >
-                          Enquire Now <span className="text-[16px] text-touvlo">→</span>
+                        <button className="text-white text-sm flex items-center gap-2 hover:gap-3 transition-all text-touvlo">
+                          Enquire Now{" "}
+                          <span className="text-[16px] text-touvlo">→</span>
                         </button>
+                      </div>
+
+                      {/* Hover Overlay - Fades in on hover */}
+                      <div className="absolute inset-0 bg-black/60 p-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 overflow-y-auto">
+                        <h3 className="font-seasons text-[20px] text-[#D4A373] leading-tight shrink-0">
+                          {item.title}
+                        </h3>
+
+                        {item.description && (
+                          <div className="font-touvlo text-zinc-200 text-[13px] leading-relaxed shrink-0">
+                            {item.description}
+                          </div>
+                        )}
+
+                        {item.benefits && item.benefits.length > 0 && (
+                          <div className="font-touvlo text-zinc-200 text-[13px] shrink-0">
+                            <p className="font-semibold mb-1 text-[#D4A373]">
+                              Key Benefits:
+                            </p>
+                            <ul className="list-disc pl-4 space-y-1">
+                              {item.benefits.map((benefit, idx) => (
+                                <li key={idx}>{benefit}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        <div className="mt-auto pt-4 shrink-0">
+                          <button
+                            onClick={() => router.push("/corporate-session")}
+                            className="w-full bg-[#D4A373] text-white py-2 rounded-full font-touvlo text-[14px] hover:bg-[#c29363] transition-colors"
+                          >
+                            Enquire Now
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -234,20 +268,54 @@ const ServicesPage = () => {
                         </div>
                       )}
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+                      {/* Default Overlay - Fades out on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none">
                         <h3 className="text-white text-[18px] text-touvlo font-medium mb-3">
                           {item.title || "Private Session"}
                         </h3>
-                        <button
-                          onClick={() =>
-                            router.push(
-                              isLoggedIn ? "/privateappointment" : "/login",
-                            )
-                          }
-                          className="text-white text-sm flex items-center gap-2 hover:gap-3 transition-all"
-                        >
-                          Book Now <span className="text-[16px] text-touvlo">→</span>
+                        <button className="text-white text-sm flex items-center gap-2 hover:gap-3 transition-all">
+                          Book Now{" "}
+                          <span className="text-[16px] text-touvlo">→</span>
                         </button>
+                      </div>
+
+                      {/* Hover Overlay - Fades in on hover */}
+                      <div className="absolute inset-0 bg-black/60 p-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 overflow-y-auto">
+                        <h3 className="font-seasons text-[20px] text-[#D4A373] leading-tight shrink-0">
+                          {item.title || "Private Session"}
+                        </h3>
+
+                        {item.description && (
+                          <div className="font-touvlo text-zinc-200 text-[13px] leading-relaxed shrink-0">
+                            {item.description}
+                          </div>
+                        )}
+
+                        {item.benefits && item.benefits.length > 0 && (
+                          <div className="font-touvlo text-zinc-200 text-[13px] shrink-0">
+                            <p className="font-semibold mb-1 text-[#D4A373]">
+                              Key Benefits:
+                            </p>
+                            <ul className="list-disc pl-4 space-y-1">
+                              {item.benefits.map((benefit, idx) => (
+                                <li key={idx}>{benefit}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        <div className="mt-auto pt-4 shrink-0">
+                          <button
+                            onClick={() =>
+                              router.push(
+                                isLoggedIn ? "/privateappointment" : "/login",
+                              )
+                            }
+                            className="w-full bg-[#D4A373] text-white py-2 rounded-full font-touvlo text-[14px] hover:bg-[#c29363] transition-colors"
+                          >
+                            Book Now
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -15,22 +15,26 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     // Fetch full user document to get email
-    const user = await User.findById(authUser._id).lean() as { email?: string; phone?: string; name?: string } | null;
+    const user = (await User.findById(authUser._id).lean()) as {
+      email?: string;
+      phone?: string;
+      name?: string;
+    } | null;
 
     if (!user) {
       return NextResponse.json(
         { success: false, message: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     const body = await req.json();
-    const { sessionId } = body;
+    const { sessionId, formData } = body;
 
     if (!sessionId) {
       return NextResponse.json(
         { success: false, message: "Session ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -39,29 +43,36 @@ export async function POST(req: NextRequest) {
     if (!discoverySession) {
       return NextResponse.json(
         { success: false, message: "Discovery session not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // Check if session is already booked
-    if ((discoverySession.bookedSeats || 0) >= (discoverySession.totalSeats || 1)) {
+    if (
+      (discoverySession.bookedSeats || 0) >= (discoverySession.totalSeats || 1)
+    ) {
       return NextResponse.json(
         { success: false, message: "This session is already fully booked" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Get base URL
     let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
     if (!baseUrl) {
-      const origin = req.headers.get('origin');
-      if (origin && (origin.startsWith('http://') || origin.startsWith('https://'))) {
+      const origin = req.headers.get("origin");
+      if (
+        origin &&
+        (origin.startsWith("http://") || origin.startsWith("https://"))
+      ) {
         baseUrl = origin;
       } else {
-        const host = req.headers.get('host') || req.headers.get('x-forwarded-host');
-        const protocol = req.headers.get('x-forwarded-proto') ||
-                        (host?.includes('localhost') ? 'http' : 'https');
-        baseUrl = host ? `${protocol}://${host}` : 'http://localhost:3000';
+        const host =
+          req.headers.get("host") || req.headers.get("x-forwarded-host");
+        const protocol =
+          req.headers.get("x-forwarded-proto") ||
+          (host?.includes("localhost") ? "http" : "https");
+        baseUrl = host ? `${protocol}://${host}` : "http://localhost:3000";
       }
     }
 
@@ -69,8 +80,12 @@ export async function POST(req: NextRequest) {
 
     if (amount <= 0) {
       return NextResponse.json(
-        { success: false, message: "Invalid session price. Please set a price for this discovery session." },
-        { status: 400 }
+        {
+          success: false,
+          message:
+            "Invalid session price. Please set a price for this discovery session.",
+        },
+        { status: 400 },
       );
     }
 
@@ -83,7 +98,7 @@ export async function POST(req: NextRequest) {
             currency: "sgd",
             product_data: {
               name: discoverySession.title || "Discovery Session",
-              description: `${discoverySession.date || 'TBD'} at ${discoverySession.startTime || 'TBD'} - ${discoverySession.instructorName || 'Yoga Session'}`,
+              description: `${discoverySession.date || "TBD"} at ${discoverySession.startTime || "TBD"} - ${discoverySession.instructorName || "Yoga Session"}`,
             },
             unit_amount: amount,
           },
@@ -99,6 +114,7 @@ export async function POST(req: NextRequest) {
         sessionType: "discovery",
         date: discoverySession.date || "",
         time: discoverySession.startTime || "",
+        formData: JSON.stringify(formData || {}),
       },
       customer_email: user.email || undefined,
     });
@@ -115,12 +131,7 @@ export async function POST(req: NextRequest) {
     const status = e?.message === "UNAUTHORIZED" ? 401 : 500;
     return NextResponse.json(
       { success: false, message: e?.message || "Server error" },
-      { status }
+      { status },
     );
   }
 }
-
-
-
-
-

@@ -238,6 +238,7 @@ type Event = {
   day: string;
   time: string;
   imageUrl?: string;
+  endDate?: string;
 };
 
 type Session = {
@@ -278,6 +279,55 @@ const Index = () => {
     if (url.startsWith("data:image")) return url;
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
     return `data:image/jpeg;base64,${url}`;
+  };
+
+  // Helper function to format time with day/date
+  const formatTime = (
+    day: string,
+    time: string,
+    dateString: string,
+    endDateString?: string,
+  ): string => {
+    if (!endDateString) {
+      return ` · ${time}`;
+    }
+
+    const timeParts = time.split("-").map((t) => t.trim());
+    const startTime = timeParts[0] || time;
+    const endTime = timeParts[1] || "";
+
+    const startDate = new Date(dateString);
+    const endDate = new Date(endDateString);
+
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const startMonth = months[startDate.getMonth()];
+    const startDay = startDate.getDate();
+    const endMonth = months[endDate.getMonth()];
+    const endDay = endDate.getDate();
+
+    const isMultiDay = startDate.getDate() !== endDate.getDate() || 
+                      startDate.getMonth() !== endDate.getMonth() || 
+                      startDate.getFullYear() !== endDate.getFullYear();
+
+    if (endTime && isMultiDay) {
+      // Shortened format for Home Page cards to fit in space: "9:00 AM - 5:00 PM"
+      return ` · ${startTime} - ${endTime}`;
+    }
+
+    return ` · ${time}`;
   };
 
   const toggleMute = () => {
@@ -577,8 +627,7 @@ const Index = () => {
               {Icons.map((item) => (
                 <div
                   key={item.id}
-                  
-                  className="flex text-black flex-col items-start cursor-pointer hover:opacity-80 transition-opacity"
+                  className="flex text-black flex-col items-center  hover:opacity-80 transition-opacity"
                 >
                   <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 relative">
                     <Image
@@ -589,10 +638,10 @@ const Index = () => {
                     />
                   </div>
                   <div className="leading-5">
-                    <p className="font-seasons pt-4 sm:pt-6 md:pt-[28px] text-left font-normal text-[14px] sm:text-[16px] md:text-[18px] text-[#1c3163]">
+                    <p className="font-seasons pt-4 sm:pt-6 md:pt-[28px] text-center font-normal text-[14px] sm:text-[16px] md:text-[18px] text-[#1c3163]">
                       {item.title}
                     </p>
-                    <p className="text-left text-[9px] sm:text-[9.5px] md:text-[16px] font-light leading-[14px] sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454] mt-[25px]">
+                    <p className="text-center text-[9px] sm:text-[9.5px] md:text-[16px] font-light leading-[14px] sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454] mt-[25px]">
                       {item.para}
                     </p>
                   </div>
@@ -660,7 +709,7 @@ const Index = () => {
                     >
                       {product.name}
                     </p>
-                    <p className="text-left text-[15px] text-[#545454] font-touvlo">
+                    <p className="text-left  md:text-[13px] text-[#545454] font-touvlo">
                       {product.discount ? (
                         <>
                           <span className="line-through mr-2">
@@ -674,7 +723,7 @@ const Index = () => {
                           </span>
                         </>
                       ) : (
-                        <span className="font-semibold font-touvlo text-[#545454] text-[15px]">
+                        <span className="font-semibold font-touvlo text-[#545454] text-[13px]">
                           ${product.price} USD
                         </span>
                       )}
@@ -1105,16 +1154,62 @@ const Index = () => {
                     "Nov",
                     "Dec",
                   ];
-                  const monthAbbr = monthNames[eventDate.getMonth()];
-                  const dayNumber = eventDate.getDate();
+                  let monthAbbr = monthNames[eventDate.getMonth()];
+                  let dayDisplay = eventDate.getDate().toString();
+
+                  // Handle date range display for the badge
+                  if (event.endDate) {
+                    const endDate = new Date(event.endDate);
+                    const endMonthAbbr = monthNames[endDate.getMonth()];
+                    const endDay = endDate.getDate();
+
+                    if (
+                      eventDate.getMonth() === endDate.getMonth() &&
+                      eventDate.getFullYear() === endDate.getFullYear()
+                    ) {
+                      // Same month: Feb 10-12
+                      dayDisplay = `${eventDate.getDate()}-${endDay}`;
+                    } else {
+                      // Diff month: Feb-Mar / 28-02
+                      monthAbbr = `${monthAbbr}-${endMonthAbbr}`;
+                      dayDisplay = `${eventDate.getDate()}-${endDay}`;
+                    }
+                  }
+
+                  // Format date for display: "Nov 7, 2025" or "Feb 10 - 12, 2025"
                   const year = eventDate.getFullYear();
+                  let formattedFullDate = `${monthAbbr} ${dayDisplay}, ${year}`;
 
-                  // Format date for display: "Nov 7, 2025"
-                  const formattedFullDate = `${monthAbbr} ${dayNumber}, ${year}`;
+                  if (event.endDate) {
+                    // For text display, use a cleaner full format if desired, or reuse the logic above
+                    // Reusing logic above to keep consistent with badge for now, but formatted nicely
+                    const endDate = new Date(event.endDate);
+                    const endMonthAbbr = monthNames[endDate.getMonth()];
+                    const endDay = endDate.getDate();
+                    const endYear = endDate.getFullYear();
 
-                  // Format time if available - use non-breaking space to prevent PM/AM from wrapping
+                    if (year === endYear) {
+                      if (eventDate.getMonth() === endDate.getMonth()) {
+                        formattedFullDate = `${monthNames[eventDate.getMonth()]} ${eventDate.getDate()} - ${endDay}, ${year}`;
+                      } else {
+                        formattedFullDate = `${monthNames[eventDate.getMonth()]} ${eventDate.getDate()} - ${endMonthAbbr} ${endDay}, ${year}`;
+                      }
+                    } else {
+                      formattedFullDate = `${monthAbbr} ${eventDate.getDate()}, ${year} - ${endMonthAbbr} ${endDay}, ${endYear}`;
+                    }
+                  } else {
+                    // Single day full format
+                    formattedFullDate = `${monthNames[eventDate.getMonth()]} ${eventDate.getDate()}, ${year}`;
+                  }
+
+                  // Format time if available
                   const timeDisplay = event.time
-                    ? ` · ${event.time.replace(/\s+/g, "\u00A0")}`
+                    ? formatTime(
+                        event.day,
+                        event.time,
+                        event.date,
+                        event.endDate,
+                      )
                     : "";
 
                   const imageUrl = event.imageUrl
@@ -1141,19 +1236,19 @@ const Index = () => {
                               {monthAbbr}
                             </div>
                             <div className="text-[#1C3163] text-[18px] sm:text-[20px] md:text-[24px] font-semibold leading-tight">
-                              {dayNumber}
+                              {dayDisplay}
                             </div>
                           </div>
                         </div>
                       </Link>
                       {/* Event Details - Light Beige Background */}
-                      <div className="px-4  md:px-5  mt-2 relative z-10">
+                      <div className="  mt-2 relative z-10">
                         <h3 className=" font-seasons text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight mb-2  tracking-wide">
                           {event.title}
                         </h3>
-                        <p className="text-gray-700 text-[12px] sm:text-[13px] md:text-[14px] font-light text-[#545454] font-touvlo">
+                        <p className="text-gray-700 text-[12px] sm:text-[13px] md:text-[14px] font-light text-[#545454] font-touvlo whitespace-nowrap ">
                           {formattedFullDate}
-                          <span className="whitespace-nowrap">
+                          <span className="ml-[2px] whitespace-nowrap">
                             {timeDisplay}
                           </span>
                         </p>
