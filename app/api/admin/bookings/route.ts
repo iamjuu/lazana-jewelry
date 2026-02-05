@@ -6,6 +6,7 @@ import User from "@/models/User";
 import CorporateSession from "@/models/CorporateSession";
 import PrivateSession from "@/models/PrivateSession";
 import DiscoverySession from "@/models/DiscoverySession";
+import SessionEnquiry from "@/models/SessionEnquiry";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {

@@ -315,17 +315,65 @@ const EventsPage = () => {
         const apiPastEvents: ApiPastEvent[] = data.data;
         setPastEventsFromAPI(apiPastEvents);
 
-        // Transform API past events to display format
         const transformedPastEvents: DisplayEvent[] = apiPastEvents.map(
-          (event) => ({
-            id: event._id,
-            date: parseEventDate(event.date, event.endDate),
-            image: getImageUrl(event.thumbnailImage),
-            title: event.title,
-            location: event.location,
-            time: formatTime(event.day, event.time, event.date, event.endDate),
-            description: event.description,
-          }),
+          (event) => {
+            const dateObj = parseEventDate(event.date, event.endDate);
+            // Helper to get simple formatted full date string for text display
+            let fullDateStr = "";
+            const startDate = new Date(event.date);
+            const months = [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ];
+            const month = months[startDate.getMonth()];
+            const day = startDate.getDate();
+            const year = startDate.getFullYear();
+
+            if (event.endDate) {
+              const endDate = new Date(event.endDate);
+              const endMonth = months[endDate.getMonth()];
+              const endDay = endDate.getDate();
+              const endYear = endDate.getFullYear();
+
+              if (year === endYear) {
+                if (startDate.getMonth() === endDate.getMonth()) {
+                  fullDateStr = `${month} ${day} - ${endDay}, ${year}`;
+                } else {
+                  fullDateStr = `${month} ${day} - ${endMonth} ${endDay}, ${year}`;
+                }
+              } else {
+                fullDateStr = `${month} ${day}, ${year} - ${endMonth} ${endDay}, ${endYear}`;
+              }
+            } else {
+              fullDateStr = `${month} ${day}, ${year}`;
+            }
+
+            return {
+              id: event._id,
+              date: dateObj,
+              image: getImageUrl(event.thumbnailImage),
+              title: event.title,
+              location: event.location,
+              time: formatTime(
+                event.day,
+                event.time,
+                event.date,
+                event.endDate,
+              ),
+              formattedDate: fullDateStr,
+              description: event.description,
+            };
+          },
         );
 
         setPastEventsData(transformedPastEvents);
