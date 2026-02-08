@@ -1223,6 +1223,7 @@ export default function SessionsPage() {
                   <option value="">Select Duration</option>
                   <option value="30">30 minutes</option>
                   <option value="60">1 hour (60 minutes)</option>
+                  <option value="75">45 minutes</option>
                   <option value="75">75 minutes</option>
                   <option value="90">1.5 hours (90 minutes)</option>
                   <option value="120">2 hours (120 minutes)</option>

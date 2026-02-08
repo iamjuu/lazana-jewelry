@@ -195,13 +195,13 @@ const AboutPage = () => {
           </div>
         </div>
 
-        <div className="w-full flex flex-col mt-[25px] ml-[45px]">
+        <div className="w-full flex flex-col mt-[25px] md:ml-[45px]">
           <div className="flex w-full  justify-start ">
             <h1 className="font-seasons text-[16px] sm:text-[18px] md:text-[30px] lg:text-[32px] text-[#e6b884] font-normal text-left leading-none ">
               What makes our Singing Bowls unique
             </h1>
           </div>
-          <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-[25px]">
+          <div className="w-full grid grid-cols-2  md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-[25px]">
             {Icons.map((item) => (
               <div
                 key={item.id}
@@ -232,7 +232,7 @@ const AboutPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-[25px]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-start">
           {/* Left Side - Two Stacked Images */}
-          <div className="relative w-full flex flex-col gap-4 sm:gap-6 mt-[40px] lg:mt-[40px]">
+          <div className="relative w-full flex flex-col justify-center items-center gap-4 sm:gap-6 mt-[40px] lg:mt-[40px]">
             {/* First Image */}
             <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto lg:mx-0 group">
               <div className="relative w-full overflow-hidden shadow-lg">
@@ -247,7 +247,7 @@ const AboutPage = () => {
               </div>
             </div>
             {/* Second Image */}
-            <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto group">
+            <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] flex  justify-center group">
               <div className="relative w-[350] overflow-hidden shadow-lg max-h-[350px] lg:max-h-[400px]">
                 <ImageWithShimmer
                   src="/assets/images/about/97FA431C-FA5F-4E86-B42D-2CD52185DB1B_1_105_c.jpeg"
@@ -330,7 +330,7 @@ const AboutPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
           {/* Left Content */}
           <div className="">
-            <h2 className="font-seasons text-[#D5B584] text-[16px] sm:text-[14px] md:text-[30px] lg:text-[32px] font-normal leading-tight">
+            <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
               About Our Founder
             </h2>
 

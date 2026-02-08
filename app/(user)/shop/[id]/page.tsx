@@ -85,7 +85,7 @@ const ImageMagnifier = ({ src, alt }: { src: string; alt: string }) => {
     <>
       <div
         ref={imgRef}
-        className="relative w-full h-full cursor-zoom-in"
+        className="relative w-full h-full  cursor-zoom-in"
         onMouseEnter={handleMouseEnter}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -495,12 +495,12 @@ const ProductDetailPage = () => {
           {/* Product Detail Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 lg:items-start">
             {/* Left Side - Images and Videos */}
-            <div className="flex flex-row gap-4">
+            <div className="flex  flex-col flex-col-reverse  md:flex-row  gap-4">
               {/* Thumbnail Images and Videos */}
               {mediaItems.length > 1 && (
                 <div
-                  className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible"
-                  style={{ marginTop: "40px" }}
+                  className="flex  flex-row md:flex-col gap-3  md:mt-[40px] sm:mt-[220px] overflow-x-auto sm:overflow-visible"
+                  // style={{ marginTop: "40px" }}
                 >
                   {mediaItems.map((media, index) => (
                     <button
@@ -742,14 +742,14 @@ const ProductDetailPage = () => {
                   {expandedSections.has("description") && (
                     <div className="pb-4">
                       <p
-                        className={`text-[#545454] md:text-[16px] sm:text-[15px] font-touvlo leading-relaxed whitespace-pre-wrap ${!showFullLongDesc ? "line-clamp-2" : ""}`}
+                        className={`text-[#545454] text-[12px] md:text-[16px] font-touvlo leading-relaxed whitespace-pre-wrap ${!showFullLongDesc ? "line-clamp-2" : ""}`}
                       >
                         {product.description}
                       </p>
                       {product.description.length > 150 && (
                         <button
                           onClick={() => setShowFullLongDesc(!showFullLongDesc)}
-                          className="text-[#1C3163] md:text-[16px] sm:text-[14px] font-semibold mt-2 hover:text-[#D5B584] transition-colors"
+                          className="text-[#1C3163]  md:text-[16px] text-[14px] font-semibold mt-2 hover:text-[#D5B584] transition-colors"
                         >
                           {showFullLongDesc ? "Read Less" : "Read More"}
                         </button>
@@ -776,7 +776,7 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("bowlSizing") && (
                     <div className="pb-4">
-                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
+                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
                         Our crystal bowls come in various sizes to suit
                         different healing practices. We offer bowls ranging from
                         small (4-6 inches) for personal use to large (12-14
@@ -806,13 +806,13 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("shipping") && (
                     <div className="pb-4">
-                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mb-3">
+                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mb-3">
                         We offer Air Economy shipping to ensure your crystal
                         bowls arrive safely and promptly. Shipping charges are
                         calculated based on the total number of bowls in your
                         order:
                       </p>
-                      <ul className="list-disc list-inside text-[#545454] md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo">
+                      <ul className="list-disc text-[12px]  list-inside text-[#545454] md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo">
                         <li>1 Bowl: USD $65</li>
                         <li>2-3 Bowls: USD $111</li>
                         <li>4-7 Bowls:  USD $155</li>
@@ -821,7 +821,7 @@ const ProductDetailPage = () => {
                           $111, 11-14 = $155, and so on)
                         </li>
                       </ul>
-                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mt-3">
+                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mt-3">
                         All orders are carefully packaged to protect your bowls
                         during transit. Delivery times vary by location,
                         typically 25-28 business days for international orders.
@@ -840,7 +840,7 @@ const ProductDetailPage = () => {
                           <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
                             Return Policy
                           </h4>
-                          <p className="text-[#545454] md:text-[16px] sm:text-[14px] font-touvlo">
+                          <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[14px] font-touvlo">
                             No Returns unless it&apos;s broken
                           </p>
                         
@@ -849,7 +849,7 @@ const ProductDetailPage = () => {
                           <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
                             Care Instructions
                           </h4>
-                          <p className="text-[#545454] md:text-[16px] sm:text-[14px] font-touvlo">
+                          <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[14px] font-touvlo">
                             Wipe with soft cloth, avoid water contact
                           </p>
                         </div>
@@ -857,7 +857,7 @@ const ProductDetailPage = () => {
                           <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
                             Includes Accessories
                           </h4>
-                          <p className="text-[#545454] md:text-[16px] sm:text-[14px] font-touvlo">
+                          <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[14px] font-touvlo">
                             Rubber ring + suede mallet
                           </p>
                           {/* <Link
@@ -893,7 +893,7 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("octave") && (
                     <div className="pb-4">
-                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
+                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
                         The 3rd octave bowls produce deeper, more grounding
                         frequencies that are ideal for root chakra work and deep
                         meditation. These bowls create a rich, resonant sound
@@ -931,7 +931,7 @@ const ProductDetailPage = () => {
                         Our bowls are available in multiple tuning frequencies
                         to suit your preferences:
                       </p>
-                      <ul className="list-disc list-inside  md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo text-[#545454]">
+                      <ul className="list-disc list-inside text-[12px]  md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo text-[#545454]">
                         <li>
                           <strong>432 Hz:</strong> The healing frequency of
                           nature, known for its calming and harmonizing effects.
@@ -951,7 +951,7 @@ const ProductDetailPage = () => {
                           DNA and promote positive transformation.
                         </li>
                       </ul>
-                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed mt-3 font-touvlo">
+                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed mt-3 font-touvlo">
                         If you would like your bowls in an alternative
                         frequency, please leave a note on your order at checkout
                         and we can customize your order to your preferred

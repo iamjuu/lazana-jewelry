@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -51,6 +50,8 @@ const Navbar = () => {
   const [isShopHovered, setIsShopHovered] = useState(false);
   const [isOfferingHovered, setIsOfferingHovered] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [mobileShopExpanded, setMobileShopExpanded] = useState(false);
+  const [mobileOfferingExpanded, setMobileOfferingExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   // const [isSearching, setIsSearching] = useState(false); // Can add loading state if needed
@@ -158,6 +159,17 @@ const Navbar = () => {
           </Link>
 
           <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => {
+                setIsSearchOpen(true);
+                setMobileMenuOpen(false);
+              }}
+              className="text-[#D5B584] hover:text-white"
+              aria-label="Search"
+            >
+              <Search size={20} />
+            </button>
             <Link href="/profile" className="text-[#D5B584] hover:text-white">
               <User size={20} />
             </Link>
@@ -194,20 +206,132 @@ const Navbar = () => {
         {/* MOBILE MENU - DROPDOWN */}
         {mobileMenuOpen && (
           <div className="font-seasons lg:hidden bg-white/20 backdrop-blur-md rounded-lg p-4 space-y-3 mb-4 relative z-30">
-            {navigationItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${
-                  pathname === item.href
-                    ? "text-white font-semibold bg-white/20"
-                    : ""
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navigationItems.map((item) => {
+              /* Shop: expandable with backend categories on mobile */
+              if (item.hasDropdown) {
+                return (
+                  <div key={item.href} className="space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => setMobileShopExpanded(!mobileShopExpanded)}
+                      className={`w-full text-left py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition flex items-center justify-between ${
+                        pathname.startsWith("/shop")
+                          ? "text-white font-semibold bg-white/20"
+                          : ""
+                      }`}
+                    >
+                      {item.label}
+                      <span
+                        className={`text-lg transition-transform ${
+                          mobileShopExpanded ? "rotate-180" : ""
+                        }`}
+                      >
+                        ▼
+                      </span>
+                    </button>
+                    {mobileShopExpanded && (
+                      <div className="pl-4 space-y-1 border-l-2 border-[#D5B584]/40 ml-2">
+                        <Link
+                          href="/shop?category=all"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            setMobileShopExpanded(false);
+                          }}
+                          className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#D5B584] hover:bg-white/10 rounded font-touvlo"
+                        >
+                          All Bowls
+                        </Link>
+                        {categories.length === 0 ? (
+                          <p className="py-2 px-3 text-sm text-[#D5B584]/80 font-touvlo">
+                            Loading categories...
+                          </p>
+                        ) : (
+                          categories.slice(0, 8).map((cat) => (
+                            <Link
+                              key={cat._id}
+                              href={`/shop?category=${cat.slug}`}
+                              onClick={() => {
+                                setMobileMenuOpen(false);
+                                setMobileShopExpanded(false);
+                              }}
+                              className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#D5B584] hover:bg-white/10 rounded font-touvlo"
+                            >
+                              {cat.name}
+                            </Link>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              /* Sound Healing: expandable with Events & Services on mobile */
+              if (item.hasOfferingDropdown) {
+                return (
+                  <div key={item.href} className="space-y-1">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMobileOfferingExpanded(!mobileOfferingExpanded)
+                      }
+                      className={`w-full text-left py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition flex items-center justify-between ${
+                        pathname.startsWith("/services") ||
+                        pathname.startsWith("/events")
+                          ? "text-white font-semibold bg-white/20"
+                          : ""
+                      }`}
+                    >
+                      {item.label}
+                      <span
+                        className={`text-lg transition-transform ${
+                          mobileOfferingExpanded ? "rotate-180" : ""
+                        }`}
+                      >
+                        ▼
+                      </span>
+                    </button>
+                    {mobileOfferingExpanded && (
+                      <div className="pl-4 space-y-1 border-l-2 border-[#D5B584]/40 ml-2">
+                        <Link
+                          href="/events"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            setMobileOfferingExpanded(false);
+                          }}
+                          className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#D5B584] hover:bg-white/10 rounded font-touvlo"
+                        >
+                          Events
+                        </Link>
+                        <Link
+                          href="/services"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            setMobileOfferingExpanded(false);
+                          }}
+                          className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#D5B584] hover:bg-white/10 rounded font-touvlo"
+                        >
+                          Services
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${
+                    pathname === item.href
+                      ? "text-white font-semibold bg-white/20"
+                      : ""
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
             <Link
               href="/book-a-session"
               onClick={() => setMobileMenuOpen(false)}
@@ -219,30 +343,6 @@ const Navbar = () => {
             >
               Book a Call
             </Link>
-
-            {/* Shop Categories for Mobile */}
-            <div className="pl-4 space-y-2 border-l border-[#D5B584]/30 pt-2">
-              <p className="text-xs text-[#D5B584] uppercase font-semibold">
-                Categories
-              </p>
-              <Link
-                href="/shop?category=all"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm text-[#1C3163] hover:text-[#D5B584] py-1"
-              >
-                All Bowls
-              </Link>
-              {categories.slice(0, 5).map((cat) => (
-                <Link
-                  key={cat._id}
-                  href={`/shop?category=${cat.slug}`}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-sm text-[#1C3163] hover:text-[#D5B584] py-1 font-touvlo"
-                >
-                  {cat.name}
-                </Link>
-              ))}
-            </div>
           </div>
         )}
 
@@ -468,9 +568,9 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Search Overlay */}
+        {/* Search Overlay - visible on both mobile and desktop */}
         {isSearchOpen && (
-          <div className="absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D5B584]/20 shadow-lg py-4 px-4 z-40 transition-all duration-300">
+          <div className="absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D5B584]/20 shadow-lg py-4 px-4 z-[60] transition-all duration-300">
             <div className="max-w-4xl mx-auto flex items-center gap-4">
               <form onSubmit={handleSearch} className="flex-1 relative">
                 <input

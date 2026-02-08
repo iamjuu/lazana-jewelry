@@ -440,7 +440,7 @@ const ShopPageContent = () => {
                 </h2>
               </div>
               {/* Description Text */}
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] mt-[25px]">
+              <p className="font-touvlo  text-[12px] md:text-[16px] leading-relaxed text-[#545454]  mt-[10px]  md:mt-[25px]">
                 Thoughtfully crafted Crystal Bowls designed for clarity,
                 relaxation, modern mindful living, sound healing, meditation and
                 yoga. Made from 99.9% pure clear quartz crystal. Lightweight,
@@ -452,7 +452,7 @@ const ShopPageContent = () => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 mt-[35px]">
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 mt-[10px] md:mt-[35px]">
               {/* Left Side Icons - Filter and Sort */}
               <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
                 {/* Filter Icon Button */}

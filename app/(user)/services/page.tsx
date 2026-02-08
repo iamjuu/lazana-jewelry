@@ -102,7 +102,7 @@ const ServicesPage = () => {
                 <h2 className="font-seasons text-[16px] md:text-[30px] lg:text-[32px] text-[#D4A373] font-normal  leading-none">
                   Services
                 </h2>
-                <p className="font-touvlo text-[16px] md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px] ">
+                <p className="font-touvlo text-[12px] md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px] ">
                   Whether through a guided sound bath, meditation or private
                   session, Yoga and Sound Healing offers a powerful way to
                   reconnect with your inner self, reduce stress, and achieve
@@ -119,7 +119,7 @@ const ServicesPage = () => {
                     Healing & Transformation through Sound, Movement & Energy
                     Work
                   </h3>
-                  <p className="font-touvlo text-[16px] md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px]">
+                  <p className="font-touvlo text-[12px] md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px]">
                     I offer tailored experiences for individuals, groups, and
                     organizations seeking a deeper transformation through Yoga,
                     Sound Healing, and Meditation.
