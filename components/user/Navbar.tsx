@@ -137,13 +137,13 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="hidden md:block md:min-h-[84px]" />
+      <div className="min-h-[64px] md:min-h-[84px]" />
 
       <nav
         ref={navRef}
         className="w-full px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-[43px]
-        relative lg:fixed lg:top-0 lg:left-0 lg:right-0 lg:z-50
-        lg:bg-white/10 lg:backdrop-blur-sm bg-transparent overflow-visible"
+        fixed top-0 left-0 right-0 z-50
+        lg:bg-white/10   backdrop-blur-sm  lg:backdrop-blur-sm bg-transparent overflow-visible"
       >
         {/* MOBILE/TABLET NAVBAR - ALWAYS VISIBLE */}
         <div className="lg:hidden flex items-center justify-between py-4 relative z-40">
@@ -214,17 +214,15 @@ const Navbar = () => {
                     <button
                       type="button"
                       onClick={() => setMobileShopExpanded(!mobileShopExpanded)}
-                      className={`w-full text-left py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition flex items-center justify-between ${
-                        pathname.startsWith("/shop")
+                      className={`w-full text-left py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition flex items-center justify-between ${pathname.startsWith("/shop")
                           ? "text-white font-semibold bg-white/20"
                           : ""
-                      }`}
+                        }`}
                     >
                       {item.label}
                       <span
-                        className={`text-lg transition-transform ${
-                          mobileShopExpanded ? "rotate-180" : ""
-                        }`}
+                        className={`text-lg transition-transform ${mobileShopExpanded ? "rotate-180" : ""
+                          }`}
                       >
                         ▼
                       </span>
@@ -274,18 +272,16 @@ const Navbar = () => {
                       onClick={() =>
                         setMobileOfferingExpanded(!mobileOfferingExpanded)
                       }
-                      className={`w-full text-left py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition flex items-center justify-between ${
-                        pathname.startsWith("/services") ||
-                        pathname.startsWith("/events")
+                      className={`w-full text-left py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition flex items-center justify-between ${pathname.startsWith("/services") ||
+                          pathname.startsWith("/events")
                           ? "text-white font-semibold bg-white/20"
                           : ""
-                      }`}
+                        }`}
                     >
                       {item.label}
                       <span
-                        className={`text-lg transition-transform ${
-                          mobileOfferingExpanded ? "rotate-180" : ""
-                        }`}
+                        className={`text-lg transition-transform ${mobileOfferingExpanded ? "rotate-180" : ""
+                          }`}
                       >
                         ▼
                       </span>
@@ -322,11 +318,10 @@ const Navbar = () => {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`block py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${
-                    pathname === item.href
+                  className={`block py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${pathname === item.href
                       ? "text-white font-semibold bg-white/20"
                       : ""
-                  }`}
+                    }`}
                 >
                   {item.label}
                 </Link>
@@ -335,11 +330,10 @@ const Navbar = () => {
             <Link
               href="/book-a-session"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${
-                pathname === "/book-a-session"
+              className={`block py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${pathname === "/book-a-session"
                   ? "text-white font-semibold bg-white/20"
                   : ""
-              }`}
+                }`}
             >
               Book a Call
             </Link>
@@ -383,11 +377,10 @@ const Navbar = () => {
                   >
                     <Link
                       href={item.href}
-                      className={`text-[#D5B584]  hover:text-[#1C3163] transition  ${
-                        pathname.startsWith("/shop")
+                      className={`text-[#D5B584]  hover:text-[#1C3163] transition  ${pathname.startsWith("/shop")
                           ? "text-white font-semibold  scale-110"
                           : ""
-                      }`}
+                        }`}
                     >
                       {item.label}
                     </Link>
@@ -457,12 +450,11 @@ const Navbar = () => {
                   >
                     <Link
                       href={item.href}
-                      className={`text-[#D5B584] hover:text-[#1C3163] transition font-seasons ${
-                        pathname.startsWith("/services") ||
-                        pathname.startsWith("/events")
+                      className={`text-[#D5B584] hover:text-[#1C3163] transition font-seasons ${pathname.startsWith("/services") ||
+                          pathname.startsWith("/events")
                           ? "text-white font-semibold scale-110 !text-[18px] "
                           : ""
-                      }`}
+                        }`}
                     >
                       {item.label}
                     </Link>
@@ -510,11 +502,10 @@ const Navbar = () => {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-[#D5B584] hover:text-[#1C3163] transition  ${
-                    pathname === item.href
+                  className={`text-[#D5B584] hover:text-[#1C3163] transition  ${pathname === item.href
                       ? "text-white font-semibold scale-110"
                       : ""
-                  }`}
+                    }`}
                 >
                   {item.label}
                 </Link>
@@ -523,11 +514,10 @@ const Navbar = () => {
 
             <Link
               href="/book-a-session"
-              className={`text-[#D5B584] hover:text-[#1C3163] transition ${
-                pathname === "/book-a-session"
+              className={`text-[#D5B584] hover:text-[#1C3163] transition ${pathname === "/book-a-session"
                   ? "text-[#1C3163] font-semibold scale-110"
                   : ""
-              }`}
+                }`}
             >
               Book a Call
             </Link>
@@ -536,13 +526,14 @@ const Navbar = () => {
           {/* RIGHT ICONS */}
           <div className="flex items-center gap-6 text-lg">
             {/* Search Icon */}
-            <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="text-[#D5B584] hover:text-white transition-colors"
-            >
-              <Search size={22} />
-            </button>
-
+            {!isSearchOpen && (
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="text-[#D5B584] hover:text-white transition-colors"
+              >
+                <Search size={22} />
+              </button>
+            )}
             <Link href="/profile" className="text-[#D5B584] hover:text-white">
               <User size={24} />
             </Link>

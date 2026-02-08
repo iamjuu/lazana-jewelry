@@ -530,14 +530,14 @@ const EventsPage = () => {
                             <p className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-normal">
                               {event.location}
                             </p>
-                            <p className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-light">
+                            <p className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[16px] font-light">
                               {/* Show full date in text for clarity on mobile/simplified views */}
                               {event.formattedDate} · {event.time}
                             </p>
                           </div>
 
                           <div className="mt-[10px]">
-                            <p className="text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-light leading-relaxed font-touvlo">
+                            <p className="text-[#545454] text-[14px] sm:text-[16px] md:text-[16px] font-light leading-relaxed font-touvlo">
                               {getDisplayDescription(
                                 event.description,
                                 event.id,

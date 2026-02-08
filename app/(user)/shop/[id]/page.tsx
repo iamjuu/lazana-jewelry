@@ -1025,7 +1025,7 @@ const ProductDetailPage = () => {
                           className="block cursor-pointer"
                         >
                           <div>
-                            <p className="text-[#1C3163] md:text-[16px] sm:text-[16px] font-medium font-touvlo ">
+                            <p className="text-[#1C3163]  text-[14px] sm:text-[14px] md:text-[16px]  font-medium font-touvlo ">
                               {item.name}
                             </p>
                             <div className="flex items-center gap-2 font-touvlo">
@@ -1039,7 +1039,7 @@ const ProductDetailPage = () => {
                                   </span>
                                 </>
                               ) : (
-                                <span className="text-[#545454] font-light text-[13px] whitespace-nowrap">
+                                <span className="text-[#545454]   font-light text-[13px] whitespace-nowrap">
                                   {itemDisplayPrice} USD
                                 </span>
                               )}

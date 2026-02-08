@@ -102,7 +102,7 @@ const ServicesPage = () => {
                 <h2 className="font-seasons text-[16px] md:text-[30px] lg:text-[32px] text-[#D4A373] font-normal  leading-none">
                   Services
                 </h2>
-                <p className="font-touvlo text-[12px] md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px] ">
+                <p className="font-touvlo text-[14px] sm:text-[16px]  md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px] ">
                   Whether through a guided sound bath, meditation or private
                   session, Yoga and Sound Healing offers a powerful way to
                   reconnect with your inner self, reduce stress, and achieve
@@ -115,11 +115,11 @@ const ServicesPage = () => {
                   Work with Me
                 </h2>
                 <div className="mt-[25px]">
-                  <h3 className="font-seasons text-[20px] md:text-[18px] text-[#1C3163] leading-relaxed text-wrap">
+                  <h3 className="font-seasons text-[20px] sm:text-[24px] md:text-[18px] text-[#1C3163] leading-relaxed text-wrap">
                     Healing & Transformation through Sound, Movement & Energy
                     Work
                   </h3>
-                  <p className="font-touvlo text-[12px] md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px]">
+                  <p className="font-touvlo text-[14px] sm:text-[16px]   md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px]">
                     I offer tailored experiences for individuals, groups, and
                     organizations seeking a deeper transformation through Yoga,
                     Sound Healing, and Meditation.

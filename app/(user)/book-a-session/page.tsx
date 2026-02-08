@@ -30,13 +30,13 @@ const BookASessionPage = () => {
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6 lg:gap-8">
                   {/* Left Content */}
                   <div className="flex-1">
-                    <h2 className="font-seasons text-[16px] flex flex-col sm:text-[18px] md:text-[20px] lg:text-[20px] text-[#1C3163] font-medium mb-3 sm:mb-4">
+                    <h2 className="font-seasons  flex flex-col text-[20px] sm:text-[24px] md:text-[20px] lg:text-[20px] text-[#1C3163] font-medium mb-3 sm:mb-4">
                       Free Studio Visit in Singapore
                       <span className="text-[13px] text-gray-500 sm:text-[14px] md:text-[16px] lg:text-[16px] mt-1">
                         30 minutes
                       </span>
                     </h2>
-                    <p className="text-[13px] sm:text-[14px] md:text-[16px] lg:text-[16px] text-[#545454] mb-4 leading-relaxed max-w-2xl font-touvlo">
+                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[16px] text-[#545454] mb-4 leading-relaxed max-w-2xl font-touvlo">
                       This is for you if you want to come and visit in person to
                       experience and listen to our Crystal Bowls live before
                       purchasing our collection.
