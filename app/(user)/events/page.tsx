@@ -458,7 +458,7 @@ const EventsPage = () => {
           <div className="max-w-6xl   mx-auto">
             {/* Header Section */}
             <div className="mb-12 flex gap-[48px] md:mb-0">
-              <h1 className="text-[#D5B584] text-[36px] sm:text-[40px] md:text-[30px] lg:text-[32px] font-light font-seasons">
+              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                 Events
               </h1>
               {/* <p className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-light max-w-md">

@@ -435,7 +435,7 @@ const ShopPageContent = () => {
             {/* Header */}
             <div className="">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-[50px] ">
-                <h2 className="font-seasons text-[#D5B584] text-[16px] sm:text-[28px] md:text-[30px] font-normal m-0 leading-none">
+                <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
                   {categoryName}
                 </h2>
               </div>
@@ -809,15 +809,15 @@ const ShopPageContent = () => {
                               <div className="text-[10px] sm:text-[11px] md:text-[14px] text-black flex items-center gap-0 font-touvlo ">
                                 {hasDiscount ? (
                                   <>
-                                    <span className="text-[#545454] font-light line-through text-[13px]">
+                                    <span className="text-[#545454] font-light line-through text-[11px]">
                                       {displayOriginalPrice}
                                     </span>
-                                    <span className="text-[#545454] font-light text-[13px] whitespace-nowrap">
+                                    <span className="text-[#545454] font-light text-[11px] whitespace-nowrap">
                                       {displayPrice} USD
                                     </span>
                                   </>
                                 ) : (
-                                  <span className="text-[#545454] font-light text-[13px] whitespace-nowrap">
+                                  <span className="text-[#545454] font-light text-[11px] whitespace-nowrap">
                                     {displayPrice} USD
                                   </span>
                                 )}

@@ -201,13 +201,13 @@ const AboutPage = () => {
               What makes our Singing Bowls unique
             </h1>
           </div>
-          <div className="w-full grid grid-cols-2  md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-[25px]">
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-[54px] mt-[25px] ">
             {Icons.map((item) => (
               <div
                 key={item.id}
                 className="flex text-black flex-col items-center  hover:opacity-80 transition-opacity"
               >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 relative mb-4">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 relative ">
                   <Image
                     src={item.image}
                     alt={item.title}
@@ -215,11 +215,11 @@ const AboutPage = () => {
                     className="object-contain"
                   />
                 </div>
-                <div className="leading-snug">
-                  <p className="font-seasons text-center font-normal text-[16px] md:text-[18px] pb-2 text-[#1c3163]">
-                    {item.title}
+                <div className="leading-5">
+                <p className="font-seasons pt-4 sm:pt-6 md:pt-[28px] text-center font-normal text-[14px] sm:text-[16px] md:text-[18px] text-[#1c3163]">
+                {item.title}
                   </p>
-                  <p className="text-center text-[12px] sm:text-[13px] md:text-[16px] font-light leading-relaxed font-touvlo text-[#545454]">
+                  <p className="text-center text-[9px] sm:text-[9.5px] md:text-[16px] font-light leading-[14px] sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454] mt-[25px]">
                     {item.para}
                   </p>
                 </div>
@@ -231,8 +231,8 @@ const AboutPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-[25px]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-start">
-          {/* Left Side - Two Stacked Images */}
-          <div className="relative w-full flex flex-col justify-center items-center gap-4 sm:gap-6 mt-[40px] lg:mt-[40px]">
+          {/* Left Side - Two Stacked Images (order-2 on mobile so content shows first) */}
+          <div className="relative w-full flex flex-col justify-center items-center gap-4 sm:gap-6 mt-[40px] lg:mt-[40px] order-2 lg:order-1">
             {/* First Image */}
             <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto lg:mx-0 group">
               <div className="relative w-full overflow-hidden shadow-lg">
@@ -261,8 +261,8 @@ const AboutPage = () => {
             </div>
           </div>
 
-          {/* Right Side - Content */}
-          <div className="">
+          {/* Right Side - Content (order-1 on mobile so it shows first) */}
+          <div className="order-1 lg:order-2">
             <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
               About Sound Healing
             </h2>

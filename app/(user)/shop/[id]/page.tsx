@@ -1031,15 +1031,15 @@ const ProductDetailPage = () => {
                             <div className="flex items-center gap-2 font-touvlo">
                               {itemHasDiscount ? (
                                 <>
-                                  <span className="text-[#545454] font-light line-through text-[12px]">
+                                  <span className="text-[#545454] font-light line-through text-[11px]">
                                     {itemDisplayOriginalPrice}
                                   </span>
-                                  <span className="text-[#545454] font-light text-[13px] whitespace-nowrap">
+                                  <span className="text-[#545454] font-light text-[11px] whitespace-nowrap">
                                     {itemDisplayPrice} USD
                                   </span>
                                 </>
                               ) : (
-                                <span className="text-[#545454]   font-light text-[13px] whitespace-nowrap">
+                                <span className="text-[#545454]   font-light text-[11px] whitespace-nowrap">
                                   {itemDisplayPrice} USD
                                 </span>
                               )}

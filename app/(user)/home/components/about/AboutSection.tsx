@@ -10,7 +10,7 @@ const AboutSectionComponent = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex   flex-col w-full ">
           {/* Section Title */}
-          <h2 className="font-seasons text-[20px] sm:text-[24px] md:text-[30px] lg:text-[30px] xl:text-[32px]  text-[#e6b884] font-normal">
+          <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
             Founder's Note
           </h2>
 

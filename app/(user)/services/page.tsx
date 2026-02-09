@@ -99,7 +99,7 @@ const ServicesPage = () => {
             {/* Left Column - Text Content */}
             <div className="w-full lg:w-1/2 mt-[25px] ">
               <div className="">
-                <h2 className="font-seasons text-[16px] md:text-[30px] lg:text-[32px] text-[#D4A373] font-normal  leading-none">
+                <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                   Services
                 </h2>
                 <p className="font-touvlo text-[14px] sm:text-[16px]  md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px] ">
@@ -111,7 +111,7 @@ const ServicesPage = () => {
               </div>
 
               <div className="mt-[25px]">
-                <h2 className="font-seasons text-[16px] md:text-[30px] lg:text-[32px] text-[#D4A373] font-normal leading-none">
+                <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                   Work with Me
                 </h2>
                 <div className="mt-[25px]">
@@ -128,7 +128,7 @@ const ServicesPage = () => {
               </div>
 
               <div className="mt-[25px]">
-                <h2 className="font-seasons text-[16px] md:text-[30px] lg:text-[32px] text-[#D4A373] font-normal leading-none">
+                <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                   For Corporate & Group
                 </h2>
               </div>
@@ -232,7 +232,7 @@ const ServicesPage = () => {
 
         {/* 2. PRIVATE & GROUP OFFERINGS SECTION */}
         <section className="max-w-7xl mx-auto px-6 md:px-6 lg:px-0 mt-[25px] font-seasons">
-          <h2 className="font-seasons text-[32px] md:text-[30px] lg:text-[32px] text-[#D4A373] font-normal ">
+          <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
             Private & Group Offerings
           </h2>
 
