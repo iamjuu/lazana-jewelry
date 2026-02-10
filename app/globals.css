@@ -89,6 +89,19 @@
   animation: shimmer 2s infinite;
 }
 
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-from-left {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */

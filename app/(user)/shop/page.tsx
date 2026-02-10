@@ -425,22 +425,29 @@ const ShopPageContent = () => {
     });
   };
 
+  const menuClose = () => {
+    setShowFilters(false);
+  };
+
   return (
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
       <Navbar />
 
       <>
-        <section className="w-full mt-[25px] ">
+        <section
+                    onClick={menuClose}
+
+        className="w-full mt-[25px] ">
           <div className="max-w-6xl mx-auto px-4">
             {/* Header */}
             <div className="">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-[50px] ">
-                <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
+                <h2 className="font-seasons text-[#D5B584] text-[16px] sm:text-[28px] md:text-[30px] font-normal m-0 leading-none">
                   {categoryName}
                 </h2>
               </div>
               {/* Description Text */}
-              <p className="font-touvlo  text-[12px] md:text-[16px] leading-relaxed text-[#545454]  mt-[10px]  md:mt-[25px]">
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] mt-[25px]">
                 Thoughtfully crafted Crystal Bowls designed for clarity,
                 relaxation, modern mindful living, sound healing, meditation and
                 yoga. Made from 99.9% pure clear quartz crystal. Lightweight,
@@ -452,12 +459,15 @@ const ShopPageContent = () => {
             </div>
 
             {/* Main Content Layout */}
-            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 mt-[10px] md:mt-[35px]">
+            <div
+            onClick={menuClose}
+            className="flex flex-col lg:flex-row gap-6 lg:gap-8 mt-[35px]">
               {/* Left Side Icons - Filter and Sort */}
               <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
                 {/* Filter Icon Button */}
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setShowFilters(!showFilters);
                     setShowSortDropdown(false);
                   }}
@@ -472,7 +482,11 @@ const ShopPageContent = () => {
                 </button>
 
                 {/* Sort Icon Button with Dropdown */}
-                <div className="relative" ref={sortDropdownRef}>
+                <div
+                  className="relative"
+                  ref={sortDropdownRef}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     onClick={() => {
                       setShowSortDropdown(!showSortDropdown);
@@ -561,9 +575,19 @@ const ShopPageContent = () => {
                 </div>
               </div>
 
-              {/* Filter Sidebar - Left */}
+              {/* Filter Sidebar - Left: below md slides in from left */}
               {showFilters && (
-                <div className="w-full lg:w-64 shrink-0 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 shadow-lg">
+                <>
+                  {/* Backdrop below md: tap to close */}
+                  <div
+                    aria-hidden
+                    onClick={() => setShowFilters(false)}
+                    className="fixed inset-0 z-40 bg-white/10 md:hidden"
+                  />
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full lg:w-64 shrink-0 bg-white/10 backdrop-blur-lg border h-fit border-white/20 rounded-lg p-6 shadow-lg max-md:fixed max-md:left-0 max-md:top-0 max-md:z-50 max-md:h-full max-md:w-64 max-md:max-w-[85vw] max-md:rounded-none max-md:rounded-r-lg max-md:animate-slide-in-from-left max-md:overflow-y-auto"
+                  >
                   <div className="space-y-6">
                     {/* All Collections Heading */}
                     <div className="flex items-center justify-between">
@@ -707,6 +731,7 @@ const ShopPageContent = () => {
                     </div>
                   </div>
                 </div>
+                </>
               )}
 
               {/* Products Grid - Right */}
@@ -809,15 +834,15 @@ const ShopPageContent = () => {
                               <div className="text-[10px] sm:text-[11px] md:text-[14px] text-black flex items-center gap-0 font-touvlo ">
                                 {hasDiscount ? (
                                   <>
-                                    <span className="text-[#545454] font-light line-through text-[11px]">
+                                    <span className="text-[#545454] font-light line-through text-[13px]">
                                       {displayOriginalPrice}
                                     </span>
-                                    <span className="text-[#545454] font-light text-[11px] whitespace-nowrap">
+                                    <span className="text-[#545454] font-light text-[13px] whitespace-nowrap">
                                       {displayPrice} USD
                                     </span>
                                   </>
                                 ) : (
-                                  <span className="text-[#545454] font-light text-[11px] whitespace-nowrap">
+                                  <span className="text-[#545454] font-light text-[13px] whitespace-nowrap">
                                     {displayPrice} USD
                                   </span>
                                 )}
@@ -836,43 +861,43 @@ const ShopPageContent = () => {
                     })}
                   </div>
                 )}
+
+                {/* Pagination Controls - below the product grid */}
+                {totalProducts > 20 && (
+                  <div className="flex items-center justify-center gap-6 mt-12 mb-8">
+                    {/* Previous Button */}
+                    <button
+                      onClick={handlePreviousPage}
+                      disabled={!hasPrev}
+                      className={`px-6 py-2 rounded-lg font-touvlo text-[14px] sm:text-[15px] md:text-[16px] transition-all ${
+                        hasPrev
+                          ? "bg-[#1C3163] text-white hover:opacity-90 cursor-pointer"
+                          : "bg-[#1C3163] text-white opacity-50 cursor-not-allowed"
+                      }`}
+                    >
+                      Previous
+                    </button>
+
+                    {/* Page Indicator */}
+                    <span className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] text-[#1C3163]">
+                      Page {currentPage} of {totalPages}
+                    </span>
+
+                    {/* Next Button */}
+                    <button
+                      onClick={handleNextPage}
+                      disabled={!hasNext}
+                      className={`px-6 py-2 rounded-lg font-touvlo text-[14px] sm:text-[15px] md:text-[16px] transition-all ${
+                        hasNext
+                          ? "bg-[#1C3163] text-white hover:opacity-90 cursor-pointer"
+                          : "bg-[#1C3163] text-white opacity-50 cursor-not-allowed"
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </div>
-
-              {/* Pagination Controls */}
-              {totalProducts > 20 && (
-                <div className="flex items-center justify-center gap-6 mt-12 mb-8">
-                  {/* Previous Button */}
-                  <button
-                    onClick={handlePreviousPage}
-                    disabled={!hasPrev}
-                    className={`px-6 py-2 rounded-lg font-touvlo text-[14px] sm:text-[15px] md:text-[16px] transition-all ${
-                      hasPrev
-                        ? "bg-[#1C3163] text-white hover:opacity-90 cursor-pointer"
-                        : "bg-[#1C3163] text-white opacity-50 cursor-not-allowed"
-                    }`}
-                  >
-                    Previous
-                  </button>
-
-                  {/* Page Indicator */}
-                  <span className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] text-[#1C3163]">
-                    Page {currentPage} of {totalPages}
-                  </span>
-
-                  {/* Next Button */}
-                  <button
-                    onClick={handleNextPage}
-                    disabled={!hasNext}
-                    className={`px-6 py-2 rounded-lg font-touvlo text-[14px] sm:text-[15px] md:text-[16px] transition-all ${
-                      hasNext
-                        ? "bg-[#1C3163] text-white hover:opacity-90 cursor-pointer"
-                        : "bg-[#1C3163] text-white opacity-50 cursor-not-allowed"
-                    }`}
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </section>
