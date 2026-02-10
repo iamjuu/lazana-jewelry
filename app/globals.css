@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/* Prevent white strip on right in responsive: no horizontal overflow, full width */
+html,
+body {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  /* Match layout background so no white shows at any viewport (e.g. 833px) */
+  background: linear-gradient(to right, #FDECE2, #FEC1A2);
+}
+
 /* Hide scrollbar globally while maintaining scroll functionality */
 * {
   scrollbar-width: none; /* Firefox */

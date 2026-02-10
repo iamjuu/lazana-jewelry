@@ -233,7 +233,7 @@ const BlogPage = () => {
 
                           {/* Description with Read More aligned to right */}
                           <div className="flex items-start justify-between gap-2 ">
-                            <p className="text-[#545454] text-sm md:text-[16px] leading-relaxed flex-1 text-[#545454] font-touvlo">
+                            <p className="text-[#545454] text-[14px] sm:text-[15pxtext-[#1C3163] font-medium] md:text-[16px] leading-relaxed flex-1 text-[#545454] font-touvlo">
                               {excerpt}
                             </p>
                           </div>

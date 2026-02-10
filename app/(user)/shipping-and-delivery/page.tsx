@@ -22,7 +22,7 @@ const ShippingAndDeliveryPage = () => {
           <div className="flex flex-col gap-8 md:gap-[25px] mt-[25px]">
             {/* Shipping Coverage */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
                 Shipping Coverage
               </h3>
               <div className=" text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
@@ -34,7 +34,7 @@ const ShippingAndDeliveryPage = () => {
 
             {/* Shipping Rates */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
                 Shipping Rates (Calculated at Checkout)
               </h3>
               <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
@@ -74,7 +74,7 @@ const ShippingAndDeliveryPage = () => {
 
             {/* Additional Bowls */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
                 Additional Bowls
               </h3>
               <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
@@ -86,7 +86,7 @@ const ShippingAndDeliveryPage = () => {
 
             {/* Customs & Duties */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
                 Customs & Duties
               </h3>
               <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
@@ -101,7 +101,7 @@ const ShippingAndDeliveryPage = () => {
 
             {/* Production & Delivery Timeline */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
                 Production & Delivery Timeline
               </h3>
               <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font -light leading-relaxed">
@@ -119,7 +119,7 @@ const ShippingAndDeliveryPage = () => {
 
             {/* Packaging & Insurance */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
                 Packaging & Insurance
               </h3>
               <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">

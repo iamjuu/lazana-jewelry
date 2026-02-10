@@ -81,6 +81,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      // Session cookie: cleared when tab/window closes (no maxAge)
       res.cookies.set({
         name: "token",
         value: token,
@@ -88,7 +89,17 @@ export async function POST(req: NextRequest) {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+      });
+
+      // Clear admin session so user is not redirected to admin dashboard
+      res.cookies.set({
+        name: "adminToken",
+        value: "",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
       });
 
       return res;
@@ -131,7 +142,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Set token as HTTP-only cookie
+    // Session cookie: cleared when tab/window closes (no maxAge)
     res.cookies.set({
       name: "token",
       value: token,
@@ -139,7 +150,17 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    // Clear admin session so user is not redirected to admin dashboard
+    res.cookies.set({
+      name: "adminToken",
+      value: "",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 0,
     });
 
     return res;

@@ -120,6 +120,9 @@ export default function LoginPage() {
       if (data.data?.token) {
         sessionStorage.setItem("userToken", data.data.token);
         sessionStorage.setItem("userRole", "user");
+        // Clear any previous admin session so layout/middleware don't redirect to admin
+        sessionStorage.removeItem("adminToken");
+        sessionStorage.removeItem("adminRole");
         toast.success("Login successful!");
         router.push("/");
       }

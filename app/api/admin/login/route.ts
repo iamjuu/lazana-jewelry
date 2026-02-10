@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     const token = signToken({ userId: String(admin._id), role: "admin", isAdmin: true });
     const res = NextResponse.json({ success: true, data: { token, role: "admin" } });
     
-    // Set admin-specific cookie (separate from user token)
+    // Session cookie: cleared when tab/window closes (no maxAge)
     res.cookies.set({
       name: "adminToken",
       value: token,
@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7,
     });
 
     return res;

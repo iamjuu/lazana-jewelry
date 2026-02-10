@@ -43,7 +43,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = () => {
     <section className="w-full py-[20px] md:py-[0px] ">
 
 
-      <div className="max-w-6xl  py-10 gap-[25px] md:py-0 items-center flex  flex-col mx-auto px-4  mt-[12px]  md:mt-[25px]">
+      <div className="max-w-6xl   gap-[25px] md:py-0 items-center flex  flex-col mx-auto px-4  mt-[12px]  md:mt-[25px]">
         <div className=''>
           <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
             Stressed or overwhelmed, but no time?

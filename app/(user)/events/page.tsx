@@ -66,8 +66,18 @@ const EventsPage = () => {
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(
     new Set(),
   );
-  const itemsPerPage = 4; // Show 4 items per page for horizontal scroll
+  // Responsive: 1 per page on mobile (so prev/next buttons show and work), 4 on desktop
+  const [itemsPerPage, setItemsPerPage] = useState(4);
   const MAX_DESCRIPTION_LENGTH = 450; // Maximum characters to show before truncation
+
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      setItemsPerPage(window.innerWidth < 768 ? 1 : 4);
+    };
+    updateItemsPerPage();
+    window.addEventListener("resize", updateItemsPerPage);
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
 
   // Helper function to parse date and extract month and day
   const parseEventDate = (
@@ -399,6 +409,11 @@ const EventsPage = () => {
   // Calculate pagination for past events
   const totalPages = Math.ceil(pastEventsData.length / itemsPerPage);
 
+  // Keep currentPage in bounds when itemsPerPage or data changes
+  useEffect(() => {
+    setCurrentPage((p) => (p >= totalPages && totalPages > 0 ? totalPages - 1 : p));
+  }, [totalPages, itemsPerPage]);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleNextPage = () => {
@@ -453,8 +468,8 @@ const EventsPage = () => {
   return (
     <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen ">
       <Navbar />
-      <div className="w-full mt-[25px] ">
-        <section className="w-full px-4 md:px-0 py-[0px]">
+      <div className="w-full mt-[25px] "> 
+        <section className="w-full px-4  py-[0px] ">
           <div className="max-w-6xl flex flex-col  mx-auto">
             {/* Header Section */}
             <div className=" flex  gap-[48px]">
@@ -470,7 +485,8 @@ const EventsPage = () => {
             {/* Events List */}
             {loading ? (
               <div className="text-center py-12 text-[#1C3163]">
-                Loading events...
+                <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
+                <p>Loading events...</p>
               </div>
             ) : eventsData.length === 0 ? (
               <div className="text-center py-12 text-[#1C3163]">
@@ -490,7 +506,7 @@ const EventsPage = () => {
                         <p className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                           {event.date.month}
                         </p>
-                        <p className="text-[20px] sm:text-[25px] md:text-[50px] lg:text-[50px] font-light font-seasons leading-none">
+                        <p className="text-[25px] sm:text-[25px] md:text-[50px] lg:text-[50px] font-light font-seasons leading-none">
                           {event.date.day}
                         </p>
                       </div>
@@ -608,7 +624,34 @@ const EventsPage = () => {
                 <p className="text-[16px]">No past events available</p>
               </div>
             ) : (
-              <div className="relative">
+              <div className="relative overflow-visible">
+                {/* Mobile-only left/right nav buttons - horizontal scroll not reliable on mobile */}
+                {totalPages > 1 && (
+                  <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-between px-2 md:hidden">
+                    <div className="pointer-events-auto">
+                      <button
+                        type="button"
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 0}
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-lg transition-all duration-300 hover:bg-white disabled:pointer-events-none disabled:opacity-50"
+                        aria-label="Previous slide"
+                      >
+                        <ChevronLeft className="w-5 h-5 text-[#D5B584]" />
+                      </button>
+                    </div>
+                    <div className="pointer-events-auto">
+                      <button
+                        type="button"
+                        onClick={handleNextPage}
+                        disabled={currentPage >= totalPages - 1}
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-lg transition-all duration-300 hover:bg-white disabled:pointer-events-none disabled:opacity-50"
+                        aria-label="Next slide"
+                      >
+                        <ChevronRight className="w-5 h-5 text-[#D5B584]" />
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {/* Past Events - Horizontal Scroll Container */}
                 <div
                   ref={scrollContainerRef}
@@ -682,7 +725,7 @@ const EventsPage = () => {
                             return (
                               <div
                                 key={event.id}
-                                className="flex flex-col group flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]"
+                                className="flex flex-col group flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] mt-[25px]"
                               >
                                 <Link href={`/past-events/${event.id}`}>
                                   <div className="relative w-full aspect-[4/3] overflow-hidden mb-0 group-hover:shadow-2xl transition-all duration-500">
@@ -730,30 +773,6 @@ const EventsPage = () => {
                   </div>
                 </div>
 
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-4 mt-8">
-                    <button
-                      onClick={handlePrevPage}
-                      disabled={currentPage === 0}
-                      className="flex items-center justify-center rounded-full bg-white/90 hover:bg-white p-3 shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                      aria-label="Previous page"
-                    >
-                      <ChevronLeft className="w-5 h-5 text-[#D5B584]" />
-                    </button>
-                    <span className="text-[#1C3163] text-sm">
-                      Page {currentPage + 1} of {totalPages}
-                    </span>
-                    <button
-                      onClick={handleNextPage}
-                      disabled={currentPage >= totalPages - 1}
-                      className="flex items-center justify-center rounded-full bg-white/90 hover:bg-white p-3 shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                      aria-label="Next page"
-                    >
-                      <ChevronRight className="w-5 h-5 text-[#D5B584]" />
-                    </button>
-                  </div>
-                )}
               </div>
             )}
           </div>

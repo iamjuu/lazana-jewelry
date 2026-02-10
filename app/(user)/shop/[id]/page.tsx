@@ -251,7 +251,10 @@ const ProductDetailPage = () => {
       <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
         <Navbar />
         <div className="min-h-screen flex items-center justify-center">
-          <p className="text-2xl text-[#1C3163]">Loading product...</p>
+          <div className="text-center text-[#1C3163]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
+            <p>Loading product...</p>
+          </div>
         </div>
         <Footer />
       </div>
@@ -499,7 +502,7 @@ const ProductDetailPage = () => {
               {/* Thumbnail Images and Videos */}
               {mediaItems.length > 1 && (
                 <div
-                  className="flex  flex-row md:flex-col gap-3  md:mt-[40px] sm:mt-[220px] overflow-x-auto sm:overflow-visible"
+                  className="flex  flex-row md:flex-col gap-3  md:mt-[40px] sm:mt-[20px] overflow-x-auto sm:overflow-visible"
                   // style={{ marginTop: "40px" }}
                 >
                   {mediaItems.map((media, index) => (
@@ -575,7 +578,7 @@ const ProductDetailPage = () => {
             {/* Right Side - Product Info */}
             <div className="flex flex-col">
               <h1
-                className="font-seasons text-[#1C3163] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none"
+                className="font-seasons text-[#1C3163] text-[26px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none"
                 style={{ textShadow: "0.5px 0 0 currentColor" }}
               >
                 {product.name}
@@ -585,13 +588,13 @@ const ProductDetailPage = () => {
                 {hasDiscount ? (
                   <div className="flex items-center gap-3">
                     <p
-                      className="font-seasons text-gray-500 text-[24px] sm:text-[16px] md:text-[24px] lg:text-[24px] line-through font-medium"
+                      className="font-seasons text-gray-500 text-[20px] sm:text-[20px] md:text-[24px] lg:text-[24px] line-through font-medium"
                       style={{ textShadow: "0.5px 0 0 currentColor" }}
                     >
                       {originalPriceFormatted}
                     </p>
                     <p
-                      className="font-seasons text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] font-medium"
+                      className="font-seasons text-[#1C3163] text-[20px] sm:text-[20px] lg:text-[24px] font-medium"
                       style={{ textShadow: "0.5px 0 0 currentColor" }}
                     >
                       {priceInDollars} USD
@@ -599,7 +602,7 @@ const ProductDetailPage = () => {
                   </div>
                 ) : (
                   <p
-                    className="font-seasons text-[#1C3163] text-[12px] sm:text-[16px] lg:text-[24px] font-medium"
+                    className="font-seasons text-[#1C3163] text-[20px] sm:text-[20px] lg:text-[24px] font-medium"
                     style={{ textShadow: "0.5px 0 0 currentColor" }}
                   >
                     {priceInDollars} USD

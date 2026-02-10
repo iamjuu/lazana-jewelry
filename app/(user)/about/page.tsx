@@ -195,12 +195,14 @@ const AboutPage = () => {
           </div>
         </div>
 
-        <div className="w-full flex flex-col mt-[25px] md:ml-[45px]">
+        <div className="w-full flex flex-col mt-[25px]">
+          <div className=" pl:0 lg:pl-10">
           <div className="flex w-full  justify-start ">
             <h1 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
               What makes our Singing Bowls unique
             </h1>
           </div>
+         
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-[54px] mt-[25px] ">
             {Icons.map((item) => (
               <div
@@ -225,6 +227,7 @@ const AboutPage = () => {
                 </div>
               </div>
             ))}
+          </div>
           </div>
         </div>
       </div>

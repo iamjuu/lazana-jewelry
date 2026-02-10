@@ -129,9 +129,10 @@
       fetchSubcategories();
     }, [formData.category]);
 
-    // Helper to convert base64 string to data URL if needed
+    // Helper to convert base64 string to data URL if needed (blob URLs pass through for local preview)
     const normalizeImageUrl = (url: string): string => {
       if (!url) return "";
+      if (url.startsWith("blob:")) return url;
       if (url.startsWith("data:image")) return url;
       if (url.startsWith("http://") || url.startsWith("https://")) return url;
       return `data:image/jpeg;base64,${url}`;
@@ -190,6 +191,9 @@
       }
       return [];
     });
+
+    // Track which original image indices user has removed (UI only; persisted when Save is clicked)
+    const [removedOriginalImageIndices, setRemovedOriginalImageIndices] = useState<Set<number>>(new Set());
     const [originalVideos, setOriginalVideos] = useState<string[]>(() => {
       if (initialData?.videoUrl) {
         return Array.isArray(initialData.videoUrl) 
@@ -199,32 +203,33 @@
       return [];
     });
 
-    // Handle image selection - use local preview (no upload yet, no base64)
+    // Handle image selection - use local preview (no upload yet); changes apply to UI only until Save
     const handleImageSelect = (index: number, file: File | null) => {
       if (!file) {
         const newPendingFiles = [...pendingImageFiles];
         newPendingFiles[index] = null;
         setPendingImageFiles(newPendingFiles);
-        
-        // Update preview - if editing and we have original image, restore it
+        // Remove from UI only; if this was an original image, mark as removed (persisted on Save)
+        if (isEdit && originalImages[index]) {
+          setRemovedOriginalImageIndices((prev) => new Set(prev).add(index));
+        }
         const newImages = [...uploadedImages];
         const newFormImages = [...formData.images];
-        if (isEdit && originalImages[index]) {
-          newImages[index] = normalizeImageUrl(originalImages[index]);
-          newFormImages[index] = originalImages[index];
-        } else {
-        newImages.splice(index, 1);
-        newFormImages.splice(index, 1);
-        }
+        newImages[index] = "";
+        newFormImages[index] = "";
         setUploadedImages(newImages);
         setFormData({ ...formData, images: newFormImages });
-        
-        // If removing the last image and there are multiple fields, reduce field count
-        if (index === imageFieldCount - 1 && imageFieldCount > 1 && !originalImages[index]) {
+        if (index === imageFieldCount - 1 && imageFieldCount > 1) {
           setImageFieldCount(imageFieldCount - 1);
         }
         return;
       }
+      // User chose a new file: clear "removed" mark for this index so we use the new file on Save
+      setRemovedOriginalImageIndices((prev) => {
+        const next = new Set(prev);
+        next.delete(index);
+        return next;
+      });
 
       // Store the file (don't upload yet)
       const newPendingFiles = [...pendingImageFiles];
@@ -252,33 +257,23 @@
     };
 
     const handleImageRemove = (index: number) => {
-      // Clean up object URL if it was created from local file
-      if (uploadedImages[index] && uploadedImages[index].startsWith('blob:')) {
+      if (uploadedImages[index] && uploadedImages[index].startsWith("blob:")) {
         URL.revokeObjectURL(uploadedImages[index]);
       }
-      
+      // Remove from UI only; persist removal when user clicks Save
+      if (isEdit && originalImages[index]) {
+        setRemovedOriginalImageIndices((prev) => new Set(prev).add(index));
+      }
       const newImages = [...uploadedImages];
       const newFormImages = [...formData.images];
-      
-      // If editing and we have original image, restore it
-      if (isEdit && originalImages[index]) {
-        newImages[index] = normalizeImageUrl(originalImages[index]);
-        newFormImages[index] = originalImages[index];
-      } else {
-        newImages.splice(index, 1);
-        newFormImages.splice(index, 1);
-      }
-      
+      newImages[index] = "";
+      newFormImages[index] = "";
       setUploadedImages(newImages);
       setFormData({ ...formData, images: newFormImages });
-      
-      // Clear pending file
       const newPendingFiles = [...pendingImageFiles];
       newPendingFiles[index] = null;
       setPendingImageFiles(newPendingFiles);
-      
-      // If removing the last image and there are multiple fields, reduce field count
-      if (index === imageFieldCount - 1 && imageFieldCount > 1 && !originalImages[index]) {
+      if (index === imageFieldCount - 1 && imageFieldCount > 1) {
         setImageFieldCount(imageFieldCount - 1);
       }
     };
@@ -433,8 +428,11 @@
         return;
       }
 
-      // Check if we have at least one image (either uploaded or pending)
-      const hasImages = formData.images.length > 0 || pendingImageFiles.some(f => f !== null);
+      // At least one image: either a pending file, an existing form URL, or an original not removed
+      const hasImages =
+        pendingImageFiles.some((f) => f !== null) ||
+        formData.images.some((img) => img && img.trim() !== "") ||
+        (isEdit && Array.from({ length: Math.max(originalImages.length, 1) }).some((_, i) => originalImages[i] && !removedOriginalImageIndices.has(i)));
       if (!hasImages) {
         setError("At least one image is required");
         setLoading(false);
@@ -501,8 +499,8 @@
               toast.dismiss(uploadToastId);
               throw new Error(`Failed to upload image ${i + 1}. Please try again.`);
             }
-          } else if (isEdit && originalImages[i] && !formData.images[i]) {
-            // Use original image if editing and no new image at this index
+          } else if (isEdit && originalImages[i] && !formData.images[i] && !removedOriginalImageIndices.has(i)) {
+            // Use original image if editing, no new image, and user did not remove it
             if (finalImages.length <= i) {
               finalImages.push(originalImages[i]);
             } else {
@@ -1021,16 +1019,27 @@
                 />
                 {uploadedImages[index] && (
                   <div className="relative  w-full h-32 max-w-[200px] rounded-md border border-zinc-600 overflow-hidden  bg-zinc-900">
-                    <NextImage
-                      src={normalizeImageUrl(uploadedImages[index])}
-                      alt={index === 0 ? "Main Preview" : `Preview ${index + 1}`}
-                      width={200}
-                      height={128}
-                      className="w-full h-full object-contain"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
+                    {uploadedImages[index].startsWith("blob:") ? (
+                      <img
+                        src={uploadedImages[index]}
+                        alt={index === 0 ? "Main Preview" : `Preview ${index + 1}`}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <NextImage
+                        src={normalizeImageUrl(uploadedImages[index])}
+                        alt={index === 0 ? "Main Preview" : `Preview ${index + 1}`}
+                        width={200}
+                        height={128}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    )}
                     <button
                       type="button"
                       onClick={() => handleImageRemove(index)}

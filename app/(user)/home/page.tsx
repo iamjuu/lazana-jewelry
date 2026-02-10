@@ -234,6 +234,7 @@ type Category = {
 type Event = {
   _id: string;
   title: string;
+  name?: string;
   date: string;
   day: string;
   time: string;
@@ -279,6 +280,16 @@ const Index = () => {
     if (url.startsWith("data:image")) return url;
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
     return `data:image/jpeg;base64,${url}`;
+  };
+
+  // Prefer a human-readable event title (avoid showing IDs or garbled data)
+  const getEventDisplayTitle = (event: Event): string => {
+    const t = event.title?.trim();
+    const n = event.name?.trim();
+    const looksLikeId = t && t.length >= 12 && !/\s/.test(t) && /^[a-zA-Z0-9]+$/.test(t);
+    if (t && !looksLikeId) return t;
+    if (n) return n;
+    return t || "Event";
   };
 
   // Helper function to format time with day/date
@@ -468,8 +479,8 @@ const Index = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
-      <div className="relative h-screen w-full overflow-hidden">
+    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen w-full min-w-0 relative">
+      <div className="relative z-10 h-screen w-full overflow-hidden">
         <video
           ref={videoRef}
           autoPlay
@@ -515,7 +526,7 @@ const Index = () => {
           </div>
         </div>
       </div>
-      <div className="w-full">
+      <div className="w-full relative z-0">
         {/* about section  */}
 
         {/* collection section  */}
@@ -934,7 +945,7 @@ const Index = () => {
 
         {/* testimonials section  */}
 
-        <section className="w-full py-[0px] md:py-[0px]  relative mt-[25px] ">
+        <section className="w-full md:py-[0px]  relative mt-[25px] ">
           <div className="max-w-6xl mx-auto px-4">
             <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
               What our Clients are saying
@@ -1118,7 +1129,7 @@ const Index = () => {
 
         {/* Upcoming Events section */}
 
-        <section className="w-full ">
+        <section className="w-full  mt-[25px]">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex w-full  justify-between items-center">
               <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
@@ -1226,7 +1237,7 @@ const Index = () => {
                         <div className="relative w-full aspect-[4/3]  overflow-hidden mb-0 group-hover:shadow-2xl transition-all duration-500">
                           <Image
                             src={imageUrl}
-                            alt={event.title}
+                            alt={getEventDisplayTitle(event)}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover group-hover:scale-110 transition-all duration-500 ease-out"
@@ -1243,9 +1254,9 @@ const Index = () => {
                         </div>
                       </Link>
                       {/* Event Details - Light Beige Background */}
-                      <div className="  mt-2 relative z-10">
-                        <h3 className=" font-seasons text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight mb-2  tracking-wide">
-                          {event.title}
+                      <div className="mt-2 relative z-0">
+                        <h3 className="font-seasons text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight mb-2 tracking-wide">
+                          {getEventDisplayTitle(event)}
                         </h3>
                         <p className="text-gray-700 text-[12px] sm:text-[13px] md:text-[14px] font-light text-[#545454] font-touvlo whitespace-nowrap ">
                           {formattedFullDate}

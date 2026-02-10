@@ -23,7 +23,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
   }, [pathname, router]);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#fee8dd' }}>
+    <div className="min-h-screen w-full min-w-0" style={{ backgroundColor: '#fee8dd' }}>
       {children}
     </div>
   );

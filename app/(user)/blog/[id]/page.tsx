@@ -183,25 +183,26 @@ const BlogDetailPage = () => {
 
             {/* Content */}
             <div className="prose prose-lg max-w-none">
-              <div className="text-[#1C3163] text-[16px] md:text-lg leading-relaxed space-y-4">
+              <div className="text-[#1C3163] text-[14px] sm:text-[16px] md:text-[16px] lg:text-[16px] leading-relaxed space-y-4">
                 {paragraphs.length > 0 ? (
                   paragraphs.map((paragraph, index) => (
-                    <p key={index} className="whitespace-pre-line text-touvlo text-[#545454]">
+                    <p key={index} className="whitespace-pre-line font-touvlo text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px]">
                       {paragraph}
                     </p>
                   ))
                 ) : (
-                  <p className="whitespace-pre-line text-[#545454] font-touvlo md:text-[16px]">
+                  <p className="whitespace-pre-line text-[#545454] font-touvlo text-[14px] sm:text-[16px] md:text-[16px] lg:text-[16px]">
                     {blog.description}
                   </p>
                 )}
               </div>
             </div>
 
-            {/* Author Signature */}
-            <div className="mt-[25px] md:pt-[25px]  border-[#1C3163]/20">
-              <p className="text-[#545454] text-base md:text-lg font-medium text-center ">
-              *******************  {blog.name || "Francesca Wong"} *******************
+            {/* Author Signature - fewer asterisks on mobile so it fits */}
+            <div className="mt-[25px] md:pt-[25px] border-[#1C3163]/20">
+              <p className="text-[#545454] text-base md:text-lg font-medium text-center">
+                <span className="md:hidden">***  {blog.name || "Francesca Wong"}  ***</span>
+                <span className="hidden md:inline">*******************  {blog.name || "Francesca Wong"} *******************</span>
               </p>
             </div>
 

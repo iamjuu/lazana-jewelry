@@ -89,7 +89,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 
-  // 2. USER trying to access ADMIN LOGIN/SIGNUP pages → Redirect to home
+  // 1d. ADMIN with valid token on admin login/signup → Redirect to dashboard (avoids loop when both user + admin cookies exist)
+  if (adminToken && isAdminAuthRoute) {
+    const adminPayload = decodeToken(adminToken);
+    if (adminPayload && (adminPayload.isAdmin || adminPayload.role === "admin")) {
+      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+    }
+  }
+
+  // 2. USER (without valid admin) trying to access ADMIN LOGIN/SIGNUP pages → Redirect to home
   if (userToken && isAdminAuthRoute) {
     console.log("🚫 User trying to access admin login, redirecting to home");
     return NextResponse.redirect(new URL("/", request.url));

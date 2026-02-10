@@ -25,6 +25,8 @@ const ServicesPage = () => {
   const [privateCurrentIndex, setPrivateCurrentIndex] = useState(0);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
+  // On mobile, tap card to show description (no hover); one card expanded at a time
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
 
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     if (typeof window !== "undefined") {
@@ -92,7 +94,7 @@ const ServicesPage = () => {
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]  min-h-screen ">
       <Navbar />
 
-      <main className="w-full  ">
+      <main className="w-full md:px-4 ">
         {/* HERO / TOP SECTION - Matches your design image */}
         <section className="max-w-7xl mx-auto px-6 md:px-6 lg:px-0">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center lg:items-start">
@@ -127,11 +129,7 @@ const ServicesPage = () => {
                 </div>
               </div>
 
-              <div className="mt-[25px]">
-                <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-                  For Corporate & Group
-                </h2>
-              </div>
+            
             </div>
 
             {/* Right Column - Hero Image (Fixed Aspect Ratio) */}
@@ -151,12 +149,17 @@ const ServicesPage = () => {
 
         {/* 1. CORPORATE SESSIONS LOOP */}
         <section className="max-w-7xl mx-auto px-6 md:px-6 lg:px-0 mt-[25px] font-seasons">
+        <div className="mt-[25px]">
+                <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+                  For Corporate & Group
+                </h2>
+              </div>
           {sessionsLoading ? (
-            <div className="text-center py-12 text-[#D5B584]">
+            <div className="text-center py-12 text-[#D5B584] mt-[25px]">
               Loading sessions...
             </div>
           ) : (
-            <div className="relative overflow-hidden">
+            <div className="relative overflow-hidden mt-[25px]">
               <div
                 className="flex gap-6 transition-transform duration-500 ease-in-out"
                 style={{
@@ -168,7 +171,24 @@ const ServicesPage = () => {
                     key={item._id}
                     className="min-w-full md:min-w-[calc(33.333%-1rem)]"
                   >
-                    <div className="relative group aspect-[3/4] overflow-hidden rounded-2xl shadow-sm">
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() =>
+                        setExpandedCardId((id) =>
+                          id === item._id ? null : item._id,
+                        )
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setExpandedCardId((id) =>
+                            id === item._id ? null : item._id,
+                          );
+                        }
+                      }}
+                      className="relative group aspect-[3/4] overflow-hidden rounded-2xl shadow-sm cursor-pointer [touch-action:manipulation]"
+                    >
                       {item.imageUrl && (
                         <Image
                           src={item.imageUrl}
@@ -177,20 +197,33 @@ const ServicesPage = () => {
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       )}
-                      {/* Default Overlay - Fades out on hover */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6 font-touvlo transition-opacity duration-300 group-hover:opacity-0 pointer-events-none">
+                      {/* Default Overlay - Fades out on hover (desktop) or when expanded (mobile) */}
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6 font-touvlo transition-opacity duration-300 group-hover:opacity-0 pointer-events-none ${expandedCardId === item._id ? "opacity-0" : ""}`}
+                      >
                         <h3 className="text-white text-[18px] font-medium mb-3 text-touvlo">
                           {item.title}
                         </h3>
-                        <button className="text-white text-sm flex items-center gap-2 hover:gap-3 transition-all text-touvlo">
-                          Enquire Now{" "}
-                          <span className="text-[16px] text-touvlo">→</span>
-                        </button>
+                        <span className="text-white text-sm flex items-center gap-2 text-touvlo">
+                          Enquire Now <span className="text-[16px]">→</span>
+                        </span>
                       </div>
 
-                      {/* Hover Overlay - Fades in on hover */}
-                      <div className="absolute inset-0 bg-black/60 p-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 overflow-y-auto">
-                        <h3 className="font-seasons text-[20px] text-[#D4A373] leading-tight shrink-0">
+                      {/* Description overlay - hover on desktop, tap to show on mobile. When hidden, pointer-events-none so tap reaches the card. */}
+                      <div
+                        role="presentation"
+                        onClick={(e) => e.stopPropagation()}
+                        className={`absolute inset-0 bg-black/60 p-6 flex flex-col gap-3 transition-all duration-300 overflow-y-auto overflow-x-hidden ${expandedCardId === item._id ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} md:opacity-0 md:group-hover:opacity-100 md:pointer-events-none md:group-hover:pointer-events-auto`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setExpandedCardId(null)}
+                          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center text-lg leading-none md:hidden"
+                          aria-label="Close"
+                        >
+                          ×
+                        </button>
+                        <h3 className="font-seasons text-[20px] text-[#D4A373] leading-tight shrink-0 pr-8">
                           {item.title}
                         </h3>
 
@@ -215,7 +248,10 @@ const ServicesPage = () => {
 
                         <div className="mt-auto pt-4 shrink-0">
                           <button
-                            onClick={() => router.push("/corporate-session")}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push("/corporate-session");
+                            }}
                             className="w-full bg-[#D4A373] text-white py-2 rounded-full font-touvlo text-[14px] hover:bg-[#c29363] transition-colors"
                           >
                             Enquire Now
@@ -254,7 +290,24 @@ const ServicesPage = () => {
                     key={item._id}
                     className="min-w-full md:min-w-[calc(33.333%-1rem)] flex-shrink-0"
                   >
-                    <div className="relative group aspect-[3/4] overflow-hidden rounded-2xl shadow-sm bg-white/10">
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() =>
+                        setExpandedCardId((id) =>
+                          id === item._id ? null : item._id,
+                        )
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setExpandedCardId((id) =>
+                            id === item._id ? null : item._id,
+                          );
+                        }
+                      }}
+                      className="relative group aspect-[3/4] overflow-hidden rounded-2xl shadow-sm bg-white/10 cursor-pointer [touch-action:manipulation]"
+                    >
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}
@@ -268,20 +321,33 @@ const ServicesPage = () => {
                         </div>
                       )}
 
-                      {/* Default Overlay - Fades out on hover */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none">
+                      {/* Default Overlay - Fades out on hover (desktop) or when expanded (mobile) */}
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none ${expandedCardId === item._id ? "opacity-0" : ""}`}
+                      >
                         <h3 className="text-white text-[18px] text-touvlo font-medium mb-3">
                           {item.title || "Private Session"}
                         </h3>
-                        <button className="text-white text-sm flex items-center gap-2 hover:gap-3 transition-all">
-                          Book Now{" "}
-                          <span className="text-[16px] text-touvlo">→</span>
-                        </button>
+                        <span className="text-white text-sm flex items-center gap-2">
+                          Book Now <span className="text-[16px] text-touvlo">→</span>
+                        </span>
                       </div>
 
-                      {/* Hover Overlay - Fades in on hover */}
-                      <div className="absolute inset-0 bg-black/60 p-6 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 overflow-y-auto">
-                        <h3 className="font-seasons text-[20px] text-[#D4A373] leading-tight shrink-0">
+                      {/* Description overlay - hover on desktop, tap to show on mobile. When hidden, pointer-events-none so tap reaches the card. */}
+                      <div
+                        role="presentation"
+                        onClick={(e) => e.stopPropagation()}
+                        className={`absolute inset-0 bg-black/60 p-6 flex flex-col gap-3 transition-all duration-300 overflow-y-auto overflow-x-hidden ${expandedCardId === item._id ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} md:opacity-0 md:group-hover:opacity-100 md:pointer-events-none md:group-hover:pointer-events-auto`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setExpandedCardId(null)}
+                          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center text-lg leading-none md:hidden"
+                          aria-label="Close"
+                        >
+                          ×
+                        </button>
+                        <h3 className="font-seasons text-[20px] text-[#D4A373] leading-tight shrink-0 pr-8">
                           {item.title || "Private Session"}
                         </h3>
 
@@ -306,11 +372,12 @@ const ServicesPage = () => {
 
                         <div className="mt-auto pt-4 shrink-0">
                           <button
-                            onClick={() =>
+                            onClick={(e) => {
+                              e.stopPropagation();
                               router.push(
                                 isLoggedIn ? "/privateappointment" : "/login",
-                              )
-                            }
+                              );
+                            }}
                             className="w-full bg-[#D4A373] text-white py-2 rounded-full font-touvlo text-[14px] hover:bg-[#c29363] transition-colors"
                           >
                             Book Now

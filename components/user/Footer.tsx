@@ -64,8 +64,8 @@ const Footer = () => {
   };
 
   return (
-    <section className="w-full py-[40px] md:py-[8px] bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2] text-touvlo mt-[35px] bg-red-500">
-      <div className="max-w-6xl border-b pb-[64px] border-black items-stretch flex flex-col md:flex-row justify-between mx-auto px-4 gap-6 md:gap-2 ">
+    <section className="w-full  z-[-9999px] py-[40px] md:py-[8px] bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2] text-touvlo mt-[35px] overflow-x-hidden">
+      <div className="max-w-6xl border-b pb-[64px] border-black items-stretch flex flex-col md:flex-row justify-between mx-auto px-4 gap-6 md:gap-2 min-w-0">
         <div className="hidden md:flex items-start h-full">
           <Image
             src={FooterIcon1}
@@ -165,7 +165,7 @@ const Footer = () => {
       <div>
         <div className="max-w-6xl flex flex-col md:flex-row py-[0px] mx-auto px-4 gap-8 md:gap-0 relative">
           
-          <div className="w-full md:w-[50%] flex justify-center items-center md:justify-start absolute inset-0 opacity-30 md:opacity-100 md:relative md:inset-auto z-0 md:z-auto md:pointer-events-none">
+          <div className="w-full md:w-[30%] flex justify-center items-center md:justify-start absolute inset-0 opacity-30 md:opacity-100 md:relative md:inset-auto z-0 md:z-auto md:pointer-events-none">
             <Image
               src={FooterIcon3}
               alt="footer icon"
@@ -175,10 +175,10 @@ const Footer = () => {
 
  
 
-          <div className="w-full md:w-[50%] font-montserrat font-[200] text-[14px] md:text-[16px] relative z-10 md:z-auto ">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-4">
-              <div>
-                <ul className="space-y-2">
+          <div className="w-full md:w-[70%] font-montserrat font-[200] text-[14px] md:text-[16px] relative z-10 md:z-auto min-w-0 overflow-hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-4 min-w-0">
+              <div className="min-w-0">
+                <ul className="space-y-2 min-w-0">
                   <li>
                     <Link
                       href="/"
@@ -221,8 +221,8 @@ const Footer = () => {
                   </li>
                 </ul>
               </div>
-              <div>
-                <ul className="space-y-2">
+              <div className="min-w-0">
+                <ul className="space-y-2 min-w-0">
                   <li>
                     <Link
                       href="/events"
@@ -265,20 +265,18 @@ const Footer = () => {
                   </li>
                 </ul>
               </div>
-              <div>
-                <ul className="space-y-2">
+              <div className="min-w-0 overflow-hidden sm:overflow-visible">
+                <ul className="space-y-2 min-w-0">
                   <li>
-
-                    
-                    <span className="text-touvlo break-words text-[#545454] ">
+                    <span className="text-touvlo text-[#545454] block">
                       Based in Singapore
                     </span>
                   </li>
-                  <li>
+                  <li className="min-w-0 max-w-[15rem] sm:max-w-[15rem] md:max-w-none">
                     <a
                       href="mailto:hello@crystalbowlstudio.com"
-                      className="text-[#545454] hover:text-[black] transition-colors text-touvlo"
-                    >
+                      className="text-[#545454] hover:text-[black] transition-colors text-touvlo block w-full min-w-0 whitespace-normal break-all sm:break-words lg:whitespace-nowrap"
+                      >
                       hello@crystalbowlstudio.com
                     </a>
                   </li>
@@ -290,11 +288,11 @@ const Footer = () => {
 
 
 
-        <div className="w-full font-touvlo ">
-          <div className="max-w-6xl mx-auto px-4 py-6 md:py-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className="w-full font-touvlo min-w-0">
+          <div className="max-w-6xl mx-auto px-4 py-6 md:py-6 min-w-0">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 min-w-0">
               {/* Left Section - Social Icons and Text */}
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 min-w-0 flex-1 sm:flex-initial">
                 {/* Social Media Icons */}
                 <div className="flex gap-3">
                   <a
@@ -333,8 +331,8 @@ const Footer = () => {
                 </div>
 
                 {/* Copyright and Links */}
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-black/80 text-[12px] sm:text-[14px] font-light">
-                  <p>©{new Date().getFullYear()} — Copyright</p>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-black/80 text-[12px] sm:text-[14px] font-light min-w-0 flex-wrap">
+                  <p className="min-w-0 shrink-0">©{new Date().getFullYear()} — Copyright</p>
                   <div className="flex flex-wrap gap-2 sm:gap-4">
                     <a
                       href="#"

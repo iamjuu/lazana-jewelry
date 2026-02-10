@@ -117,12 +117,12 @@ function AdminLoginContent() {
   };
 
   return (
-    <div className="mx-auto max-w-md px-6 py-20">
-      <h1 className="mb-6 text-3xl font-bold">Admin Login</h1>
-      <p className="mb-6 text-sm text-zinc-600">Crystal Bowl Studio Administration</p>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium mb-1">
+    <div className="mx-auto max-w-md px-6 py-24  shadow-lg  mt-[60px] border-t border-b rounded-lg border-[#1C3163]">
+      <h1 className="font-seasons mb-2 text-3xl font-bold text-[#1C3163] whitespace-nowrap text-center">Crystal Bowl Studio </h1>
+      <p className="font-touvlo mb-6 text-sm text-[#1C3163] text-center">Administrator Login</p>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="mt-10">
+          <label htmlFor="email" className="font-touvlo block text-sm font-medium text-[#1C3163] mb-1">
             Email
           </label>
           <input
@@ -136,7 +136,7 @@ function AdminLoginContent() {
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium mb-1">
+          <label htmlFor="password" className="font-touvlo block text-sm font-medium text-[#1C3163] mb-1">
             Password
           </label>
           <input
@@ -153,19 +153,13 @@ function AdminLoginContent() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-md bg-black px-4 py-2 text-white disabled:opacity-50"
+          className="w-full rounded-md bg-[#1C3163] px-4 py-2 font-touvlo text-white disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
-      <p className="mt-4 text-center text-sm text-zinc-600">
-        Don&apos;t have an account?{" "}
-        <Link href="/admin/signup" className="text-black underline">
-          Sign Up
-        </Link>
-      </p>
-      <p className="mt-2 text-center text-sm text-zinc-600">
-        <Link href="/" className="text-black underline">
+      <p className="mt-6 text-center text-sm font-touvlo text-[#1C3163]">
+        <Link href="/" className="underline">
           Back to Home
         </Link>
       </p>

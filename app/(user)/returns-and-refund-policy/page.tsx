@@ -22,7 +22,7 @@ const ReturnsAndRefundPolicyPage = () => {
           <div className="flex flex-col gap-[1px]">
             {/* Custom-Made to Order */}
             <div className="mt-[25px]">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
                 Custom-Made to Order
               </h3>
               <div className="text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[14px] font-light leading-relaxed font-touvlo">
@@ -37,7 +37,7 @@ const ReturnsAndRefundPolicyPage = () => {
 
             {/* Order Cancellations */}
             <div className="mt-[25px]">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
                 Order Cancellations
               </h3>
               <div className=" text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[14px] font-light leading-relaxed font-touvlo">
@@ -73,7 +73,7 @@ const ReturnsAndRefundPolicyPage = () => {
 
             {/* Damaged or Defective Items */}
             <div className="mt-[25px]">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
                 Damaged or Defective Items
               </h3>
               <div className=" text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[14px] font-light leading-relaxed font-touvlo">
@@ -106,7 +106,7 @@ const ReturnsAndRefundPolicyPage = () => {
 
             {/* Need Help */}
             <div className="mt-[25px]">
-              <h3 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
                 Need Help?
               </h3>
               <div className=" text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[14px] font-light leading-relaxed font-touvlo">

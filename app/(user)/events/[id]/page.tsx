@@ -386,16 +386,16 @@ const EventDetailPage = () => {
             <div className="order-2">
               <div className="space-y-2 sm:space-y-3 mt-0 sm:mt-4">
                 {/* Event Title */}
-                <h1 className="text-[#1C3163] text-[20px] sm:text-[22px] md:text-[30px] lg:text-[32px] font-light leading-tight font-seasons">
+                <h1 className="text-[#1C3163] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-light leading-tight font-seasons">
                   {event.title}
                 </h1>
 
                 {/* Event Details */}
                 <div className="space-y-1 sm:space-y-1.5 text-[#1C3163] text-[12px] sm:text-[13px] md:text-[14px] font-touvlo">
-                  <p className="font-normal">
+                  <p className="text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-touvlo text-[#1C3163] ">
                     {event.day}, {formattedDate}
                   </p>
-                  <p className="font-light">
+                  <p className=" text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-touvlo">
                     {formatTimeWithDate(
                       event.day,
                       event.time,
@@ -403,7 +403,7 @@ const EventDetailPage = () => {
                       event.endDate,
                     )}
                   </p>
-                  <p className="font-light">{event.location}</p>
+                  <p className="text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-touvlo">{event.location}</p>
                 </div>
 
                 {/* Booking Card */}

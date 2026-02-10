@@ -127,10 +127,12 @@ export default function SignupPage() {
 
       toast.success("Account created successfully! You are now logged in.");
       
-      // Store token in localStorage
+      // Store token in sessionStorage (cleared when tab closes)
       if (data.data?.token) {
         sessionStorage.setItem("userToken", data.data.token);
         sessionStorage.setItem("userRole", "user");
+        sessionStorage.removeItem("adminToken");
+        sessionStorage.removeItem("adminRole");
       }
 
       // Redirect to home

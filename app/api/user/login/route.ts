@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       data: { token, role: "user" } 
     });
     
-    // Set user-specific cookie (separate from admin token)
+    // Session cookie: cleared when tab/window closes (no maxAge)
     res.cookies.set({
       name: "userToken",
       value: token,
@@ -47,7 +47,6 @@ export async function POST(req: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
     return res;

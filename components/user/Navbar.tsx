@@ -142,11 +142,11 @@ const Navbar = () => {
       <nav
         ref={navRef}
         className="w-full px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-[43px]
-        fixed top-0 left-0 right-0 z-50
+        fixed top-0 left-0 right-0 z-[1000]
         lg:bg-white/10   backdrop-blur-sm  lg:backdrop-blur-sm bg-transparent overflow-visible"
       >
         {/* MOBILE/TABLET NAVBAR - ALWAYS VISIBLE */}
-        <div className="lg:hidden flex items-center justify-between py-4 relative z-40">
+        <div className="lg:hidden flex items-center justify-between py-4 relative z-[1001]">
           <Link href="/" className="flex items-center">
             <Image
               src={CryselLogo}
@@ -187,7 +187,7 @@ const Navbar = () => {
             >
               <ShoppingCart size={20} />
               {mounted && cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-xs w-4 h-4 rounded-full flex items-center justify-center text-[10px]">
+                <span className="absolute -top-2 -right-2 bg-[#1c3163] text-xs w-4 h-4 rounded-full flex items-center justify-center text-[10px]">
                   {cartCount}
                 </span>
               )}
@@ -205,7 +205,7 @@ const Navbar = () => {
 
         {/* MOBILE MENU - DROPDOWN */}
         {mobileMenuOpen && (
-          <div className="font-seasons lg:hidden bg-white/20 backdrop-blur-md rounded-lg p-4 space-y-3 mb-4 relative z-30">
+          <div className="font-seasons lg:hidden bg-white/20 backdrop-blur-md rounded-lg p-4 space-y-3 mb-4 relative z-[1002]">
             {navigationItems.map((item) => {
               /* Shop: expandable with backend categories on mobile */
               if (item.hasDropdown) {
@@ -391,7 +391,7 @@ const Navbar = () => {
                           absolute left-0 top-full mt-2 w-56
                           backdrop-blur-sm
                           shadow-lg border border-white/20
-                          rounded-lg z-[100] pointer-events-auto py-3
+                          rounded-lg z-[1003] pointer-events-auto py-3
                           !text-[18px]
 
                         "
@@ -465,7 +465,7 @@ const Navbar = () => {
                           absolute left-0 top-full mt-2 w-56
                           backdrop-blur-sm
                           shadow-lg border border-white/20
-                          rounded-lg z-[100] pointer-events-auto py-3
+                          rounded-lg z-[1003] pointer-events-auto py-3
                         "
                         style={{ backgroundColor: "#fde9dd" }}
                         onMouseEnter={() => {
@@ -524,7 +524,7 @@ const Navbar = () => {
           </div>
 
           {/* RIGHT ICONS */}
-          <div className="flex items-center gap-6 text-lg">
+          <div className="flex items-center z-[1001] gap-6 text-lg relative">
             {/* Search Icon */}
             {!isSearchOpen && (
               <button
@@ -561,7 +561,7 @@ const Navbar = () => {
 
         {/* Search Overlay - visible on both mobile and desktop */}
         {isSearchOpen && (
-          <div className="absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D5B584]/20 shadow-lg py-4 px-4 z-[60] transition-all duration-300">
+          <div className="absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D5B584]/20 shadow-lg py-4 px-4 z-[1002] transition-all duration-300">
             <div className="max-w-4xl mx-auto flex items-center gap-4">
               <form onSubmit={handleSearch} className="flex-1 relative">
                 <input
@@ -588,40 +588,78 @@ const Navbar = () => {
             </div>
 
             {/* Live Search Results Dropdown */}
-            {searchResults.length > 0 && searchQuery.trim() && (
+            {searchQuery.trim() && (
               <div className="max-w-4xl mx-auto mt-2 bg-white/95 backdrop-blur-md rounded-lg shadow-xl border border-[#D5B584]/20 overflow-hidden max-h-[60vh] overflow-y-auto">
+                {/* Search results count */}
+                <div className="px-3 py-2 border-b border-[#D5B584]/20">
+                  <p className="font-touvlo text-[#545454] text-sm">
+                    {searchResults.length === 0
+                      ? "No results"
+                      : `${searchResults.length} result${searchResults.length === 1 ? "" : "s"}`}
+                  </p>
+                </div>
                 <div className="p-2">
-                  {searchResults.map((product) => (
-                    <div
-                      key={product._id}
-                      onClick={() => handleProductClick(product._id)}
-                      className="flex items-center gap-4 p-3 hover:bg-[#D5B584]/10 cursor-pointer rounded-md transition-colors border-b border-gray-100 last:border-0"
-                    >
-                      {/* Product Image */}
-                      <div className="w-12 h-12 relative flex-shrink-0 rounded overflow-hidden bg-gray-100">
-                        {product.imageUrl && product.imageUrl.length > 0 ? (
-                          <Image
-                            src={product.imageUrl[0]} // Using first image, ensure it's handled properly if relative/absolute
-                            alt={product.name}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400">
-                            <Search size={16} />
-                          </div>
-                        )}
+                  {/* Mobile: list layout (unchanged) */}
+                  <div className="flex flex-col md:hidden">
+                    {searchResults.map((product) => (
+                      <div
+                        key={product._id}
+                        onClick={() => handleProductClick(product._id)}
+                        className="flex items-center gap-4 p-3 hover:bg-[#D5B584]/10 cursor-pointer rounded-md transition-colors border-b border-gray-100 last:border-0"
+                      >
+                        <div className="w-12 h-12 relative flex-shrink-0 rounded overflow-hidden bg-gray-100">
+                          {product.imageUrl && product.imageUrl.length > 0 ? (
+                            <Image
+                              src={product.imageUrl[0]}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <Search size={16} />
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-[#1C3163] font-seasons text-lg leading-tight">
+                            {product.name}
+                          </p>
+                        </div>
                       </div>
-
-                      {/* Product Name & Price */}
-                      <div>
-                        <p className="text-[#1C3163] font-seasons text-lg leading-tight">
-                          {product.name}
-                        </p>
-                        {/* Option to show price if needed: <p className="text-[#D5B584] text-sm">${product.price}</p> */}
+                    ))}
+                  </div>
+                  {/* Md+: grid of product photo + name */}
+                  <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {searchResults.map((product) => (
+                      <div
+                        key={product._id}
+                        onClick={() => handleProductClick(product._id)}
+                        className="flex flex-col rounded-lg overflow-hidden border border-[#D5B584]/20 hover:bg-[#D5B584]/10 cursor-pointer transition-colors"
+                      >
+                        <div className="aspect-square relative w-full bg-gray-100">
+                          {product.imageUrl && product.imageUrl.length > 0 ? (
+                            <Image
+                              src={product.imageUrl[0]}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 1024px) 50vw, 33vw"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <Search size={24} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-3">
+                          <p className="text-[#1C3163] font-seasons text-sm leading-tight line-clamp-2">
+                            {product.name}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             )}

@@ -131,7 +131,7 @@ const PastEventDetailPage = () => {
              {/* Title and Details - Side by Side on Desktop (950px+) */}
              <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4 xl:gap-8 mb-3 sm:mb-4">
                {/* Title - Left Side */}
-               <h1 className="text-[#D5B584]  md:text-[30px] lg:text-[32px] font-normal leading-tight xl:flex-1 xl:min-w-0 break-words mt-[25px] font-seasons">
+               <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                {pastEvent.title}
              </h1>
              

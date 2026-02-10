@@ -173,8 +173,8 @@ const CartPageContent = () => {
 
                       {/* Product Details */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex justify-between gap-4 mb-2 font-touvlo">
-                          <h3 className="text-[#1C3163] text-base md:text-lg font-medium line-clamp-2">
+                        <div className="flex justify-between gap-4 font-touvlo">
+                          <h3 className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454] mt-[25px]">
                             {item.name}
                           </h3>
                           <button
@@ -200,7 +200,7 @@ const CartPageContent = () => {
                               </p>
                             </div>
                           ) : (
-                            <p className="text-[#2C3E50] text-lg md:text-[16px] font-semibold font-touvlo">
+                            <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">
                           ${item.price.toLocaleString("en-US")}
                         </p>
                           )}
@@ -252,19 +252,19 @@ const CartPageContent = () => {
             {/* Order Summary Section */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-                <h2 className="text-[#1C3163] text-xl font-semibold mb-6 font-touvlo">
+                <h2 className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[24px] font-normal font-touvlo">
                   Order Summary
                 </h2>
 
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-[#2C3E50] font-touvlo">
-                    <span>Subtotal ({totalQuantity()} items)</span>
-                    <span>${itemsSubtotal.toLocaleString("en-US")}</span>
+                    <span className="text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">Subtotal ({totalQuantity()} items)</span>
+                    <span className="text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">${itemsSubtotal.toLocaleString("en-US")}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex justify-between text-[#1C3163] text-[16px] font-semibold font-touvlo">
-                      <span>Total</span>
-                      <span>${totalAmount.toLocaleString("en-US")}</span>
+                      <span className="text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">Total</span>
+                      <span className="text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">${totalAmount.toLocaleString("en-US")}</span>
                     </div>
                   </div>
                 </div>
