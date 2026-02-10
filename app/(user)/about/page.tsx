@@ -197,7 +197,7 @@ const AboutPage = () => {
 
         <div className="w-full flex flex-col mt-[25px] md:ml-[45px]">
           <div className="flex w-full  justify-start ">
-            <h1 className="font-seasons text-[16px] sm:text-[18px] md:text-[30px] lg:text-[32px] text-[#e6b884] font-normal text-left leading-none ">
+            <h1 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
               What makes our Singing Bowls unique
             </h1>
           </div>
@@ -219,7 +219,7 @@ const AboutPage = () => {
                 <p className="font-seasons pt-4 sm:pt-6 md:pt-[28px] text-center font-normal text-[14px] sm:text-[16px] md:text-[18px] text-[#1c3163]">
                 {item.title}
                   </p>
-                  <p className="text-center text-[9px] sm:text-[9.5px] md:text-[16px] font-light leading-[14px] sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454] mt-[25px]">
+                  <p className="text-center text-[14px] sm:text-[15px] md:text-[16px] font-light  sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454] mt-[25px]">
                     {item.para}
                   </p>
                 </div>
@@ -232,7 +232,7 @@ const AboutPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-[25px]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-start">
           {/* Left Side - Two Stacked Images (order-2 on mobile so content shows first) */}
-          <div className="relative w-full flex flex-col justify-center items-center gap-4 sm:gap-6 mt-[40px] lg:mt-[40px] order-2 lg:order-1">
+          <div className="relative w-full flex flex-col justify-center items-center gap-4 sm:gap-6  lg:mt-[40px] order-2 lg:order-1">
             {/* First Image */}
             <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto lg:mx-0 group">
               <div className="relative w-full overflow-hidden shadow-lg">
@@ -268,7 +268,7 @@ const AboutPage = () => {
             </h2>
 
             <div className="text-[#545454] mt-[25px]">
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#545454] text-left">
                 Sound Healing refers to a range of practices that use sound and
                 vibration to support relaxation, focus, and overall well-being.
                 These practices may include sound baths, sound meditation, and
@@ -277,7 +277,7 @@ const AboutPage = () => {
                 bells.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
                 From a scientific perspective, Sound Healing is often discussed
                 in relation to its effects on the nervous system and stress
                 regulation.{" "}
@@ -289,7 +289,7 @@ const AboutPage = () => {
                 </span>
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
                 Beyond these physiological effects, sound-based practices are
                 also closely linked to mindfulness. The sound waves provides a
                 simple, non-verbal focal point for attention, helping to reduce
@@ -301,7 +301,7 @@ const AboutPage = () => {
                 </span>
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
                 In addition, vibration also plays an important role in many
                 sound healing approaches. Lower-frequency sound waves can be
                 felt physically and heard, particularly when instruments such as
@@ -311,7 +311,7 @@ const AboutPage = () => {
                 relaxation responses.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
                 Sound Healing is best understood as a complementary practice,
                 supporting well-being alongside meditation, movement, and
                 therapeutic care. At Crystal Bowl Studio, we approach Sound
@@ -335,13 +335,13 @@ const AboutPage = () => {
             </h2>
 
             <div className="space-y-4 text-black mt-[25px]">
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
                 Crystal Bowl Studio was founded by Francesca Wong, whose work
                 brings together international business experience and
                 long-standing practice in Yoga and Sound Healing.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
                 Before establishing Crystal Bowl Studio, Francesca spent over a
                 decade working across global finance, e-commerce, and luxury
                 beauty, with experience at KPMG, Citibank, Alibaba, and Estée
@@ -352,7 +352,7 @@ const AboutPage = () => {
                 experience.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
                 Her journey into Yoga and Sound began in 2011, and deepened
                 through years of study, practice, and teaching. Francesca
                 trained extensively in India and Australia, spending over a year
@@ -360,7 +360,7 @@ const AboutPage = () => {
                 Dharamshala, Bangalore, Delhi, and Varanasi.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
                 Her approach is informed by classical yoga philosophy as well as
                 broader healing traditions such as Ayurveda and Traditional
                 Chinese Medicine. Rather than treating these systems as fixed
@@ -368,7 +368,7 @@ const AboutPage = () => {
                 support awareness, presence, and balance in everyday life.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
+              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
                 Francesca's experience in consumer-facing industries reflects
                 the way Crystal Bowl Studio approaches its products, the
                 integration of craftsmanship, practicality and usability,

@@ -641,7 +641,7 @@ const Index = () => {
                     <p className="font-seasons pt-4 sm:pt-6 md:pt-[28px] text-center font-normal text-[14px] sm:text-[16px] md:text-[18px] text-[#1c3163]">
                       {item.title}
                     </p>
-                    <p className="text-center text-[9px] sm:text-[9.5px] md:text-[16px] font-light leading-[14px] sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454] mt-[25px]">
+                    <p className="text-center text-[14px] sm:text-[15px] md:text-[16px] font-light  sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454] mt-[25px]">
                       {item.para}
                     </p>
                   </div>
@@ -759,7 +759,7 @@ const Index = () => {
               <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                 What is Sound Healing?
               </h1>
-              <p className="text-[#545454] text-[14px] sm:text-[16px] md:text-[16px] leading-relaxed font-light font-touvlo">
+              <p className="text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-light font-touvlo">
                 Sound healing uses sound and vibration to support relaxation,
                 focus, and balance. From a scientific perspective, sound healing
                 is most often discussed in relation to its effects on the
@@ -769,7 +769,7 @@ const Index = () => {
                 system, which is the part of the nervous system responsible for
                 rest, recovery, and regulation.
               </p>
-              <p className="text-[#545454] text-[14px] sm:text-[16px] md:text-[16px] leading-relaxed font-light font-touvlo">
+              <p className="text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-light font-touvlo">
                 Singing bowls can significantly reduce tension, anxiety,
                 fatigue, and depressed mood after a single session of sound
                 meditation. <br />
@@ -794,7 +794,7 @@ const Index = () => {
         <AboutSectionComponent />
 
         <section className="w-full  md:py-[0px] mt-[25px] ">
-          <div className="max-w-6xl flex flex-col gap-[25px] md:gap-0   mx-auto px-4">
+          <div className="max-w-6xl flex flex-col  md:gap-0   mx-auto px-4">
             {/* Header */}
             <div className="mb-8 md:mb-6 flex justify-between items-center flex-wrap gap-4">
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]">
@@ -813,7 +813,7 @@ const Index = () => {
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#1C3163]" />
               </Link>
             </div>
-
+<div className="flex flex-col gap-[25px]" >
             {/* First Row - Featured Corporate Sessions */}
             <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-x-6 md:gap-x-12 gap-y-8 md:gap-y-16  md:mb-16 font-touvlo">
               {featuredCorporateSessions.length > 0 ? (
@@ -902,10 +902,10 @@ const Index = () => {
 
                       {/* Content - Right Side */}
                       <div className="flex w-[40%] h-full  flex-row md:flex-col justify-between ">
-                        <h3 className="text-[#545454] pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2 font-touvlo">
+                        <h3 className="text-[#545454]  md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2 font-touvlo">
                           {session.title || "Private Session"}
                         </h3>
-                        <div className="flex-col gap-3  items-center justify-center sm:gap-4 md:gap-[27px] flex">
+                        <div className="flex-col gap-3   sm:gap-4 md:gap-[27px] flex">
                           {/* Arrow Button */}
                           <Link href="/services">
                             <button className="size-[18px] sm:size-[20px] md:size-[22px] rounded-full border-1 border-[#1C3163] flex items-center justify-center hover:bg-[#1C3163] hover:text-white transition-colors group">
@@ -927,6 +927,7 @@ const Index = () => {
                   </p>
                 </div>
               )}
+            </div>
             </div>
           </div>
         </section>
