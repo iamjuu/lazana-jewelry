@@ -17,7 +17,7 @@ const BookASessionPage = () => {
               <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                 Book a Call
               </h1>
-              <p className="text-[#545454] text-[13px] sm:text-[14px] md:text-[16px] lg:text-[16px] leading-relaxed max-w-2xl mt-[25px] font-touvlo">
+              <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] leading-relaxed max-w-2xl mt-[25px] font-touvlo">
                 Choose from our available sessions and book your preferred
                 experience with us.
               </p>
@@ -36,7 +36,7 @@ const BookASessionPage = () => {
                         30 minutes
                       </span>
                     </h2>
-                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[16px] text-[#545454] mb-4 leading-relaxed max-w-2xl font-touvlo">
+                    <p className="sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] text-[#545454] mb-4 leading-relaxed max-w-2xl font-touvlo">
                       This is for you if you want to come and visit in person to
                       experience and listen to our Crystal Bowls live before
                       purchasing our collection.

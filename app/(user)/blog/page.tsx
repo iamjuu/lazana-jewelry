@@ -80,7 +80,7 @@ const BlogPage = () => {
           {/* <div className="absolute inset-0 bg-gradient-to-br from-[#D5B584]/80 via-[#FEC1A2]/70 to-[#FDECE2]/80"></div> */}
           {/* Content */}
           <div className="relative z-10 h-full flex items-center justify-center font-seasons">
-            <h1 className="text-[#e6b884] text-5xl md:text-6xl lg:text-7xl font-normal text-center drop-shadow-lg font-seasons">
+            <h1 className="text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal text-center drop-shadow-lg font-seasons">
               Blog
             </h1>
           </div>
@@ -227,13 +227,13 @@ const BlogPage = () => {
                         {/* Blog Content */}
                         <div className="flex flex-col flex-1">
                           {/* Title */}
-                          <h2 className="text-[#1C3163] text-xl md:text-[26px] font-bold leading-tight group-hover:text-[#545454] transition-colors duration-200 font-seasons">
+                          <h2 className="text-[#1C3163] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-seasons font-normal leading-tight group-hover:text-[#545454] transition-colors duration-200">
                             {blog.title}
                           </h2>
 
                           {/* Description with Read More aligned to right */}
                           <div className="flex items-start justify-between gap-2 ">
-                            <p className="text-[#545454] text-[14px] sm:text-[15pxtext-[#1C3163] font-medium] md:text-[16px] leading-relaxed flex-1 text-[#545454] font-touvlo">
+                            <p className="text-[#545454] text-[14px] sm:text-[15px] text-[#1C3163] font-medium] md:text-[16px] leading-relaxed flex-1 text-[#545454] font-touvlo">
                               {excerpt}
                             </p>
                           </div>

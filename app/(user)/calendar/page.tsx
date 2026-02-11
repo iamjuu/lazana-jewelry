@@ -108,11 +108,11 @@ const CalendarPage = () => {
           <div className="max-w-6xl pb-[106px] mx-auto">
             {/* Header */}
             <div className="mb-8 md:mb-12">
-              <h1 className="text-[32px] sm:text-[36px] md:text-[40px]  text-[#D5B584] font-light leading-tight mb-3">
+              <h1 className=" font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-light leading-tight mb-3">
                 Schedule Your Call
               </h1>
-              <p className="text-[16px] sm:text-[18px] md:text-[20px] text-[#5B7C99] font-light">
-                Check Out Our Availability And Book The Date And Time That Works For You
+              <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#5B7C99] font-light">
+                Check out our availability and book the date and time that works for you
               </p>
             </div>
 

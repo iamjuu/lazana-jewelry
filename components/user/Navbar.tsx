@@ -146,7 +146,7 @@ const Navbar = () => {
         lg:bg-white/10   backdrop-blur-sm  lg:backdrop-blur-sm bg-transparent overflow-visible"
       >
         {/* MOBILE/TABLET NAVBAR - ALWAYS VISIBLE */}
-        <div className="lg:hidden flex items-center justify-between py-4 relative z-[1001]">
+        <div className="lg:hidden flex items-center justify-between py-4 relative z-[9999px]">
           <Link href="/" className="flex items-center">
             <Image
               src={CryselLogo}

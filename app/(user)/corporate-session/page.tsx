@@ -132,10 +132,10 @@ const CorporateSessionPage = () => {
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="mb-[25px]">
-              <h1 className="text-[32px] text-[#D5B584] font-seasons leading-tight mb-[25px]">
+              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] text-[#D5B584] font-seasons leading-tight mb-[25px]">
                 Corporate Session
               </h1>
-              <p className="text-[16px] text-[#545454] font-touvlo leading-relaxed max-w-2xl">
+              <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo leading-relaxed max-w-2xl">
                 Fill out the form below and we&apos;ll respond within 2-3
                 business days.
               </p>
@@ -146,12 +146,12 @@ const CorporateSessionPage = () => {
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Section 1: Contact Details */}
                 <div>
-                  <h2 className="text-[#1C3163] text-[18px] font-seasons font-medium mb-4">
+                  <h2 className="text-[#1C3163] text-[19px] font-seasons font-medium mb-4">
                     1. Contact Details
                   </h2>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-[#545454] text-[14px] mb-2 font-touvlo">
+                      <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px]  mb-2 font-touvlo">
                         Full Name*
                       </label>
                       <input
@@ -164,7 +164,7 @@ const CorporateSessionPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-[#545454] text-[14px] mb-2 font-touvlo">
+                      <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px]  mb-2 font-touvlo">
                         Work Email*
                       </label>
                       <input
@@ -177,7 +177,7 @@ const CorporateSessionPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-[#545454] text-[14px] mb-2 font-touvlo">
+                      <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px]  mb-2 font-touvlo">
                         Company Name*
                       </label>
                       <input
@@ -190,7 +190,7 @@ const CorporateSessionPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-[#545454] text-[14px] mb-2 font-touvlo">
+                      <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px]  mb-2 font-touvlo">
                         Job Title / Role*
                       </label>
                       <input
@@ -203,7 +203,7 @@ const CorporateSessionPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-[#545454] text-[14px] mb-2 font-touvlo">
+                      <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px]  mb-2 font-touvlo">
                         Contact Number
                       </label>
                       <input
@@ -215,7 +215,7 @@ const CorporateSessionPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-[#545454] text-[14px] mb-2 font-touvlo">
+                      <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px]  mb-2 font-touvlo">
                         City & Country*
                       </label>
                       <input
@@ -232,12 +232,12 @@ const CorporateSessionPage = () => {
 
                 {/* Section 2: Company Information */}
                 <div>
-                  <h2 className="text-[#1C3163] text-[18px] font-seasons font-medium mb-4">
+                  <h2 className="text-[#1C3163] text-[19px] font-seasons font-medium mb-4">
                     2. Company Information
                   </h2>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-[#545454] text-[14px] mb-2 font-touvlo">
+                      <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px]  mb-2 font-touvlo">
                         Industry
                       </label>
                       <select
@@ -246,21 +246,21 @@ const CorporateSessionPage = () => {
                         onChange={handleChange}
                         className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                       >
-                        <option value="">Select Industry</option>
-                        <option value="Finance">Finance</option>
-                        <option value="Technology">Technology</option>
-                        <option value="FMCG">FMCG</option>
-                        <option value="Healthcare">Healthcare</option>
-                        <option value="Hospitality">Hospitality</option>
-                        <option value="Education">Education</option>
-                        <option value="Professional Services">
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="">Select Industry</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="Finance">Finance</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="Technology">Technology</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="FMCG">FMCG</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="Healthcare">Healthcare</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="Hospitality">Hospitality</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="Education">Education</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="Professional Services">
                           Professional Services
                         </option>
-                        <option value="Other">Other</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="Other">Other</option>
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[#545454] text-[14px] mb-2 font-touvlo">
+                      <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px]  mb-2 font-touvlo">
                         Company Size
                       </label>
                       <select
@@ -269,11 +269,11 @@ const CorporateSessionPage = () => {
                         onChange={handleChange}
                         className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                       >
-                        <option value="">Select Company Size</option>
-                        <option value="1-50">1-50</option>
-                        <option value="51-200">51-200</option>
-                        <option value="201-1,000">201-1,000</option>
-                        <option value="1,000+">1,000+</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="">Select Company Size</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="1-50">1-50</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="51-200">51-200</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="201-1,000">201-1,000</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="1,000+">1,000+</option>
                       </select>
                     </div>
                   </div>
@@ -281,14 +281,14 @@ const CorporateSessionPage = () => {
 
                 {/* Section 3: Enquiry Type */}
                 <div>
-                  <h2 className="text-[#1C3163] text-[18px] font-seasons font-medium mb-4">
+                  <h2 className="text-[#1C3163] text-[19px] font-seasons font-medium mb-4">
                     3. Enquiry Type
                   </h2>
                   <div>
-                    <label className="block text-[#545454] text-[14px] mb-3 font-touvlo">
+                    <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px]  mb-3 font-touvlo">
                       What are you enquiring about?*
                     </label>
-                    <div className="space-y-2">
+                    <div className="space-y-2 sm:text-[15px]  text-[14px]  md:text-[16px]">
                       {[
                         "Corporate Sound Healing Sessions",
                         "Wellness Workshops or Retreats",
@@ -319,7 +319,7 @@ const CorporateSessionPage = () => {
 
                 {/* Section 4: Session Details */}
                 <div>
-                  <h2 className="text-[#1C3163] text-[18px] font-seasons font-medium mb-4">
+                  <h2 className="text-[#1C3163] text-[19px] font-seasons font-medium mb-4">
                     4. Session Details
                   </h2>
                   <div className="space-y-4">
@@ -379,20 +379,20 @@ const CorporateSessionPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-[#545454] text-[14px] mb-2 font-touvlo">
+                      <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] mb-2 font-touvlo">
                         Preferred Session Duration
                       </label>
                       <select
                         name="preferredDuration"
                         value={formData.preferredDuration}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                       >
-                        <option value="">Select Duration</option>
-                        <option value="30 minutes">30 minutes</option>
-                        <option value="45 minutes">45 minutes</option>
-                        <option value="60 minutes">60 minutes</option>
-                        <option value="90 minutes">90 minutes</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="">Select Duration</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="30 minutes">30 minutes</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="45 minutes">45 minutes</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="60 minutes">60 minutes</option>
+                        <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="90 minutes">90 minutes</option>
                       </select>
                     </div>
                   </div>
@@ -400,14 +400,14 @@ const CorporateSessionPage = () => {
 
                 {/* Section 5: Session Objective */}
                 <div>
-                  <h2 className="text-[#1C3163] text-[18px] font-seasons font-medium mb-4">
+                  <h2 className="text-[#1C3163] text-[19px] font-seasons font-medium mb-4">
                     5. Session Objective
                   </h2>
                   <div>
-                    <label className="block text-[#545454] text-[14px] mb-3 font-touvlo">
+                    <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] mb-3 font-touvlo">
                       What is the main intention of this session?
                     </label>
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-[14px] sm:text-[16px]">
                       {[
                         "Stress reduction & relaxation",
                         "Team bonding",
@@ -441,11 +441,11 @@ const CorporateSessionPage = () => {
 
                 {/* Section 6: Additional Information */}
                 <div>
-                  <h2 className="text-[#1C3163] text-[18px] font-seasons font-medium mb-4">
+                  <h2 className="text-[#1C3163] text-[19px] font-seasons font-medium mb-4">
                     6. Additional Information
                   </h2>
                   <div>
-                    <label className="block text-[#545454] text-[14px] mb-2 font-touvlo">
+                    <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] mb-2 font-touvlo">
                       Message / Additional Notes
                     </label>
                     <textarea
@@ -453,7 +453,7 @@ const CorporateSessionPage = () => {
                       value={formData.comment}
                       onChange={handleChange}
                       rows={6}
-                      className="w-full px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all resize-none"
+                      className="w-full px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#545454] placeholder-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all resize-none"
                       placeholder="Any additional information you'd like to share..."
                     />
                   </div>

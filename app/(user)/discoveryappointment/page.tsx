@@ -429,12 +429,11 @@ const DiscoveryAppointmentPage = () => {
           <div className="max-w-6xl  mx-auto">
             {/* Header */}
             <div className="mb-[25px]">
-              <h1 className="text-[32px] text-[#D5B584] font-seasons leading-tight mb-[25px]">
-                Schedule Your Call
+              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px font-seasons leading-tight mb-[25px]">
+                Schedule Your Discovery Session
               </h1>
-              <p className="text-[16px] text-[#545454] font-touvlo">
-                Check Out Our Availability And Book The Date And Time That Works
-                For You
+              <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo">
+                Check out our availability and book the date and time that works for you
               </p>
             </div>
 
@@ -445,7 +444,7 @@ const DiscoveryAppointmentPage = () => {
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
                   {/* Left side - Calendar */}
                   <div className="w-full lg:w-1/2">
-                    <h3 className="text-[18px] sm:text-[20px] md:text-[22px] text-[#5B7C99] font-normal mb-6">
+                    <h3 className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#5B7C99] font-normal mb-6">
                       Select Date & Time
                     </h3>
 
@@ -601,14 +600,14 @@ const DiscoveryAppointmentPage = () => {
 
                   {/* Right side - Time Slots */}
                   <div className="w-full lg:w-1/2">
-                    <h3 className="text-[18px] sm:text-[20px] md:text-[22px] text-[#5B7C99] font-normal mb-6">
+                    <h3 className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#5B7C99] font-normal mb-6">
                       Time Zone: Singapore Standard Time (SMT +8)
                     </h3>
 
                     {/* Time Slots Grid */}
                     {!selectedDate ? (
                       <div className="flex items-center justify-center py-12 px-4 bg-zinc-100 rounded-lg">
-                        <p className="text-[#6B7280] text-center">
+                        <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#6B7280] text-center">
                           Please select a date first to see available time slots
                         </p>
                       </div>
@@ -659,14 +658,14 @@ const DiscoveryAppointmentPage = () => {
                 className="mt-12 transition-all duration-700 ease-out opacity-100 translate-y-0 scale-100"
               >
                 <div className="rounded-[24px] p-6 md:p-8 lg:p-10 bg-white shadow-lg transition-shadow duration-500 hover:shadow-2xl">
-                  <h2 className="text-[32px] text-[#D5B584] font-seasons leading-tight mb-[25px]">
+                  <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px]  font-seasons leading-tight mb-[25px]">
                     Discovery Form
                   </h2>
-                  <p className="text-[16px] text-[#545454] font-touvlo mb-2">
+                  <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo mb-2">
                     Here are a few questions for you to fill out so we can
                     better support you in finding your right bowl family.
                   </p>
-                  <p className="text-[14px] text-[#545454] font-touvlo mb-8 italic">
+                  <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo mb-8 italic">
                     You can skip this section and submit your appointment with
                     just the date and time selection.
                   </p>
@@ -674,7 +673,7 @@ const DiscoveryAppointmentPage = () => {
                   <div className="space-y-8">
                     {/* Question 1: Do You Have Any Crystal Bowls? */}
                     <div>
-                      <label className="block text-[16px] sm:text-[18px] text-[#1C3163] font-normal mb-4">
+                      <label className="block sm:text-[15px]  text-[14px]  md:text-[16px] text-[#1C3163] font-normal mb-4">
                         Do you have any crystal bowls?
                       </label>
                       <div className="flex gap-6">
@@ -710,7 +709,7 @@ const DiscoveryAppointmentPage = () => {
                     {/* Question 2: If Yes - Notes and Alchemies */}
                     {hasCrystalBowls === "yes" && (
                       <div>
-                        <label className="block text-[16px] sm:text-[18px] text-[#1C3163] font-normal mb-4">
+                        <label className="block sm:text-[15px]  text-[14px]  md:text-[16px] text-[#1C3163] font-normal mb-4">
                           If yes: Please list the notes and alchemies (if
                           known):
                         </label>
@@ -726,7 +725,7 @@ const DiscoveryAppointmentPage = () => {
 
                     {/* Question 3: Experience Level */}
                     <div>
-                      <label className="block text-[16px] sm:text-[18px] text-[#1C3163] font-normal mb-4">
+                      <label className="block sm:text-[15px]  text-[14px]  md:text-[16px] text-[#1C3163] font-normal mb-4">
                         How would you describe your experience level?{" "}
                         <span className="text-[#545454] text-[14px]">
                           (Optional)
@@ -742,7 +741,7 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-[#545454]">
+                          <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             Beginner - I&apos;m new to crystal bowls studio
                           </span>
                         </label>
@@ -757,7 +756,7 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-[#545454]">
+                          <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             Some experience - I&apos;ve played or attended
                             sessions
                           </span>
@@ -771,7 +770,7 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-[#545454]">
+                          <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             Experienced - I own/play bowls regularly
                           </span>
                         </label>
@@ -780,7 +779,7 @@ const DiscoveryAppointmentPage = () => {
 
                     {/* Question 4: Main Intention */}
                     <div>
-                      <label className="block text-[16px] sm:text-[18px] text-[#1C3163] font-normal mb-4">
+                      <label className="block sm:text-[15px]  text-[14px]  md:text-[16px] text-[#1C3163] font-normal mb-4">
                         What is your main intention for your discovery session?{" "}
                         <span className="text-[#545454] text-[14px]">
                           (Optional)
@@ -796,7 +795,7 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-[#545454]">
+                          <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             I&apos;m looking for a specific note/crystal studio
                           </span>
                         </label>
@@ -809,7 +808,7 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-[#545454]">
+                          <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             I want to complete or expand a set
                           </span>
                         </label>
@@ -822,7 +821,7 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] rounded"
                           />
-                          <span className="ml-3 text-[16px] text-[#545454]">
+                          <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             I am ready to purchase if I find the right bowl
                           </span>
                         </label>
@@ -837,7 +836,7 @@ const DiscoveryAppointmentPage = () => {
                             }
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-2 rounded"
                           />
-                          <span className="ml-3 text-[16px] text-[#545454]">
+                          <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             I am gathering inspiration
                           </span>
                         </label>
@@ -846,7 +845,7 @@ const DiscoveryAppointmentPage = () => {
 
                     {/* Question 5: Sound or Energy */}
                     <div>
-                      <label className="block text-[16px] sm:text-[18px] text-[#1C3163] font-normal mb-4">
+                      <label className="block sm:text-[15px]  text-[14px]  md:text-[16px] text-[#1C3163] font-normal mb-4">
                         What kind of sound or energy are you looking for? (e.g.
                         grounding, heart-opening, masculine/feminine balance..){" "}
                         <span className="text-[#545454] text-[14px]">
@@ -856,7 +855,7 @@ const DiscoveryAppointmentPage = () => {
                       <textarea
                         value={soundOrEnergy}
                         onChange={(e) => setSoundOrEnergy(e.target.value)}
-                        className="w-full px-4 py-3 border border-[#1C3163] rounded-lg text-[16px] text-[#545454] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#1C3163] resize-none"
+                        className="w-full px-4 py-3 border border-[#1C3163] rounded-lg sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#1C3163] resize-none"
                         rows={6}
                         placeholder="Describe the kind of sound or energy you are looking for..."
                       />

@@ -90,7 +90,7 @@ const FAQPage = () => {
                     onClick={() => toggleFAQ(index)}
                     className="w-full py-6 md:py-8 flex items-center justify-between gap-4 text-left hover:opacity-80 transition-opacity"
                   >
-                    <h3 className="text-[#1C3163] md:text-[19px] sm:text-[16px] md:text-[18px] font-normal flex-1 font-seasons">
+                    <h3 className="text-[#1C3163] text-[19px]  font-normal flex-1 font-seasons">
                       {faq.question}
                     </h3>
                     <div className="shrink-0">
@@ -104,7 +104,7 @@ const FAQPage = () => {
                   
                   {isOpen && (
                     <div className="pb-6 md:pb-8 animate-fadeIn">
-                      <div className="text-[#545454] text-[12px] sm:text-[14px] md:text-[14px] font-light leading-relaxed pr-12 sm:pr-16 font-touvlo">
+                      <div className="text-[#545454] text-[14px] font-light leading-relaxed pr-12 sm:pr-16 font-touvlo">
                         {faq.answer}
                       </div>
                     </div>

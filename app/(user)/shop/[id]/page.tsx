@@ -578,7 +578,7 @@ const ProductDetailPage = () => {
             {/* Right Side - Product Info */}
             <div className="flex flex-col">
               <h1
-                className="font-seasons text-[#1C3163] text-[26px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none"
+                className="font-seasons text-[#1C3163] text-[26px] sm:text-[28px] md:text-[30px] lg:text-[32px] font-normal leading-none"
                 style={{ textShadow: "0.5px 0 0 currentColor" }}
               >
                 {product.name}
@@ -614,7 +614,7 @@ const ProductDetailPage = () => {
               {product.shortDescription && (
                 <div className="mt-[25px]">
                   <p
-                    className={`font-touvlo text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed whitespace-pre-wrap ${!showFullShortDesc ? "line-clamp-4" : ""}`}
+                    className={`font-touvlo text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed whitespace-pre-wrap ${!showFullShortDesc ? "line-clamp-4" : ""}`}
                   >
                     {product.shortDescription}
                   </p>
@@ -735,7 +735,7 @@ const ProductDetailPage = () => {
                     onClick={() => toggleSection("description")}
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
-                    <h3 className="font-seasons text-[#1C3163] md:text-[18px] sm:text-[20px] font-medium">
+                    <h3 className="font-seasons text-[#1C3163] text-[19px] md:text-[20px] font-medium">
                       Description
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
@@ -745,7 +745,7 @@ const ProductDetailPage = () => {
                   {expandedSections.has("description") && (
                     <div className="pb-4">
                       <p
-                        className={`text-[#545454] text-[12px] md:text-[16px] font-touvlo leading-relaxed whitespace-pre-wrap ${!showFullLongDesc ? "line-clamp-2" : ""}`}
+                        className={`text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] font-touvlo leading-relaxed whitespace-pre-wrap ${!showFullLongDesc ? "line-clamp-2" : ""}`}
                       >
                         {product.description}
                       </p>
@@ -770,7 +770,7 @@ const ProductDetailPage = () => {
                     onClick={() => toggleSection("bowlSizing")}
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
-                    <h3 className="text-[#1C3163] md:text-[18px] sm:text-[20px] font-medium font-seasons">
+                    <h3 className="text-[#1C3163] text-[19px] md:text-[20px] font-medium font-seasons">
                       Bowl Sizing
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
@@ -779,7 +779,7 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("bowlSizing") && (
                     <div className="pb-4">
-                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
+                      <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed font-touvlo">
                         Our crystal bowls come in various sizes to suit
                         different healing practices. We offer bowls ranging from
                         small (4-6 inches) for personal use to large (12-14
@@ -800,7 +800,7 @@ const ProductDetailPage = () => {
                     onClick={() => toggleSection("shipping")}
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
-                    <h3 className="text-[#1C3163] md:text-[18px] sm:text-[20px] font-medium font-seasons ">
+                    <h3 className="text-[#1C3163] text-[19px] md:text-[20px] font-medium font-seasons ">
                       Shipping and Delivery
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
@@ -809,7 +809,7 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("shipping") && (
                     <div className="pb-4">
-                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mb-3">
+                      <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed font-touvlo mb-3">
                         We offer Air Economy shipping to ensure your crystal
                         bowls arrive safely and promptly. Shipping charges are
                         calculated based on the total number of bowls in your
@@ -887,7 +887,7 @@ const ProductDetailPage = () => {
                     onClick={() => toggleSection("octave")}
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
-                    <h3 className="text-[#1C3163] md:text-[18px] sm:text-[20px] font-medium font-seasons">
+                    <h3 className="text-[#1C3163] text-[19px] md:text-[20px] font-medium font-seasons">
                       What's the difference between 3rd and 4th Octave bowls?
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
@@ -896,7 +896,7 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("octave") && (
                     <div className="pb-4">
-                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
+                      <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed font-touvlo">
                         The 3rd octave bowls produce deeper, more grounding
                         frequencies that are ideal for root chakra work and deep
                         meditation. These bowls create a rich, resonant sound
@@ -921,7 +921,7 @@ const ProductDetailPage = () => {
                     onClick={() => toggleSection("tuning")}
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
-                    <h3 className="text-[#1C3163] md:text-[18px] sm:text-[20px] font-medium font-seasons">
+                    <h3 className="text-[#1C3163] text-[19px] md:text-[20px] font-medium font-seasons">
                       Which tuning system are Our Bowls made in?
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
@@ -930,11 +930,11 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("tuning") && (
                     <div className="">
-                      <p className="text-[#545454] md:text-[16px] sm:text-[15px] leading-relaxed mb-3 font-touvlo">
+                      <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed mb-3 font-touvlo">
                         Our bowls are available in multiple tuning frequencies
                         to suit your preferences:
                       </p>
-                      <ul className="list-disc list-inside text-[12px]  md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo text-[#545454]">
+                      <ul className="list-disc list-inside sm:text-[15px]  text-[14px]  md:text-[16px] space-y-2 ml-2 font-touvlo text-[#545454]">
                         <li>
                           <strong>432 Hz:</strong> The healing frequency of
                           nature, known for its calming and harmonizing effects.
@@ -1034,15 +1034,15 @@ const ProductDetailPage = () => {
                             <div className="flex items-center gap-2 font-touvlo">
                               {itemHasDiscount ? (
                                 <>
-                                  <span className="text-[#545454] font-light line-through text-[11px]">
+                                  <span className="text-[#545454] font-light line-through text-[14px]">
                                     {itemDisplayOriginalPrice}
                                   </span>
-                                  <span className="text-[#545454] font-light text-[11px] whitespace-nowrap">
+                                  <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
                                     {itemDisplayPrice} USD
                                   </span>
                                 </>
                               ) : (
-                                <span className="text-[#545454]   font-light text-[11px] whitespace-nowrap">
+                                <span className="text-[#545454]   font-light text-[14px] whitespace-nowrap">
                                   {itemDisplayPrice} USD
                                 </span>
                               )}

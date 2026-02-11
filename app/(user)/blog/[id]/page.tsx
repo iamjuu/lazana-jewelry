@@ -141,7 +141,7 @@ const BlogDetailPage = () => {
             </div>
 
             {/* Title */}
-            <h1 className="text-[#1C3163] text-3xl md:text-[30px] lg:text-[32px] font-seasons  font-normal leading-relaxed">
+            <h1 className="text-[#1C3163] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-seasons  font-normal leading-relaxed">
               {blog.title}
             </h1>
 

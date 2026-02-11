@@ -454,7 +454,7 @@ const Index = () => {
       id: 1,
       image: PremiumQuality,
       title: " Premium Craftsmanship",
-      para: "Each piece is precision-crafted, made from 100% pure clear quartz, our bowls produce quality sound and long-lasting resonance.",
+      para: "Each piece is precision-crafted, made from 99.9% pure clear quartz, our bowls produce quality sound and long-lasting resonance.",
     },
 
     {
@@ -597,7 +597,7 @@ const Index = () => {
                 About Crystal Bowl Studio
               </h2>
               {/* Wrapped in a fragment to replace the div but keep structure clean if needed, or just standard p tags */}
-              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454] mt-[25px]">
+              <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] leading-[1.9] text-[#545454] mt-[25px]">
                 Crystal Bowl Studio is designed for modern, conscious living,
                 rooted in ancient traditions and wisdom. Each bowl is made from
                 99.9% pure clear quartz crystal, carefully handcrafted and
@@ -652,7 +652,7 @@ const Index = () => {
                     <p className="font-seasons pt-4 sm:pt-6 md:pt-[28px] text-center font-normal text-[14px] sm:text-[16px] md:text-[18px] text-[#1c3163]">
                       {item.title}
                     </p>
-                    <p className="text-center text-[14px] sm:text-[15px] md:text-[16px] font-light  sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454] mt-[25px]">
+                    <p className="text-center sm:text-[15px]  text-[14px]  md:text-[16px] font-light  sm:leading-[15px] md:leading-[22px] font-touvlo text-[#545454] mt-[25px]">
                       {item.para}
                     </p>
                   </div>
@@ -726,7 +726,7 @@ const Index = () => {
                           <span className="line-through mr-2">
                             ${product.price}
                           </span>
-                          <span className="font-semibold text-[11px]">
+                          <span className="font-semibold text-[14px]">
                             $
                             {Math.round(
                               (product.price - product.discount) * 100,
@@ -734,7 +734,7 @@ const Index = () => {
                           </span>
                         </>
                       ) : (
-                        <span className="font-semibold font-touvlo text-[#545454] text-[11px]">
+                        <span className="font-semibold font-touvlo text-[#545454] text-[14px]">
                           ${product.price} USD
                         </span>
                       )}
@@ -770,7 +770,7 @@ const Index = () => {
               <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                 What is Sound Healing?
               </h1>
-              <p className="text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-light font-touvlo">
+              <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed font-light font-touvlo">
                 Sound healing uses sound and vibration to support relaxation,
                 focus, and balance. From a scientific perspective, sound healing
                 is most often discussed in relation to its effects on the
@@ -978,7 +978,7 @@ const Index = () => {
                       className="min-w-full flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center"
                     >
                       {/* Right Side - Testimonial Card */}
-                      <div className="flex-1 w-full border border-[#D5B584] rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[200px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
+                      <div className="flex-1 w-full border border-[#D5B584]  rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[50px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
                         <div className="animate-fadeIn">
                           <blockquote className="font-touvlo text-[#545454]  text-[12px] sm:text-[12px] md:text-[14px] lg:text-[14px] font-light leading-relaxed mb-6 md:mb-8 ">
                             &ldquo;{testimonial.testimonial}&rdquo;

@@ -48,13 +48,13 @@ const CollectionSection: React.FC<CollectionSectionProps> = () => {
           <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
             Stressed or overwhelmed, but no time?
           </h1>
-          <p className="mt-[25px] font-touvlo text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose"> Let Crystal Sound clear your mind in 1 minute. </p>
+          <p className="mt-[25px] font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose"> Let Crystal Sound clear your mind in 1 minute. </p>
         </div>
         <div>
 
           <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
             We make Crystal Singing Bowls for Sound Healing & Meditation</h1>
-          <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose mt-[25px]">Thoughtfully crafted Crystal Singing Bowls for clarity, relaxation, and modern mindful living.
+          <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose mt-[25px]">Thoughtfully crafted Crystal Singing Bowls for clarity, relaxation, and modern mindful living.
             <br />
             Made from 99.9% pure clear quartz crystal.
             <br />

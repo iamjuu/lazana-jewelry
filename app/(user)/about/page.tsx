@@ -104,7 +104,7 @@ const AboutPage = () => {
             </h2>
 
             <div className=" text-[#545454] mt-[25px]">
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left">
+              <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed text-[#545454] text-left">
                 Crystal Singing Bowls are instruments of sound and vibration
                 widely used in meditation, sound healing, yoga, and mindfulness
                 practices. Unlike traditional metal singing bowls, which have

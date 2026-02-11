@@ -538,7 +538,7 @@ const EventsPage = () => {
                       {/* Event Details */}
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
-                          <h2 className="text-[#1C3163] text-[24px] sm:text-[28px] md:text-[30px] lg:text-[32px] font-normal leading-tight group-hover/card:text-[#e6b884] transition-colors duration-300 font-seasons">
+                          <h2 className="text-[#1C3163] text-[26px] sm:text-[28px] md:text-[30px] lg:text-[32px] font-normal leading-tight group-hover/card:text-[#e6b884] transition-colors duration-300 font-seasons">
                             {event.title}
                           </h2>
 
@@ -546,7 +546,7 @@ const EventsPage = () => {
                             <p className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-normal">
                               {event.location}
                             </p>
-                            <p className="text-[#1C3163] text-[20px] sm:text-[24px] md:text-[16px] font-light">
+                            <p className="text-[#1C3163] sm:text-[15px]  text-[14px]  md:text-[16px] font-light">
                               {/* Show full date in text for clarity on mobile/simplified views */}
                               {event.formattedDate} · {event.time}
                             </p>
