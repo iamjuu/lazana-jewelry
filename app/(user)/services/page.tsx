@@ -134,7 +134,7 @@ const ServicesPage = () => {
 
             {/* Right Column - Hero Image (Fixed Aspect Ratio) */}
             <div className="w-full lg:w-1/2 mt-[44px]">
-              <div className="relative w-full aspect-[4/3] md:aspect-[3/2] lg:aspect-[4/5] xl:aspect-square overflow-hidden  w-[450px] h-[350px]">
+              <div className="relative w-full aspect-[4/3] md:aspect-[3/2] lg:aspect-[4/5] xl:aspect-square overflow-hidden  w-[450px] h-[350px] rounded-lg">
                 <Image
                   src="/assets/images/about/2025Frankie374.jpg"
                   alt="Sound healing session"
@@ -228,17 +228,17 @@ const ServicesPage = () => {
                         </h3>
 
                         {item.description && (
-                          <div className="font-touvlo text-zinc-200 text-[13px] leading-relaxed shrink-0">
+                          <div className="font-touvlo text-zinc-200 text-[13px] leading-relaxed whitespace-pre-wrap text-left shrink-0">
                             {item.description}
                           </div>
                         )}
 
                         {item.benefits && item.benefits.length > 0 && (
-                          <div className="font-touvlo text-zinc-200 text-[13px] shrink-0">
+                          <div className="font-touvlo text-zinc-200 text-[13px] shrink-0 text-left">
                             <p className="font-semibold mb-1 text-[#D4A373]">
                               Key Benefits:
                             </p>
-                            <ul className="list-disc pl-4 space-y-1">
+                            <ul className="list-disc list-inside pl-4 space-y-1">
                               {item.benefits.map((benefit, idx) => (
                                 <li key={idx}>{benefit}</li>
                               ))}
@@ -352,17 +352,17 @@ const ServicesPage = () => {
                         </h3>
 
                         {item.description && (
-                          <div className="font-touvlo text-zinc-200 text-[13px] leading-relaxed shrink-0">
+                          <div className="font-touvlo text-zinc-200 text-[13px] leading-relaxed whitespace-pre-wrap text-left shrink-0">
                             {item.description}
                           </div>
                         )}
 
                         {item.benefits && item.benefits.length > 0 && (
-                          <div className="font-touvlo text-zinc-200 text-[13px] shrink-0">
+                          <div className="font-touvlo text-zinc-200 text-[13px] shrink-0 text-left">
                             <p className="font-semibold mb-1 text-[#D4A373]">
                               Key Benefits:
                             </p>
-                            <ul className="list-disc pl-4 space-y-1">
+                            <ul className="list-disc list-inside pl-4 space-y-1">
                               {item.benefits.map((benefit, idx) => (
                                 <li key={idx}>{benefit}</li>
                               ))}

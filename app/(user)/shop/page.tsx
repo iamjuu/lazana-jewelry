@@ -675,13 +675,14 @@ const ShopPageContent = () => {
                           Size
                         </h4>
 
-                        {["5-6", "6-7", "7-8", "8"].map((size) => (
+                        {["5-6", "6-7", "7-8", "8-9"].map((size) => (
                           <label
                             key={size}
                             className="flex items-center justify-between cursor-pointer py-1"
                           >
                             <span className="text-sm text-[#1C3163]">
-                              {size}″
+                              {/* {size}″ */}
+                              {size} INCHES
                             </span>
 
                             <input
@@ -691,6 +692,7 @@ const ShopPageContent = () => {
                                 setFilters({
                                   ...filters,
                                   size: e.target.checked ? size : "",
+                                  
                                 });
                                 setShowSortDropdown(false);
                               }}

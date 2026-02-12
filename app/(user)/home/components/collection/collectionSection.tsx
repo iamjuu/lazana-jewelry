@@ -40,7 +40,7 @@ const Icons = [
 
 const CollectionSection: React.FC<CollectionSectionProps> = () => {
   return (
-    <section className="w-full py-[20px] md:py-[0px] ">
+    <section className="w-full z-0 py-[20px] md:py-[0px] ">
 
 
       <div className="max-w-6xl   gap-[25px] md:py-0 items-center flex  flex-col mx-auto px-4  mt-[12px]  md:mt-[25px]">

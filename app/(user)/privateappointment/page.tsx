@@ -133,7 +133,7 @@ function PrivateAppointmentContent() {
     e.preventDefault()
     
     if (!formData.slotId) {
-      toast.error('Please select a session time')
+      toast.error('Please select a session')
       return
     }
 
@@ -231,24 +231,24 @@ function PrivateAppointmentContent() {
       <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
         <Navbar />
         <div className="w-full">
-          <section className="w-full px-4 md:px-0 py-[68px]">
-            <div className="max-w-4xl pb-[106px] mx-auto">
+          <section className="w-full px-4 md:px-0 mt-[25px]">
+            <div className="max-w-4xl  mx-auto">
               {/* Header */}
-              <div className="mb-8 md:mb-12">
-                <h1 className="text-[32px] sm:text-[36px] md:text-[40px] text-[#D5B584] font-light leading-tight mb-3">
+              <div className="mb-[25px] md:mb-[25px]">
+                <h1 className="text-[28px] sm:text-[28px] md:text-[30px]  lg:text-[32px] text-[#D5B584] font-light leading-tight mb-3 font-seasons">
                   Private Session Booking
                 </h1>
-                <p className="text-[14px] sm:text-[15px] md:text-[16px] text-[#5B7C99] font-light leading-relaxed max-w-2xl">
+                <p className="text-[14px] sm:text-[15px] md:text-[16px] text-[#545454] font-light leading-relaxed max-w-2xl font-touvlo">
                   Fill out the form below to book your private session. Select your preferred date and time from the available slots.
                 </p>
               </div>
 
               {/* Form */}
-              <div className="bg-white/50 rounded-lg p-6 md:p-8">
+              <div className="bg-white/50 rounded-lg p-6 md:p-8 ">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Session Time Dropdown */}
                   <div>
-                    <label htmlFor="slotId" className="block text-sm font-medium text-[#5B7C99] mb-2">
+                    <label htmlFor="slotId" className="block text-[14px] sm:text-[15px] md:text-[16px]  font-medium text-[#1C3163] mb-2 font-touvlo">
                       Select Session Time <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -256,12 +256,12 @@ function PrivateAppointmentContent() {
                       name="slotId"
                       value={formData.slotId}
                       onChange={handleChange}
-                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                       required
                       disabled={loadingSlots}
                     >
                       <option value="">
-                        {loadingSlots ? 'Loading available sessions...' : 'Select a session time'}
+                        {loadingSlots ? 'Loading available sessions...' : 'Select a session '}
                       </option>
                       {availableSlots.map((slot) => (
                         <option key={slot._id} value={slot._id}>
@@ -270,7 +270,7 @@ function PrivateAppointmentContent() {
                       ))}
                     </select>
                     {availableSlots.length === 0 && !loadingSlots && (
-                      <p className="mt-2 text-sm text-[#6B7280]">
+                      <p className="mt-2 text-sm text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo">
                         No available sessions at the moment. Please check back later.
                       </p>
                     )}
@@ -284,7 +284,7 @@ function PrivateAppointmentContent() {
                       placeholder="Full Name"
                       value={formData.fullName}
                       onChange={handleChange}
-                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                       required
                     />
                   </div>
@@ -298,7 +298,7 @@ function PrivateAppointmentContent() {
                         placeholder="Phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                         required
                       />
                     </div>
@@ -309,7 +309,7 @@ function PrivateAppointmentContent() {
                         placeholder="Email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                         required
                       />
                     </div>
@@ -317,11 +317,11 @@ function PrivateAppointmentContent() {
 
                   {/* Required Session Details */}
                   <div className="pt-4 border-t border-[#5B7C99]/20">
-                    <h3 className="text-[#1C3163] text-[16px] md:text-[18px] font-medium mb-4">Session Details</h3>
+                    <h3 className="text-[#1C3163]  text-[14px] md:text-[16px] sm:text-[15px] font-medium mb-4 font-touvlo">Session Details</h3>
                     
                     {/* Preferred Date(s) */}
                     <div className="mb-4">
-                      <label className="block text-[#5B7C99] text-[14px] mb-2">
+                      <label className="block text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] mb-2 font-touvlo">
                         Preferred Date(s) <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -330,14 +330,14 @@ function PrivateAppointmentContent() {
                         placeholder="e.g., March 15, 2024 or March 15-20, 2024"
                         value={formData.preferredDates}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                         required
                       />
                     </div>
 
                     {/* Preferred Location */}
                     <div className="mb-4">
-                      <label className="block text-[#5B7C99] text-[14px] mb-2">
+                      <label className="block text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] mb-2 font-touvlo">
                         Preferred Location <span className="text-red-500">*</span>
                       </label>
                       <div className="flex flex-wrap gap-4">
@@ -349,10 +349,10 @@ function PrivateAppointmentContent() {
                               value={option}
                               checked={formData.preferredLocation === option}
                               onChange={() => handleRadioChange('preferredLocation', option)}
-                              className="w-4 h-4 text-[#D5B584] border-[#5B7C99] focus:ring-[#D5B584]"
+                              className="w-4 h-4 text-[#D5B584] border-[#1C3163] focus:ring-[#D5B584] text-[14]"
                               required
                             />
-                            <span className="text-[#5B7C99] text-[14px]">{option}</span>
+                            <span className="text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo">{option}</span>
                           </label>
                         ))}
                       </div>
@@ -360,14 +360,14 @@ function PrivateAppointmentContent() {
 
                     {/* Preferred Duration */}
                     <div className="mb-4">
-                      <label className="block text-[#5B7C99] text-[14px] mb-2">
+                      <label className="block text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] mb-2 font-touvlo">
                         Preferred Session Duration <span className="text-red-500">*</span>
                       </label>
                       <select
                         name="preferredDuration"
                         value={formData.preferredDuration}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                         required
                       >
                         <option value="">Select Duration</option>
@@ -382,7 +382,7 @@ function PrivateAppointmentContent() {
 
                   {/* Optional Corporate-Related Fields */}
                   <div className="pt-4 border-t border-[#5B7C99]/20">
-                    <h3 className="text-[#1C3163] text-[16px] md:text-[18px] font-medium mb-4">Additional Information (Optional)</h3>
+                    <h3 className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-medium mb-4 font-touvlo">Additional Information (Optional)</h3>
                     
                     {/* Company Name and Job Title */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
@@ -393,7 +393,7 @@ function PrivateAppointmentContent() {
                           placeholder="Company Name"
                           value={formData.companyName}
                           onChange={handleChange}
-                          className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                          className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                         />
                       </div>
                       <div>
@@ -403,7 +403,7 @@ function PrivateAppointmentContent() {
                           placeholder="Job Title / Role"
                           value={formData.jobTitle}
                           onChange={handleChange}
-                          className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                          className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                         />
                       </div>
                     </div>
@@ -416,7 +416,7 @@ function PrivateAppointmentContent() {
                         placeholder="Work Email (Optional)"
                         value={formData.workEmail}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                       />
                     </div>
 
@@ -427,7 +427,7 @@ function PrivateAppointmentContent() {
                           name="industry"
                           value={formData.industry}
                           onChange={handleChange}
-                          className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                          className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                         >
                           <option value="">Industry (Optional)</option>
                           <option value="Finance">Finance</option>
@@ -445,7 +445,7 @@ function PrivateAppointmentContent() {
                           name="companySize"
                           value={formData.companySize}
                           onChange={handleChange}
-                          className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                          className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg  text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
                         >
                           <option value="">Company Size (Optional)</option>
                           <option value="1-50">1-50</option>
@@ -458,7 +458,7 @@ function PrivateAppointmentContent() {
 
                     {/* Session Objectives */}
                     <div className="mb-4">
-                      <label className="block text-[#5B7C99] text-[14px] mb-2">Session Objectives (Optional)</label>
+                      <label className="block text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] mb-2 font-touvlo">Session Objectives (Optional)</label>
                       <div className="space-y-2">
                         {[
                           'Stress reduction & relaxation',
@@ -473,9 +473,9 @@ function PrivateAppointmentContent() {
                               type="checkbox"
                               checked={formData.sessionObjectives.includes(option)}
                               onChange={() => handleCheckboxChange('sessionObjectives', option)}
-                              className="w-4 h-4 text-[#D5B584] border-[#5B7C99] rounded focus:ring-[#D5B584]"
+                              className="w-4 h-4 text-[#D5B584] border-[#1C3163] rounded focus:ring-[#D5B584]"
                             />
-                            <span className="text-[#5B7C99] text-[14px]">{option}</span>
+                            <span className="text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo">{option}</span>
                           </label>
                         ))}
                       </div>
@@ -490,15 +490,15 @@ function PrivateAppointmentContent() {
                       value={formData.comment}
                       onChange={handleChange}
                       rows={6}
-                      className="w-full px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all resize-none"
+                      className="w-full font-touvlo px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all resize-none"
                     />
                   </div>
 
                   {/* Selected Slot Display */}
                   {selectedSlot && (
                     <div className="bg-[#D5B584]/20 border border-[#D5B584]/40 rounded-lg p-4">
-                      <p className="text-sm font-medium text-[#5B7C99] mb-2">Selected Session:</p>
-                      <p className="text-[14px] sm:text-[16px] text-[#1C3163] font-medium">
+                      <p className="text-sm font-medium text-[#1C3163] mb-2 font-touvlo">Selected Session:</p>
+                      <p className="text-[14px] sm:text-[15px] md:text-[16px] text-[#1C3163] font-medium font-touvlo">
                         {formatSlotDisplay(selectedSlot)}
                       </p>
                       {/* Show date/time only if they exist (optional fields) */}
@@ -527,7 +527,7 @@ function PrivateAppointmentContent() {
                     <button
                       type="submit"
                       disabled={submitting || !formData.slotId || !formData.preferredDates || !formData.preferredLocation || !formData.preferredDuration}
-                      className="bg-[#1C3163] text-white px-12 py-4 rounded-lg text-[16px] sm:text-[18px] font-medium hover:bg-[#2a4580] transition-colors duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-[#1C3163] text-white px-12 py-4 rounded-lg text-[14px] sm:text-[15px] md:text-[16px] font-medium hover:bg-[#2a4580] transition-colors duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed font-touvlo"
                     >
                       {submitting ? 'Booking...' : 'Book Session'}
                     </button>

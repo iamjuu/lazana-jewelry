@@ -480,6 +480,8 @@ const Index = () => {
 
   return (
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen w-full min-w-0 relative">
+      {/* Navbar moved outside overflow-hidden so it stays visible on mobile after scroll (iOS fix) */}
+      <Navbar />
       <div className="relative z-10 h-screen w-full overflow-hidden">
         <video
           ref={videoRef}
@@ -499,7 +501,7 @@ const Index = () => {
         </video>
 
         <div className="relative z-10 h-full flex flex-col justify-between w-full">
-          <Navbar />
+          <div className="min-h-[64px] md:min-h-[84px]" />
 
           <div className="relative">
             <h1 className="font-seasons text-center pb-[60px] sm:pb-[80px] md:pb-[100px] lg:pb-[120px] px-4 text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[50px]  leading-tight">
@@ -804,6 +806,7 @@ const Index = () => {
 
         <AboutSectionComponent />
 
+        {(featuredCorporateSessions.length > 0 || featuredPrivateSessions.length > 0) && (
         <section className="w-full  md:py-[0px] mt-[25px] ">
           <div className="max-w-6xl flex flex-col  md:gap-0   mx-auto px-4">
             {/* Header */}
@@ -826,9 +829,9 @@ const Index = () => {
             </div>
 <div className="flex flex-col gap-[25px]" >
             {/* First Row - Featured Corporate Sessions */}
+            {featuredCorporateSessions.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-x-6 md:gap-x-12 gap-y-8 md:gap-y-16  md:mb-16 font-touvlo">
-              {featuredCorporateSessions.length > 0 ? (
-                featuredCorporateSessions.map((session) => {
+              {featuredCorporateSessions.map((session) => {
                   const imageUrl = session.imageUrl
                     ? session.imageUrl.startsWith("data:") ||
                       session.imageUrl.startsWith("http")
@@ -839,7 +842,7 @@ const Index = () => {
                   return (
                     <div
                       key={session._id}
-                      className="flex w-full  md:flex-row gap-5 md:gap-0 flex-col-reverse  items-center md:items-end justify-between group"
+                      className="flex w-full  md:flex-row gap-5 md:gap-0 flex-col-reverse  items-center md:items-end justify-between group "
                     >
                       {/* Image Container - Left Side */}
                       <div className="relative aspect-3/4 w-[50%] rounded-2xl md:rounded-3xl overflow-hidden shrink-0 font-touvlo">
@@ -873,22 +876,16 @@ const Index = () => {
                       </div>
                     </div>
                   );
-                })
-              ) : (
-                <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center py-12">
-                  <p className="text-[#545454] text-[14px] sm:text-[16px] font-touvlo">
-                    No corporate sessions found
-                  </p>
-                </div>
-              )}
+                })}
             </div>
+            )}
 
             {/* Second Section Header */}
 
             {/* Second Row - Featured Private Sessions */}
+            {featuredPrivateSessions.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-12 gap-y-8 md:gap-y-16 md:mb-16  ">
-              {featuredPrivateSessions.length > 0 ? (
-                featuredPrivateSessions.map((session) => {
+              {featuredPrivateSessions.map((session) => {
                   const imageUrl = session.imageUrl
                     ? session.imageUrl.startsWith("data:") ||
                       session.imageUrl.startsWith("http")
@@ -930,18 +927,13 @@ const Index = () => {
                       </div>
                     </div>
                   );
-                })
-              ) : (
-                <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center ">
-                  <p className="text-[#545454] text-[14px] sm:text-[16px] font-touvlo">
-                    No private sessions found
-                  </p>
-                </div>
-              )}
+                })}
             </div>
+            )}
             </div>
           </div>
         </section>
+        )}
 
         {/* testimonials section  */}
 

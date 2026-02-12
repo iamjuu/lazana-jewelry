@@ -54,35 +54,41 @@ const Navbar = () => {
   const [mobileOfferingExpanded, setMobileOfferingExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
-  // const [isSearching, setIsSearching] = useState(false); // Can add loading state if needed
+  const [searchPage, setSearchPage] = useState(1);
+  const [hasMoreSearch, setHasMoreSearch] = useState(false);
+  const [loadingMoreSearch, setLoadingMoreSearch] = useState(false);
+  const searchResultsRef = useRef<HTMLDivElement>(null);
 
   const shopHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const offeringHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Debounce timeout
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounced search effect
+  // Debounced search effect - initial fetch (limit 20)
   useEffect(() => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
 
     if (searchQuery.trim()) {
-      // Set loading state here if desired
       searchTimeoutRef.current = setTimeout(async () => {
         try {
           const res = await fetch(
-            `/api/products?search=${encodeURIComponent(searchQuery)}&limit=5`,
+            `/api/products?search=${encodeURIComponent(searchQuery)}&limit=20&page=1`,
           );
           const data = await res.json();
           if (data.success) {
             setSearchResults(data.data || []);
+            setSearchPage(1);
+            setHasMoreSearch(data.pagination?.hasNext ?? false);
           }
         } catch (error) {
           console.error("Search error:", error);
         }
-      }, 300); // 300ms debounce
+      }, 300);
     } else {
       setSearchResults([]);
+      setSearchPage(1);
+      setHasMoreSearch(false);
     }
 
     return () => {
@@ -92,16 +98,45 @@ const Navbar = () => {
     };
   }, [searchQuery]);
 
+  const fetchMoreSearchResults = async () => {
+    if (!searchQuery.trim() || loadingMoreSearch || !hasMoreSearch) return;
+    setLoadingMoreSearch(true);
+    try {
+      const nextPage = searchPage + 1;
+      const res = await fetch(
+        `/api/products?search=${encodeURIComponent(searchQuery)}&limit=20&page=${nextPage}`,
+      );
+      const data = await res.json();
+      if (data.success && data.data?.length) {
+        setSearchResults((prev) => [...prev, ...(data.data || [])]);
+        setSearchPage(nextPage);
+        setHasMoreSearch(data.pagination?.hasNext ?? false);
+      } else {
+        setHasMoreSearch(false);
+      }
+    } catch (error) {
+      console.error("Search load more error:", error);
+      setHasMoreSearch(false);
+    } finally {
+      setLoadingMoreSearch(false);
+    }
+  };
+
+  const handleSearchResultsScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    if (nearBottom && hasMoreSearch && !loadingMoreSearch) {
+      fetchMoreSearchResults();
+    }
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // User requested "enter option no need to go", so we do nothing on submit
-    // unless we want to keep it as a fallback?
-    // "enter option no need to go" -> Disable redirect on Enter.
-    // if (searchQuery.trim()) {
-    //   router.push(`/shop?search=${encodeURIComponent(searchQuery)}`);
-    //   setIsSearchOpen(false);
-    //   setSearchQuery("");
-    // }
+    const keyword = searchQuery.trim();
+    router.push(keyword ? `/search?q=${encodeURIComponent(keyword)}` : "/search");
+    setIsSearchOpen(false);
+    setSearchQuery("");
+    setSearchResults([]);
   };
 
   const handleProductClick = (productId: string) => {
@@ -109,6 +144,8 @@ const Navbar = () => {
     setIsSearchOpen(false);
     setSearchQuery("");
     setSearchResults([]);
+    setSearchPage(1);
+    setHasMoreSearch(false);
   };
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -127,7 +164,11 @@ const Navbar = () => {
       try {
         const res = await fetch("/api/categories");
         const data = await res.json();
-        if (data.success) setCategories(data.data || []);
+        if (data.success){ setCategories(data.data || []);
+          console.log(data.data);
+
+        }
+
       } catch (err) {
         console.error(err);
       }
@@ -142,18 +183,19 @@ const Navbar = () => {
       <nav
         ref={navRef}
         className="w-full px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-[43px]
-        fixed top-0 left-0 right-0 z-[1000]
+        fixed top-0 left-0 right-0 z-[99999] lg:z-[1000]
+        transform-gpu
         lg:bg-white/10   backdrop-blur-sm  lg:backdrop-blur-sm bg-transparent overflow-visible"
       >
         {/* MOBILE/TABLET NAVBAR - ALWAYS VISIBLE */}
-        <div className="lg:hidden flex items-center justify-between py-4 relative z-[9999px]">
+        <div className="lg:hidden flex items-center justify-between py-4 relative z-[9999]">
           <Link href="/" className="flex items-center">
             <Image
               src={CryselLogo}
               alt="Logo"
               width={150}
               height={30}
-              className="h-6 sm:h-8 w-auto"
+              className="h-[28px] sm:h-8 w-auto"
               priority
             />
           </Link>
@@ -244,7 +286,7 @@ const Navbar = () => {
                             Loading categories...
                           </p>
                         ) : (
-                          categories.slice(0, 8).map((cat) => (
+                          categories.slice(0, 10).map((cat) => (
                             <Link
                               key={cat._id}
                               href={`/shop?category=${cat.slug}`}
@@ -415,7 +457,7 @@ const Navbar = () => {
                           All Crystal singing bowls
                         </Link>
 
-                        {categories.slice(0, 8).map((cat) => (
+                        {categories.slice(0, 10).map((cat) => (
                           <Link
                             key={cat._id}
                             href={`/shop?category=${cat.slug}`}
@@ -587,50 +629,22 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* Live Search Results Dropdown */}
+            {/* Live Search Results Dropdown - same card layout on mobile (list) and desktop (grid), limit 20, infinite scroll */}
             {searchQuery.trim() && (
-              <div className="max-w-4xl mx-auto mt-2 bg-white/95 backdrop-blur-md rounded-lg shadow-xl border border-[#D5B584]/20 overflow-hidden max-h-[60vh] overflow-y-auto">
-                {/* Search results count */}
-                <div className="px-3 py-2 border-b border-[#D5B584]/20">
+              <div className="max-w-4xl mx-auto mt-2 bg-white/95 backdrop-blur-md rounded-lg shadow-xl border border-[#D5B584]/20 overflow-hidden max-h-[60vh] flex flex-col">
+                <div className="px-3 py-2 border-b border-[#D5B584]/20 shrink-0">
                   <p className="font-touvlo text-[#545454] text-sm">
                     {searchResults.length === 0
                       ? "No results"
                       : `${searchResults.length} result${searchResults.length === 1 ? "" : "s"}`}
                   </p>
                 </div>
-                <div className="p-2">
-                  {/* Mobile: list layout (unchanged) */}
-                  <div className="flex flex-col md:hidden">
-                    {searchResults.map((product) => (
-                      <div
-                        key={product._id}
-                        onClick={() => handleProductClick(product._id)}
-                        className="flex items-center gap-4 p-3 hover:bg-[#D5B584]/10 cursor-pointer rounded-md transition-colors border-b border-gray-100 last:border-0"
-                      >
-                        <div className="w-12 h-12 relative flex-shrink-0 rounded overflow-hidden bg-gray-100">
-                          {product.imageUrl && product.imageUrl.length > 0 ? (
-                            <Image
-                              src={product.imageUrl[0]}
-                              alt={product.name}
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400">
-                              <Search size={16} />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-[#1C3163] font-seasons text-lg leading-tight">
-                            {product.name}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Md+: grid of product photo + name */}
-                  <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div
+                  ref={searchResultsRef}
+                  onScroll={handleSearchResultsScroll}
+                  className="p-2 overflow-y-auto flex-1 min-h-0"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {searchResults.map((product) => (
                       <div
                         key={product._id}
@@ -644,7 +658,7 @@ const Navbar = () => {
                               alt={product.name}
                               fill
                               className="object-cover"
-                              sizes="(max-width: 1024px) 50vw, 33vw"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -660,6 +674,11 @@ const Navbar = () => {
                       </div>
                     ))}
                   </div>
+                  {loadingMoreSearch && (
+                    <div className="flex justify-center py-4">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#D5B584]" />
+                    </div>
+                  )}
                 </div>
               </div>
             )}

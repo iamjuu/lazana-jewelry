@@ -9,6 +9,8 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/stores/useCart";
 import toast from "react-hot-toast";
+
+import Bowlsize from "@/public/assets/images/productdesc/bowlsize2.jpeg";
 // Fonts are now defined in globals.css as font-seasons and font-touvlo
 
 type Product = {
@@ -610,22 +612,23 @@ const ProductDetailPage = () => {
                 )}
               </div>
 
-              {/* Short Description - Show after price */}
+              {/* Short Description - Show after price addd this in future if we need readmore   ${!showFullShortDesc ? "line-clamp-4" : ""} */}
               {product.shortDescription && (
                 <div className="mt-[25px]">
                   <p
-                    className={`font-touvlo text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed whitespace-pre-wrap ${!showFullShortDesc ? "line-clamp-4" : ""}`}
-                  >
+                    className={`font-touvlo text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed 
+                      whitespace-pre-wrap `}
+                  >  
                     {product.shortDescription}
                   </p>
-                  {product.shortDescription.length > 200 && (
+                  {/* {product.shortDescription.length > 200 && (
                     <button
                       onClick={() => setShowFullShortDesc(!showFullShortDesc)}
                       className="text-[#1C3163] md:text-[16px] sm:text-[15px] font-semibold mt-2 hover:text-[#D5B584] transition-colors font-touvlo"
                     >
                       {showFullShortDesc ? "Read Less" : "Read More"}
                     </button>
-                  )}
+                  )} */}
                 </div>
               )}
 
@@ -742,21 +745,24 @@ const ProductDetailPage = () => {
                       {expandedSections.has("description") ? "−" : "+"}
                     </span>
                   </button>
+
+                  {/* Description Section - Accordion Style  ${!showFullLongDesc ? "line-clamp-2" : ""*/}
                   {expandedSections.has("description") && (
                     <div className="pb-4">
                       <p
-                        className={`text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] font-touvlo leading-relaxed whitespace-pre-wrap ${!showFullLongDesc ? "line-clamp-2" : ""}`}
+                        className={`text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] font-touvlo leading-relaxed whitespace-pre-wrap
+                           }`}
                       >
                         {product.description}
                       </p>
-                      {product.description.length > 150 && (
+                      {/* {product.description.length > 150 && (
                         <button
                           onClick={() => setShowFullLongDesc(!showFullLongDesc)}
                           className="text-[#1C3163]  md:text-[16px] text-[14px] font-semibold mt-2 hover:text-[#D5B584] transition-colors"
                         >
                           {showFullLongDesc ? "Read Less" : "Read More"}
                         </button>
-                      )}
+                      )} */}
                     </div>
                   )}
                 </div>
@@ -768,7 +774,7 @@ const ProductDetailPage = () => {
                 <div className="border-t border-[#D5B584]/30">
                   <button
                     onClick={() => toggleSection("bowlSizing")}
-                    className="w-full py-4 flex items-center justify-between text-left"
+                    className="w-full py-4 flex items-center justify-between text-left "
                   >
                     <h3 className="text-[#1C3163] text-[19px] md:text-[20px] font-medium font-seasons">
                       Bowl Sizing
@@ -778,18 +784,18 @@ const ProductDetailPage = () => {
                     </span>
                   </button>
                   {expandedSections.has("bowlSizing") && (
-                    <div className="pb-4">
-                      <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed font-touvlo">
+                    <div className="pb-4 ">
+                      <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
                         Our crystal bowls come in various sizes to suit
-                        different healing practices. We offer bowls ranging from
-                        small (4-6 inches) for personal use to large (12-14
-                        inches) for group sessions. Each size is carefully
-                        crafted to produce specific frequencies and resonances.
-                        The size you choose depends on your intended use -
-                        smaller bowls are perfect for individual meditation and
-                        chakra work, while larger bowls create powerful sound
-                        waves ideal for group healing sessions.
+                        different healing practices and intentions. The size of
+                        your bowl depends on the note or chakra that you choose.
+                        4th Octave bowls are between 5.7”-7.7”. 3rd Octave bowls
+                        are between 7” - 8.8”. <br /> Need help to choose? Book a
+                        discovery call 
+        
+                        <Link href="/discoveryappointment" className="text-[#1C3163] pl-2 underline hover:opacity-80 transition-opacity">here</Link>
                       </p>
+                      <Image src={Bowlsize} alt="Bowl Sizing" className="w-full h-auto mt-4  rounded-lg" />
                     </div>
                   )}
                 </div>
@@ -809,22 +815,22 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("shipping") && (
                     <div className="pb-4">
-                      <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed font-touvlo mb-3">
+                      <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mb-3">
                         We offer Air Economy shipping to ensure your crystal
                         bowls arrive safely and promptly. Shipping charges are
                         calculated based on the total number of bowls in your
                         order:
                       </p>
-                      <ul className="list-disc text-[12px]  list-inside text-[#545454] md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo">
+                      <ul className="list-disc text-[14px]  list-inside text-[#545454] md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo">
                         <li>1 Bowl: USD $65</li>
                         <li>2-3 Bowls: USD $111</li>
-                        <li>4-7 Bowls:  USD $155</li>
+                        <li>4-7 Bowls: USD $155</li>
                         <li>
                           8+ Bowls: Rates continue in cycles (8 = $65, 9-10 =
                           $111, 11-14 = $155, and so on)
                         </li>
                       </ul>
-                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mt-3">
+                      <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mt-3">
                         All orders are carefully packaged to protect your bowls
                         during transit. Delivery times vary by location,
                         typically 25-28 business days for international orders.
@@ -840,27 +846,26 @@ const ProductDetailPage = () => {
                       {/* Additional Information */}
                       <div className="mt-6 space-y-4 pt-4 border-t border-[#D5B584]/30">
                         <div>
-                          <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
+                          <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] text-[14px] mb-1 font-touvlo">
                             Return Policy
                           </h4>
-                          <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[14px] font-touvlo">
+                          <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] font-touvlo">
                             No Returns unless it&apos;s broken
                           </p>
-                        
                         </div>
                         <div>
-                          <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
+                          <h4 className="text-[#545454] font-semibold text-[14px] md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
                             Care Instructions
                           </h4>
-                          <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[14px] font-touvlo">
+                          <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] font-touvlo">
                             Wipe with soft cloth, avoid water contact
                           </p>
                         </div>
                         <div>
-                          <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo">
+                          <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] mb-1 font-touvlo text-[14px]">
                             Includes Accessories
                           </h4>
-                          <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[14px] font-touvlo">
+                          <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] font-touvlo">
                             Rubber ring + suede mallet
                           </p>
                           {/* <Link
@@ -869,7 +874,7 @@ const ProductDetailPage = () => {
                           >
                             Any doubts? Contact us
                           </Link> */}
-  <Link
+                          <Link
                             href="/returns-and-refund-policy"
                             className="text-[#1C3163] hover:underline font-touvlo text-[14px] sm:text-[15px] block mt-2"
                           >
@@ -896,20 +901,20 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("octave") && (
                     <div className="pb-4">
-                      <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed font-touvlo">
-                        The 3rd octave bowls produce deeper, more grounding
-                        frequencies that are ideal for root chakra work and deep
-                        meditation. These bowls create a rich, resonant sound
-                        that helps anchor you to the earth and promotes feelings
-                        of stability and security. The 4th octave bowls have
-                        higher, more ethereal frequencies that are perfect for
-                        crown chakra activation and spiritual connection. These
-                        bowls produce lighter, more uplifting tones that can
-                        help elevate consciousness and facilitate connection
-                        with higher realms. Each octave offers unique healing
-                        properties, and many practitioners use both in their
-                        healing sessions for a complete chakra balancing
-                        experience.
+                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
+                        4th Octave Bowls are considered the standard octave of
+                        crystal bowls, clear and ethereal. 3rd Octave bowls are
+                        a lower pitch and deeper sound, more vibrations, more
+                        resonant in the body. It is personal preference which
+                        octave you want to work with and which sound you prefer,
+                        and how you intend to use the bowls in your practice or
+                        facilitation. Many practitioners choose to combine 3rd
+                        and 4th Octave bowls within the same set. This creates a
+                        richer spectrum of tone, allowing you to move between
+                        depth and clarity, grounding and lift, and ultimately
+                        offer a more layered sound experience. Shop our
+                        Harmonized Sets, designed to fit together in perfect
+                        harmony.
                       </p>
                     </div>
                   )}
@@ -934,7 +939,7 @@ const ProductDetailPage = () => {
                         Our bowls are available in multiple tuning frequencies
                         to suit your preferences:
                       </p>
-                      <ul className="list-disc list-inside sm:text-[15px]  text-[14px]  md:text-[16px] space-y-2 ml-2 font-touvlo text-[#545454]">
+                      <ul className="list-disc list-inside text-[14px]  md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo text-[#545454]">
                         <li>
                           <strong>432 Hz:</strong> The healing frequency of
                           nature, known for its calming and harmonizing effects.
@@ -954,7 +959,7 @@ const ProductDetailPage = () => {
                           DNA and promote positive transformation.
                         </li>
                       </ul>
-                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed mt-3 font-touvlo">
+                      <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed mt-3 font-touvlo">
                         If you would like your bowls in an alternative
                         frequency, please leave a note on your order at checkout
                         and we can customize your order to your preferred

@@ -87,32 +87,35 @@ export async function GET(req: NextRequest) {
       query.octave = octave;
     }
 
-    // Size filter - handle various formats: exact (8), ranges (5-6, 6-5), decimals (6.2)
+    // Size filter - handle various formats: exact (8), ranges (5-6, 8-9), decimals (6.2). DB may store trailing " (inches).
     if (size) {
-      // Check if the filter is a range (e.g., "5-6")
+      const optionalInch = `(?:["\u2033])?`;
+      // Check if the filter is a range (e.g., "5-6", "8-9")
       const rangeMatch = size.match(/^(\d+)-(\d+)$/);
 
       if (rangeMatch) {
         const [_, min, max] = rangeMatch;
 
         // Match products with size that:
-        // 1. Exactly matches the range string (5-6)
-        // 2. Matches the reverse range (6-5)
-        // 3. Is a single number within the range (5, 6, 5.5, 5.2, etc.)
-        const sizePattern = `^(${min}-${max}|${max}-${min}|${min}(\\.\\d+)?|${max}(\\.\\d+)?)$`;
-
-        // For ranges like 5-6, also match 5.x where x is any digit
+        // 1. Exactly matches the range string (5-6, 8-9) or reverse (9-8)
+        // 2. Is a number within the range (8, 8.0, 8.1, ... 9, 9.0), with optional trailing " or ″
         const rangePatterns = [];
         for (let i = parseInt(min); i <= parseInt(max); i++) {
           rangePatterns.push(`${i}(\\.\\d+)?`);
         }
 
         query.size = {
-          $regex: `^(${min}-${max}|${max}-${min}|${rangePatterns.join("|")})$`,
+          $regex: `^(${min}-${max}|${max}-${min}|${rangePatterns.join("|")})${optionalInch}$`,
+          $options: "i",
+        };
+      } else if (/^\d+$/.test(size)) {
+        // Single integer (e.g. "8") → treat as "8 inches": match 8, 8.0, 8.1, 8.0", etc.
+        query.size = {
+          $regex: `^${size}(\\.\\d+)?${optionalInch}$`,
           $options: "i",
         };
       } else {
-        // Exact value match (e.g., "8" or "6.2")
+        // Exact value match (e.g. "6.2") or other format
         query.size = size;
       }
     }
