@@ -65,7 +65,7 @@ const AboutPage = () => {
       id: 1,
       image: PremiumQuality,
       title: " Premium Craftsmanship",
-      para: "Each piece is precision-crafted, made from 100% pure clear quartz, our bowls produce quality sound and long-lasting resonance.",
+      para: "Each piece is precision-crafted, made from 99.9% pure  quartz, our bowls produce quality sound and long-lasting resonance.",
     },
 
     {

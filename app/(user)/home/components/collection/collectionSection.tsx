@@ -14,7 +14,7 @@ const Icons = [
     id: 1,
     image: PremiumQuality,
     title: " Premium Craftsmanship",
-    para: "Each piece is precision-crafted, made from 100% pure clear quartz, our bowls produce quality sound and long-lasting resonance."
+    para: "Each piece is precision-crafted, made from 99.9% pure quartz, our bowls produce quality sound and long-lasting resonance."
   },
 
   {
@@ -56,7 +56,7 @@ const CollectionSection: React.FC<CollectionSectionProps> = () => {
             We make Crystal Singing Bowls for Sound Healing & Meditation</h1>
           <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose mt-[25px]">Thoughtfully crafted Crystal Singing Bowls for clarity, relaxation, and modern mindful living.
             <br />
-            Made from 99.9% pure clear quartz crystal.
+            Made from 99.9% pure  quartz crystal.
             <br />
             Lightweight, travel-friendly, and designed for everyday use.
           </p>

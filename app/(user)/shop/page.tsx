@@ -450,7 +450,7 @@ const ShopPageContent = () => {
               <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed text-[#545454] mt-[25px]">
                 Thoughtfully crafted Crystal Bowls designed for clarity,
                 relaxation, modern mindful living, sound healing, meditation and
-                yoga. Made from 99.9% pure clear quartz crystal. Lightweight,
+                yoga. Made from 99.9% pure quartz crystal. Lightweight,
                 travel-friendly, and designed for everyday practice. Each bowl
                 is unique and can be customised by chakra, note, frequency,
                 colour, and design to make it uniquely yours. Explore our

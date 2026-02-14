@@ -176,9 +176,12 @@ const Navbar = () => {
     fetchCategories();
   }, []);
 
+  const isHomePage = pathname === "/";
+
   return (
     <>
-      <div className="min-h-[64px] md:min-h-[84px]" />
+      {/* No spacer on home so navbar sits on top of the video container; other pages keep spacer */}
+      {!isHomePage && <div className="min-h-[64px] md:min-h-[84px]" />}
 
       <nav
         ref={navRef}
@@ -187,15 +190,15 @@ const Navbar = () => {
         transform-gpu
         lg:bg-white/10   backdrop-blur-sm  lg:backdrop-blur-sm bg-transparent overflow-visible"
       >
-        {/* MOBILE/TABLET NAVBAR - ALWAYS VISIBLE */}
-        <div className="lg:hidden flex items-center justify-between py-4 relative z-[9999]">
-          <Link href="/" className="flex items-center">
+        {/* MOBILE/TABLET NAVBAR - fixed row height, larger logo without increasing navbar */}
+        <div className="lg:hidden flex items-center justify-between min-h-[56px] py-3 relative z-[9999]">
+          <Link href="/" className="flex items-center h-full min-h-[56px]">
             <Image
               src={CryselLogo}
               alt="Logo"
-              width={150}
-              height={30}
-              className="h-[28px] sm:h-8 w-auto"
+              width={180}
+              height={40}
+              className="h-[36px] sm:h-12 w-auto max-h-full object-contain"
               priority
             />
           </Link>

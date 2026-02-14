@@ -606,7 +606,7 @@ const Index = () => {
               <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] leading-[1.9] text-[#545454] mt-[25px]">
                 Crystal Bowl Studio is designed for modern, conscious living,
                 rooted in ancient traditions and wisdom. Each bowl is made from
-                99.9% pure clear quartz crystal, carefully handcrafted and
+                99.9% pure  quartz crystal, carefully handcrafted and
                 quality-checked, to produce clarity, rich, ethereal vibrations
                 that supports meditation, relaxation, healing and
                 transformational work.{" "}

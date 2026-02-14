@@ -296,7 +296,9 @@ const Footer = () => {
                 {/* Social Media Icons */}
                 <div className="flex gap-3">
                   <a
-                    href="#"
+                    href="https://www.instagram.com/crystalbowlstudio?igsh=MTA0NzZ4bjJmbzFtNQ=="
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"
                     aria-label="Instagram"
                   >
@@ -307,7 +309,9 @@ const Footer = () => {
                     />
                   </a>
                   <a
-                    href="#"
+                    href="https://youtube.com/@crystalbowlstudio?si=OAjik3e37JHr_Ltx"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"
                     aria-label="YouTube"
                   >
@@ -318,7 +322,9 @@ const Footer = () => {
                     />
                   </a>
                   <a
-                    href="#"
+                    href="https://www.linkedin.com/in/francesca-wong-17506a58?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"
                     aria-label="LinkedIn"
                   >
@@ -334,12 +340,12 @@ const Footer = () => {
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-black/80 text-[12px] sm:text-[14px] font-light min-w-0 flex-wrap">
                   <p className="min-w-0 shrink-0">©{new Date().getFullYear()} — Copyright</p>
                   <div className="flex flex-wrap gap-2 sm:gap-4">
-                    <a
-                      href="#"
+                    <Link
+                      href="/terms-and-conditions"
                       className="hover:text-[black] transition-colors"
                     >
                       Terms & Conditions
-                    </a>
+                    </Link>
                     <a
                       href="#"
                       className="hover:text-[black] transition-colors"

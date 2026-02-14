@@ -13,7 +13,7 @@ const ShippingAndDeliveryPage = () => {
         <div className="max-w-6xl mx-auto px-4">
           {/* Header */}
           <div className="">
-            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal font-seasons">
+            <h2 className="text-[#D5B584] text-[28px] sm:text-[30px] md:text-[30px] lg:text-[32px] font-normal font-seasons">
               Shipping & Delivery
             </h2>
           </div>
@@ -22,10 +22,10 @@ const ShippingAndDeliveryPage = () => {
           <div className="flex flex-col gap-8 md:gap-[25px] mt-[25px]">
             {/* Shipping Coverage */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[19px]  font-normal font-seasons">
                 Shipping Coverage
               </h3>
-              <div className=" text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
+              <div className=" text-[#545454] text-[14px]  font-touvlo font-light leading-relaxed">
                 <p>
                   We ship internationally to all countries worldwide, except Switzerland, Africa, South America, India.
                 </p>
@@ -34,10 +34,10 @@ const ShippingAndDeliveryPage = () => {
 
             {/* Shipping Rates */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[19px]  font-normal font-seasons">
                 Shipping Rates (Calculated at Checkout)
               </h3>
-              <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
+              <div className="text-[#545454] text-[14px] font-touvlo font-light leading-relaxed">
                 <p>
                   Shipping fees are based on the number of bowls in your order and will be automatically calculated at checkout.
                 </p>
@@ -45,26 +45,26 @@ const ShippingAndDeliveryPage = () => {
                   <table className="w-full border-collapse border border-[#1C3163]/20 mt-4">
                     <thead>
                       <tr className="bg-[#D5B584]/20">
-                        <th className="border border-[#1C3163]/20 px-4 py-3 text-left text-[#1C3163] font-normal">
+                        <th className="border border-[#1C3163]/20 px-4 py-3 text-left text-[14px] sm:text-[14px] md:text-[14px] text-[#1C3163] font-normal">
                           Number of Bowls
                         </th>
-                        <th className="border border-[#1C3163]/20 px-4 py-3 text-left text-[#1C3163] font-normal">
+                        <th className="border border-[#1C3163]/20 px-4 py-3 text-left text-[14px] sm:text-[14px] md:text-[14px] text-[#1C3163] font-normal">
                           Shipping Cost
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="border border-[#1C3163]/20 px-4 py-3">1 Bowl</td>
-                        <td className="border border-[#1C3163]/20 px-4 py-3">USD $65</td>
+                        <td className="border border-[#1C3163]/20 px-4 py-3 text-[14px] sm:text-[14px] md:text-[14px]">1 Bowl</td>
+                        <td className="border border-[#1C3163]/20 px-4 py-3 text-[14px] sm:text-[14px] md:text-[14px]">USD $65</td>
                       </tr>
                       <tr className="bg-white/50">
-                        <td className="border border-[#1C3163]/20 px-4 py-3">2–3 Bowls</td>
-                        <td className="border border-[#1C3163]/20 px-4 py-3">USD $111</td>
+                        <td className="border border-[#1C3163]/20 px-4 py-3 text-[14px] sm:text-[14px] md:text-[14px]">2–3 Bowls</td>
+                        <td className="border border-[#1C3163]/20 px-4 py-3 text-[14px] sm:text-[14px] md:text-[14px]">USD $111</td>
                       </tr>
                       <tr>
-                        <td className="border border-[#1C3163]/20 px-4 py-3">4–7 Bowls</td>
-                        <td className="border border-[#1C3163]/20 px-4 py-3">USD $155</td>
+                        <td className="border border-[#1C3163]/20 px-4 py-3 text-[14px] sm:text-[14px] md:text-[14px]">4–7 Bowls</td>
+                        <td className="border border-[#1C3163]/20 px-4 py-3 text-[14px] sm:text-[14px] md:text-[14px]">USD $155</td>
                       </tr>
                     </tbody>
                   </table>
@@ -74,10 +74,10 @@ const ShippingAndDeliveryPage = () => {
 
             {/* Additional Bowls */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[19px]  font-normal font-seasons">
                 Additional Bowls
               </h3>
-              <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
+              <div className="text-[#545454] text-[14px]  font-touvlo font-light leading-relaxed">
                 <p>
                   For orders of more than 7 bowls, shipping fees will continue to increase according to the tiered structure above and will be calculated automatically at checkout.
                 </p>
@@ -86,10 +86,10 @@ const ShippingAndDeliveryPage = () => {
 
             {/* Customs & Duties */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[19px]  font-normal font-seasons">
                 Customs & Duties
               </h3>
-              <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
+              <div className="text-[#545454] text-[14px]  font-touvlo font-light leading-relaxed">
                 <p>
                   International orders may be subject to customs duties, import taxes, or other fees depending on your country of residence.
                 </p>
@@ -101,10 +101,10 @@ const ShippingAndDeliveryPage = () => {
 
             {/* Production & Delivery Timeline */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[19px]  font-normal font-seasons">
                 Production & Delivery Timeline
               </h3>
-              <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font -light leading-relaxed">
+              <div className="text-[#545454] text-[14px]  font-touvlo font -light leading-relaxed">
                 <p>
                   All Crystal Bowl Studio bowls are custom made to order.
                 </p>
@@ -119,10 +119,10 @@ const ShippingAndDeliveryPage = () => {
 
             {/* Packaging & Insurance */}
             <div className="">
-              <h3 className="text-[#1C3163] text-[16px] sm:text-[19px] md:text-[19px] font-normal font-seasons">
+              <h3 className="text-[#1C3163] text-[19px]  font-normal font-seasons">
                 Packaging & Insurance
               </h3>
-              <div className="text-[#545454] md:text-[14px] sm:text-[16px] font-touvlo font-light leading-relaxed">
+              <div className="text-[#545454] text-[14px]  font-touvlo font-light leading-relaxed">
                 <p>
                   Each bowl is carefully packaged using protective materials and includes its own padded crystal bowl travel case to ensure maximum safety during transit.
                 </p>
