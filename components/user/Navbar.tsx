@@ -395,7 +395,7 @@ const Navbar = () => {
               priority
             />
           </Link>
-
+{/* chanes */}
           {/* NAV LINKS */}
           <div className="font-seasons flex items-center gap-10  text-[18px]">
             {navigationItems.map((item) => {
