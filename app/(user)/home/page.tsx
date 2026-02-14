@@ -486,7 +486,7 @@ const Index = () => {
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen w-full min-w-0 relative">
       {/* Navbar moved outside overflow-hidden so it stays visible on mobile after scroll (iOS fix) */}
       <Navbar />
-      <div className="relative z-10 h-screen w-full overflow-hidden mt-3 sm:mt-0">
+      <div className="relative z-10 h-screen w-full overflow-hidden  sm:mt-0">
         <video
           ref={videoRef}
           autoPlay

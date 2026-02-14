@@ -191,8 +191,8 @@ const Navbar = () => {
         lg:bg-white/10   backdrop-blur-sm  lg:backdrop-blur-sm bg-transparent overflow-visible"
       >
         {/* MOBILE/TABLET NAVBAR - fixed row height, larger logo without increasing navbar */}
-        <div className="lg:hidden flex items-center justify-between min-h-[56px] py-3 relative z-[9999]">
-          <Link href="/" className="flex items-center h-full min-h-[56px]">
+        <div className="lg:hidden flex items-center justify-between min-h-[56px] py-3 relative z-[9999] gap-4">
+          <Link href="/" className="flex items-center h-full min-h-[46px]">
             <Image
               src={CryselLogo}
               alt="Logo"
