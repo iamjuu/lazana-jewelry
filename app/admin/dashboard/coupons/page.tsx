@@ -640,7 +640,7 @@ export default function CouponsPage() {
                   className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-white"
                 >
                   <option value="percentage">Percentage (%)</option>
-                  <option value="amount">Fixed Amount (SGD)</option>
+                  <option value="amount">Fixed Amount (USD)</option>
                 </select>
               </div>
 
@@ -666,7 +666,7 @@ export default function CouponsPage() {
               ) : (
                 <div>
                   <label className="block text-sm font-medium text-white mb-1">
-                    Discount Amount * (SGD)
+                    Discount Amount * (USD)
                   </label>
                   <input
                     type="number"
@@ -916,7 +916,7 @@ export default function CouponsPage() {
                     <td className="px-4 py-3 text-white">
                       {coupon.discountType === "percentage" 
                         ? `${coupon.discountPercent || 0}%`
-                        : `SGD ${coupon.discountAmount || 0}`
+                        : `USD ${coupon.discountAmount || 0}`
                       }
                     </td>
                     <td className={`px-4 py-3 ${expired ? "text-red-400" : "text-white"}`}>

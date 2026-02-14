@@ -901,7 +901,7 @@ const ProductDetailPage = () => {
                   </button>
                   {expandedSections.has("octave") && (
                     <div className="pb-4">
-                      <p className="text-[#545454] text-[12px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
+                      <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
                         4th Octave Bowls are considered the standard octave of
                         crystal bowls, clear and ethereal. 3rd Octave bowls are
                         a lower pitch and deeper sound, more vibrations, more

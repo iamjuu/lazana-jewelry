@@ -12,6 +12,7 @@ type PastEvent = {
   day: string;
   time: string;
   date: string;
+  endDate?: string;
   description: string;
   thumbnailImage: string;
   photos?: string[];
@@ -38,6 +39,7 @@ export default function PastEventsPage() {
     day: "",
     time: "",
     date: "",
+    endDate: "",
     description: "",
     thumbnailImage: "",
     photos: [] as string[],
@@ -111,6 +113,46 @@ export default function PastEventsPage() {
   useEffect(() => {
     fetchPastEvents();
   }, [currentPage, searchQuery]);
+
+  // Auto-populate Day based on Date and EndDate (same logic as events dashboard)
+  useEffect(() => {
+    if (!formData.date) {
+      setFormData((prev) => ({ ...prev, day: "" }));
+      return;
+    }
+
+    const startDate = new Date(formData.date);
+    if (isNaN(startDate.getTime())) return;
+
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const startDayName = days[startDate.getDay()];
+    let dayString = startDayName;
+
+    if (formData.endDate) {
+      const endDate = new Date(formData.endDate);
+      if (!isNaN(endDate.getTime())) {
+        const endDayName = days[endDate.getDay()];
+        if (startDayName !== endDayName) {
+          dayString = `${startDayName}-${endDayName}`;
+        }
+      }
+    }
+
+    setFormData((prev) => {
+      if (prev.day !== dayString) {
+        return { ...prev, day: dayString };
+      }
+      return prev;
+    });
+  }, [formData.date, formData.endDate]);
 
   // Normalize image URL for display
   const getImageUrl = (url: string) => {
@@ -414,6 +456,7 @@ export default function PastEventsPage() {
       day: pastEvent.day || "",
       time: pastEvent.time || "",
       date: pastEvent.date || "",
+      endDate: pastEvent.endDate || "",
       description: pastEvent.description || "",
       thumbnailImage: originalThumb,
       photos: originalPhotosArray,
@@ -651,6 +694,7 @@ export default function PastEventsPage() {
         day: string;
         time: string;
         date: string;
+        endDate?: string;
         description: string;
         thumbnailImage: string;
         photos: string[];
@@ -662,6 +706,7 @@ export default function PastEventsPage() {
         day: formData.day.trim(),
         time: timeRange,
         date: formData.date.trim(),
+        endDate: formData.endDate.trim() ? formData.endDate.trim() : undefined,
         description: formData.description.trim(),
         thumbnailImage: finalThumbnailUrl,
         photos: finalPhotos.filter(p => p !== ""),
@@ -751,7 +796,7 @@ export default function PastEventsPage() {
         }
       });
       
-      setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", thumbnailImage: "", photos: [], videos: [] });
+      setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", endDate: "", description: "", thumbnailImage: "", photos: [], videos: [] });
       setStartHour("");
       setStartMinute("");
       setStartPeriod("AM");
@@ -817,7 +862,7 @@ export default function PastEventsPage() {
     }
     
     setShowAddForm(false);
-    setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", description: "", thumbnailImage: "", photos: [], videos: [] });
+    setFormData({ name: "", title: "", location: "", day: "", time: "", date: "", endDate: "", description: "", thumbnailImage: "", photos: [], videos: [] });
     setStartHour("");
     setStartMinute("00");
     setStartPeriod("AM");
@@ -932,6 +977,7 @@ export default function PastEventsPage() {
                           </td>
                           <td className="px-6 py-4 text-zinc-400">
                             {pastEvent.date || "N/A"}
+                            {pastEvent.endDate ? ` - ${pastEvent.endDate}` : ""}
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
@@ -1105,17 +1151,30 @@ export default function PastEventsPage() {
               </div>
 
               <div className="space-y-1">
+                <label htmlFor="past-event-end-date" className="text-sm font-medium text-white">
+                  End Date <span className="text-zinc-400 text-xs">(optional)</span>
+                </label>
+                <input
+                  id="past-event-end-date"
+                  type="date"
+                  value={formData.endDate}
+                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1">
                 <label htmlFor="past-event-day" className="text-sm font-medium text-white">
-                  Day <span className="text-red-500">*</span>
+                  Day <span className="text-zinc-400 text-xs">(auto-populated)</span>
                 </label>
                 <input
                   id="past-event-day"
                   type="text"
                   required
+                  readOnly
                   value={formData.day}
-                  onChange={(e) => setFormData({ ...formData, day: e.target.value })}
-                  className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-                  placeholder="e.g., Friday"
+                  className="w-full rounded-md border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm text-zinc-400 cursor-not-allowed focus:outline-none"
+                  placeholder="e.g. Saturday (Auto-populated)"
                 />
               </div>
 

@@ -78,7 +78,7 @@ function CheckoutForm({ orderId, amount }: { orderId: string; amount: number }) 
 
       <div className="bg-white p-4 rounded-lg shadow-lg">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-lg font-medium text-[#1C3163]">Total Amount (SGD):</span>
+          <span className="text-lg font-medium text-[#1C3163]">Total Amount (USD):</span>
           <span className="text-2xl font-bold text-[#1C3163]">${amount.toFixed(2)}</span>
         </div>
       </div>

@@ -1235,7 +1235,7 @@ export default function SessionsPage() {
             {activeTab === "discovery" && (
               <div className="space-y-1">
                 <label htmlFor="price" className="text-sm font-medium text-white">
-                  Price (SGD) <span className="text-red-500">*</span>
+                  Price (USD) <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="price"
@@ -1249,7 +1249,7 @@ export default function SessionsPage() {
                   placeholder="Enter price (e.g., 50.00)"
                 />
                 <p className="text-xs text-zinc-400 mt-1">
-                  Discovery sessions now require payment. Enter the price in SGD.
+                  Discovery sessions now require payment. Enter the price in USD.
                 </p>
               </div>
             )}

@@ -7,6 +7,7 @@ export interface PastEventType {
   day: string;
   time: string;
   date: string;
+  endDate?: string;
   description: string;
   thumbnailImage: string; // Required main thumbnail image
   photos?: string[]; // Optional array of up to 6 photos
@@ -23,6 +24,7 @@ const PastEventSchema = new Schema<PastEventType>(
     day: { type: String, required: true },
     time: { type: String, required: true },
     date: { type: String, required: true },
+    endDate: { type: String },
     description: { type: String, required: true },
     thumbnailImage: { type: String, required: true }, // Required main thumbnail
     photos: { type: [String], default: [] }, // Optional array, max 6

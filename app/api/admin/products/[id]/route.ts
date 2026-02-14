@@ -132,8 +132,8 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     }
     if (discount !== undefined) {
       if (discount === null || discount === "") {
-        // Remove discount if explicitly set to null/empty
-        updateData.discount = undefined;
+        // Remove discount if explicitly set to null/empty (use null so Mongoose includes it in the update)
+        updateData.discount = null;
       } else {
         const discountNum = typeof discount === 'number' ? discount : parseFloat(String(discount));
         if (!isNaN(discountNum)) {

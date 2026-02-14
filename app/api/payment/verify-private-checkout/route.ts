@@ -250,7 +250,7 @@ export async function POST(req: NextRequest) {
             services: `Private Session - ${sessionDate} at ${sessionTime}`,
             phone: customerPhone,
             email: customerEmail || user.email || "customer@example.com", // Fallback email to prevent validation error
-            comment: `Private Session booking - Payment confirmed. Amount: SGD $${bookingAmount.toFixed(2)}`,
+            comment: `Private Session booking - Payment confirmed. Amount: USD $${bookingAmount.toFixed(2)}`,
             status: "completed",
             sessionType: "private",
             sessionId: sessionIdToUse,

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     await connectDB();
     
     const body = await req.json();
-    const { name, title, location, day, time, date, description, thumbnailImage, photos, videos } = body;
+    const { name, title, location, day, time, date, endDate, description, thumbnailImage, photos, videos } = body;
 
     // Validation
     if (!name || !title || !location || !day || !time || !date || !description) {
@@ -116,6 +116,7 @@ export async function POST(req: NextRequest) {
       day: String(day).trim(),
       time: String(time).trim(),
       date: String(date).trim(),
+      endDate: endDate && String(endDate).trim() ? String(endDate).trim() : undefined,
       description: String(description).trim(),
       thumbnailImage: s3ThumbnailUrl,
       photos: s3PhotoUrls,

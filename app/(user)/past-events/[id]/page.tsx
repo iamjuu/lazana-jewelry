@@ -17,6 +17,7 @@ type ApiPastEvent = {
   day: string;
   time: string;
   date: string;
+  endDate?: string;
   description: string;
   thumbnailImage: string;
   photos?: string[];
@@ -105,7 +106,24 @@ const PastEventDetailPage = () => {
   const monthName = monthNames[eventDate.getMonth()];
   const dayNumber = eventDate.getDate();
   const year = eventDate.getFullYear();
-  const formattedDate = `${monthName} ${dayNumber}, ${year}`;
+  let formattedDate: string;
+  if (pastEvent.endDate) {
+    const endDate = new Date(pastEvent.endDate);
+    const endMonth = monthNames[endDate.getMonth()];
+    const endDay = endDate.getDate();
+    const endYear = endDate.getFullYear();
+    if (year === endYear) {
+      if (eventDate.getMonth() === endDate.getMonth()) {
+        formattedDate = `${monthName} ${dayNumber} - ${endDay}, ${year}`;
+      } else {
+        formattedDate = `${monthName} ${dayNumber} - ${endMonth} ${endDay}, ${year}`;
+      }
+    } else {
+      formattedDate = `${monthName} ${dayNumber}, ${year} - ${endMonth} ${endDay}, ${endYear}`;
+    }
+  } else {
+    formattedDate = `${monthName} ${dayNumber}, ${year}`;
+  }
 
   const photos = pastEvent.photos || [];
   const videos = pastEvent.videos || [];

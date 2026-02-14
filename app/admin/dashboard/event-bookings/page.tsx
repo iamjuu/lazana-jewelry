@@ -183,7 +183,7 @@ export default function EventBookingsPage() {
           </div>
           <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-4">
             <div className="text-sm text-zinc-400 mb-1">Revenue</div>
-            <div className="text-2xl font-semibold text-white">SGD ${stats.totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-semibold text-white">USD ${stats.totalRevenue.toFixed(2)}</div>
           </div>
         </div>
 
@@ -252,7 +252,7 @@ export default function EventBookingsPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 text-white">
-                        SGD ${booking.amount.toFixed(2)}
+                        USD ${booking.amount.toFixed(2)}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getStatusColor(booking.status)}`}>

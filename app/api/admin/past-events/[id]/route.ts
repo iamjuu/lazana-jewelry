@@ -13,7 +13,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     const body = await req.json();
     const { id } = await context.params;
     
-    const { name, title, location, day, time, date, description, thumbnailImage, photos, videos } = body;
+    const { name, title, location, day, time, date, endDate, description, thumbnailImage, photos, videos } = body;
 
     // Validation
     if (!name || !title || !location || !day || !time || !date || !description) {
@@ -112,20 +112,24 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       }
     }
 
+    const updatePayload: Record<string, unknown> = {
+      name: String(name).trim(),
+      title: String(title).trim(),
+      location: String(location).trim(),
+      day: String(day).trim(),
+      time: String(time).trim(),
+      date: String(date).trim(),
+      description: String(description).trim(),
+      thumbnailImage: s3ThumbnailUrl,
+      photos: s3PhotoUrls,
+      videos: s3VideoUrls,
+    };
+    if (endDate !== undefined) {
+      updatePayload.endDate = endDate && String(endDate).trim() ? String(endDate).trim() : null;
+    }
     const updated = await PastEvent.findByIdAndUpdate(
       id,
-      {
-        name: String(name).trim(),
-        title: String(title).trim(),
-        location: String(location).trim(),
-        day: String(day).trim(),
-        time: String(time).trim(),
-        date: String(date).trim(),
-        description: String(description).trim(),
-        thumbnailImage: s3ThumbnailUrl,
-        photos: s3PhotoUrls,
-        videos: s3VideoUrls,
-      },
+      updatePayload,
       { new: true }
     );
     

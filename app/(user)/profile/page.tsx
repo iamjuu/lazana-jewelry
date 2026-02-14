@@ -1029,7 +1029,7 @@ function ProfilePageContent() {
                               )}
                             <div className="flex justify-between items-center pt-2 border-t border-gray-300">
                               <p className="text-[#1C3163] font-semibold text-lg">
-                                Total Amount (SGD)
+                                Total Amount (USD)
                               </p>
                               <p className="text-[#1C3163] font-semibold text-lg">
                                 ${formatAmount(order.amount)}
@@ -1356,7 +1356,7 @@ function ProfilePageContent() {
                                     )}
                                   </div>
                                   <span className="text-green-600 font-medium">
-                                    -SGD ${formatAmount(booking.discountAmount)}
+                                    -USD ${formatAmount(booking.discountAmount)}
                                   </span>
                                 </div>
                               )}

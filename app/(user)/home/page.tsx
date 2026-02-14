@@ -292,6 +292,10 @@ const Index = () => {
     return t || "Event";
   };
 
+  // Shorten "6:00 AM" to "6 AM" so date line fits within card (no overflow)
+  const shortenTime = (t: string): string =>
+    t.replace(/:00\s*(?=AM|PM)/gi, " ");
+
   // Helper function to format time with day/date
   const formatTime = (
     day: string,
@@ -300,7 +304,7 @@ const Index = () => {
     endDateString?: string,
   ): string => {
     if (!endDateString) {
-      return ` · ${time}`;
+      return ` · ${shortenTime(time)}`;
     }
 
     const timeParts = time.split("-").map((t) => t.trim());
@@ -334,11 +338,11 @@ const Index = () => {
                       startDate.getFullYear() !== endDate.getFullYear();
 
     if (endTime && isMultiDay) {
-      // Shortened format for Home Page cards to fit in space: "9:00 AM - 5:00 PM"
-      return ` · ${startTime} - ${endTime}`;
+      // Shortened format for Home Page cards: "6 AM - 11 AM" when minutes are :00
+      return ` · ${shortenTime(startTime)} - ${shortenTime(endTime)}`;
     }
 
-    return ` · ${time}`;
+    return ` · ${shortenTime(time)}`;
   };
 
   const toggleMute = () => {
@@ -482,7 +486,7 @@ const Index = () => {
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen w-full min-w-0 relative">
       {/* Navbar moved outside overflow-hidden so it stays visible on mobile after scroll (iOS fix) */}
       <Navbar />
-      <div className="relative z-10 h-screen w-full overflow-hidden">
+      <div className="relative z-10 h-screen w-full overflow-hidden mt-3 sm:mt-0">
         <video
           ref={videoRef}
           autoPlay

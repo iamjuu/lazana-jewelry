@@ -147,6 +147,10 @@ const EventsPage = () => {
     return `data:image/jpeg;base64,${imageUrl}`;
   };
 
+  // Shorten "2:00 PM" to "2 PM" when minutes are zero (same as home page)
+  const shortenTime = (t: string): string =>
+    t.replace(/:00\s*(?=AM|PM)/gi, " ");
+
   // Helper function to format time with day/date
   const formatTime = (
     day: string,
@@ -154,10 +158,9 @@ const EventsPage = () => {
     dateString: string,
     endDateString?: string,
   ): string => {
-    // If no endDate, fallback to standard "Day, Time" or "Date, Time"
+    // If no endDate, fallback to standard "Day, Time"
     if (!endDateString) {
-      // Optional: You could format this as "Feb 03, 9:00 AM - 5:00 PM" if desired
-      return `${day} ${time}`;
+      return `${day} ${shortenTime(time)}`;
     }
 
     // Try to split time into start and end
@@ -194,12 +197,11 @@ const EventsPage = () => {
       startDate.getMonth() !== endDate.getMonth() ||
       startDate.getFullYear() !== endDate.getFullYear();
 
-    // "8:00 AM - 8:00 PM" (simplified only for multi-day)
     if (endTime && isMultiDay) {
-      return `${startTime} - ${endTime}`;
+      return `${shortenTime(startTime)} - ${shortenTime(endTime)}`;
     }
 
-    return `${day} ${time}`;
+    return `${day} ${shortenTime(time)}`;
   };
 
   // Fetch events from API
@@ -678,48 +680,15 @@ const EventsPage = () => {
                             (pageIndex + 1) * itemsPerPage,
                           )
                           .map((event) => {
-                            const dateString =
-                              pastEventsFromAPI.find((e) => e._id === event.id)
-                                ?.date || "";
-                            const eventDate = dateString
-                              ? new Date(dateString)
-                              : new Date();
-                            // Validate date - if invalid, use current date as fallback
-                            const isValidDate = !isNaN(eventDate.getTime());
-                            const validDate = isValidDate
-                              ? eventDate
-                              : new Date();
-
-                            const monthNames = [
-                              "Jan",
-                              "Feb",
-                              "Mar",
-                              "Apr",
-                              "May",
-                              "Jun",
-                              "Jul",
-                              "Aug",
-                              "Sep",
-                              "Oct",
-                              "Nov",
-                              "Dec",
-                            ];
-                            const monthAbbr =
-                              monthNames[validDate.getMonth()] || "Jan";
-                            const dayNumber = validDate.getDate() || 1;
-                            const year =
-                              validDate.getFullYear() ||
-                              new Date().getFullYear();
-
-                            // Format date for display: "Nov 7, 2025"
-                            const formattedFullDate = `${monthAbbr} ${dayNumber}, ${year}`;
-
-                            // Format time if available
-                            const apiEvent = pastEventsFromAPI.find(
-                              (e) => e._id === event.id,
-                            );
-                            const timeDisplay = apiEvent?.time
-                              ? ` · ${apiEvent.time}`
+                            // Use transformed event date (supports endDate range) for badge and text
+                            const badgeMonth =
+                              event.date.month.length > 4
+                                ? event.date.month.substring(0, 3)
+                                : event.date.month;
+                            const timeDisplay = event.time
+                              ? event.time.startsWith(" · ")
+                                ? event.time
+                                : ` · ${event.time}`
                               : "";
 
                             return (
@@ -744,25 +713,27 @@ const EventsPage = () => {
                                         className="object-cover group-hover:scale-110 transition-all duration-500 ease-out"
                                       />
                                     )}
-                                    {/* Date Badge - Upper Right Corner */}
+                                    {/* Date Badge - Upper Right Corner (uses event.date with endDate support) */}
                                     <div className="absolute top-2 right-2 bg-white px-3 py-2 text-center shadow-lg">
                                       <div className="text-[#1C3163] text-[10px] sm:text-[11px] font-medium uppercase leading-tight">
-                                        {monthAbbr}
+                                        {badgeMonth}
                                       </div>
                                       <div className="text-[#1C3163] text-[18px] sm:text-[20px] md:text-[24px] font-semibold leading-tight">
-                                        {dayNumber}
+                                        {event.date.day}
                                       </div>
                                     </div>
                                   </div>
                                 </Link>
-                                {/* Event Details - Light Beige Background */}
-                                <div className="px-4 md:px-5  -mt-2 relative z-10 mt-[25px]">
-                                  <h3 className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight   tracking-wide font-seasons">
+                                {/* Event Details - left-aligned with image (same as home Upcoming Events) */}
+                                <div className="mt-2 relative z-0">
+                                  <h3 className="font-seasons text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight mb-2 tracking-wide">
                                     {event.title}
                                   </h3>
-                                  <p className="text-[#545454] text-[12px] sm:text-[13px] md:text-[14px] font-light font-touvlo whitespace-nowrap">
-                                    {formattedFullDate}
-                                    {timeDisplay}
+                                  <p className="text-gray-700 text-[12px] sm:text-[13px] md:text-[14px] font-light text-[#545454] font-touvlo whitespace-nowrap ">
+                                    {event.formattedDate}
+                                    <span className="ml-[2px] whitespace-nowrap">
+                                      {timeDisplay}
+                                    </span>
                                   </p>
                                 </div>
                               </div>

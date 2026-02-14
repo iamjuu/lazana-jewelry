@@ -772,7 +772,7 @@ export default function EventsPage() {
                           </td>
                           <td className="px-6 py-4 text-zinc-400">
                             {event.price !== undefined
-                              ? `SGD $${event.price.toFixed(2)}`
+                              ? `USD $${event.price.toFixed(2)}`
                               : "N/A"}
                           </td>
                           <td className="px-6 py-4">
@@ -1146,7 +1146,7 @@ export default function EventsPage() {
                   htmlFor="event-price"
                   className="text-sm font-medium text-white"
                 >
-                  Price (SGD) <span className="text-red-500">*</span>
+                  Price (USD) <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="event-price"

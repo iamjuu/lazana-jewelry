@@ -595,7 +595,7 @@
             category: isUniversalProduct ? undefined : (formData.category || undefined),
             subcategory: isUniversalProduct ? undefined : (formData.subcategory || undefined),
             price: priceValue,
-            discount: formData.discount ? parseFloat(formData.discount) : undefined,
+            discount: formData.discount.trim() === "" ? null : parseFloat(formData.discount),
             imageUrl: finalImages.filter(img => img && img.trim() !== ""),
             videoUrl: finalVideos.filter(v => v && v.trim() !== ""), // Filter out empty strings and always send array (even if empty)
             isSet: isUniversalProduct ? undefined : (formData.isSet || undefined),

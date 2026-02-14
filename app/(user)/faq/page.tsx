@@ -1,9 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 import { Plus, Minus } from "lucide-react";
+import Bowlsize from "@/public/assets/images/productdesc/bowlsize2.jpeg";
 
 const FAQPage = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(-1); // Third item open by default
@@ -12,12 +14,23 @@ const FAQPage = () => {
     {
       id: 1,
       question: "What sizes do your bowls come in?",
-      answer: "Our crystal bowls come in various sizes to suit different healing practices. We offer bowls ranging from small (4-6 inches) for personal use to large (12-14 inches) for group sessions. Each size is carefully crafted to produce specific frequencies and resonances."
+      answer: (
+        <>
+          <p>
+            Our crystal bowls come in various sizes to suit different healing practices and intentions. The size of your bowl depends on the note or chakra that you choose. 4th Octave bowls are between 5.7&quot;-7.7&quot;. 3rd Octave bowls are between 7&quot; - 8.8&quot;. Need help to choose? Book a discovery call{" "}
+            <Link href="/discoveryappointment" className="text-[#1C3163] underline hover:opacity-80 transition-opacity">
+              here
+            </Link>
+            .
+          </p>
+          <Image src={Bowlsize} alt="Bowl Sizing" className=" sm:w-[50%] md:w-[50%] h-auto mt-4 rounded-lg" />
+        </>
+      )
     },
     {
       id: 2,
       question: "What's the difference between the 3rd and 4th Octave?",
-      answer: "The 3rd octave bowls produce deeper, more grounding frequencies that are ideal for root chakra work and deep meditation. The 4th octave bowls have higher, more ethereal frequencies that are perfect for crown chakra activation and spiritual connection. Each octave offers unique healing properties."
+      answer: "4th Octave Bowls are considered the standard octave of crystal bowls, clear and ethereal. 3rd Octave bowls are a lower pitch and deeper sound, more vibrations, more resonant in the body. It is personal preference which octave you want to work with and which sound you prefer, and how you intend to use the bowls in your practice or facilitation. Many practitioners choose to combine 3rd and 4th Octave bowls within the same set. This creates a richer spectrum of tone, allowing you to move between depth and clarity, grounding and lift, and ultimately offer a more layered sound experience. Shop our Harmonized Sets, designed to fit together in perfect harmony."
     },
     {
       id: 3,
