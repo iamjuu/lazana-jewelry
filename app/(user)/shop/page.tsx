@@ -175,10 +175,16 @@ const ShopPageContent = () => {
     let timeoutId: NodeJS.Timeout | null = null;
     let abortController: AbortController | null = null;
 
+    const ABORT_REASON = "shop_fetch_cleanup";
+
     const fetchProducts = async () => {
       // Cancel previous request if still pending
-      if (abortController) {
-        abortController.abort();
+      if (abortController && !abortController.signal.aborted) {
+        try {
+          abortController.abort(ABORT_REASON);
+        } catch {
+          // ignore
+        }
       }
       abortController = new AbortController();
       try {
@@ -226,7 +232,13 @@ const ShopPageContent = () => {
 
         // Add timeout to prevent hanging requests
         timeoutId = setTimeout(() => {
-          abortController?.abort();
+          if (abortController && !abortController.signal.aborted) {
+            try {
+              abortController.abort("request_timeout");
+            } catch {
+              // ignore
+            }
+          }
         }, 5000); // 5 second timeout
 
         const response = await fetch(apiUrl, {
@@ -314,12 +326,11 @@ const ShopPageContent = () => {
       }
       if (abortController) {
         try {
-          // Check if signal is not already aborted before aborting
           if (!abortController.signal.aborted) {
-            abortController.abort();
+            abortController.abort(ABORT_REASON);
           }
-        } catch (error) {
-          // Ignore errors when aborting (signal might already be aborted)
+        } catch {
+          // Ignore when abort fails (e.g. already aborted)
         }
         abortController = null;
       }
