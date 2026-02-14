@@ -40,9 +40,9 @@ export default function DashboardBreadcrumb() {
     };
   });
 
-  // Get root link and label
-  const rootHref = isDashboardRoute ? "/dashboard" : "/";
-  const rootLabel = isDashboardRoute ? "Dashboard" : "Home";
+  // Get root link and label: admin area -> admin dashboard, dashboard -> dashboard, else public home
+  const rootHref = isAdminRoute ? "/admin/dashboard" : isDashboardRoute ? "/dashboard" : "/";
+  const rootLabel = isAdminRoute ? "Home" : isDashboardRoute ? "Dashboard" : "Home";
 
   return (
     <nav className="flex items-center gap-2 text-sm text-zinc-400" aria-label="Breadcrumb">
