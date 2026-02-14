@@ -453,7 +453,7 @@ const ShopPageContent = () => {
             {/* Header */}
             <div className="">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-[50px] ">
-                <h2 className="font-seasons text-[#D5B584] text-[16px] sm:text-[28px] md:text-[30px] font-normal m-0 leading-none">
+                <h2 className="font-seasons text-[#D5B584] text-[26px] sm:text-[28px] md:text-[30px] font-normal m-0 leading-none">
                   {categoryName}
                 </h2>
               </div>

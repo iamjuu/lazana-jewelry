@@ -43,12 +43,18 @@ export async function POST(req: NextRequest) {
       email: normalizedEmail,
     });
 
-    // Send confirmation email to user (don't wait - send in background)
-    sendSubscriptionConfirmationToUser(normalizedEmail).catch((error) => {
-      console.error("Failed to send subscription confirmation email to user:", error);
-    });
+    // Send confirmation email to user (await so we can return error if email fails)
+    try {
+      await sendSubscriptionConfirmationToUser(normalizedEmail);
+    } catch (emailError: any) {
+      console.error("[Subscribe] Failed to send confirmation email:", emailError?.message || emailError);
+      return NextResponse.json(
+        { success: false, message: "Subscription saved but we could not send the confirmation email. Please try again later or contact us." },
+        { status: 500 }
+      );
+    }
 
-    // Send notification email to admin (don't wait - send in background)
+    // Send notification email to admin in background (non-blocking)
     sendSubscriptionNotificationToAdmin({
       email: normalizedEmail,
       subscribedAt: subscriber.createdAt?.toISOString() || new Date().toISOString(),

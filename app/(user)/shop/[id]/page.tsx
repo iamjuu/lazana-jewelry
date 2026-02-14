@@ -431,69 +431,75 @@ const ProductDetailPage = () => {
     <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen]">
       <Navbar />
 
-      {/* Breadcrumb */}
-      <div className="max-w-6xl mx-auto px-4 mt-[25px]">
-        <nav className="flex items-center space-x-2 text-sm sm:text-base text-[#6B5D4F]">
-          <Link
-            href="/"
-            className="font-seasons hover:text-[#D5B584] transition-colors text-[#1c3163]"
-            // style={{ fontWeight: 700, textShadow: "0.5px 0 0 currentColor" }}
-          >
-            <span
-              className="font-seasons text-[#1c3163] text-[16px]"
-              // style={{ fontWeight: 700, textShadow: "0.5px 0 0 currentColor" }}
-            >
-              Home
-            </span>
-          </Link>
-          {product.category &&
+      {/* Breadcrumb: when 3 items (Home + category + subcategory), use smaller font below 401px so it stays on one line */}
+      {(() => {
+        const hasThreeBreadcrumbs =
+          product.category &&
           typeof product.category === "object" &&
-          product.category.name ? (
-            <>
-              <span style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
+          !!product.category.name &&
+          product.subcategory &&
+          typeof product.subcategory === "object" &&
+          !!product.subcategory.name;
+        const narrowClass = hasThreeBreadcrumbs
+          ? " max-[401px]:text-[16px] max-[401px]:flex-nowrap max-[401px]:gap-1"
+          : "";
+        return (
+          <div className="max-w-6xl mx-auto px-4 mt-[25px]">
+            <nav
+              className={`flex items-center flex-wrap space-x-2 text-sm sm:text-base text-[#6B5D4F]${narrowClass}`}
+            >
               <Link
-                href={`/shop?category=${product.category.slug}`}
-                className="font-seasons hover:text-[#D5B584] text-[#1c3163] transition-colors text-[16px]"
-                // style={{
-                //   fontWeight: 700,
-                //   textShadow: "0.5px 0 0 currentColor",
-                // }}
+                href="/"
+                className={`font-seasons hover:text-[#D5B584] transition-colors text-[#1c3163] shrink-0 ${hasThreeBreadcrumbs ? "max-[401px]:text-[11px]" : ""}`}
               >
-                {product.category.name}
+                <span
+                  className={`font-seasons text-[#1c3163] text-[16px] ${hasThreeBreadcrumbs ? "max-[401px]:text-[14px]" : ""}`}
+                >
+                  Home
+                </span>
               </Link>
-              {product.subcategory &&
-                typeof product.subcategory === "object" &&
-                product.subcategory.name && (
-                  <>
-                    <span style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
-                    <span
-                      className="font-seasons text-[#1c3163] text-[16px]"
-                      // style={{
-                      //   fontWeight: 700,
-                      //   textShadow: "0.5px 0 0 currentColor",
-                      // }}
-                    >
-                      {product.subcategory.name}
-                    </span>
-                  </>
-                )}
-            </>
-          ) : (
-            <>
-              <span style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
-              <span
-                className="font-seasons text-[#1c3163] text-[16px]"
-                style={{
-                  fontWeight: 700,
-                  textShadow: "0.5px 0 0 currentColor",
-                }}
-              >
-                All Products
-              </span>
-            </>
-          )}
-        </nav>
-      </div>
+              {product.category &&
+              typeof product.category === "object" &&
+              product.category.name ? (
+                <>
+                  <span className="shrink-0" style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
+                  <Link
+                    href={`/shop?category=${product.category.slug}`}
+                    className={`font-seasons hover:text-[#D5B584] text-[#1c3163] transition-colors text-[16px] shrink-0 ${hasThreeBreadcrumbs ? "max-[401px]:text-[14px]" : ""}`}
+                  >
+                    {product.category.name}
+                  </Link>
+                  {product.subcategory &&
+                    typeof product.subcategory === "object" &&
+                    product.subcategory.name && (
+                      <>
+                        <span className="shrink-0" style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
+                        <span
+                          className={`font-seasons text-[#1c3163] text-[16px] shrink-0 ${hasThreeBreadcrumbs ? "max-[401px]:text-[14px]" : ""}`}
+                        >
+                          {product.subcategory.name}
+                        </span>
+                      </>
+                    )}
+                </>
+              ) : (
+                <>
+                  <span className="shrink-0" style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
+                  <span
+                    className="font-seasons text-[#1c3163] text-[16px]"
+                    style={{
+                      fontWeight: 700,
+                      textShadow: "0.5px 0 0 currentColor",
+                    }}
+                  >
+                    All Products
+                  </span>
+                </>
+              )}
+            </nav>
+          </div>
+        );
+      })()}
 
       <section className="w-full mt-[25px]">
         <div className="max-w-6xl mx-auto px-4">

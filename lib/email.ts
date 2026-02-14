@@ -17,15 +17,18 @@ function getTransporter(): nodemailer.Transporter {
     return transporter;
   }
 
+  const port = parseInt(process.env.EMAIL_PORT || "587");
+  const useSecure = process.env.EMAIL_SECURE === "true";
+
   transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.EMAIL_PORT || "587"),
-    secure: process.env.EMAIL_SECURE === "true", // true for 465, false for other ports
+    port,
+    secure: useSecure, // true for 465, false for 587 (STARTTLS)
+    requireTLS: !useSecure && port === 587, // Hostinger/smtp.hostinger.com on 587 needs STARTTLS
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
-    // Add connection pooling and retry options
     pool: true,
     maxConnections: 1,
     maxMessages: 5,
@@ -37,8 +40,9 @@ function getTransporter(): nodemailer.Transporter {
 }
 
 async function sendEmail(to: string, subject: string, html: string) {
+  // Same as your Hostinger snippet: display name + angle-address
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `"Crystal Bowl Studio" <${process.env.EMAIL_USER}>`,
     to,
     subject,
     html,
@@ -51,29 +55,25 @@ async function sendEmail(to: string, subject: string, html: string) {
     return info;
   } catch (error: any) {
     console.error(`❌ Failed to send email to ${to}:`, error.message);
+    console.error("   Full error:", error);
 
     if (error.code === "EAUTH") {
-      // Reset transporter on auth error to force reconnection
       transporter = null;
-
-      console.error("💡 Gmail Authentication Error - Common fixes:");
-      console.error("   1. Check if App Password was revoked by Google");
-      console.error(
-        "   2. Generate a NEW App Password at: https://myaccount.google.com/apppasswords",
-      );
-      console.error(
-        "   3. Update EMAIL_PASS in .env.local with the new 16-character password",
-      );
-      console.error("   4. Ensure 2FA is enabled on your Google account");
-      console.error(
-        "   5. Check Google Security: https://myaccount.google.com/security",
-      );
-      console.error(
-        "   6. Look for 'Recent security activity' - Google may have blocked access",
-      );
-      console.error(
-        "   7. Restart your development server after updating credentials",
-      );
+      const isHostinger = (process.env.EMAIL_HOST || "").includes("hostinger");
+      if (isHostinger) {
+        console.error("💡 Hostinger SMTP auth failed. Check:");
+        console.error("   1. EMAIL_USER = full address (e.g. hello@crystalbowlstudio.com)");
+        console.error("   2. EMAIL_PASS: if password has # or special chars, wrap in quotes: EMAIL_PASS=\"YourPass#123\"");
+        console.error("   3. In hPanel: Email → your account → ensure SMTP is enabled / password is correct");
+        console.error("   4. Restart dev server after changing .env");
+      } else {
+        console.error("💡 Gmail Authentication Error - Common fixes:");
+        console.error("   1. Check if App Password was revoked by Google");
+        console.error("   2. Generate a NEW App Password at: https://myaccount.google.com/apppasswords");
+        console.error("   3. Update EMAIL_PASS in .env.local with the new 16-character password");
+        console.error("   4. Ensure 2FA is enabled on your Google account");
+        console.error("   7. Restart your development server after updating credentials");
+      }
     }
 
     throw error;

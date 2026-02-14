@@ -176,7 +176,7 @@ const Navbar = () => {
     fetchCategories();
   }, []);
 
-  const isHomePage = pathname === "/";
+  const isHomePage = pathname === "/" || pathname === "/home";
 
   return (
     <>
