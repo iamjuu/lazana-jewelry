@@ -1126,7 +1126,7 @@ const Index = () => {
         {/* Upcoming Events section */}
 
         <section className="w-full  mt-[25px]">
-          <div className="max-w-6xl mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4">
             <div className="flex w-full  justify-between items-center">
               <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                 Upcoming Events
@@ -1145,7 +1145,7 @@ const Index = () => {
                 <p className="text-[16px]">No upcoming events at the moment</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 md:mt-[25px]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-11 md:mt-[25px]">
                 {upcomingEvents.map((event) => {
                   const eventDate = new Date(event.date);
                   const monthNames = [

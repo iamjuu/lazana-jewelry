@@ -182,7 +182,7 @@ const Navbar = () => {
 
       <nav
         ref={navRef}
-        className="w-full px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-[43px]
+        className="w-full px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-[35px]
         fixed top-0 left-0 right-0 z-[99999] lg:z-[1000]
         transform-gpu
         lg:bg-white/10   backdrop-blur-sm  lg:backdrop-blur-sm bg-transparent overflow-visible"
@@ -382,16 +382,16 @@ const Navbar = () => {
           </div>
         )}
 
-        {/* DESKTOP NAVBAR */}
-        <div className="max-w-[1400px] mx-auto hidden lg:flex items-center justify-between">
-          {/* LOGO */}
-          <Link href="/" className="flex items-center">
+        {/* DESKTOP NAVBAR - fixed row height so logo can be larger without shifting layout */}
+        <div className="max-w-[1400px] mx-auto hidden lg:flex items-center justify-between min-h-[48px]">
+          {/* LOGO - taller logo, constrained to row so navbar height unchanged */}
+          <Link href="/" className="flex items-center h-full min-h-[48px]">
             <Image
               src={CryselLogo}
               alt="Logo"
               width={200}
-              height={40}
-              className="h-8 xl:h-10 w-auto"
+              height={48}
+              className="h-10 xl:h-12 w-auto max-h-full object-contain"
               priority
             />
           </Link>

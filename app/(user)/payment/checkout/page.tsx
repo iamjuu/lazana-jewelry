@@ -172,7 +172,7 @@ function PaymentCheckoutContent() {
       <Navbar />
       
       <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
-        <h1 className="text-[28px] sm:text-[36px] font-normal text-[#1C3163] mb-8">
+        <h1 className="text-[28px] sm:text-[30px] font-normal text-[#1C3163] mb-8 font-touvlo">
           Complete Your Payment
         </h1>
 
