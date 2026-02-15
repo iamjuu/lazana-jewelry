@@ -646,28 +646,33 @@ export default function PastEventsPage() {
           );
           
           try {
-            const uploadFormData = new FormData();
-            uploadFormData.append('file', file);
-            uploadFormData.append('folder', 'videos');
-            
-            const uploadResponse = await fetch('/api/upload/s3', {
+            // Use presigned URL so file goes directly to S3 (avoids Vercel 4.5 MB body limit)
+            const presignedRes = await fetch('/api/upload/s3/presigned', {
               method: 'POST',
-              body: uploadFormData,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                folder: 'videos',
+                filename: file.name || `past-event-video-${Date.now()}.mp4`,
+                contentType: file.type || 'video/mp4',
+              }),
             });
-            
-            const uploadData = await uploadResponse.json();
-            
-            if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
-              throw new Error(`Failed to upload video ${i + 1} to S3`);
+            const presignedData = await presignedRes.json();
+            if (!presignedRes.ok || !presignedData.success || !presignedData.uploadUrl || !presignedData.url) {
+              throw new Error(presignedData.message || 'Failed to get upload URL');
             }
-            
-            // Insert or replace at index i
+            const putRes = await fetch(presignedData.uploadUrl, {
+              method: 'PUT',
+              body: file,
+              headers: { 'Content-Type': file.type || 'video/mp4' },
+            });
+            if (!putRes.ok) {
+              throw new Error(`Upload failed: ${putRes.status}`);
+            }
             if (finalVideos.length <= i) {
-              finalVideos.push(uploadData.url);
+              finalVideos.push(presignedData.url);
             } else {
-              finalVideos[i] = uploadData.url;
+              finalVideos[i] = presignedData.url;
             }
-            
             toast.dismiss(uploadToastId);
             toast.success(`Video ${i + 1} uploaded successfully!`, { duration: 2000 });
           } catch (uploadErr) {

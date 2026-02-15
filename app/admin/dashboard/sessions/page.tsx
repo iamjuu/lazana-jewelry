@@ -345,21 +345,29 @@ export default function SessionsPage() {
         });
       }
 
-      // Upload new video to S3
-      const uploadFormData = new FormData();
-      uploadFormData.append("file", selectedVideoFile);
-      uploadFormData.append("folder", "videos");
-
-      const response = await fetch("/api/upload/s3", {
+      // Upload new video to S3 via presigned URL (avoids Vercel 4.5 MB body limit)
+      const presignedRes = await fetch("/api/upload/s3/presigned", {
         method: "POST",
-        body: uploadFormData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          folder: "videos",
+          filename: selectedVideoFile.name || `session-video-${Date.now()}.mp4`,
+          contentType: selectedVideoFile.type || "video/mp4",
+        }),
       });
-
-      if (!response.ok) {
+      const presignedData = await presignedRes.json();
+      if (!presignedRes.ok || !presignedData.success || !presignedData.uploadUrl || !presignedData.url) {
+        throw new Error(presignedData.message || "Failed to get upload URL");
+      }
+      const putRes = await fetch(presignedData.uploadUrl, {
+        method: "PUT",
+        body: selectedVideoFile,
+        headers: { "Content-Type": selectedVideoFile.type || "video/mp4" },
+      });
+      if (!putRes.ok) {
         throw new Error("Failed to upload video to S3");
       }
-
-      const { url } = await response.json();
+      const url = presignedData.url;
 
       setFormData({ ...formData, video: url });
       setPreviewUrl(url);

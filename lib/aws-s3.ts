@@ -1,4 +1,5 @@
   import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+  import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
   import sharp from "sharp";
 
   // Initialize S3 client
@@ -158,6 +159,33 @@
       console.error("Error extracting S3 key:", error);
       return null;
     }
+  }
+
+  export interface PresignedUploadResult {
+    uploadUrl: string;
+    key: string;
+    url: string;
+  }
+
+  /**
+   * Create a presigned PUT URL so the client can upload directly to S3 (bypasses server body size limits, e.g. Vercel 4.5MB).
+   */
+  export async function createPresignedUploadUrl(
+    folder: string,
+    filename: string,
+    contentType: string
+  ): Promise<PresignedUploadResult> {
+    const timestamp = Date.now();
+    const sanitized = filename.replace(/[^a-zA-Z0-9.-]/g, "_");
+    const key = `${folder}/${timestamp}-${sanitized}`;
+    const command = new PutObjectCommand({
+      Bucket: S3_BUCKET,
+      Key: key,
+      ContentType: contentType,
+    });
+    const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 900 });
+    const url = `${S3_BASE_URL}/${key}`;
+    return { uploadUrl, key, url };
   }
 
   /**
