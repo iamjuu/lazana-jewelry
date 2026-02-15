@@ -453,6 +453,20 @@ const Index = () => {
     fetchBestSellers();
   }, []);
 
+  // iOS Safari: autoplay often ignored unless we call play() and keep video muted
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    const play = () => {
+      video.muted = true;
+      video.play().catch(() => {});
+    };
+    if (video.readyState >= 2) play();
+    else video.addEventListener("loadeddata", play, { once: true });
+    return () => video.removeEventListener("loadeddata", play);
+  }, []);
+
   const Icons = [
     {
       id: 1,
@@ -486,7 +500,7 @@ const Index = () => {
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen w-full min-w-0 relative">
       {/* Navbar moved outside overflow-hidden so it stays visible on mobile after scroll (iOS fix) */}
       <Navbar />
-      <div className="relative z-10 h-screen w-full overflow-hidden  sm:mt-0">
+      <div className="relative z-10 h-screen w-full overflow-hidden sm:mt-0">
         <video
           ref={videoRef}
           autoPlay
@@ -516,22 +530,22 @@ const Index = () => {
               </span>{" "}
               Meditation.
             </h1>
-
-            {/* Mute/Unmute Button */}
-            <button
-              onClick={toggleMute}
-              className="fixed z-50 bottom-20 left-1 size-18 flex justify-center items-center rounded-full p-4 bg-black/30 hover:bg-black/50 backdrop-blur-sm transition-all duration-300 border border-[#D5B584]/30"
-              aria-label={isMuted ? "Unmute video" : "Mute video"}
-            >
-              {isMuted ? (
-                <VolumeX className="w-6 h-6  text-[#D5B584]" />
-              ) : (
-                <Volume2 className="w-6 h-6 sm:w-6 sm:h-6 text-[#D5B584]" />
-              )}
-            </button>
           </div>
         </div>
       </div>
+
+      {/* Mute button outside overflow-hidden so it stays visible on iOS Safari when scrolling (fixed inside overflow can get clipped/hidden) */}
+      <button
+        onClick={toggleMute}
+        className="fixed z-[100] bottom-20 left-1 size-18 flex justify-center items-center rounded-full p-4 bg-black/30 hover:bg-black/50 backdrop-blur-sm transition-all duration-300 border border-[#D5B584]/30"
+        aria-label={isMuted ? "Unmute video" : "Mute video"}
+      >
+        {isMuted ? (
+          <VolumeX className="w-6 h-6 text-[#D5B584]" />
+        ) : (
+          <Volume2 className="w-6 h-6 sm:w-6 sm:h-6 text-[#D5B584]" />
+        )}
+      </button>
       <div className="w-full relative z-0">
         {/* about section  */}
 
