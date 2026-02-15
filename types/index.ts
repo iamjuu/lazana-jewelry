@@ -100,7 +100,7 @@ export type OrderStatus = "pending" | "paid" | "cancelled" | "failed"; // Paymen
 
 export type DeliveryStatus = "pending" | "processing" | "ready to ship" | "shipped" | "reached to your country" | "on the way to delivery" | "delivered";
 
-export type DeliveryMethod = "Air Express" | "Air Economy"; // Air Economy kept for backward compatibility, but only Air Express is available for new orders
+export type DeliveryMethod = "Air Express" | "Air Economy";
 
 export interface DeliveryCharges {
   method: DeliveryMethod;
@@ -139,7 +139,7 @@ export interface Order extends WithTimestamps {
   productTotal: number; // Total product cost
   deliveryCharges: DeliveryCharges;
   amount: number; // productTotal + deliveryCharges.total - discountAmount
-  currency: string; // SGD
+  currency: string; // USD
   status: OrderStatus; // Payment status (pending, paid, cancelled)
   deliveryStatus: DeliveryStatus; // Delivery status (pending, processing, ready to ship, shipped, reached to your country, on the way to delivery, delivered)
   statusHistory: OrderStatusUpdate[]; // Track payment status updates

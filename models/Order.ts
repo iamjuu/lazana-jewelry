@@ -13,9 +13,9 @@ const OrderItemSchema = new Schema<OrderItem>({
 const DeliveryChargesSchema = new Schema<DeliveryCharges>({
   method: { 
     type: String, 
-    enum: ["Air Express", "Air Economy"], // Keep Air Economy for backward compatibility with old orders
+    enum: ["Air Express", "Air Economy"],
     required: true,
-    default: "Air Express"
+    default: "Air Economy"
   },
   breakdown: { type: String, required: true },
   total: { type: Number, required: true },
@@ -52,7 +52,7 @@ const OrderSchema = new Schema<OrderType>(
     productTotal: { type: Number, required: true },
     deliveryCharges: { type: DeliveryChargesSchema, required: true },
     amount: { type: Number, required: true }, // productTotal + deliveryCharges.total
-    currency: { type: String, default: "SGD" },
+    currency: { type: String, default: "USD" },
     status: { 
       type: String, 
       default: "pending",

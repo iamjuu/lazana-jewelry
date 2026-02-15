@@ -5,7 +5,7 @@ export interface ProductCouponType {
   couponName: string; // Display name for the coupon
   discountType: "percentage" | "amount"; // Discount type: percentage or fixed amount
   discountPercent?: number; // Discount percentage (e.g., 10 for 10%) - required if discountType is "percentage"
-  discountAmount?: number; // Fixed discount amount (e.g., 50 for SGD 50) - required if discountType is "amount"
+  discountAmount?: number; // Fixed discount amount (e.g., 50 for USD 50) - required if discountType is "amount"
   expiryDate: Date; // Expiry date
   excludedCategories?: mongoose.Types.ObjectId[]; // Categories to exclude (products in these categories won't be eligible)
   excludedProducts?: mongoose.Types.ObjectId[]; // Products to exclude (these specific products won't be eligible)

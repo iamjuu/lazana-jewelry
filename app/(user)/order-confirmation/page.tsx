@@ -18,8 +18,8 @@ type CartItem = {
   relativeproduct?: boolean;
 };
 
-type DeliveryMethod = "Air Express";
-
+type DeliveryMethod = "Air Economy";
+ 
 // Calculate shipping based on total bowl count
 // Pattern repeats every 7 bowls:
 // 1 Bowl: $65
@@ -63,7 +63,7 @@ function OrderConfirmationContent() {
   const quantity = parseInt(searchParams?.get("quantity") || "1");
   
   const [items, setItems] = useState<CartItem[]>([]);
-  const [deliveryMethod] = useState<DeliveryMethod>("Air Express"); // Only Air Express available
+  const [deliveryMethod] = useState<DeliveryMethod>("Air Economy"); // Only Air Economy available
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",

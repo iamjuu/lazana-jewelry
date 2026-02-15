@@ -46,10 +46,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create Stripe Payment Intent with SGD currency - Card payments only
+    // Create Stripe Payment Intent with USD currency - Card payments only
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(order.amount * 100), // Convert to cents
-      currency: "sgd",
+      currency: "usd",
       payment_method_types: ["card"], // Only allow card payments
       metadata: {
         orderId: order._id.toString(),

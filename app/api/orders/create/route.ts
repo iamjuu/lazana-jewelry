@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
       productTotal,
       deliveryCharges,
       amount,
-      currency: "SGD",
+      currency: "USD",
       status: "pending",
       statusHistory: [
         {

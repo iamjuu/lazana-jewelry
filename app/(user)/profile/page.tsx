@@ -998,7 +998,7 @@ function ProfilePageContent() {
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                   <p className="text-gray-600">
-                                    Delivery ({order.deliveryCharges.method})
+                                    Delivery ({order.deliveryCharges.method === "Air Express" ? "Air Economy" : order.deliveryCharges.method})
                                   </p>
                                   <p className="text-[#1C3163] font-medium">
                                     ${formatAmount(order.deliveryCharges.total)}
@@ -1011,8 +1011,7 @@ function ProfilePageContent() {
                                 )}
                               </>
                             )}
-                            {order.discountAmount &&
-                              order.discountAmount > 0 && (
+                            {order.discountAmount != null && order.discountAmount > 0 ? (
                                 <div className="flex justify-between items-center text-sm">
                                   <div className="flex items-center gap-2">
                                     <p className="text-gray-600">Discount</p>
@@ -1026,7 +1025,7 @@ function ProfilePageContent() {
                                     -${formatAmount(order.discountAmount)}
                                   </p>
                                 </div>
-                              )}
+                              ) : null}
                             <div className="flex justify-between items-center pt-2 border-t border-gray-300">
                               <p className="text-[#1C3163] font-semibold text-lg">
                                 Total Amount (USD)

@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
       line_items: [
         {
           price_data: {
-            currency: "sgd",
+            currency: "usd",
             product_data: {
               name: discoverySession.title || "Discovery Session",
               description: `${discoverySession.date || "TBD"} at ${discoverySession.startTime || "TBD"} - ${discoverySession.instructorName || "Yoga Session"}`,

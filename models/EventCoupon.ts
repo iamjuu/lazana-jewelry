@@ -5,7 +5,7 @@ export interface EventCouponType {
   couponName: string; // Display name for the coupon
   discountType: "percentage" | "amount"; // Discount type: percentage or fixed amount
   discountPercent?: number; // Discount percentage (e.g., 10 for 10%) - required if discountType is "percentage"
-  discountAmount?: number; // Fixed discount amount (e.g., 50 for SGD 50) - required if discountType is "amount"
+  discountAmount?: number; // Fixed discount amount (e.g., 50 for USD 50) - required if discountType is "amount"
   expiryDate: Date; // Expiry date
   excludedEvents?: mongoose.Types.ObjectId[]; // Events to exclude (these events won't be eligible for this coupon)
   usageLimit?: number | null; // Total number of times coupon can be used (optional, null = unlimited)

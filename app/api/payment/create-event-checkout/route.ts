@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
     const lineItems: any[] = [
       {
         price_data: {
-          currency: "sgd",
+          currency: "usd",
           product_data: {
             name: event.title,
             description: discountAmountCents > 0 
