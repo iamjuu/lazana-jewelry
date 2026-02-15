@@ -453,18 +453,21 @@ const Index = () => {
     fetchBestSellers();
   }, []);
 
-  // iOS Safari: autoplay often ignored unless we call play() and keep video muted
+  // Mobile (iOS Safari, Android Chrome): autoplay often needs explicit play() and muted; try on multiple readiness events
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     video.muted = true;
-    const play = () => {
-      video.muted = true;
-      video.play().catch(() => {});
+    const attemptPlay = () => {
+      if (video.paused) {
+        video.muted = true;
+        video.play().catch(() => {});
+      }
     };
-    if (video.readyState >= 2) play();
-    else video.addEventListener("loadeddata", play, { once: true });
-    return () => video.removeEventListener("loadeddata", play);
+    const events = ["loadedmetadata", "loadeddata", "canplay", "canplaythrough"] as const;
+    events.forEach((ev) => video.addEventListener(ev, attemptPlay));
+    if (video.readyState >= 2) attemptPlay();
+    return () => events.forEach((ev) => video.removeEventListener(ev, attemptPlay));
   }, []);
 
   const Icons = [
@@ -507,6 +510,7 @@ const Index = () => {
           loop
           muted
           playsInline
+          preload="auto"
           className="absolute top-0 left-0 w-full h-full object-cover"
           onError={(e) => console.error("Video error:", e)}
           onLoadedData={() => console.log("Video loaded successfully")}
