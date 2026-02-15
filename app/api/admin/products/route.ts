@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
+import "@/models/Category"; // Register Category so Product ref resolves (avoids "Schema hasn't been registered for model Category")
 import { requireAdmin } from "@/lib/auth";
 import mongoose from "mongoose";
 import { uploadToS3 } from "@/lib/aws-s3";
@@ -166,7 +167,7 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
-        // Upload base64 video to S3
+        // Upload base64 video to S3 - fail entire request if any upload fails
         try {
           const filename = `product-video-${Date.now()}-${i + 1}.mp4`;
           const result = await uploadToS3(videoStr, filename, 'videos');
@@ -174,7 +175,10 @@ export async function POST(req: NextRequest) {
           console.log(`Uploaded video ${i + 1} to S3: ${result.url}`);
         } catch (uploadError) {
           console.error(`Failed to upload video ${i + 1}:`, uploadError);
-          // Continue with other videos, don't fail the entire request
+          return NextResponse.json(
+            { success: false, message: `Failed to upload video ${i + 1} to S3` },
+            { status: 500 }
+          );
         }
       }
 

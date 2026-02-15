@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
+import "@/models/Category"; // Register Category so Product ref resolves (avoids "Schema hasn't been registered for model Category")
 import { requireAdmin } from "@/lib/auth";
 import mongoose from "mongoose";
 import { uploadToS3, deleteFromS3, extractS3Key } from "@/lib/aws-s3";
@@ -159,13 +160,19 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       }
     }
     if (imageUrl !== undefined) {
+      // Get existing product images so we can delete removed ones from S3
+      const existingProductForImages = await Product.findById(id).select('imageUrl').lean();
+      const oldImages: string[] = existingProductForImages?.imageUrl && Array.isArray(existingProductForImages.imageUrl)
+        ? existingProductForImages.imageUrl
+        : [];
+
       // Upload images to S3 and get URLs
       console.log("Uploading images to S3 for update...");
       const s3ImageUrls: string[] = [];
-      
+
       for (let i = 0; i < imageUrl.length; i++) {
         const image = imageUrl[i];
-        
+
         // Skip if already an S3 URL
         if (typeof image === 'string' && image.startsWith('https://')) {
           s3ImageUrls.push(image);
@@ -186,7 +193,23 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
           );
         }
       }
-      
+
+      // Delete from S3 any old image that is no longer in the new list
+      const imagesToDelete = oldImages.filter(
+        (oldImg) => oldImg && oldImg.startsWith('https://') && !s3ImageUrls.includes(oldImg)
+      );
+      for (const url of imagesToDelete) {
+        try {
+          const key = extractS3Key(url);
+          if (key) {
+            await deleteFromS3(key);
+            console.log(`✓ Deleted removed image from S3: ${key}`);
+          }
+        } catch (deleteError) {
+          console.error(`Failed to delete old image ${url}:`, deleteError);
+        }
+      }
+
       updateData.imageUrl = s3ImageUrls;
     }
     if (videoUrl !== undefined) {
@@ -210,7 +233,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
           continue;
         }
 
-        // Upload base64 video to S3
+        // Upload base64 video to S3 - fail entire update if any upload fails
         try {
           const filename = `product-video-${id}-${Date.now()}-${i + 1}.mp4`;
           const result = await uploadToS3(videoStr, filename, 'videos');
@@ -218,7 +241,10 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
           console.log(`Uploaded video ${i + 1} to S3: ${result.url}`);
         } catch (uploadError) {
           console.error(`Failed to upload video ${i + 1}:`, uploadError);
-          // Continue with other videos
+          return NextResponse.json(
+            { success: false, message: `Failed to upload video ${i + 1} to S3` },
+            { status: 500 }
+          );
         }
       }
 

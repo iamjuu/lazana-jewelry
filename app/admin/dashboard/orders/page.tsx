@@ -170,12 +170,10 @@ export default function OrdersPage() {
           const stats = {
             total: data.data?.pagination?.total || ordersList.length,
             pending: ordersList.filter((o: Order) => o.status === "pending").length,
-            paid: ordersList.filter((o: Order) => o.status === "paid").length,
+            paid: data.data?.stats?.totalPaidCount ?? 0,
             cancelled: ordersList.filter((o: Order) => o.status === "cancelled").length,
             failed: ordersList.filter((o: Order) => o.status === "failed").length,
-            totalRevenue: ordersList
-              .filter((o: Order) => o.status === "paid")
-              .reduce((sum: number, o: Order) => sum + o.amount, 0),
+            totalRevenue: data.data?.stats?.totalRevenue ?? 0,
           };
           setStats(stats);
         } else {
@@ -261,17 +259,13 @@ export default function OrdersPage() {
           setTotalOrders(data.data.pagination.total || 0);
         }
         
-        // Calculate stats from current page (for display purposes)
-        // Note: For accurate stats, you might want a separate stats API
         const stats = {
           total: data.data?.pagination?.total || ordersList.length,
           pending: ordersList.filter((o: Order) => o.status === "pending").length,
-          paid: ordersList.filter((o: Order) => o.status === "paid").length,
+          paid: data.data?.stats?.totalPaidCount ?? 0,
           cancelled: ordersList.filter((o: Order) => o.status === "cancelled").length,
           failed: ordersList.filter((o: Order) => o.status === "failed").length,
-          totalRevenue: ordersList
-            .filter((o: Order) => o.status === "paid")
-            .reduce((sum: number, o: Order) => sum + o.amount, 0),
+          totalRevenue: data.data?.stats?.totalRevenue ?? 0,
         };
         setStats(stats);
       } else {

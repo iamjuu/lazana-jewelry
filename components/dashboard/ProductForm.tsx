@@ -343,26 +343,19 @@
       
       const newVideos = [...uploadedVideos];
       const newFormVideos = [...formData.videos];
-      
-      // If editing and we have original video, restore it
-      if (isEdit && originalVideos[index]) {
-        newVideos[index] = normalizeVideoUrl(originalVideos[index]);
-        newFormVideos[index] = originalVideos[index];
-      } else {
+      // Always remove from list so it goes off screen; S3 delete happens on Save
       newVideos.splice(index, 1);
       newFormVideos.splice(index, 1);
-      }
       
       setUploadedVideos(newVideos);
       setFormData({ ...formData, videos: newFormVideos });
       
       // Clear pending file too
       const newPendingFiles = [...pendingVideoFiles];
-      newPendingFiles[index] = null;
+      newPendingFiles.splice(index, 1);
       setPendingVideoFiles(newPendingFiles);
       
-      // If removing the last video and there are multiple fields, reduce field count
-      if (index === videoFieldCount - 1 && videoFieldCount > 0 && !originalVideos[index]) {
+      if (videoFieldCount > 0) {
         setVideoFieldCount(videoFieldCount - 1);
       }
     };
@@ -554,14 +547,8 @@
               toast.dismiss(uploadToastId);
               throw new Error(`Failed to upload video ${i + 1}. Please try again.`);
             }
-          } else if (isEdit && originalVideos[i] && !formData.videos[i]) {
-            // Use original video if editing and no new video at this index
-            if (finalVideos.length <= i) {
-              finalVideos.push(originalVideos[i]);
-            } else {
-              finalVideos[i] = originalVideos[i];
-            }
           }
+          // Kept originals are already in finalVideos from [...formData.videos]
         }
 
         const url = isEdit 

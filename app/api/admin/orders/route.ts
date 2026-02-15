@@ -36,6 +36,16 @@ export async function GET(req: NextRequest) {
 
     const total = await Order.countDocuments(query);
 
+    // Global stats (unchanged by tab/filter): total revenue and total paid orders count
+    const [revenueResult, totalPaidCount] = await Promise.all([
+      Order.aggregate([
+        { $match: { status: "paid" } },
+        { $group: { _id: null, totalRevenue: { $sum: "$amount" } } },
+      ]),
+      Order.countDocuments({ status: "paid" }),
+    ]);
+    const totalRevenue = revenueResult[0]?.totalRevenue ?? 0;
+
     return NextResponse.json({
       success: true,
       data: {
@@ -45,6 +55,10 @@ export async function GET(req: NextRequest) {
           page,
           limit,
           pages: Math.ceil(total / limit),
+        },
+        stats: {
+          totalRevenue,
+          totalPaidCount,
         },
       },
     });
