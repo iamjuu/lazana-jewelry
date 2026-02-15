@@ -201,10 +201,10 @@ const ServicesPage = () => {
                       <div
                         className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6 font-touvlo transition-opacity duration-300 group-hover:opacity-0 pointer-events-none ${expandedCardId === item._id ? "opacity-0" : ""}`}
                       >
-                        <h3 className="text-white text-[18px] font-medium mb-3 text-touvlo">
+                        <h3 className="text-white text-[18px] font-medium mb-3 font-seasons">
                           {item.title}
                         </h3>
-                        <span className="text-white text-sm flex items-center gap-2 text-touvlo">
+                        <span className="text-white text-sm flex items-center gap-2  font-seasons">
                           Enquire Now <span className="text-[16px]">→</span>
                         </span>
                       </div>

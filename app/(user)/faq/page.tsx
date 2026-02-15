@@ -68,7 +68,7 @@ const FAQPage = () => {
     {
       id: 8,
       question: "Do the bowls come with mallets / cases?",
-      answer: "Yes! Each bowl purchase includes a high-quality mallet designed specifically for crystal bowl sound healing. We also provide protective cases for safe storage and easy transportation. Our cases are lightweight yet durable, making them perfect for sound healers who travel. The mallets are crafted to produce the optimal resonance and are included at no additional cost with your bowl purchase."
+      answer: "Yes! Each  purchase includes  high-quality mallets designed specifically for crystal bowl sound healing. We also provide protective cases for safe storage and easy transportation. Our cases are lightweight yet durable, making them perfect for sound healers who travel. The mallets are crafted to produce the optimal resonance and are included at no additional cost with your bowl purchase."
     }
   ];
 
