@@ -262,6 +262,26 @@ const ServicesPage = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Pagination Dots - Only show if there is more than one page */}
+              {corporateSessions.length > itemsPerPage && (
+                <div className="flex justify-center gap-2 mt-8">
+                  {Array.from({
+                    length: Math.ceil(corporateSessions.length / itemsPerPage),
+                  }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCorporateCurrentIndex(i)}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        i === corporateCurrentIndex
+                          ? "bg-[#D4A373] w-8"
+                          : "bg-[#D4A373]/30 w-2"
+                      }`}
+                      aria-label={`Go to slide ${i + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </section>
