@@ -299,6 +299,9 @@ const ShopPageContent = () => {
           }
         }
       } catch (error: any) {
+        if (error?.name === "AbortError" || error?.message === "shop_fetch_cleanup" || error?.message === "request_timeout") {
+          return;
+        }
         console.error("Failed to fetch products:", error);
         if (isMounted) {
           setProducts([]);
@@ -364,18 +367,30 @@ const ShopPageContent = () => {
     filters.sortBy,
   ]);
 
-  // Pagination navigation functions
+  // Use instant scroll on iOS/touch to avoid Safari quirks; smooth on desktop
+  const scrollToTop = () => {
+    const isTouch =
+      typeof navigator !== "undefined" &&
+      (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+        "ontouchstart" in window);
+    if (isTouch) {
+      window.scrollTo(0, 0);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const handlePreviousPage = () => {
     if (hasPrev) {
       setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToTop();
     }
   };
 
   const handleNextPage = () => {
     if (hasNext) {
       setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToTop();
     }
   };
 
@@ -477,6 +492,7 @@ const ShopPageContent = () => {
               <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
                 {/* Filter Icon Button */}
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowFilters(!showFilters);
@@ -499,6 +515,7 @@ const ShopPageContent = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
+                    type="button"
                     onClick={() => {
                       setShowSortDropdown(!showSortDropdown);
                       setShowFilters(false);
@@ -522,6 +539,7 @@ const ShopPageContent = () => {
   z-50 min-w-[220px]"
                     >
                       <button
+                        type="button"
                         onClick={() => handleSortChange("featured", "asc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
                           filters.featured ? "underline" : ""
@@ -530,6 +548,7 @@ const ShopPageContent = () => {
                         FEATURED
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleSortChange("newAddition", "asc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
                           filters.newAddition ? "underline" : ""
@@ -538,6 +557,7 @@ const ShopPageContent = () => {
                         NEW ADDITION
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleSortChange("name", "asc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
                           filters.sortBy === "name" &&
@@ -549,6 +569,7 @@ const ShopPageContent = () => {
                         ALPHABETICALLY, A-Z
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleSortChange("name", "desc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
                           filters.sortBy === "name" &&
@@ -560,6 +581,7 @@ const ShopPageContent = () => {
                         ALPHABETICALLY, Z-A
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleSortChange("price", "asc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
                           filters.sortBy === "price" &&
@@ -571,6 +593,7 @@ const ShopPageContent = () => {
                         PRICE, LOW TO HIGH
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleSortChange("price", "desc")}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
                           filters.sortBy === "price" &&
@@ -880,6 +903,7 @@ const ShopPageContent = () => {
                   <div className="flex items-center justify-center gap-6 mt-12 mb-8">
                     {/* Previous Button */}
                     <button
+                      type="button"
                       onClick={handlePreviousPage}
                       disabled={!hasPrev}
                       className={`px-6 py-2 rounded-lg font-touvlo text-[14px] sm:text-[15px] md:text-[16px] transition-all ${
@@ -898,6 +922,7 @@ const ShopPageContent = () => {
 
                     {/* Next Button */}
                     <button
+                      type="button"
                       onClick={handleNextPage}
                       disabled={!hasNext}
                       className={`px-6 py-2 rounded-lg font-touvlo text-[14px] sm:text-[15px] md:text-[16px] transition-all ${
