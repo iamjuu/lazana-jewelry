@@ -774,21 +774,23 @@ const ShopPageContent = () => {
               )}
 
               {/* Products Grid - Right */}
-              <div className="flex-1 relative">
-                {/* Loading overlay when paginating */}
-                {loading && products.length > 0 && (
-                  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
-                      <p className="text-[#1C3163] font-touvlo">Loading page {currentPage}...</p>
-                    </div>
-                  </div>
-                )}
-                
-                {loading && products.length === 0 ? (
-                  <div className="text-center py-12 text-[#1C3163]">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
-                    <p>Loading products...</p>
+              <div className="flex-1">
+                {loading ? (
+                  /* Shimmer skeleton loading effect */
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-[18px] w-full">
+                    {Array.from({ length: 12 }).map((_, index) => (
+                      <div key={index} className="animate-pulse">
+                        {/* Shimmer Image */}
+                        <div className="relative w-full aspect-square overflow-hidden rounded-lg bg-gray-200">
+                          <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-shimmer"></div>
+                        </div>
+                        {/* Shimmer Text */}
+                        <div className="pt-4 space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : products.length === 0 ? (
                   <div className="text-center py-12 text-[#1C3163]">
