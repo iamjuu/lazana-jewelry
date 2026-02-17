@@ -164,8 +164,9 @@ const Navbar = () => {
       try {
         const res = await fetch("/api/categories");
         const data = await res.json();
-        if (data.success) {
-          setCategories(data.data || []);
+        if (data.success){ setCategories(data.data || []);
+          // console.log(data.data);
+
         }
 
       } catch (err) {

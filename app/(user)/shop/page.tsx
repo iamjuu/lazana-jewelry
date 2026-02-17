@@ -820,6 +820,7 @@ const ShopPageContent = () => {
                           href={`/shop/${item._id}`}
                           key={item._id}
                           className="text-black group cursor-pointer"
+                          prefetch={false}
                         >
                           <div className="relative w-full aspect-square overflow-hidden rounded-lg">
                             {imageUrl ? (
@@ -836,6 +837,7 @@ const ShopPageContent = () => {
                                   fill
                                   className="object-cover transition-all duration-500 group-hover:opacity-0 group-hover:scale-110"
                                   unoptimized
+                                  loading="lazy"
                                 />
                                 {/* Second Image - only show if it exists */}
                                 {secondImageUrl && (
@@ -850,6 +852,7 @@ const ShopPageContent = () => {
                                     fill
                                     className="object-cover transition-all duration-500 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-105"
                                     unoptimized
+                                    loading="lazy"
                                   />
                                 )}
                               </>
@@ -859,6 +862,7 @@ const ShopPageContent = () => {
                                 alt={displayName}
                                 fill
                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                loading="lazy"
                               />
                             )}
                           </div>
