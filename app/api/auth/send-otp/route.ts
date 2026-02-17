@@ -20,7 +20,22 @@ export async function POST(req: NextRequest) {
     const existingUser = await User.findOne({ email, registered: true });
     
     if (existingUser) {
-      // User is registered - this is for login, just send OTP
+      // Check if user is fully verified
+      if (existingUser.emailVerified) {
+        // User is fully registered and verified - they should login instead
+        return NextResponse.json(
+          { 
+            success: false, 
+            message: "This email is already registered. Please login instead.",
+            userStatus: "already_registered",
+            verified: true,
+            registered: true
+          },
+          { status: 400 }
+        );
+      }
+      
+      // User is registered but not verified - send OTP to complete verification
       const otp = crypto.randomInt(100000, 999999).toString();
       existingUser.verificationToken = otp;
       await existingUser.save();
@@ -37,11 +52,14 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: "OTP sent to your email",
+        message: "OTP sent to your email. Please verify to complete registration.",
+        userStatus: "pending_verification",
+        verified: false,
+        registered: true,
         data: {
           email,
           expiresIn: 600, // 10 minutes in seconds
-          isLogin: true, // Indicates this is for login
+          isLogin: false, // Still completing signup
         },
       });
     }

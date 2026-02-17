@@ -44,12 +44,31 @@ export default function SignupPage() {
       });
 
       const data = await res.json();
+      
+      // Check if user already exists and is fully registered (verified)
+      if (data.userStatus === "already_registered") {
+        setError("This email is already registered. Please login instead.");
+        toast.error("Already registered! Please login.");
+        setLoading(false);
+        return;
+      }
+      
+      // Check if user exists but not verified - send OTP to complete signup
+      if (data.userStatus === "pending_verification") {
+        toast.success("Account found! Verifying your email to complete signup.");
+        setStep("otp");
+        setLoading(false);
+        return;
+      }
+      
       if (!res.ok) {
+        // Other errors
         setError(data.message || "Failed to send OTP");
         toast.error(data.message || "Failed to send OTP");
         return;
       }
 
+      // Normal signup flow - OTP sent
       toast.success("OTP sent to your email!");
       setStep("otp");
     } catch (err) {
@@ -220,8 +239,16 @@ export default function SignupPage() {
 
               {/* Error message */}
               {error && (
-                <div className="text-sm text-red-600">
+                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">
                   <p>{error}</p>
+                  {error.includes("already registered") && (
+                    <Link 
+                      href="/login" 
+                      className="block mt-2 text-sm font-medium text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Go to Login →
+                    </Link>
+                  )}
                 </div>
               )}
 
