@@ -225,9 +225,9 @@ const ShopPageContent = () => {
           params.append("sortOrder", filters.sortOrder);
         }
 
-        // Add pagination parameters
+        // Add pagination parameters (reduced to 12 items for better iOS performance)
         params.append("page", currentPage.toString());
-        params.append("limit", "20");
+        params.append("limit", "12");
 
         if (params.toString()) {
           apiUrl += `?${params.toString()}`;
@@ -242,7 +242,7 @@ const ShopPageContent = () => {
               // ignore
             }
           }
-        }, 10000); // 10 second timeout (increased for slower connections)
+        }, 8000); // 8 second timeout
 
         const response = await fetch(apiUrl, {
           signal: abortController.signal,
@@ -302,12 +302,20 @@ const ShopPageContent = () => {
           }
         }
       } catch (error: any) {
+        // Silently ignore aborts - they're expected when user changes page/filters
         if (error?.name === "AbortError" || error?.message === "shop_fetch_cleanup" || error?.message === "request_timeout") {
           return;
         }
+        
+        // Log real errors but don't break the page
         console.error("Failed to fetch products:", error);
+        
         if (isMounted) {
-          setProducts([]);
+          // Keep existing products on error (better UX than showing empty)
+          // Only clear if we had no products before
+          if (products.length === 0) {
+            setProducts([]);
+          }
           setCategoryName(
             categoryParam && categoryParam !== "all"
               ? categoryParam || "Category"
@@ -373,73 +381,28 @@ const ShopPageContent = () => {
     filters.sortBy,
   ]);
 
-  // Use instant scroll on iOS/touch to avoid Safari quirks; smooth on desktop
-  const scrollToTop = () => {
-    try {
-      const isTouch =
-        typeof navigator !== "undefined" &&
-        (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-          "ontouchstart" in window);
-      if (isTouch) {
-        window.scrollTo(0, 0);
-      } else {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    } catch (error) {
-      console.error("Scroll error:", error);
-      // Fallback: try basic scroll
-      try {
-        window.scrollTo(0, 0);
-      } catch {
-        // Silently fail if scroll is completely broken
-      }
-    }
-  };
-
   const handlePreviousPage = () => {
     if (hasPrev && !loading && !isNavigatingRef.current) {
       isNavigatingRef.current = true;
-      // Safety timeout: if fetch doesn't complete in 15s, reset ref
-      setTimeout(() => {
-        if (isNavigatingRef.current) {
-          console.warn("Navigation timeout - resetting lock");
-          isNavigatingRef.current = false;
-        }
-      }, 15000);
-      
       setCurrentPage((prev) => prev - 1);
-      // Delay scroll slightly to let state update propagate
-      setTimeout(() => {
-        scrollToTop();
-      }, 50);
     }
   };
 
   const handleNextPage = () => {
     if (hasNext && !loading && !isNavigatingRef.current) {
       isNavigatingRef.current = true;
-      // Safety timeout: if fetch doesn't complete in 15s, reset ref
-      setTimeout(() => {
-        if (isNavigatingRef.current) {
-          console.warn("Navigation timeout - resetting lock");
-          isNavigatingRef.current = false;
-        }
-      }, 15000);
-      
       setCurrentPage((prev) => prev + 1);
-      // Delay scroll slightly to let state update propagate
-      setTimeout(() => {
-        scrollToTop();
-      }, 50);
     }
   };
 
-  // Helper function to normalize image URL
-  const normalizeImageUrl = (url: string): string => {
+  // Helper function to get valid image URL (only http/https, skip base64)
+  const getValidImageUrl = (url: string): string => {
     if (!url) return "";
-    if (url.startsWith("data:image")) return url;
-    if (url.startsWith("http://") || url.startsWith("https://")) return url;
-    return `data:image/jpeg;base64,${url}`;
+    // Only return actual URLs, not base64 (too heavy)
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+    return ""; // Skip base64 images
   };
 
   // Handle Add to Cart
@@ -460,10 +423,10 @@ const ShopPageContent = () => {
     const discountedPrice =
       hasDiscount && item.discount ? item.price - item.discount : item.price;
 
-    // Get first image URL for cart
+    // Get first image URL for cart (only http/https, skip base64)
     const imageUrl =
       item.imageUrl && item.imageUrl.length > 0
-        ? normalizeImageUrl(item.imageUrl[0])
+        ? getValidImageUrl(item.imageUrl[0])
         : "";
 
     addItem({
@@ -811,8 +774,18 @@ const ShopPageContent = () => {
               )}
 
               {/* Products Grid - Right */}
-              <div className="flex-1">
-                {loading ? (
+              <div className="flex-1 relative">
+                {/* Loading overlay when paginating */}
+                {loading && products.length > 0 && (
+                  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
+                      <p className="text-[#1C3163] font-touvlo">Loading page {currentPage}...</p>
+                    </div>
+                  </div>
+                )}
+                
+                {loading && products.length === 0 ? (
                   <div className="text-center py-12 text-[#1C3163]">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#1C3163] mx-auto mb-4"></div>
                     <p>Loading products...</p>
@@ -826,14 +799,14 @@ const ShopPageContent = () => {
                 ) : (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-[18px] w-full">
                     {products.map((item) => {
-                      // Get first and second images
+                      // Get first and second images - skip base64 images (too heavy for iOS)
                       const imageUrl =
                         item.imageUrl && item.imageUrl.length > 0
-                          ? item.imageUrl[0]
+                          ? getValidImageUrl(item.imageUrl[0]) || null
                           : null;
                       const secondImageUrl =
                         item.imageUrl && item.imageUrl.length > 1
-                          ? item.imageUrl[1]
+                          ? getValidImageUrl(item.imageUrl[1]) || null
                           : null;
                       // Price is already in dollars - format to always show 2 decimals for consistency
                       const formatPrice = (price: number) => {
@@ -862,37 +835,26 @@ const ShopPageContent = () => {
                           className="text-black group cursor-pointer"
                           prefetch={false}
                         >
-                          <div className="relative w-full aspect-square overflow-hidden rounded-lg">
+                          <div className="relative w-full aspect-square overflow-hidden rounded-lg bg-gray-100">
                             {imageUrl ? (
                               <>
-                                {/* First Image */}
-                                <Image
-                                  src={
-                                    imageUrl.startsWith("data:") ||
-                                    imageUrl.startsWith("http")
-                                      ? imageUrl
-                                      : `data:image/jpeg;base64,${imageUrl}`
-                                  }
+                                {/* Use regular img tag instead of next/image to avoid iOS Safari memory crash */}
+                                {/* Only show actual URLs, not base64 (too heavy for iOS) */}
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={imageUrl}
                                   alt={displayName}
-                                  fill
-                                  className="object-cover transition-all duration-500 group-hover:opacity-0 group-hover:scale-110"
-                                  unoptimized
                                   loading="lazy"
+                                  className="w-full h-full object-cover transition-all duration-500 group-hover:opacity-0 group-hover:scale-110"
                                 />
-                                {/* Second Image - only show if it exists */}
+                                {/* Second Image - only show if it exists (hover effect) */}
                                 {secondImageUrl && (
-                                  <Image
-                                    src={
-                                      secondImageUrl.startsWith("data:") ||
-                                      secondImageUrl.startsWith("http")
-                                        ? secondImageUrl
-                                        : `data:image/jpeg;base64,${secondImageUrl}`
-                                    }
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img
+                                    src={secondImageUrl}
                                     alt={`${displayName} - alternate view`}
-                                    fill
-                                    className="object-cover transition-all duration-500 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-105"
-                                    unoptimized
                                     loading="lazy"
+                                    className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-105"
                                   />
                                 )}
                               </>
@@ -943,7 +905,7 @@ const ShopPageContent = () => {
                 )}
 
                 {/* Pagination Controls - below the product grid */}
-                {totalProducts > 20 && (
+                {totalProducts > 12 && (
                   <div className="flex items-center justify-center gap-6 mt-12 mb-8">
                     {/* Previous Button */}
                     <button

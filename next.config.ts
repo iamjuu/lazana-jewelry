@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Force unique build ID with timestamp to bust cache for all users
   generateBuildId: async () => {
-    return `v0.2.0-${Date.now()}`;
+    return `v0.4.0-${Date.now()}`;
   },
   experimental: {
     // Allow larger file uploads (e.g. product videos ~28MB) to /api/upload/s3
