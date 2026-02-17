@@ -381,14 +381,14 @@ const ShopPageContent = () => {
   };
 
   const handlePreviousPage = () => {
-    if (hasPrev) {
+    if (hasPrev && !loading) {
       setCurrentPage((prev) => prev - 1);
       scrollToTop();
     }
   };
 
   const handleNextPage = () => {
-    if (hasNext) {
+    if (hasNext && !loading) {
       setCurrentPage((prev) => prev + 1);
       scrollToTop();
     }
@@ -909,9 +909,9 @@ const ShopPageContent = () => {
                     <button
                       type="button"
                       onClick={handlePreviousPage}
-                      disabled={!hasPrev}
+                      disabled={!hasPrev || loading}
                       className={`px-6 py-2 rounded-lg font-touvlo text-[14px] sm:text-[15px] md:text-[16px] transition-all ${
-                        hasPrev
+                        hasPrev && !loading
                           ? "bg-[#1C3163] text-white hover:opacity-90 cursor-pointer"
                           : "bg-[#1C3163] text-white opacity-50 cursor-not-allowed"
                       }`}
@@ -928,9 +928,9 @@ const ShopPageContent = () => {
                     <button
                       type="button"
                       onClick={handleNextPage}
-                      disabled={!hasNext}
+                      disabled={!hasNext || loading}
                       className={`px-6 py-2 rounded-lg font-touvlo text-[14px] sm:text-[15px] md:text-[16px] transition-all ${
-                        hasNext
+                        hasNext && !loading
                           ? "bg-[#1C3163] text-white hover:opacity-90 cursor-pointer"
                           : "bg-[#1C3163] text-white opacity-50 cursor-not-allowed"
                       }`}
