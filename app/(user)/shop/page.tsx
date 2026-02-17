@@ -315,11 +315,12 @@ const ShopPageContent = () => {
           );
         }
       } finally {
-        // Always clear loading state immediately
+        // Always clear loading state and navigation lock
         if (isMounted) {
           setLoading(false);
-          isNavigatingRef.current = false;
         }
+        // Always reset navigation ref, even if unmounted (safety)
+        isNavigatingRef.current = false;
       }
     };
 
@@ -341,8 +342,9 @@ const ShopPageContent = () => {
         }
         abortController = null;
       }
-      // Force loading to false on cleanup to prevent stuck state
+      // Force loading to false and reset navigation ref on cleanup
       setLoading(false);
+      isNavigatingRef.current = false;
     };
   }, [
     categoryParam,
@@ -373,30 +375,62 @@ const ShopPageContent = () => {
 
   // Use instant scroll on iOS/touch to avoid Safari quirks; smooth on desktop
   const scrollToTop = () => {
-    const isTouch =
-      typeof navigator !== "undefined" &&
-      (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-        "ontouchstart" in window);
-    if (isTouch) {
-      window.scrollTo(0, 0);
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    try {
+      const isTouch =
+        typeof navigator !== "undefined" &&
+        (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+          "ontouchstart" in window);
+      if (isTouch) {
+        window.scrollTo(0, 0);
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } catch (error) {
+      console.error("Scroll error:", error);
+      // Fallback: try basic scroll
+      try {
+        window.scrollTo(0, 0);
+      } catch {
+        // Silently fail if scroll is completely broken
+      }
     }
   };
 
   const handlePreviousPage = () => {
     if (hasPrev && !loading && !isNavigatingRef.current) {
       isNavigatingRef.current = true;
+      // Safety timeout: if fetch doesn't complete in 15s, reset ref
+      setTimeout(() => {
+        if (isNavigatingRef.current) {
+          console.warn("Navigation timeout - resetting lock");
+          isNavigatingRef.current = false;
+        }
+      }, 15000);
+      
       setCurrentPage((prev) => prev - 1);
-      scrollToTop();
+      // Delay scroll slightly to let state update propagate
+      setTimeout(() => {
+        scrollToTop();
+      }, 50);
     }
   };
 
   const handleNextPage = () => {
     if (hasNext && !loading && !isNavigatingRef.current) {
       isNavigatingRef.current = true;
+      // Safety timeout: if fetch doesn't complete in 15s, reset ref
+      setTimeout(() => {
+        if (isNavigatingRef.current) {
+          console.warn("Navigation timeout - resetting lock");
+          isNavigatingRef.current = false;
+        }
+      }, 15000);
+      
       setCurrentPage((prev) => prev + 1);
-      scrollToTop();
+      // Delay scroll slightly to let state update propagate
+      setTimeout(() => {
+        scrollToTop();
+      }, 50);
     }
   };
 
