@@ -25,11 +25,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Add headers to prevent aggressive caching of HTML pages
+  // Prevent caching of HTML pages only (not JS/CSS chunks)
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: '/((?!_next/static|_next/image|favicon.ico).*)',
         headers: [
           {
             key: 'Cache-Control',

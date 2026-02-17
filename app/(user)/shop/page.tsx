@@ -98,6 +98,9 @@ const ShopPageContent = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [hasNext, setHasNext] = useState(false);
   const [hasPrev, setHasPrev] = useState(false);
+  
+  // Guard against rapid pagination clicks (race condition fix)
+  const isNavigatingRef = useRef(false);
 
   // Close filters when category changes
   useEffect(() => {
@@ -239,7 +242,7 @@ const ShopPageContent = () => {
               // ignore
             }
           }
-        }, 5000); // 5 second timeout
+        }, 10000); // 10 second timeout (increased for slower connections)
 
         const response = await fetch(apiUrl, {
           signal: abortController.signal,
@@ -315,6 +318,7 @@ const ShopPageContent = () => {
         // Always clear loading state immediately
         if (isMounted) {
           setLoading(false);
+          isNavigatingRef.current = false;
         }
       }
     };
@@ -381,14 +385,16 @@ const ShopPageContent = () => {
   };
 
   const handlePreviousPage = () => {
-    if (hasPrev && !loading) {
+    if (hasPrev && !loading && !isNavigatingRef.current) {
+      isNavigatingRef.current = true;
       setCurrentPage((prev) => prev - 1);
       scrollToTop();
     }
   };
 
   const handleNextPage = () => {
-    if (hasNext && !loading) {
+    if (hasNext && !loading && !isNavigatingRef.current) {
+      isNavigatingRef.current = true;
       setCurrentPage((prev) => prev + 1);
       scrollToTop();
     }
