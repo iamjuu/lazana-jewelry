@@ -12,7 +12,7 @@
   });
 
   const S3_BUCKET = process.env.S3_BUCKET_NAME || "amzn-crystalbowl-bucket";
-  const S3_BASE_URL = process.env.S3_BASE_URL || "https://amzn-crystalbowls3.s3.ap-southeast-1.amazonaws.com";
+  const S3_BASE_URL = process.env.S3_BASE_URL || "https://amzn-crystalbowl-bucket.s3.ap-southeast-1.amazonaws.com";
 
   export interface UploadResult {
     url: string;

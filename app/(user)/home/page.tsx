@@ -516,7 +516,7 @@ const Index = () => {
           onLoadedData={() => console.log("Video loaded successfully")}
         >
           <source
-            src="https://amzn-crystalbowls3.s3.ap-southeast-1.amazonaws.com/videos/1768043688349-ttt.mp4"
+            src="https://amzn-crystalbowl-bucket.s3.ap-southeast-1.amazonaws.com/videos/ttt.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.

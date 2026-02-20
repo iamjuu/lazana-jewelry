@@ -97,13 +97,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2. USER (without valid admin) trying to access ADMIN LOGIN/SIGNUP pages → Redirect to home
-  if (userToken && isAdminAuthRoute) {
-    console.log("🚫 User trying to access admin login, redirecting to home");
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  // 2b. Allow access to admin login/signup pages (if no user token)
+  // 2. Allow access to admin login/signup pages.
+  // Blocking these when a user token exists can create redirect loops when
+  // stale/mixed cookies are present (user + admin cookies in normal tabs).
   if (isAdminAuthRoute) {
     return NextResponse.next();
   }
