@@ -73,19 +73,19 @@ export async function middleware(request: NextRequest) {
 
   // 1. ADMIN trying to access USER ROUTES → Redirect to admin dashboard
   if (adminToken && isUserRoute) {
-    console.log("🚫 Admin trying to access user route, redirecting to dashboard");
+    // console.log("🚫 Admin trying to access user route, redirecting to dashboard");
     return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 
   // 1b. ADMIN trying to access root path "/" → Redirect to admin dashboard
   if (adminToken && pathname === "/") {
-    console.log("🚫 Admin trying to access root, redirecting to dashboard");
+    // console.log("🚫 Admin trying to access root, redirecting to dashboard");
     return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 
   // 1c. ADMIN trying to access user login/signup pages → Redirect to admin dashboard
   if (adminToken && (pathname.startsWith("/login") || pathname.startsWith("/signup") || pathname.startsWith("/register"))) {
-    console.log("🚫 Admin trying to access user auth pages, redirecting to dashboard");
+    // console.log("🚫 Admin trying to access user auth pages, redirecting to dashboard");
     return NextResponse.redirect(new URL("/admin/dashboard", request.url));
   }
 
@@ -108,7 +108,7 @@ export async function middleware(request: NextRequest) {
   if (isAdminRoute) {
     if (!adminToken) {
       // No admin token, redirect to admin login
-      console.log("🚫 No admin token, redirecting to admin login");
+      // console.log("🚫 No admin token, redirecting to admin login");
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
     
@@ -116,7 +116,7 @@ export async function middleware(request: NextRequest) {
     const adminPayload = decodeToken(adminToken);
     if (!adminPayload || (!adminPayload.isAdmin && adminPayload.role !== "admin")) {
       // Invalid or non-admin token, clear it and redirect
-      console.log("🚫 Invalid admin token, redirecting to admin login");
+      // console.log("🚫 Invalid admin token, redirecting to admin login");
       const response = NextResponse.redirect(new URL("/admin/login", request.url));
       response.cookies.delete("adminToken");
       return response;

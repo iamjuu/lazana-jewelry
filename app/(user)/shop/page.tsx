@@ -302,8 +302,20 @@ const ShopPageContent = () => {
           }
         }
       } catch (error: any) {
-        // Silently ignore aborts - they're expected when user changes page/filters
-        if (error?.name === "AbortError" || error?.message === "shop_fetch_cleanup" || error?.message === "request_timeout") {
+        // Silently ignore aborts - they're expected when user changes page/filters.
+        // In some browsers `abort(reason)` can surface as:
+        // - DOMException AbortError
+        // - Error with message
+        // - raw string reason (e.g. "shop_fetch_cleanup")
+        const abortReason =
+          typeof error === "string"
+            ? error
+            : error?.message || error?.reason || "";
+        if (
+          error?.name === "AbortError" ||
+          abortReason === "shop_fetch_cleanup" ||
+          abortReason === "request_timeout"
+        ) {
           return;
         }
         
