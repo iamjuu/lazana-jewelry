@@ -302,19 +302,17 @@ export default function PastEventsPage() {
     if (photoPreviews[index] && photoPreviews[index].startsWith('blob:')) {
       URL.revokeObjectURL(photoPreviews[index]);
     }
-    
+
+    // Keep fixed 6 slots so slot index always matches the same position (don't filter/shrink)
     const newPhotos = [...formData.photos];
+    while (newPhotos.length < 6) newPhotos.push("");
     newPhotos[index] = "";
-    setFormData({ ...formData, photos: newPhotos.filter(p => p !== "") });
-    
-    // Update preview
+    setFormData({ ...formData, photos: newPhotos });
+
     const newPreviews = [...photoPreviews];
-    if (editingId && originalPhotos[index] && !selectedPhotoFiles[index]) {
-      newPreviews[index] = getImageUrl(originalPhotos[index]);
-    } else {
-      newPreviews[index] = "";
-    }
-    setPhotoPreviews(newPreviews.filter(p => p !== ""));
+    while (newPreviews.length < 6) newPreviews.push("");
+    newPreviews[index] = "";
+    setPhotoPreviews(newPreviews);
 
     const newFiles = [...selectedPhotoFiles];
     newFiles[index] = null;
@@ -449,6 +447,12 @@ export default function PastEventsPage() {
     setEditingId(pastEvent._id);
     setShowAddForm(true);
     const timeRange = parseTimeRange(pastEvent.time || "");
+    // Pad photos to 6 fixed slots so remove button always targets the correct slot
+    const paddedPhotos = [...originalPhotosArray];
+    while (paddedPhotos.length < 6) paddedPhotos.push("");
+    const paddedPreviews = originalPhotosArray.map(p => getImageUrl(p));
+    while (paddedPreviews.length < 6) paddedPreviews.push("");
+
     setFormData({
       name: pastEvent.name || "",
       title: pastEvent.title || "",
@@ -459,7 +463,7 @@ export default function PastEventsPage() {
       endDate: pastEvent.endDate || "",
       description: pastEvent.description || "",
       thumbnailImage: originalThumb,
-      photos: originalPhotosArray,
+      photos: paddedPhotos,
       videos: originalVideosArray,
     });
     setStartHour(timeRange.startHour);
@@ -470,7 +474,7 @@ export default function PastEventsPage() {
     setEndPeriod(timeRange.endPeriod);
     
     setThumbnailPreview(originalThumb ? getImageUrl(originalThumb) : "");
-    setPhotoPreviews(originalPhotosArray.map(p => getImageUrl(p)));
+    setPhotoPreviews(paddedPreviews);
     setVideoPreviews(originalVideosArray);
     
     // Clear selected files
