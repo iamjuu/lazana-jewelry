@@ -81,7 +81,7 @@ function DiscoveryBookingSuccessContent() {
 
   if (verifying) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className='bg-white min-h-screen'>
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
@@ -96,12 +96,12 @@ function DiscoveryBookingSuccessContent() {
 
   if (!verified) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className='bg-white min-h-screen'>
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
             <p className="mb-4">Booking verification failed</p>
-            <Link href="/discoveryappointment" className="text-[#D5B584] hover:underline">
+            <Link href="/discoveryappointment" className="text-[#000000] hover:underline">
               Back to Discovery Booking
             </Link>
           </div>
@@ -112,7 +112,7 @@ function DiscoveryBookingSuccessContent() {
   }
 
   return (
-    <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+    <div className='bg-white min-h-screen'>
       <Navbar />
       
       <div className="w-full py-[40px] md:py-[68px]">
@@ -151,7 +151,7 @@ function DiscoveryBookingSuccessContent() {
 export default function DiscoveryBookingSuccessPage() {
   return (
     <Suspense fallback={
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className='bg-white min-h-screen'>
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
@@ -166,4 +166,6 @@ export default function DiscoveryBookingSuccessPage() {
     </Suspense>
   )
 }
+
+
 

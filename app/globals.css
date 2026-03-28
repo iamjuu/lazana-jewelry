@@ -7,8 +7,7 @@ body {
   min-width: 100%;
   max-width: 100vw;
   overflow-x: hidden;
-  /* Match layout background so no white shows at any viewport (e.g. 833px) */
-  background: linear-gradient(to right, #FDECE2, #FEC1A2);
+  background: #ffffff;
 }
 
 /* Hide scrollbar globally while maintaining scroll functionality */

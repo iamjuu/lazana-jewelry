@@ -3,18 +3,25 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { CryselLogo } from "@/public/assets";
 import { ShoppingCart, User, Search, X, Menu } from "lucide-react";
 import { useCart } from "@/stores/useCart";
 import toast from "react-hot-toast";
 // Fonts are now defined in globals.css as font-seasons and font-touvlo
 
-const navigationItems = [
+type NavigationItem = {
+  href: string;
+  label: string;
+  hasDropdown?: boolean;
+  hasOfferingDropdown?: boolean;
+  hovertrue?: boolean;
+};
+
+const navigationItems: NavigationItem[] = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop", hasDropdown: true },
   // {
   //   href: "/services",
-  //   label: "Sound Healing",
+  //   label: "Services",
   //   hasOfferingDropdown: true,
   //   hovertrue: true,
   // },
@@ -34,6 +41,25 @@ type Product = {
   imageUrl?: string[];
   price: number;
 }; // Adding simplified Product type for search results
+
+const BrandMark = ({ mobile = false }: { mobile?: boolean }) => (
+  <div className="flex flex-col leading-none">
+    <span
+      className={`font-seasons uppercase tracking-[0.18em] text-black ${
+        mobile ? "text-[1.35rem] sm:text-[1.6rem]" : "text-[1.6rem] xl:text-[1.9rem]"
+      }`}
+    >
+      Lazana
+    </span>
+    <span
+      className={`font-touvlo uppercase tracking-[0.38em] text-[#1C3163] ${
+        mobile ? "text-[0.58rem] sm:text-[0.68rem]" : "text-[0.62rem] xl:text-[0.72rem]"
+      }`}
+    >
+      Jewelry
+    </span>
+  </div>
+);
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -193,14 +219,7 @@ const Navbar = () => {
         {/* MOBILE/TABLET NAVBAR - fixed row height, larger logo without increasing navbar */}
         <div className="lg:hidden flex items-center justify-between min-h-[56px] py-3 relative z-[9999] gap-4">
           <Link href="/" className="flex items-center h-full min-h-[46px]">
-            <Image
-              src={CryselLogo}
-              alt="Logo"
-              width={180}
-              height={40}
-              className="h-[36px] sm:h-12 w-auto max-h-full object-contain"
-              priority
-            />
+            <BrandMark mobile />
           </Link>
 
           <div className="flex items-center gap-4">
@@ -210,12 +229,12 @@ const Navbar = () => {
                 setIsSearchOpen(true);
                 setMobileMenuOpen(false);
               }}
-              className="text-[#D5B584] hover:text-white"
+              className="text-[#000000] hover:text-[#1C3163]"
               aria-label="Search"
             >
               <Search size={20} />
             </button>
-            <Link href="/profile" className="text-[#D5B584] hover:text-white">
+            <Link href="/profile" className="text-[#000000] hover:text-[#1C3163]">
               <User size={20} />
             </Link>
 
@@ -228,7 +247,7 @@ const Navbar = () => {
                   router.push("/login");
                 }
               }}
-              className="relative text-[#D5B584] hover:text-white"
+              className="relative text-[#000000] hover:text-[#1C3163]"
             >
               <ShoppingCart size={20} />
               {mounted && cartCount > 0 && (
@@ -240,7 +259,7 @@ const Navbar = () => {
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-[#D5B584] hover:text-white lg:hidden"
+              className="text-[#000000] hover:text-[#1C3163] lg:hidden"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -259,8 +278,8 @@ const Navbar = () => {
                     <button
                       type="button"
                       onClick={() => setMobileShopExpanded(!mobileShopExpanded)}
-                      className={`w-full text-left py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition flex items-center justify-between ${pathname.startsWith("/shop")
-                          ? "text-white font-semibold bg-white/20"
+                      className={`w-full text-left py-2 px-3 text-[#000000] hover:text-[#1C3163] hover:bg-white/10 rounded transition flex items-center justify-between ${pathname.startsWith("/shop")
+                          ? "text-[#1C3163] font-semibold bg-white/20"
                           : ""
                         }`}
                     >
@@ -273,19 +292,19 @@ const Navbar = () => {
                       </span>
                     </button>
                     {mobileShopExpanded && (
-                      <div className="pl-4 space-y-1 border-l-2 border-[#D5B584]/40 ml-2">
+                      <div className="pl-4 space-y-1 border-l-2 border-[#000000]/40 ml-2">
                         <Link
                           href="/shop?category=all"
                           onClick={() => {
                             setMobileMenuOpen(false);
                             setMobileShopExpanded(false);
                           }}
-                          className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#D5B584] hover:bg-white/10 rounded font-touvlo"
+                          className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#000000] hover:bg-white/10 rounded font-touvlo"
                         >
-                          All Bowls
+                          All Jewelry
                         </Link>
                         {categories.length === 0 ? (
-                          <p className="py-2 px-3 text-sm text-[#D5B584]/80 font-touvlo">
+                          <p className="py-2 px-3 text-sm text-[#000000]/80 font-touvlo">
                             Loading categories...
                           </p>
                         ) : (
@@ -297,7 +316,7 @@ const Navbar = () => {
                                 setMobileMenuOpen(false);
                                 setMobileShopExpanded(false);
                               }}
-                              className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#D5B584] hover:bg-white/10 rounded font-touvlo"
+                              className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#000000] hover:bg-white/10 rounded font-touvlo"
                             >
                               {cat.name}
                             </Link>
@@ -308,7 +327,7 @@ const Navbar = () => {
                   </div>
                 );
               }
-              /* Sound Healing: expandable with Events & Services on mobile */
+              /* Services: expandable with Events & Services on mobile */
               if (item.hasOfferingDropdown) {
                 return (
                   <div key={item.href} className="space-y-1">
@@ -317,9 +336,9 @@ const Navbar = () => {
                       onClick={() =>
                         setMobileOfferingExpanded(!mobileOfferingExpanded)
                       }
-                      className={`w-full text-left py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition flex items-center justify-between ${pathname.startsWith("/services") ||
+                      className={`w-full text-left py-2 px-3 text-[#000000] hover:text-[#1C3163] hover:bg-white/10 rounded transition flex items-center justify-between ${pathname.startsWith("/services") ||
                           pathname.startsWith("/events")
-                          ? "text-white font-semibold bg-white/20"
+                          ? "text-[#1C3163] font-semibold bg-white/20"
                           : ""
                         }`}
                     >
@@ -332,14 +351,14 @@ const Navbar = () => {
                       </span>
                     </button>
                     {mobileOfferingExpanded && (
-                      <div className="pl-4 space-y-1 border-l-2 border-[#D5B584]/40 ml-2">
+                      <div className="pl-4 space-y-1 border-l-2 border-[#000000]/40 ml-2">
                         <Link
                           href="/events"
                           onClick={() => {
                             setMobileMenuOpen(false);
                             setMobileOfferingExpanded(false);
                           }}
-                          className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#D5B584] hover:bg-white/10 rounded font-touvlo"
+                          className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#000000] hover:bg-white/10 rounded font-touvlo"
                         >
                           Events
                         </Link>
@@ -349,7 +368,7 @@ const Navbar = () => {
                             setMobileMenuOpen(false);
                             setMobileOfferingExpanded(false);
                           }}
-                          className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#D5B584] hover:bg-white/10 rounded font-touvlo"
+                          className="block py-2 px-3 text-sm text-[#1C3163] hover:text-[#000000] hover:bg-white/10 rounded font-touvlo"
                         >
                           Services
                         </Link>
@@ -363,8 +382,8 @@ const Navbar = () => {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`block py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${pathname === item.href
-                      ? "text-white font-semibold bg-white/20"
+                  className={`block py-2 px-3 text-[#000000] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${pathname === item.href
+                      ? "text-[#1C3163] font-semibold bg-white/20"
                       : ""
                     }`}
                 >
@@ -375,8 +394,8 @@ const Navbar = () => {
             {/* <Link
               href="/book-a-session"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${pathname === "/book-a-session"
-                  ? "text-white font-semibold bg-white/20"
+              className={`block py-2 px-3 text-[#000000] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${pathname === "/book-a-session"
+                  ? "text-[#1C3163] font-semibold bg-white/20"
                   : ""
                 }`}
             >
@@ -389,14 +408,7 @@ const Navbar = () => {
         <div className="max-w-[1400px] mx-auto hidden lg:flex items-center justify-between min-h-[48px]">
           {/* LOGO - taller logo, constrained to row so navbar height unchanged */}
           <Link href="/" className="flex items-center h-full min-h-[48px]">
-            <Image
-              src={CryselLogo}
-              alt="Logo"
-              width={200}
-              height={48}
-              className="h-10 xl:h-12 w-auto max-h-full object-contain"
-              priority
-            />
+            <BrandMark />
           </Link>
 {/* chanes */}
           {/* NAV LINKS */}
@@ -422,8 +434,8 @@ const Navbar = () => {
                   >
                     <Link
                       href={item.href}
-                      className={`text-[#D5B584]  hover:text-[#1C3163] transition  ${pathname.startsWith("/shop")
-                          ? "text-white font-semibold  scale-110"
+                      className={`text-[#000000]  hover:text-[#1C3163] transition  ${pathname.startsWith("/shop")
+                          ? "text-[#1C3163] font-semibold  scale-110"
                           : ""
                         }`}
                     >
@@ -434,13 +446,12 @@ const Navbar = () => {
                       <div
                         className="
                           absolute left-0 top-full mt-2 w-56
-                          backdrop-blur-sm
-                          shadow-lg border border-white/20
+                          bg-white/60 backdrop-blur-md
+                          shadow-lg border border-black/10
                           rounded-lg z-[1003] pointer-events-auto py-3
                           !text-[18px]
 
                         "
-                        style={{ backgroundColor: "#fde9dd" }}
                         onMouseEnter={() => {
                           if (shopHoverTimeoutRef.current)
                             clearTimeout(shopHoverTimeoutRef.current);
@@ -455,7 +466,7 @@ const Navbar = () => {
                       >
                         <Link
                           href="/shop?category=all"
-                          className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md font-seasons"
+                          className="block py-3 px-4 text-[#1C3163] hover:text-[#1C3163] hover:bg-[#f0f0f0] transition hover:translate-x-2 rounded-md font-seasons"
                         >
                           All Lazana Jewelry
                         </Link>
@@ -464,7 +475,7 @@ const Navbar = () => {
                           <Link
                             key={cat._id}
                             href={`/shop?category=${cat.slug}`}
-                            className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md font-seasons"
+                            className="block py-3 px-4 text-[#1C3163] hover:text-[#1C3163] hover:bg-[#f0f0f0] transition hover:translate-x-2 rounded-md font-seasons"
                           >
                             {cat.name}
                           </Link>
@@ -495,9 +506,9 @@ const Navbar = () => {
                   >
                     <Link
                       href={item.href}
-                      className={`text-[#D5B584] hover:text-[#1C3163] transition font-seasons ${pathname.startsWith("/services") ||
+                      className={`text-[#000000] hover:text-[#1C3163] transition font-seasons ${pathname.startsWith("/services") ||
                           pathname.startsWith("/events")
-                          ? "text-white font-semibold scale-110 !text-[18px] "
+                          ? "text-[#1C3163] font-semibold scale-110 !text-[18px] "
                           : ""
                         }`}
                     >
@@ -508,11 +519,10 @@ const Navbar = () => {
                       <div
                         className="
                           absolute left-0 top-full mt-2 w-56
-                          backdrop-blur-sm
-                          shadow-lg border border-white/20
+                          bg-white/10 backdrop-blur-md
+                          shadow-lg border border-black/10
                           rounded-lg z-[1003] pointer-events-auto py-3
                         "
-                        style={{ backgroundColor: "#fde9dd" }}
                         onMouseEnter={() => {
                           if (offeringHoverTimeoutRef.current)
                             clearTimeout(offeringHoverTimeoutRef.current);
@@ -527,13 +537,13 @@ const Navbar = () => {
                       >
                         <Link
                           href="/events"
-                          className="block py-3 px-4 text-[#1C3163]  hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md"
+                          className="block py-3 px-4 text-[#1C3163]  hover:text-[#1C3163] hover:bg-[#000000] transition hover:translate-x-2 rounded-md"
                         >
                           Events
                         </Link>
                         <Link
                           href="/services"
-                          className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md"
+                          className="block py-3 px-4 text-[#1C3163] hover:text-[#1C3163] hover:bg-[#000000] transition hover:translate-x-2 rounded-md"
                         >
                           Services
                         </Link>
@@ -547,8 +557,8 @@ const Navbar = () => {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-[#D5B584] hover:text-[#1C3163] transition  ${pathname === item.href
-                      ? "text-white font-semibold scale-110"
+                  className={`text-[#000000] hover:text-[#1C3163] transition  ${pathname === item.href
+                      ? "text-blue font-semibold scale-110"
                       : ""
                     }`}
                 >
@@ -559,7 +569,7 @@ const Navbar = () => {
 
             {/* <Link
               href="/book-a-session"
-              className={`text-[#D5B584] hover:text-[#1C3163] transition ${pathname === "/book-a-session"
+              className={`text-[#000000] hover:text-[#1C3163] transition ${pathname === "/book-a-session"
                   ? "text-[#1C3163] font-semibold scale-110"
                   : ""
                 }`}
@@ -574,12 +584,12 @@ const Navbar = () => {
             {!isSearchOpen && (
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="text-[#D5B584] hover:text-white transition-colors"
+                className="text-[#000000] hover:text-[#1C3163] transition-colors"
               >
                 <Search size={22} />
               </button>
             )}
-            <Link href="/profile" className="text-[#D5B584] hover:text-white">
+            <Link href="/profile" className="text-[#000000] hover:text-[#1C3163]">
               <User size={24} />
             </Link>
 
@@ -592,11 +602,11 @@ const Navbar = () => {
                   router.push("/login");
                 }
               }}
-              className="relative text-[#D5B584] hover:text-white"
+              className="relative text-[#000000] hover:text-blue"
             >
               <ShoppingCart size={24} />
               {mounted && cartCount > 0 && (
-                <span className="absolute -top-2 font-touvlo  -right-2 bg-[#1c3163] text-xs w-5 h-5 rounded-full flex items-center justify-center text-white">
+                <span className="absolute -top-2 font-touvlo   text-white -right-2 bg-[#1c3163] text-xs w-5 h-5 rounded-full flex items-center justify-center text-blue">
                   {cartCount}
                 </span>
               )}
@@ -606,7 +616,7 @@ const Navbar = () => {
 
         {/* Search Overlay - visible on both mobile and desktop */}
         {isSearchOpen && (
-          <div className="absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D5B584]/20 shadow-lg py-4 px-4 z-[1002] transition-all duration-300">
+          <div className="absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-t border-[#000000]/20 shadow-lg py-4 px-4 z-[1002] transition-all duration-300">
             <div className="max-w-4xl mx-auto flex items-center gap-4">
               <form onSubmit={handleSearch} className="flex-1 relative">
                 <input
@@ -614,19 +624,19 @@ const Navbar = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search products..."
-                  className="w-full bg-transparent border-b-2 border-[#D5B584] py-2 px-4 text-[#1C3163] placeholder-[#D5B584]/50 focus:outline-none font-touvlo text-lg"
+                  className="w-full bg-transparent border-b-2 border-[#000000] py-2 px-4 text-[#1C3163] placeholder-[#000000]/50 focus:outline-none font-touvlo text-lg"
                   autoFocus
                 />
                 <button
                   type="submit"
-                  className="absolute right-0 top-1/2 -translate-y-1/2 text-[#D5B584] hover:text-[#1C3163] transition-colors"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 text-[#000000] hover:text-[#1C3163] transition-colors"
                 >
                   <Search size={20} />
                 </button>
               </form>
               <button
                 onClick={() => setIsSearchOpen(false)}
-                className="text-[#D5B584] hover:text-[#1C3163]"
+                className="text-[#000000] hover:text-[#1C3163]"
               >
                 <X size={24} />
               </button>
@@ -634,8 +644,8 @@ const Navbar = () => {
 
             {/* Live Search Results Dropdown - same card layout on mobile (list) and desktop (grid), limit 20, infinite scroll */}
             {searchQuery.trim() && (
-              <div className="max-w-4xl mx-auto mt-2 bg-white/95 backdrop-blur-md rounded-lg shadow-xl border border-[#D5B584]/20 overflow-hidden max-h-[60vh] flex flex-col">
-                <div className="px-3 py-2 border-b border-[#D5B584]/20 shrink-0">
+              <div className="max-w-4xl mx-auto mt-2 bg-white/95 backdrop-blur-md rounded-lg shadow-xl border border-[#000000]/20 overflow-hidden max-h-[60vh] flex flex-col">
+                <div className="px-3 py-2 border-b border-[#000000]/20 shrink-0">
                   <p className="font-touvlo text-[#545454] text-sm">
                     {searchResults.length === 0
                       ? "No results"
@@ -652,7 +662,7 @@ const Navbar = () => {
                       <div
                         key={product._id}
                         onClick={() => handleProductClick(product._id)}
-                        className="flex flex-col rounded-lg overflow-hidden border border-[#D5B584]/20 hover:bg-[#D5B584]/10 cursor-pointer transition-colors"
+                        className="flex flex-col rounded-lg overflow-hidden border border-[#000000]/20 hover:bg-[#000000]/10 cursor-pointer transition-colors"
                       >
                         <div className="aspect-square relative w-full bg-gray-100">
                           {product.imageUrl && product.imageUrl.length > 0 ? (
@@ -679,7 +689,7 @@ const Navbar = () => {
                   </div>
                   {loadingMoreSearch && (
                     <div className="flex justify-center py-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#D5B584]" />
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#000000]" />
                     </div>
                   )}
                 </div>
@@ -693,3 +703,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+

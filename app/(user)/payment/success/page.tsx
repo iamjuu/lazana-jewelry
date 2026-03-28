@@ -65,7 +65,7 @@ function PaymentSuccessContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+    <div className="min-h-screen bg-white">
       <Navbar />
       
       <div className="max-w-2xl mx-auto px-4 py-12">
@@ -130,7 +130,7 @@ function PaymentSuccessContent() {
 export default function PaymentSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
@@ -145,4 +145,5 @@ export default function PaymentSuccessPage() {
     </Suspense>
   );
 }
+
 

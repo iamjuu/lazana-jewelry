@@ -87,7 +87,7 @@ const CartPageContent = () => {
 
   if (!isClient) {
     return (
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center">
@@ -101,14 +101,14 @@ const CartPageContent = () => {
 
   if (items.length === 0) {
     return (
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="min-h-[60vh] flex items-center justify-center py-16">
           <div className="text-center max-w-md mx-auto px-4">
             <div className="mb-6 flex justify-center">
               <ShoppingBag size={80} className="text-[#1C3163] opacity-30" />
             </div>
-            <h2 className="text-[#1C3163] text-2xl md:text-[32px] font-[400] mb-4 font-seasons font-semibold text-[#e6b884]">
+            <h2 className="text-[#1C3163] text-2xl md:text-[32px] font-[400] mb-4 font-seasons font-semibold text-black">
               Your Cart is Empty
             </h2>
             <p className="text-[#2C3E50] mb-8 font-[400] font-touvlo whitespace-nowrap">
@@ -128,14 +128,14 @@ const CartPageContent = () => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
 
       <section className="w-full mt-[25px]">
         <div className="max-w-7xl mx-auto px-4">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-[#e6b884] text-3xl md:[30px] lg:[32px] font-medium mb-2 font-seasons">
+            <h1 className="text-black text-3xl md:[30px] lg:[32px] font-medium mb-2 font-seasons">
               Shopping Cart
             </h1>
             <p className="text-[#2C3E50] font-[400] font-touvlo">
@@ -333,4 +333,6 @@ export default function CartPage() {
     </ProtectedRoute>
   );
 }
+
+
 

@@ -468,14 +468,14 @@ const EventsPage = () => {
   };
 
   return (
-    <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen ">
+    <div className=" bg-white min-h-screen ">
       <Navbar />
       <div className="w-full mt-[25px] "> 
         <section className="w-full px-4  py-[0px] ">
           <div className="max-w-6xl flex flex-col  mx-auto">
             {/* Header Section */}
             <div className=" flex  gap-[48px]">
-              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+              <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                 Events
               </h1>
               {/* <p className="text-[#1C3163] text-[14px] sm:text-[15px] md:text-[16px] font-light max-w-md">
@@ -504,8 +504,8 @@ const EventsPage = () => {
                   >
                     {/* Date Section */}
                     <div className="lg:w-[150px] flex-shrink-0 ">
-                      <div className="text-[#e6b884]">
-                        <p className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+                      <div className="text-black">
+                        <p className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                           {event.date.month}
                         </p>
                         <p className="text-[25px] sm:text-[25px] md:text-[50px] lg:text-[50px] font-light font-seasons leading-none">
@@ -540,7 +540,7 @@ const EventsPage = () => {
                       {/* Event Details */}
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
-                          <h2 className="text-[#1C3163] text-[26px] sm:text-[28px] md:text-[30px] lg:text-[32px] font-normal leading-tight group-hover/card:text-[#e6b884] transition-colors duration-300 font-seasons">
+                          <h2 className="text-[#1C3163] text-[26px] sm:text-[28px] md:text-[30px] lg:text-[32px] font-normal leading-tight group-hover/card:text-black transition-colors duration-300 font-seasons">
                             {event.title}
                           </h2>
 
@@ -564,7 +564,7 @@ const EventsPage = () => {
                             {/* {event.description.length > MAX_DESCRIPTION_LENGTH && (
                             <button
                               onClick={(e) => toggleDescription(event.id, e)}
-                              className="text-[#D5B584] text-[14px] sm:text-[15px] md:text-[16px] font-normal mt-2 hover:underline focus:outline-none"
+                              className="text-[#000000] text-[14px] sm:text-[15px] md:text-[16px] font-normal mt-2 hover:underline focus:outline-none"
                             >
                               {expandedDescriptions.has(event.id) ? "Show Less" : "Read More"}
                             </button>
@@ -591,7 +591,7 @@ const EventsPage = () => {
           <div className="max-w-6xl mx-auto px-4 mt-[25px]">
             {/* Header Section */}
             <div className="flex gap-[48px]">
-              <h2 className="text-[#e6b884] text-[28px] sm:text-[18px] md:text-[30px] lg:text-[32px] font-normal font-seasons">
+              <h2 className="text-black text-[28px] sm:text-[18px] md:text-[30px] lg:text-[32px] font-normal font-seasons">
                 Past Events
               </h2>
             </div>
@@ -606,7 +606,7 @@ const EventsPage = () => {
                       key={item}
                       className="flex flex-col group flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]"
                     >
-                      <div className="relative w-full aspect-[4/3] overflow-hidden mb-0 bg-gradient-to-r from-[#e6b884]/20 via-[#D5B584]/40 to-[#D5B584]/20 rounded-lg">
+                      <div className="relative w-full aspect-[4/3] overflow-hidden mb-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg">
                         <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent" />
                       </div>
                       <div className="px-4 py-5 md:px-5 md:py-6 -mt-2 relative z-10">
@@ -638,7 +638,7 @@ const EventsPage = () => {
                         className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-lg transition-all duration-300 hover:bg-white disabled:pointer-events-none disabled:opacity-50"
                         aria-label="Previous slide"
                       >
-                        <ChevronLeft className="w-5 h-5 text-[#D5B584]" />
+                        <ChevronLeft className="w-5 h-5 text-[#000000]" />
                       </button>
                     </div>
                     <div className="pointer-events-auto">
@@ -649,7 +649,7 @@ const EventsPage = () => {
                         className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-lg transition-all duration-300 hover:bg-white disabled:pointer-events-none disabled:opacity-50"
                         aria-label="Next slide"
                       >
-                        <ChevronRight className="w-5 h-5 text-[#D5B584]" />
+                        <ChevronRight className="w-5 h-5 text-[#000000]" />
                       </button>
                     </div>
                   </div>
@@ -755,3 +755,6 @@ const EventsPage = () => {
 };
 
 export default EventsPage;
+
+
+

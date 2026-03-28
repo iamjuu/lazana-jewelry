@@ -78,14 +78,14 @@ const FAQPage = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
 
       <section className="w-full mt-[25px]">
         <div className="max-w-6xl mx-auto px-4">
           {/* Header */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[6px] items-start">
-            <h2 className="text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] font-normal font-seasons leading-none">
+            <h2 className="text-[#000000] text-[28px] sm:text-[32px] md:text-[30px] font-normal font-seasons leading-none">
               FAQs
             </h2>
             {/* <p className="text-[#1C3163] text-[14px] sm:text-[16px] md:text-[18px] font-light max-w-md">
@@ -136,4 +136,6 @@ const FAQPage = () => {
 };
 
 export default FAQPage;
+
+
 

@@ -250,7 +250,7 @@ const ProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center text-[#1C3163]">
@@ -265,7 +265,7 @@ const ProductDetailPage = () => {
 
   if (!product) {
     return (
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="min-h-screen flex items-center justify-center">
           <p className="text-2xl text-[#1C3163]">Product not found</p>
@@ -428,7 +428,7 @@ const ProductDetailPage = () => {
   };
 
   return (
-    <div className=" bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen]">
+    <div className=" bg-white min-h-screen]">
       <Navbar />
 
       {/* Breadcrumb: when 3 items (Home + category + subcategory), use smaller font below 401px so it stays on one line */}
@@ -450,7 +450,7 @@ const ProductDetailPage = () => {
             >
               <Link
                 href="/"
-                className={`font-seasons hover:text-[#D5B584] transition-colors text-[#1c3163] shrink-0 ${hasThreeBreadcrumbs ? "max-[401px]:text-[11px]" : ""}`}
+                className={`font-seasons hover:text-[#000000] transition-colors text-[#1c3163] shrink-0 ${hasThreeBreadcrumbs ? "max-[401px]:text-[11px]" : ""}`}
               >
                 <span
                   className={`font-seasons text-[#1c3163] text-[16px] ${hasThreeBreadcrumbs ? "max-[401px]:text-[14px]" : ""}`}
@@ -465,7 +465,7 @@ const ProductDetailPage = () => {
                   <span className="shrink-0" style={{ fontWeight: 700, color: "#1c3163" }}>/</span>
                   <Link
                     href={`/shop?category=${product.category.slug}`}
-                    className={`font-seasons hover:text-[#D5B584] text-[#1c3163] transition-colors text-[16px] shrink-0 ${hasThreeBreadcrumbs ? "max-[401px]:text-[14px]" : ""}`}
+                    className={`font-seasons hover:text-[#000000] text-[#1c3163] transition-colors text-[16px] shrink-0 ${hasThreeBreadcrumbs ? "max-[401px]:text-[14px]" : ""}`}
                   >
                     {product.category.name}
                   </Link>
@@ -630,7 +630,7 @@ const ProductDetailPage = () => {
                   {/* {product.shortDescription.length > 200 && (
                     <button
                       onClick={() => setShowFullShortDesc(!showFullShortDesc)}
-                      className="text-[#1C3163] md:text-[16px] sm:text-[15px] font-semibold mt-2 hover:text-[#D5B584] transition-colors font-touvlo"
+                      className="text-[#1C3163] md:text-[16px] sm:text-[15px] font-semibold mt-2 hover:text-[#000000] transition-colors font-touvlo"
                     >
                       {showFullShortDesc ? "Read Less" : "Read More"}
                     </button>
@@ -693,7 +693,7 @@ const ProductDetailPage = () => {
                     Complete your look with Lazana Jewelry
                   </h1>
                   <Link href={`/shop/${relativeProduct._id}`}>
-                    <div className="mb-8 border border-[#D5B584]/30 rounded-lg p-4 bg-white">
+                    <div className="mb-8 border border-[#000000]/30 rounded-lg p-4 bg-white">
                       <div className="flex items-center gap-4">
                         {relativeProduct.imageUrl &&
                           relativeProduct.imageUrl.length > 0 && (
@@ -711,13 +711,13 @@ const ProductDetailPage = () => {
                           )}
                         <div className="flex-1">
                           <h4
-                            className="font-touvlo text-[#D5B584] text-[16px] font-medium mb-1"
+                            className="font-touvlo text-[#000000] text-[16px] font-medium mb-1"
                             style={{ textShadow: "0.5px 0 0 currentColor" }}
                           >
                             {relativeProduct.name}
                           </h4>
                           <p
-                            className="font-touvlo text-[#D5B584] text-[14px]"
+                            className="font-touvlo text-[#000000] text-[14px]"
                             style={{ textShadow: "0.5px 0 0 currentColor" }}
                           >
                             {formatPrice(relativeProduct.price)} USD
@@ -725,7 +725,7 @@ const ProductDetailPage = () => {
                         </div>
                         <button
                           onClick={handleAddRelativeProductToCart}
-                          className="bg-[#D5B584] hover:bg-[#C4A573] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shrink-0 font-touvlo"
+                          className="bg-[#000000] hover:bg-[#C4A573] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shrink-0 font-touvlo"
                         >
                           + Add
                         </button>
@@ -737,7 +737,7 @@ const ProductDetailPage = () => {
 
               {/* Description Section - Accordion Style */}
               {product.description && (
-                <div className=" border-t border-b border-[#D5B584]/30">
+                <div className=" border-t border-b border-[#000000]/30">
                   <button
                     onClick={() => toggleSection("description")}
                     className="w-full py-4 flex items-center justify-between text-left"
@@ -762,7 +762,7 @@ const ProductDetailPage = () => {
                       {/* {product.description.length > 150 && (
                         <button
                           onClick={() => setShowFullLongDesc(!showFullLongDesc)}
-                          className="text-[#1C3163]  md:text-[16px] text-[14px] font-semibold mt-2 hover:text-[#D5B584] transition-colors"
+                          className="text-[#1C3163]  md:text-[16px] text-[14px] font-semibold mt-2 hover:text-[#000000] transition-colors"
                         >
                           {showFullLongDesc ? "Read Less" : "Read More"}
                         </button>
@@ -775,7 +775,7 @@ const ProductDetailPage = () => {
               {/* Additional Information Sections - Accordion Style */}
               <div className="space-y-0 ">
                 {/* Bowl Sizing */}
-                <div className="border-t border-[#D5B584]/30">
+                <div className="border-t border-[#000000]/30">
                   <button
                     onClick={() => toggleSection("bowlSizing")}
                     className="w-full py-4 flex items-center justify-between text-left "
@@ -796,13 +796,13 @@ const ProductDetailPage = () => {
         
                         <Link href="/discoveryappointment" className="text-[#1C3163] pl-2 underline hover:opacity-80 transition-opacity">here</Link>
                       </p>
-                      <Image src={Bowlsize} alt="Bowl Sizing" className="w-full h-auto mt-4  rounded-lg" />
+                      <Image src={Bowlsize} alt="Size Guide" className="w-full h-auto mt-4  rounded-lg" />
                     </div>
                   )}
                 </div>
 
                 {/* Shipping and Delivery */}
-                <div className="border-t border-[#D5B584]/30">
+                <div className="border-t border-[#000000]/30">
                   <button
                     onClick={() => toggleSection("shipping")}
                     className="w-full py-4 flex items-center justify-between text-left"
@@ -845,7 +845,7 @@ const ProductDetailPage = () => {
                       </Link>
 
                       {/* Additional Information */}
-                      <div className="mt-6 space-y-4 pt-4 border-t border-[#D5B584]/30">
+                      <div className="mt-6 space-y-4 pt-4 border-t border-[#000000]/30">
                         <div>
                           <h4 className="text-[#545454] font-semibold md:text-[16px] sm:text-[15px] text-[14px] mb-1 font-touvlo">
                             Return Policy
@@ -888,7 +888,7 @@ const ProductDetailPage = () => {
                 </div>
 
                 {/* 3rd vs 4th Octave */}
-                <div className="border-t border-[#D5B584]/30">
+                <div className="border-t border-[#000000]/30">
                   <button
                     onClick={() => toggleSection("octave")}
                     className="w-full py-4 flex items-center justify-between text-left"
@@ -914,7 +914,7 @@ const ProductDetailPage = () => {
                 </div>
 
                 {/* Tuning System */}
-                <div className="border-t border-[#D5B584]/30">
+                <div className="border-t border-[#000000]/30">
                   <button
                     onClick={() => toggleSection("tuning")}
                     className="w-full py-4 flex items-center justify-between text-left"
@@ -943,7 +943,7 @@ const ProductDetailPage = () => {
           {/* Related Products Section - Only show if current product is NOT a relative product */}
           {!product.relativeproduct && (
             <div className="">
-              <h2 className="text-[#D5B584] text-[28px] sm:text-[30px] lg:text-[32px] font-normal font-seasons mb-[25px]">
+              <h2 className="text-[#000000] text-[28px] sm:text-[30px] lg:text-[32px] font-normal font-seasons mb-[25px]">
                 Related Products
               </h2>
 
@@ -1052,3 +1052,5 @@ const ProductDetailPage = () => {
 };
 
 export default ProductDetailPage;
+
+

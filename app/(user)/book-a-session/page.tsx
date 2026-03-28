@@ -7,19 +7,19 @@ import Link from "next/link";
 
 const BookASessionPage = () => {
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
       <div className="w-full ">
         <section className="w-full px-4 mt-[25px]">
           <div className="max-w-6xl  mx-auto ">
             {/* Header */}
             <div className="">
-              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-                Book a Call
+              <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+                Book an Appointment
               </h1>
               <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] leading-relaxed max-w-2xl mt-[25px] font-touvlo">
-                Choose from our available sessions and book your preferred
-                experience with us.
+                Choose the appointment that fits your needs, from a private
+                studio visit to a styling consultation or corporate enquiry.
               </p>
             </div>
 
@@ -67,9 +67,9 @@ const BookASessionPage = () => {
                     </h2>
                     <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[16px] text-[#545454] mb-4 leading-relaxed max-w-2xl font-touvlo">
                       A consultation call to help match you with your perfect
-                      piece. We&apos;ll explore your goals, answer your
-                      questions, and help you feel confident in choosing the
-                      right bowls.
+                      piece. We&apos;ll talk through your style, answer your
+                      questions, and help you feel confident choosing the right
+                      pieces.
                     </p>
                   </div>
 
@@ -91,11 +91,12 @@ const BookASessionPage = () => {
                   {/* Left Content */}
                   <div className="flex-1">
                     <h2 className="font-seasons text-[20px] sm:text-[20px] md:text-[20px] lg:text-[20px] text-[#1C3163] font-medium mb-3 sm:mb-4">
-                      Corporate Wellness Solutions
+                      Corporate Gifting & Brand Enquiries
                     </h2>
                     <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[16px] text-[#545454]   mb-4 leading-relaxed max-w-2xl font-touvlo">
-                      Invite Lazana Jewelry into your workplace for team
-                      bonding, seminars, sound healing, recharge and rejuvenate.
+                      Speak with us about client gifting, team experiences,
+                      pop-ups, trunk shows, and branded jewelry enquiries for
+                      your company or event.
                     </p>
                   </div>
 
@@ -120,3 +121,5 @@ const BookASessionPage = () => {
 };
 
 export default BookASessionPage;
+
+

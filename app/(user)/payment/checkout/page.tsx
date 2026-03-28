@@ -107,7 +107,7 @@ function PaymentCheckoutContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
@@ -125,7 +125,7 @@ function PaymentCheckoutContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+    <div className="min-h-screen bg-white">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       <Navbar />
 
@@ -179,7 +179,7 @@ export default function PaymentCheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+        <div className="min-h-screen bg-white">
           <Navbar />
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
@@ -195,3 +195,4 @@ export default function PaymentCheckoutPage() {
     </Suspense>
   );
 }
+

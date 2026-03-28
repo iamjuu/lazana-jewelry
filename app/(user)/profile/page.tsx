@@ -132,15 +132,10 @@ function ProfilePageContent() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get("tab");
-    if (
-      tabParam === "orders" ||
-      tabParam === "sessions" ||
-      tabParam === "bookings" ||
-      tabParam === "bookedEvents"
-    ) {
-      setActiveTab(
-        tabParam === "sessions" ? "bookings" : (tabParam as TabType),
-      );
+    if (tabParam === "orders") {
+      setActiveTab("orders");
+    } else {
+      setActiveTab("profile");
     }
   }, []);
 
@@ -507,7 +502,7 @@ function ProfilePageContent() {
       case "refunded":
         return <XCircle className="text-red-600" size={20} />;
       default:
-        return <Package className="text-gray-600" size={20} />;
+        return <Package className="text-black" size={20} />;
     }
   };
 
@@ -525,16 +520,16 @@ function ProfilePageContent() {
       case "refunded":
         return "text-red-600 bg-red-50";
       default:
-        return "text-gray-600 bg-gray-50";
+        return "text-black bg-gray-50";
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#FDECE2] via-[#FEC1A2] to-[#D5B584] flex items-center justify-center font-touvlo">
+      <div className="min-h-screen  flex items-center justify-center font-touvlo">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white text-lg">Loading profile...</p>
+          <p className="text-black text-lg">Loading profile...</p>
         </div>
       </div>
     );
@@ -542,20 +537,20 @@ function ProfilePageContent() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#FDECE2] via-[#FEC1A2] to-[#D5B584] flex items-center justify-center">
-        <p className="text-white text-lg">Failed to load profile</p>
+      <div className="min-h-screen b flex items-center justify-center">
+        <p className="text-black text-lg">Failed to load profile</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FDECE2] via-[#FEC1A2] to-[#D5B584]">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-16 lg:py-20 font-touvlo">
-        <div className="bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
+      <div className="max-w-6xl mx-auto bg-white px-3 sm:px-6 lg:px-8 py-6 sm:py-16 lg:py-20 font-touvlo">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-[#D5B584] to-[#FEC1A2] px-4 sm:px-8 lg:px-12 py-6 sm:py-10">
+          <div className=" px-4 sm:px-8 lg:px-12 py-6 sm:py-10">
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
               {/* Profile Image */}
               <div className="relative group flex-shrink-0">
@@ -568,7 +563,7 @@ function ProfilePageContent() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#D5B584] to-[#FEC1A2] flex items-center justify-center text-white text-3xl sm:text-5xl font-bold">
+                    <div className="w-full h-full  flex items-center justify-center text-black text-3xl sm:text-5xl font-bold">
                       {getInitials(user.name)}
                     </div>
                   )}
@@ -577,10 +572,10 @@ function ProfilePageContent() {
 
               {/* User Info */}
               <div className="flex-1 text-center sm:text-left min-w-0">
-                <h1 className="text-xl sm:text-4xl font-bold text-white mb-1 sm:mb-2 truncate">
+                <h1 className="text-xl sm:text-4xl font-bold text-black mb-1 sm:mb-2 truncate">
                   {user.name}
                 </h1>
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4 text-white/90">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4 text-black">
                   <div className="flex items-center justify-center sm:justify-start gap-2 min-w-0">
                     <Mail size={16} className="flex-shrink-0 sm:w-[18px] sm:h-[18px]" />
                     <span className="text-xs sm:text-base truncate">{user.email}</span>
@@ -614,8 +609,8 @@ function ProfilePageContent() {
                   flex-1 min-w-[80px] sm:min-w-0 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium text-center border-b-2 transition-colors whitespace-nowrap
                   ${
                     activeTab === "profile"
-                      ? "border-[#D5B584] text-[#D5B584] bg-[#FEF9F5]"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      ? "border-[#000000] text-black bg-white"
+                      : "border-transparent text-black hover:text-black hover:border-gray-300"
                   }
                 `}
               >
@@ -628,41 +623,13 @@ function ProfilePageContent() {
                   flex-1 min-w-[80px] sm:min-w-0 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium text-center border-b-2 transition-colors whitespace-nowrap
                   ${
                     activeTab === "orders"
-                      ? "border-[#D5B584] text-[#D5B584] bg-[#FEF9F5]"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      ? "border-[#000000] text-black bg-white"
+                      : "border-transparent text-black hover:text-black hover:border-gray-300"
                   }
                 `}
               >
                 <Package size={18} className="inline-block mr-1 sm:mr-2 sm:w-5 sm:h-5" />
                 Orders
-              </button>
-              <button
-                onClick={() => setActiveTab("bookings")}
-                className={`
-                  flex-1 min-w-[80px] sm:min-w-0 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium text-center border-b-2 transition-colors whitespace-nowrap
-                  ${
-                    activeTab === "bookings"
-                      ? "border-[#D5B584] text-[#D5B584] bg-[#FEF9F5]"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  }
-                `}
-              >
-                <Calendar size={18} className="inline-block mr-1 sm:mr-2 sm:w-5 sm:h-5" />
-                <span className="hidden sm:inline">Booked Yoga </span>Sessions
-              </button>
-              <button
-                onClick={() => setActiveTab("bookedEvents")}
-                className={`
-                  flex-1 min-w-[80px] sm:min-w-0 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium text-center border-b-2 transition-colors whitespace-nowrap
-                  ${
-                    activeTab === "bookedEvents"
-                      ? "border-[#D5B584] text-[#D5B584] bg-[#FEF9F5]"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  }
-                `}
-              >
-                <Calendar size={18} className="inline-block mr-1 sm:mr-2 sm:w-5 sm:h-5" />
-                Events
               </button>
             </nav>
           </div>
@@ -674,13 +641,13 @@ function ProfilePageContent() {
               <form onSubmit={handleSave} className="space-y-5 sm:space-y-6">
                 {/* Personal Information */}
                 <div>
-                  <h2 className="text-base sm:text-[18px] font-bold text-[#1C3163] mb-4 sm:mb-6 flex items-center gap-2">
+                  <h2 className="text-base sm:text-[18px] font-bold text-black mb-4 sm:mb-6 flex items-center gap-2">
                     <User size={20} className="sm:w-6 sm:h-6" />
                     Personal Information
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-black mb-2">
                         Full Name
                       </label>
                       <input
@@ -689,12 +656,12 @@ function ProfilePageContent() {
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#000000] focus:ring-2 focus:ring-[#000000]/20 outline-none transition-all"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-black mb-2">
                         Phone Number
                       </label>
                       <input
@@ -703,7 +670,7 @@ function ProfilePageContent() {
                         onChange={(e) =>
                           setFormData({ ...formData, phone: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#000000] focus:ring-2 focus:ring-[#000000]/20 outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -711,13 +678,13 @@ function ProfilePageContent() {
 
                 {/* Address Information */}
                 <div>
-                  <h2 className="text-base sm:text-[18px] font-bold text-[#1C3163] mb-4 sm:mb-6 flex items-center gap-2">
+                  <h2 className="text-base sm:text-[18px] font-bold text-black mb-4 sm:mb-6 flex items-center gap-2">
                     <MapPin size={20} className="sm:w-6 sm:h-6" />
                     Address Information
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-black mb-2">
                         Street Address
                       </label>
                       <input
@@ -726,11 +693,11 @@ function ProfilePageContent() {
                         onChange={(e) =>
                           setFormData({ ...formData, street: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#000000] focus:ring-2 focus:ring-[#000000]/20 outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-black mb-2">
                         City
                       </label>
                       <input
@@ -739,11 +706,11 @@ function ProfilePageContent() {
                         onChange={(e) =>
                           setFormData({ ...formData, city: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#000000] focus:ring-2 focus:ring-[#000000]/20 outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-black mb-2">
                         State
                       </label>
                       <input
@@ -752,11 +719,11 @@ function ProfilePageContent() {
                         onChange={(e) =>
                           setFormData({ ...formData, state: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#000000] focus:ring-2 focus:ring-[#000000]/20 outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-black mb-2">
                         Zip Code
                       </label>
                       <input
@@ -765,11 +732,11 @@ function ProfilePageContent() {
                         onChange={(e) =>
                           setFormData({ ...formData, zipCode: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#000000] focus:ring-2 focus:ring-[#000000]/20 outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-black mb-2">
                         Country
                       </label>
                       <input
@@ -778,7 +745,7 @@ function ProfilePageContent() {
                         onChange={(e) =>
                           setFormData({ ...formData, country: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D5B584] focus:ring-2 focus:ring-[#D5B584]/20 outline-none transition-all"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#000000] focus:ring-2 focus:ring-[#000000]/20 outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -789,7 +756,7 @@ function ProfilePageContent() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-[#D5B584] to-[#FEC1A2] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold hover:from-[#C4A574] hover:to-[#E8B192] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-black hover:bg-gray-800 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                   >
                     <Save size={20} />
                     {saving ? "Saving..." : "Save Changes"}
@@ -801,21 +768,21 @@ function ProfilePageContent() {
             {/* Orders Tab */}
             {activeTab === "orders" && (
               <div>
-                <h2 className="text-base sm:text-[18px] font-bold text-[#1C3163] mb-4 sm:mb-6 flex items-center gap-2">
+                <h2 className="text-base sm:text-[18px] font-bold text-black mb-4 sm:mb-6 flex items-center gap-2">
                   <Package size={20} className="sm:w-6 sm:h-6" />
                   My Orders
                 </h2>
                 {ordersLoading ? (
                   <div className="flex items-center justify-center py-8 sm:py-12">
-                    <div className="w-8 h-8 border-4 border-[#D5B584]/30 border-t-[#D5B584] rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-4 border-[#000000]/30 border-t-[#000000] rounded-full animate-spin" />
                   </div>
                 ) : orders.length === 0 ? (
                   <div className="bg-gray-50 rounded-lg p-6 sm:p-12 text-center">
                     <Package size={48} className="text-gray-400 mx-auto mb-3 sm:mb-4 sm:w-16 sm:h-16" />
-                    <h3 className="text-[#1C3163] text-lg sm:text-xl font-medium mb-2">
+                    <h3 className="text-black text-lg sm:text-xl font-medium mb-2">
                       No Orders Yet
                     </h3>
-                    <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6">
+                    <p className="text-black text-sm sm:text-base mb-4 sm:mb-6">
                       You haven&apos;t placed any orders yet.
                     </p>
                   </div>
@@ -832,7 +799,7 @@ function ProfilePageContent() {
                               {getStatusIcon(order.status)}
                               <div>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <p className="text-sm text-gray-600">
+                                  <p className="text-sm text-black">
                                     Order ID
                                   </p>
                                   {order.couponCode && (
@@ -842,7 +809,7 @@ function ProfilePageContent() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-[#1C3163] font-medium">
+                                <p className="text-black font-medium">
                                   #{order._id.slice(-8).toUpperCase()}
                                 </p>
                               </div>
@@ -854,7 +821,7 @@ function ProfilePageContent() {
                                 {order.status.charAt(0).toUpperCase() +
                                   order.status.slice(1)}
                               </span>
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-black">
                                 {new Date(order.createdAt).toLocaleDateString(
                                   "en-US",
                                   {
@@ -968,16 +935,16 @@ function ProfilePageContent() {
                                         );
                                       })()}
                                     <div className="flex-1 min-w-0">
-                                      <p className="text-[#1C3163] font-medium text-sm sm:text-base break-words">
+                                      <p className="text-black font-medium text-sm sm:text-base break-words">
                                         {item.name}
                                       </p>
-                                      <p className="text-xs sm:text-sm text-gray-600">
+                                      <p className="text-xs sm:text-sm text-black">
                                         Quantity: {item.quantity}{" "}
                                         {item.isSet ? "(Set)" : "(Piece)"}
                                       </p>
                                     </div>
                                   </div>
-                                  <p className="text-[#1C3163] font-medium text-sm sm:text-base flex-shrink-0 pl-2 sm:pl-0">
+                                  <p className="text-black font-medium text-sm sm:text-base flex-shrink-0 pl-2 sm:pl-0">
                                     ${formatAmount(item.price * item.quantity)}
                                   </p>
                                 </div>
@@ -988,8 +955,8 @@ function ProfilePageContent() {
                             {order.deliveryCharges && (
                               <>
                                 <div className="flex justify-between items-center text-sm">
-                                  <p className="text-gray-600">Product Total</p>
-                                  <p className="text-[#1C3163] font-medium">
+                                  <p className="text-black">Product Total</p>
+                                  <p className="text-black font-medium">
                                     $
                                     {formatAmount(
                                       order.productTotal ?? order.amount,
@@ -997,15 +964,15 @@ function ProfilePageContent() {
                                   </p>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
-                                  <p className="text-gray-600">
+                                  <p className="text-black">
                                     Delivery ({order.deliveryCharges.method === "Air Express" ? "Air Economy" : order.deliveryCharges.method})
                                   </p>
-                                  <p className="text-[#1C3163] font-medium">
+                                  <p className="text-black font-medium">
                                     ${formatAmount(order.deliveryCharges.total)}
                                   </p>
                                 </div>
                                 {order.deliveryCharges.breakdown && (
-                                  <p className="text-xs text-gray-500 italic pl-4">
+                                  <p className="text-xs text-black italic pl-4">
                                     {order.deliveryCharges.breakdown}
                                   </p>
                                 )}
@@ -1014,7 +981,7 @@ function ProfilePageContent() {
                             {order.discountAmount != null && order.discountAmount > 0 ? (
                                 <div className="flex justify-between items-center text-sm">
                                   <div className="flex items-center gap-2">
-                                    <p className="text-gray-600">Discount</p>
+                                    <p className="text-black">Discount</p>
                                     {order.couponCode && (
                                       <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
                                         Coupon Applied: {order.couponCode}
@@ -1027,15 +994,15 @@ function ProfilePageContent() {
                                 </div>
                               ) : null}
                             <div className="flex justify-between items-center pt-2 border-t border-gray-300">
-                              <p className="text-[#1C3163] font-semibold text-lg">
+                              <p className="text-black font-semibold text-lg">
                                 Total Amount (USD)
                               </p>
-                              <p className="text-[#1C3163] font-semibold text-lg">
+                              <p className="text-black font-semibold text-lg">
                                 ${formatAmount(order.amount)}
                               </p>
                             </div>
                             {order.paymentProvider && (
-                              <p className="text-sm text-gray-600 mt-2">
+                              <p className="text-sm text-black mt-2">
                                 Paid via{" "}
                                 {order.paymentProvider.charAt(0).toUpperCase() +
                                   order.paymentProvider.slice(1)}
@@ -1043,10 +1010,10 @@ function ProfilePageContent() {
                             )}
                             {order.customerComments && (
                               <div className="mt-4 pt-4 border-t border-gray-200">
-                                <p className="text-sm font-medium text-gray-700 mb-1">
+                                <p className="text-sm font-medium text-black mb-1">
                                   Your Comments:
                                 </p>
-                                <p className="text-sm text-gray-600 italic">
+                                <p className="text-sm text-black italic">
                                   {order.customerComments}
                                 </p>
                               </div>
@@ -1076,13 +1043,13 @@ function ProfilePageContent() {
             {/* Bookings Tab */}
             {activeTab === "bookings" && (
               <div>
-                <h2 className="text-base sm:text-[18px] font-bold text-[#1C3163] mb-4 sm:mb-6 flex items-center gap-2">
+                <h2 className="text-base sm:text-[18px] font-bold text-black mb-4 sm:mb-6 flex items-center gap-2">
                   <Calendar size={20} className="sm:w-6 sm:h-6" />
-                  Booked Yoga Sessions
+                  Booked Appointments
                 </h2>
                 {bookingsLoading ? (
                   <div className="flex items-center justify-center py-8 sm:py-12">
-                    <div className="w-8 h-8 border-4 border-[#D5B584]/30 border-t-[#D5B584] rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-4 border-[#000000]/30 border-t-[#000000] rounded-full animate-spin" />
                   </div>
                 ) : bookings.length === 0 ? (
                   <div className="bg-gray-50 rounded-lg p-6 sm:p-12 text-center">
@@ -1090,11 +1057,11 @@ function ProfilePageContent() {
                       size={48}
                       className="text-gray-400 mx-auto mb-3 sm:mb-4 sm:w-16 sm:h-16"
                     />
-                    <h3 className="text-[#1C3163] text-lg sm:text-xl font-medium mb-2">
+                    <h3 className="text-black text-lg sm:text-xl font-medium mb-2">
                       No Bookings Yet
                     </h3>
-                    <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6">
-                      You haven&apos;t booked any yoga sessions yet.
+                    <p className="text-black text-sm sm:text-base mb-4 sm:mb-6">
+                      You haven&apos;t booked any appointments yet.
                     </p>
                   </div>
                 ) : (
@@ -1109,10 +1076,10 @@ function ProfilePageContent() {
                             <div className="flex items-center gap-4">
                               {getStatusIcon(booking.status)}
                               <div>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-black">
                                   Booking ID
                                 </p>
-                                <p className="text-[#1C3163] font-medium">
+                                <p className="text-black font-medium">
                                   #{booking._id.slice(-8).toUpperCase()}
                                 </p>
                               </div>
@@ -1124,7 +1091,7 @@ function ProfilePageContent() {
                                 {booking.status.charAt(0).toUpperCase() +
                                   booking.status.slice(1)}
                               </span>
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-black">
                                 {new Date(booking.createdAt).toLocaleDateString(
                                   "en-US",
                                   {
@@ -1140,30 +1107,30 @@ function ProfilePageContent() {
                         <div className="p-4 sm:p-6">
                           <div className="space-y-3 text-sm sm:text-base">
                             <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                              <span className="text-gray-600">
+                              <span className="text-black">
                                 Session Type:
                               </span>
-                              <span className="text-[#1C3163] font-medium capitalize">
+                              <span className="text-black font-medium capitalize">
                                 {booking.sessionType}
                               </span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-600">Seats:</span>
-                              <span className="text-[#1C3163] font-medium">
+                              <span className="text-black">Seats:</span>
+                              <span className="text-black font-medium">
                                 {booking.seats}
                               </span>
                             </div>
                             {booking.amount > 0 && (
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Amount:</span>
-                                <span className="text-[#1C3163]  text-[#1C3163] font-semibold text-lg">
+                                <span className="text-black">Amount:</span>
+                                <span className="text-black  text-black font-semibold text-lg">
                                   ${formatAmount(booking.amount)}
                                 </span>
                               </div>
                             )}
                             {booking.comment && (
                               <div className="pt-3 border-t border-gray-200">
-                                <p className="text-sm text-gray-600 mb-1">
+                                <p className="text-sm text-black mb-1">
                                   Details:
                                 </p>
                                 {(() => {
@@ -1173,14 +1140,14 @@ function ProfilePageContent() {
                                       const data = JSON.parse(booking.comment);
                                       return (
                                         <div className="space-y-1 mt-1 text-sm">
-                                          <p className="text-[#1C3163]">
-                                            <span className="text-gray-500">
+                                          <p className="text-black">
+                                            <span className="text-black">
                                               Date:
                                             </span>{" "}
                                             {data.date}
                                           </p>
-                                          <p className="text-[#1C3163]">
-                                            <span className="text-gray-500">
+                                          <p className="text-black">
+                                            <span className="text-black">
                                               Time:
                                             </span>{" "}
                                             {data.time}
@@ -1189,14 +1156,14 @@ function ProfilePageContent() {
                                       );
                                     } catch {
                                       return (
-                                        <p className="text-[#1C3163]">
+                                        <p className="text-black">
                                           {booking.comment}
                                         </p>
                                       );
                                     }
                                   }
                                   return (
-                                    <p className="text-[#1C3163]">
+                                    <p className="text-black">
                                       {booking.comment}
                                     </p>
                                   );
@@ -1228,13 +1195,13 @@ function ProfilePageContent() {
             {/* Booked Events Tab */}
             {activeTab === "bookedEvents" && (
               <div>
-                <h2 className="text-base sm:text-[18px] font-bold text-[#1C3163] mb-4 sm:mb-6 flex items-center gap-2">
+                <h2 className="text-base sm:text-[18px] font-bold text-black mb-4 sm:mb-6 flex items-center gap-2">
                   <Calendar size={20} className="sm:w-6 sm:h-6" />
                   Booked Events
                 </h2>
                 {eventBookingsLoading ? (
                   <div className="flex items-center justify-center py-8 sm:py-12">
-                    <div className="w-8 h-8 border-4 border-[#D5B584]/30 border-t-[#D5B584] rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-4 border-[#000000]/30 border-t-[#000000] rounded-full animate-spin" />
                   </div>
                 ) : eventBookings.length === 0 ? (
                   <div className="bg-gray-50 rounded-lg p-6 sm:p-12 text-center">
@@ -1242,10 +1209,10 @@ function ProfilePageContent() {
                       size={48}
                       className="text-gray-400 mx-auto mb-3 sm:mb-4 sm:w-16 sm:h-16"
                     />
-                    <h3 className="text-[#1C3163] text-lg sm:text-xl font-medium mb-2">
+                    <h3 className="text-black text-lg sm:text-xl font-medium mb-2">
                       No Event Bookings Yet
                     </h3>
-                    <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6">
+                    <p className="text-black text-sm sm:text-base mb-4 sm:mb-6">
                       You haven&apos;t booked any events yet.
                     </p>
                     <button
@@ -1268,7 +1235,7 @@ function ProfilePageContent() {
                               {getStatusIcon(booking.status)}
                               <div>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <p className="text-sm text-gray-600">
+                                  <p className="text-sm text-black">
                                     Booking ID
                                   </p>
                                   {booking.couponCode && (
@@ -1278,7 +1245,7 @@ function ProfilePageContent() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-[#1C3163] font-medium">
+                                <p className="text-black font-medium">
                                   #{booking._id.slice(-8).toUpperCase()}
                                 </p>
                               </div>
@@ -1290,7 +1257,7 @@ function ProfilePageContent() {
                                 {booking.status.charAt(0).toUpperCase() +
                                   booking.status.slice(1)}
                               </span>
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-black">
                                 {new Date(booking.createdAt).toLocaleDateString(
                                   "en-US",
                                   {
@@ -1308,36 +1275,36 @@ function ProfilePageContent() {
                             {booking.event && (
                               <>
                                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                                  <span className="text-gray-600">Event:</span>
-                                  <span className="text-[#1C3163] font-medium break-words">
+                                  <span className="text-black">Event:</span>
+                                  <span className="text-black font-medium break-words">
                                     {booking.event.title}
                                   </span>
                                 </div>
                                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                                  <span className="text-gray-600">Date:</span>
-                                  <span className="text-[#1C3163] font-medium">
+                                  <span className="text-black">Date:</span>
+                                  <span className="text-black font-medium">
                                     {booking.event.date}
                                   </span>
                                 </div>
                                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                                  <span className="text-gray-600">Time:</span>
-                                  <span className="text-[#1C3163] font-medium">
+                                  <span className="text-black">Time:</span>
+                                  <span className="text-black font-medium">
                                     {booking.event.time}
                                   </span>
                                 </div>
                                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                                  <span className="text-gray-600">
+                                  <span className="text-black">
                                     Location:
                                   </span>
-                                  <span className="text-[#1C3163] font-medium break-words">
+                                  <span className="text-black font-medium break-words">
                                     {booking.event.location}
                                   </span>
                                 </div>
                               </>
                             )}
                             <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                              <span className="text-gray-600">Slots:</span>
-                              <span className="text-[#1C3163] font-medium">
+                              <span className="text-black">Slots:</span>
+                              <span className="text-black font-medium">
                                 {booking.seats}
                               </span>
                             </div>
@@ -1345,7 +1312,7 @@ function ProfilePageContent() {
                               booking.discountAmount > 0 && (
                                 <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-200">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-gray-600">
+                                    <span className="text-black">
                                       Discount
                                     </span>
                                     {booking.couponCode && (
@@ -1361,20 +1328,20 @@ function ProfilePageContent() {
                               )}
                             {booking.amount > 0 && (
                               <div className="flex justify-between pt-3 border-t border-gray-200">
-                                <span className="text-gray-600 font-medium">
+                                <span className="text-black font-medium">
                                   Total Amount:
                                 </span>
-                                <span className="text-[#1C3163] font-semibold text-lg">
+                                <span className="text-black font-semibold text-lg">
                                   USD${formatAmount(booking.amount)}
                                 </span>
                               </div>
                             )}
                             {booking.comment && (
                               <div className="pt-3 border-t border-gray-200">
-                                <p className="text-sm text-gray-600 mb-1">
+                                <p className="text-sm text-black mb-1">
                                   Details:
                                 </p>
-                                <p className="text-[#1C3163]">
+                                <p className="text-black">
                                   {booking.comment}
                                 </p>
                               </div>
@@ -1416,3 +1383,5 @@ export default function ProfilePage() {
     </ProtectedRoute>
   );
 }
+
+

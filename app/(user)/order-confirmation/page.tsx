@@ -248,9 +248,9 @@ function OrderConfirmationContent() {
       
       if (bowlsFromItem > 0) {
         if (item.isSet) {
-          breakdown.push(`${item.quantity} set${item.quantity > 1 ? "s" : ""} (${bowlsFromItem} bowl${bowlsFromItem > 1 ? "s" : ""})`);
+          breakdown.push(`${item.quantity} set${item.quantity > 1 ? "s" : ""} (${bowlsFromItem} piece${bowlsFromItem > 1 ? "s" : ""})`);
         } else {
-          breakdown.push(`${item.quantity} piece${item.quantity > 1 ? "s" : ""} (${bowlsFromItem} bowl${bowlsFromItem > 1 ? "s" : ""})`);
+          breakdown.push(`${item.quantity} piece${item.quantity > 1 ? "s" : ""} (${bowlsFromItem} piece${bowlsFromItem > 1 ? "s" : ""})`);
         }
       }
     });
@@ -263,7 +263,7 @@ function OrderConfirmationContent() {
     if (totalBowls === 0) {
       breakdownText = "No delivery charge (universal products only)";
     } else {
-      breakdownText = `${totalBowls} bowl${totalBowls > 1 ? "s" : ""} = $${total}`;
+      breakdownText = `${totalBowls} piece${totalBowls > 1 ? "s" : ""} = $${total}`;
       if (breakdown.length > 0) {
         breakdownText += ` (${breakdown.join(", ")})`;
       }
@@ -405,7 +405,7 @@ function OrderConfirmationContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
@@ -419,11 +419,11 @@ function OrderConfirmationContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+    <div className="min-h-screen bg-white">
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 font-touvlo">
-        <h1 className="text-[28px] sm:text-[36px] lg:text-[32px] font-normal text-[#e6b884] mb-8 font-seasons">
+        <h1 className="text-[28px] sm:text-[36px] lg:text-[32px] font-normal text-black mb-8 font-seasons">
           Order Confirmation
         </h1>
 
@@ -559,7 +559,7 @@ function OrderConfirmationContent() {
                 <div className="p-3 border border-zinc-300 rounded-md bg-zinc-50">
                   <div className="font-medium text-[#1C3163]">Air Economy</div>
                   <div className="text-sm text-zinc-600 mt-1">
-                    1 Bowl: $65 • 2-3 Bowls: $111 • 4-7 Bowls: $155
+                    1 Piece: $65 • 2-3 Pieces: $111 • 4-7 Pieces: $155
                   </div>
                 </div>
               </div>
@@ -603,7 +603,7 @@ function OrderConfirmationContent() {
                         className={`px-6 py-2 rounded-md font-medium transition-all ${
                           couponCode.trim() && !validatingCoupon
                             ? "bg-[#1C3163] text-white hover:bg-[#152747] shadow-md"
-                            : "bg-[#D5B584] text-white hover:bg-[#C4A574] opacity-50 cursor-not-allowed"
+                            : "bg-[#000000] text-white hover:bg-[#C4A574] opacity-50 cursor-not-allowed"
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                       >
                         {validatingCoupon ? "Validating..." : "Apply"}
@@ -718,7 +718,7 @@ function OrderConfirmationContent() {
 export default function OrderConfirmationPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
@@ -733,4 +733,7 @@ export default function OrderConfirmationPage() {
     </Suspense>
   );
 }
+
+
+
 

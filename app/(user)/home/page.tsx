@@ -11,6 +11,8 @@ import {
   Bucket3,
   Crystal,
   Intention,
+  landingjewleries1,
+  landingjewleries2,
   LightWeight,
   ServiceImage1,
   ServiceImage2,
@@ -120,20 +122,20 @@ const YogaImage = [
   {
     id: 1,
     image: ServiceImage1,
-    title: "Sound Healing & Yoga",
-    description: "Personalized sessions for deep healing & alignment",
+    title: "Private Styling Appointments",
+    description: "Personal support to help you choose pieces that suit your style",
   },
   {
     id: 2,
     image: ServiceImage2,
-    title: "Corporate Wellness Programs",
-    description: "Stress management & mindfulness for teams",
+    title: "Corporate Gifting",
+    description: "Thoughtful gifting and branded jewelry enquiries for teams and clients",
   },
   {
     id: 3,
     image: ServiceImage3,
-    title: "Moon Circles & Group Sound Journeys",
-    description: "Community-based healing experiences",
+    title: "Studio Visits & Private Events",
+    description: "In-person experiences to discover the collection up close",
   },
 ];
 
@@ -141,19 +143,19 @@ const CreativeJourneyData = [
   {
     id: 1,
     image: YogaSection1,
-    title: "Explore the science of sound & its impact on energy",
+    title: "Explore timeless pieces designed for layering and everyday wear",
     description: "",
   },
   {
     id: 2,
     image: YogaSection2,
-    title: "Learn to integrate healing frequencies into music production",
+    title: "Discover styling details, finishes, and materials that suit your taste",
     description: "",
   },
   {
     id: 3,
     image: YogaSection3,
-    title: "Available for 1:1 coaching or group workshops",
+    title: "Book private appointments, studio visits, or gifting enquiries",
     description: "",
   },
 ];
@@ -163,37 +165,37 @@ const TestimonialsData = [
     id: 1,
     name: "Tanisha M.",
     testimonial:
-      "If I were to think of someone who embodies the spirit of yoga, it will be Frankie. She is extremely knowledgeable, genuine and kind. Her classes are delightful, intense and insightful. She explains how each pose is linked to practices of mindfulness and how they promote a better lifestyle. Her cues and tricks to adjust your body to better feel a stretch or pose. She practices what she preaches and I truly think she is one of the best teachers I've ever come across. Thank for you imparting your knowledge",
+      "The pieces feel even better in person. Everything looks refined, lightweight, and easy to wear, and the styling advice made it simple to choose a set I know I will keep reaching for.",
   },
   {
     id: 2,
     name: "David V.",
     testimonial:
-      "I would like to specifically thank Frankie for being such an amazing teacher. As a yogini, she not only has perfect mastery of the poses, but on top of that she has a good understanding of their physiological impact as well as deep knowledge of yogic philosophy. Then as a teacher, she is patient and willing to help, observant both of individual details and the group dynamic as a whole, and her natural enthusiasm and spontaneity are inspiring and turn every class into a wholesome experience. On top of that she teaches a wide range of classes; Hatha Foundation for students who just started their yoga journey, several advanced classes for those looking for a challenge and even sound classes which offer a moment of introspection. In short, Frankie is a world class yoga teacher!",
+      "Lazana Jewelry has that balance of polish and ease that is hard to find. The finish is beautiful, the quality feels solid, and the pieces layer naturally without looking overstyled.",
   },
   {
     id: 3,
     name: "Neeraj K.",
     testimonial:
-      "Frankie you are Absolutely amazing and your specific impacts and voice calmness, strength and clarity are superb your teaching style distinctly clear, patient and inspiring. Your wisdom helps off the mat in life balance and mindfulness. Bravo",
+      "I ordered a gift and the whole experience felt thoughtful from start to finish. The team helped me pick the right piece quickly, and the packaging made it feel special immediately.",
   },
   {
     id: 4,
     name: "John V.",
     testimonial:
-      "I have struggled with stress and anxiety my entire life, so I decided to give yoga a go this year. Frankie has shared so much knowledge, wisdom and has been an absolute inspiration to me. Frankie has given me the confidence I needed to consistently continue my practice, and I could not have continued without this guiding light. I have now completed more than fifty yoga sessions, so I joined Frankie's Yin, Gong and wellness class and was absolutely blown away by this experience. Having struggled to calm my monkey mind and relax all throughout my life this class was incredible. We should all give ourselves this gift of retreat, rest and relaxation.",
+      "The discovery call was genuinely useful. Instead of guessing online, I got clear recommendations on length, layering, and what would work best for daily wear.",
   },
   {
     id: 5,
     name: "Peter H.",
     testimonial:
-      "I am now regularly attending Hatha, Vinyasa Flo, Yin Yang and will most definitely continue Gong classes. Whilst there have certainly been considerable physical benefits after only a few months, its the mental health benefit that is truly life changing for me. I have struggled with depression, anxiety and sleeplessness for most of my life and with my daily yoga practice my mood has been positively lifted, my anxiety is kept in check, and I am sustaining longer and better-quality sleep.",
+      "What stood out to me most was the wearability. The jewelry feels elevated but still practical, which means I actually use it across work, travel, and evenings out.",
   },
   {
     id: 6,
     name: "Nipun M.",
     testimonial:
-      'When the sound vibrations detached my body from the mental awareness and alertness, that\'s when I felt myself elevating from the weight of my duties, and responsibilities. The detachment brought a sense of peace in a tangible way. I felt oblivion to everything. I really went far and beyond to notice physically where I was. There was a conscious noticeable detachment of physical realm and mental awareness. It certainly works. We should bring this service to corporate professionals. Being under tremendous pressure takes away a lot. But this service felt like a "much needed magic potion" to feel my 100% again.',
+      "We reached out for a branded gifting enquiry and the process was smooth, responsive, and professional. The end result felt premium and well considered for our audience.",
   },
 ];
 
@@ -202,25 +204,25 @@ const UpcomingEventsData = [
     id: 1,
     image: UpcomingEvent1,
     date: "07 Monday",
-    title: "Full Moon Sound Healing Journey",
+    title: "Private Studio Preview",
   },
   {
     id: 2,
     image: UpcomingEvent2,
     date: "10 Thursday",
-    title: "Corporate Mindfulness & Stress Release Workshop",
+    title: "Corporate Gifting Consultation",
   },
   {
     id: 3,
     image: UpcomingEvent3,
     date: "17 Friday",
-    title: "1:1 Sound Healing Availability",
+    title: "1:1 Styling Availability",
   },
   {
     id: 4,
     image: UpcomingEvent4,
     date: "07 Monday",
-    title: "Full Moon Sound Healing Journey",
+    title: "Collection Preview Event",
   },
 ];
 
@@ -496,16 +498,16 @@ const Index = () => {
       id: 4,
       image: Intention,
       title: "With Intention",
-      para: "Each Bowl is precisely tuned, intentionally crafted with it’s own energy, so you can match with your unique energy and purpose. ",
+      para: "Thoughtfully chosen details, finishes, and silhouettes designed to feel personal from the first wear.",
     },
   ];
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen w-full min-w-0 relative">
+    <div className="bg-white min-h-screen w-full min-w-0 relative">
       {/* Navbar moved outside overflow-hidden so it stays visible on mobile after scroll (iOS fix) */}
       <Navbar />
       <div className="relative z-10 h-screen w-full overflow-hidden sm:mt-0">
-        <video
+        {/* <video
           ref={videoRef}
           autoPlay
           loop
@@ -521,13 +523,21 @@ const Index = () => {
             type="video/mp4"
           />
           Your browser does not support the video tag.
-        </video>
+        </video> */}
+        <div className="w-full flex justify-center items-center">
+          
+     
+        <div className="max-w-7xl  pt-[100px] ">
+
+        <Image src={landingjewleries2} alt="Lazana Jewelry hero" className="h-[600px] object-cover  px-2 md:object-fit rounded-2xl"/>
+        </div>
+           </div>
 
         <div className="relative z-10 h-full flex flex-col justify-between w-full">
           <div className="min-h-[64px] md:min-h-[84px]" />
 
           <div className="relative">
-            <h1 className="font-seasons text-center pb-[60px] sm:pb-[80px] md:pb-[100px] lg:pb-[120px] px-4 text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[50px]  leading-tight">
+            <h1 className="font-seasons text-center pb-[60px] sm:pb-[80px] md:pb-[100px] lg:pb-[120px] px-4 text-[#000000] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[50px]  leading-tight">
               Lazana Jewelry for
               <br /> timeless style{" "}
               <span style={{ fontFamily: "var(--font-montserrat)" }}>
@@ -539,18 +549,7 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Mute button outside overflow-hidden so it stays visible on iOS Safari when scrolling (fixed inside overflow can get clipped/hidden) */}
-      <button
-        onClick={toggleMute}
-        className="fixed z-[100] bottom-20 left-1 size-18 flex justify-center items-center rounded-full p-4 bg-black/30 hover:bg-black/50 backdrop-blur-sm transition-all duration-300 border border-[#D5B584]/30"
-        aria-label={isMuted ? "Unmute video" : "Mute video"}
-      >
-        {isMuted ? (
-          <VolumeX className="w-6 h-6 text-[#D5B584]" />
-        ) : (
-          <Volume2 className="w-6 h-6 sm:w-6 sm:h-6 text-[#D5B584]" />
-        )}
-      </button>
+ 
       <div className="w-full relative z-0">
         {/* about section  */}
 
@@ -562,7 +561,7 @@ const Index = () => {
         <section className="w-full  md:py-0  mt-[25px]">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex w-full items-center justify-between mb-6">
-              <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+              <h2 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                 Shop Lazana Jewelry
               </h2>
               <Link
@@ -579,7 +578,7 @@ const Index = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full mt-[25px]">
               {loading ? (
                 <div className="col-span-2 md:col-span-4 flex justify-center ">
-                  <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#D5B584] border-t-transparent" />
+                  <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#000000] border-t-transparent" />
                 </div>
               ) : categories.length === 0 ? (
                 <div className="col-span-2 md:col-span-4 text-center py-12 text-[#2d2d2d]">
@@ -597,7 +596,7 @@ const Index = () => {
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (
-                          <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#D5B584] to-[#FEC1A2] flex items-center justify-center">
+                          <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#000000] to-[#FEC1A2] flex items-center justify-center">
                             <span className="text-white text-lg font-medium text-center px-2 text-[#1c3163]">
                               {category.name}
                             </span>
@@ -616,7 +615,7 @@ const Index = () => {
 
           <section className="w-full mt-[25px]">
             <div className="max-w-6xl mx-auto px-4">
-              <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+              <h2 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                 About Lazana Jewelry
               </h2>
               {/* Wrapped in a fragment to replace the div but keep structure clean if needed, or just standard p tags */}
@@ -647,7 +646,7 @@ const Index = () => {
 
           <div className="max-w-6xl flex flex-col mx-auto px-4 mt-[25px] ">
             <div className="flex w-full ">
-              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
+              <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
                 What makes our jewelry unique
               </h1>
             </div>
@@ -684,7 +683,7 @@ const Index = () => {
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex w-full items-center justify-between ">
               <h2
-                className={`font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none`}
+                className={`font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none`}
               >
                 Our Best Sellers
               </h2>
@@ -702,7 +701,7 @@ const Index = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full mt-[25px]">
               {bestLoading ? (
                 <div className="col-span-2 md:col-span-4 flex justify-center py-16">
-                  <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#D5B584] border-t-transparent" />
+                  <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#000000] border-t-transparent" />
                 </div>
               ) : bestSellers.length === 0 ? (
                 <div className="col-span-2 md:col-span-4 text-center py-12 text-[#545454]">
@@ -722,7 +721,7 @@ const Index = () => {
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (
-                          <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#D5B584] to-[#FEC1A2] flex items-center justify-center">
+                          <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#000000] to-[#FEC1A2] flex items-center justify-center">
                             <span className="text-white text-lg font-medium text-center px-2 f">
                               {product.name}
                             </span>
@@ -764,7 +763,7 @@ const Index = () => {
         <section>
           <div className="max-w-6xl mx-auto px-4 mt-[25px]">
             <div className="flex w-full items-center gap-4 sm:gap-5 md:gap-6 flex-wrap sm:flex-nowrap">
-              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+              <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                 We Ship Globally.
               </h1>
               <Link
@@ -782,18 +781,19 @@ const Index = () => {
         <section className="w-full mt-[25px]">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex flex-col gap-4 md:gap-[25px]">
-              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+              <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                 Jewelry & intention
               </h1>
               <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed font-light font-touvlo">
-                We believe jewelry is more than decoration—it is a daily ritual
-                of intention. Wearing pieces you love can support confidence,
-                calm, and presence in small, meaningful ways.
+                We believe jewelry is more than decoration. The right piece can
+                become part of how you show up every day, adding polish,
+                confidence, and a sense of personal style without effort.
               </p>
               <p className="text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-light font-touvlo">
-                Studies in psychology link self-expression and mindful routines
-                with improved mood and stress regulation. Choosing jewelry that
-                resonates with you can be part of that practice.
+                That is why we focus on pieces that feel easy to wear, easy to
+                gift, and easy to return to again and again. Timeless design,
+                quality materials, and versatility matter more than trend-led
+                excess.
               </p>
               <div className="">
                 <Link
@@ -816,18 +816,18 @@ const Index = () => {
             {/* Header */}
             <div className="mb-8 md:mb-6 flex justify-between items-center flex-wrap gap-4">
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 md:gap-[62px]">
-                <h2 className="text-[#e6b884] text-[28px] sm:text-[30px] md:text-[32px] font-normal font-seasons">
-                  Services
+                <h2 className="text-black text-[28px] sm:text-[30px] md:text-[32px] font-normal font-seasons">
+                  Appointments
                 </h2>
                 <p className="text-[#545454] text-[16px] mt-3 sm:text-[16px] md:text-[16px] font-light flex items-center justify-center font-touvlo">
-                  Private Sessions & Corporate Wellness
+                  Private styling, studio visits & gifting enquiries
                 </p>
               </div>
               <Link
                 href="/services"
                 className="font-seasons text-[#1C3163] inline-flex items-center gap-1 text-[14px] sm:text-[16px] md:text-[16px] font-normal hover:opacity-80 transition-opacity"
               >
-                <span>Explore our Services</span>
+                <span>Explore our Appointments</span>
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#1C3163]" />
               </Link>
             </div>
@@ -852,7 +852,7 @@ const Index = () => {
                       <div className="relative aspect-3/4 w-[50%] rounded-2xl md:rounded-3xl overflow-hidden shrink-0 font-touvlo">
                         <FillCdnImage
                           src={imageUrl}
-                          alt={session.title || "Corporate Session"}
+                          alt={session.title || "Corporate Service"}
                           className="object-cover group-hover:scale-110 group-hover:brightness-110 transition-all duration-500 ease-out"
                         />
                       </div>
@@ -860,7 +860,7 @@ const Index = () => {
                       {/* Content - Right Side */}
                       <div className="flex w-[40%] h-full  justify-between   flex-row md:flex-col">
                         <h3 className="text-[#545454] pt-4 sm:pt-6 md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2">
-                          {session.title || "Corporate Session"}
+                          {session.title || "Corporate Service"}
                         </h3>
                         <div className="flex-col gap-3 sm:gap-4 md:gap-[27px] flex">
                           <p className="text-[#545454] text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-light leading-relaxed line-clamp-2">
@@ -905,7 +905,7 @@ const Index = () => {
                       <div className="relative aspect-3/4 w-[50%] rounded-2xl md:rounded-3xl overflow-hidden shrink-0">
                         <FillCdnImage
                           src={imageUrl}
-                          alt={session.title || "Private Session"}
+                          alt={session.title || "Private Appointment"}
                           className="object-cover group-hover:scale-125 group-hover:rotate-2 group-hover:opacity-90 transition-all duration-700 ease-in-out"
                         />
                       </div>
@@ -913,7 +913,7 @@ const Index = () => {
                       {/* Content - Right Side */}
                       <div className="flex w-[40%] h-full  flex-row md:flex-col justify-between ">
                         <h3 className="text-[#545454]  md:pt-[30px] text-[10px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal leading-tight line-clamp-2 font-touvlo">
-                          {session.title || "Private Session"}
+                          {session.title || "Private Appointment"}
                         </h3>
                         <div className="flex-col gap-3   sm:gap-4 md:gap-[27px] flex">
                           {/* Arrow Button */}
@@ -941,8 +941,8 @@ const Index = () => {
 
         <section className="w-full md:py-[0px]  relative mt-[25px] ">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-              What our Clients are saying
+            <h2 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+              What our Customers are saying
             </h2>
           </div>
           <div
@@ -972,7 +972,7 @@ const Index = () => {
                       className="min-w-full flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center"
                     >
                       {/* Right Side - Testimonial Card */}
-                      <div className="flex-1 w-full border border-[#D5B584]  rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[50px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
+                      <div className="flex-1 w-full border border-[#000000]  rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 flex flex-col justify-center h-[50px] sm:h-[250px] md:h-[200px] lg:h-[230px]">
                         <div className="animate-fadeIn">
                           <blockquote className="font-touvlo text-[#545454]  text-[12px] sm:text-[12px] md:text-[14px] lg:text-[14px] font-light leading-relaxed mb-6 md:mb-8 ">
                             &ldquo;{testimonial.testimonial}&rdquo;
@@ -1009,7 +1009,7 @@ const Index = () => {
                     >
                       <path
                         d="M15 18L9 12L15 6"
-                        stroke="#D5B584"
+                        stroke="#000000"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -1034,7 +1034,7 @@ const Index = () => {
                     >
                       <path
                         d="M9 18L15 12L9 6"
-                        stroke="#D5B584"
+                        stroke="#000000"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -1065,7 +1065,7 @@ const Index = () => {
                     >
                       <path
                         d="M15 18L9 12L15 6"
-                        stroke="#D5B584"
+                        stroke="#000000"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -1090,7 +1090,7 @@ const Index = () => {
                     >
                       <path
                         d="M9 18L15 12L9 6"
-                        stroke="#D5B584"
+                        stroke="#000000"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -1109,8 +1109,8 @@ const Index = () => {
                       onClick={() => setTestimonialCurrentIndex(index)}
                       className={`h-2 rounded-full transition-all duration-300 ${
                         index === testimonialCurrentIndex
-                          ? "bg-[#D5B584] w-8"
-                          : "bg-[#D5B584]/30 w-2"
+                          ? "bg-[#000000] w-8"
+                          : "bg-[#000000]/30 w-2"
                       }`}
                       aria-label={`Go to testimonial ${index + 1}`}
                     />
@@ -1121,7 +1121,7 @@ const Index = () => {
           </div>
         </section>
 
-     n 
+     
       </div>
       <Footer />
     </div>
@@ -1129,3 +1129,6 @@ const Index = () => {
 };
 
 export default Index;
+
+
+

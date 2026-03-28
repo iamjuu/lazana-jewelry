@@ -83,6 +83,9 @@ export {default as jewleries1 } from './images/jowleries/pexels-bulat369-1243575
 export {default as jewleries2 } from './images/jowleries/pexels-bulat369-1243575272-35187498.jpg'
 export {default as jewleries3 } from './images/jowleries/pexels-lauraoliveira-34444125.jpg'
 export {default as jewleries4 } from './images/jowleries/pexels-vedat-29043373.jpg'
+export {default as landingjewleries1 } from './images/jowleries/pexels-vedat-29043373.jpg'
+export {default as landingjewleries2 } from './images/jowleries/pexels-vireshstudio-18016511.jpg'
+
 
 
 // About Page New Images

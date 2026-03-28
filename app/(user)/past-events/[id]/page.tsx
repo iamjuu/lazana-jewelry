@@ -68,7 +68,7 @@ const PastEventDetailPage = () => {
 
   if (loading) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className='bg-white min-h-screen'>
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
@@ -83,12 +83,12 @@ const PastEventDetailPage = () => {
 
   if (!pastEvent) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen font-touvlo'>
+      <div className='bg-white min-h-screen font-touvlo'>
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
             <p className="mb-4">Event not found</p>
-            <Link href="/events" className="text-[#D5B584] hover:underline">
+            <Link href="/events" className="text-[#000000] hover:underline">
               Back to Events
             </Link>
           </div>
@@ -130,7 +130,7 @@ const PastEventDetailPage = () => {
   const thumbnailUrl = getImageUrl(pastEvent.thumbnailImage);
 
   return (
-    <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen w-full overflow-x-hidden'>
+    <div className='bg-white min-h-screen w-full overflow-x-hidden'>
       <Navbar />
       
       <div className="w-full mt-[25px]">
@@ -138,7 +138,7 @@ const PastEventDetailPage = () => {
           {/* Back Button */}
           <Link 
             href="/events"
-            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] text-[16px] transition-colors font-touvlo"
+            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#000000] text-[16px] transition-colors font-touvlo"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Events</span>
@@ -149,7 +149,7 @@ const PastEventDetailPage = () => {
              {/* Title and Details - Side by Side on Desktop (950px+) */}
              <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4 xl:gap-8 mb-3 sm:mb-4">
                {/* Title - Left Side */}
-               <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+               <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                {pastEvent.title}
              </h1>
              
@@ -265,4 +265,7 @@ const PastEventDetailPage = () => {
 }
 
 export default PastEventDetailPage
+
+
+
 

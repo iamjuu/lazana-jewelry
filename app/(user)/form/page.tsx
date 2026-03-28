@@ -58,14 +58,14 @@ const FormPage = () => {
   }
 
   return (
-    <div className=' bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+    <div className=' bg-white min-h-screen'>
       <Navbar />
       <div className="w-full ">
         <section className="w-full px-4 md:px-0 py-[68px]">
           <div className="max-w-6xl pb-[106px] mx-auto">
             {/* Header */}
             <div className="mb-8 md:mb-12">
-              <h1 className="text-[32px] sm:text-[36px] md:text-[40px]  text-[#D5B584] font-light leading-tight mb-3">
+              <h1 className="text-[32px] sm:text-[36px] md:text-[40px]  text-[#000000] font-light leading-tight mb-3">
                 Book Now
               </h1>
               <p className="text-[14px] sm:text-[15px] md:text-[16px] text-[#5B7C99] font-light leading-relaxed max-w-2xl">
@@ -84,7 +84,7 @@ const FormPage = () => {
                     placeholder="Full Name"
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                    className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                     required
                   />
                 </div>
@@ -98,7 +98,7 @@ const FormPage = () => {
                       placeholder="Phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                       required
                     />
                   </div>
@@ -109,7 +109,7 @@ const FormPage = () => {
                       placeholder="Email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                      className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                       required
                     />
                   </div>
@@ -126,7 +126,7 @@ const FormPage = () => {
                     value={formData.comment}
                     onChange={handleChange}
                     rows={6}
-                    className="w-full px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all resize-none"
+                    className="w-full px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#5B7C99] placeholder-[#5B7C99] text-[14px] sm:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all resize-none"
                   />
                 </div>
 
@@ -150,4 +150,6 @@ const FormPage = () => {
 }
 
 export default FormPage
+
+
 

@@ -100,7 +100,7 @@ const OrdersPageContent = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center">
@@ -114,7 +114,7 @@ const OrdersPageContent = () => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
 
       <section className="w-full py-8 md:py-12">
@@ -242,4 +242,5 @@ export default function OrdersPage() {
     </ProtectedRoute>
   );
 }
+
 

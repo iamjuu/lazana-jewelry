@@ -11,14 +11,14 @@ const TermsAndConditionsPage = () => {
   const bodyClass = "text-[#545454] text-[14px] font-touvlo font-light leading-relaxed mt-2";
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
 
       <section className="w-full mt-[25px]">
         <div className="max-w-6xl mx-auto px-4 pb-12">
           {/* Main heading: 28px sm:30px md:30px lg:32px */}
           <div className="">
-            <h1 className="font-seasons text-[#D5B584] text-[28px] sm:text-[30px] md:text-[30px] lg:text-[32px] font-normal">
+            <h1 className="font-seasons text-[#000000] text-[28px] sm:text-[30px] md:text-[30px] lg:text-[32px] font-normal">
               Terms of Service
             </h1>
           </div>
@@ -215,3 +215,5 @@ const TermsAndConditionsPage = () => {
 };
 
 export default TermsAndConditionsPage;
+
+

@@ -69,7 +69,7 @@ export default function EventBookingSuccessPage() {
 
   if (verifying) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className='bg-white min-h-screen'>
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
@@ -84,12 +84,12 @@ export default function EventBookingSuccessPage() {
 
   if (!verified) {
     return (
-      <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+      <div className='bg-white min-h-screen'>
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
             <p className="mb-4">Booking verification failed</p>
-            <Link href="/events" className="text-[#D5B584] hover:underline">
+            <Link href="/events" className="text-[#000000] hover:underline">
               Back to Events
             </Link>
           </div>
@@ -100,7 +100,7 @@ export default function EventBookingSuccessPage() {
   }
 
   return (
-    <div className='bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+    <div className='bg-white min-h-screen'>
       <Navbar />
       
       <div className="w-full py-[40px] md:py-[68px]">
@@ -135,6 +135,8 @@ export default function EventBookingSuccessPage() {
     </div>
   )
 }
+
+
 
 
 

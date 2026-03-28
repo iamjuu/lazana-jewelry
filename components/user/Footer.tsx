@@ -5,10 +5,7 @@ import {
   FooterIcon2,
   FooterIcon3,
   WhatsAppIcon,
-  FacebookIcon,
-  YouTubeIcon,
   InstagramIcon,
-  LinkedIcon
 } from "@/public/assets";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,7 +20,7 @@ const Footer = () => {
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email.trim()) {
       toast.error("Please enter your email address");
       return;
@@ -50,7 +47,9 @@ const Footer = () => {
       const data = await response.json();
 
       if (data.success) {
-        toast.success(data.message || "Successfully subscribed to our newsletter!");
+        toast.success(
+          data.message || "Successfully subscribed to our newsletter!",
+        );
         setEmail("");
       } else {
         toast.error(data.message || "Failed to subscribe. Please try again.");
@@ -64,7 +63,7 @@ const Footer = () => {
   };
 
   return (
-    <section className="w-full  z-[-9999px] py-[40px] md:py-[8px] bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2] text-touvlo mt-[35px] overflow-x-hidden">
+    <section className="w-full  z-[-9999px] py-[40px] md:py-[8px] text-touvlo mt-[35px] overflow-x-hidden">
       <div className="max-w-6xl border-b pb-[64px] border-black items-stretch flex flex-col md:flex-row justify-between mx-auto px-4 gap-6 md:gap-2 min-w-0">
         <div className="hidden md:flex items-start h-full">
           <Image
@@ -76,8 +75,8 @@ const Footer = () => {
 
         <div className="flex flex-col gap-8 md:gap-[64px] items-center text-center ">
           <h3 className="font-seasons text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] xl:text-[40px] pb-4 sm:pb-5 md:pb-[0px] text-[#1c3163] ">
-            Ready To Begin Your
-            <br className="hidden sm:block" /> Healing Journey?
+            Ready To Find Your
+            <br className="hidden sm:block" /> Next Signature Piece?
           </h3>
 
           <div className="w-full max-w-[560px] flex flex-col gap-3 sm:gap-4">
@@ -99,25 +98,6 @@ const Footer = () => {
                 />
               </Link>
             </div>
-
-            {/* Row 2 */}
-            <div className="grid items-center grid-cols-[1fr_auto] gap-3 sm:gap-4">
-              <Link
-                href="/book-a-session"
-                className="font-touvlo w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
-              >
-                Book a Call
-              </Link>
-              <Link
-                href="/book-a-session"
-                className="size-[44px] sm:size-[52px] rounded-xl sm:rounded-2xl bg-white text-[#1C3163] flex items-center justify-center hover:bg-white/90 transition-colors"
-              >
-                <ArrowRight
-                  className="w-5 h-5 sm:w-6 sm:h-6"
-                  strokeWidth={1.5}
-                />
-              </Link>
-            </div>
           </div>
         </div>
         <div className="hidden md:block">
@@ -129,17 +109,20 @@ const Footer = () => {
         </div>
       </div>
 
-
-<div>
-<div className="max-w-6xl flex flex-col   md:flex-row py-[44px] mx-auto px-4 gap-8 md:gap-0">
-<div className="w-full  flex flex-col items-center justify-center">
+      <div>
+        <div className="max-w-6xl flex flex-col   md:flex-row py-[44px] mx-auto px-4 gap-8 md:gap-0">
+          <div className="w-full  flex flex-col items-center justify-center">
             <h2 className="font-seasons text-[#1c3163] font-[400] text-center text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] mb-3 sm:mb-4">
               Join our mailing list
             </h2>
             <p className="font-touvlo text-[#545454] text-center  text-[14px] sm:text-[15px] md:text-[16px] mb-6 sm:mb-8 max-w-[500px]">
-              Be the first to know about special offers, new collections and stay up to date with all our magic!
+              Be the first to know about new arrivals, limited drops, styling
+              notes, and special offers.
             </p>
-            <form onSubmit={handleSubscribe} className="w-full max-w-[500px] flex flex-col sm:flex-row gap-3 sm:gap-0">
+            <form
+              onSubmit={handleSubscribe}
+              className="w-full max-w-[500px] flex flex-col sm:flex-row gap-3 sm:gap-0"
+            >
               <input
                 type="email"
                 placeholder="Email"
@@ -147,24 +130,22 @@ const Footer = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 required
-                className="flex-1 px-4 sm:px-5 py-3 sm:py-3.5 bg-white border border-[#d5b584]/30 rounded-xl sm:rounded-l-xl sm:rounded-r-none text-[#1C3163] placeholder:text-gray-400 focus:outline-none focus:border-[#d5b584] transition-colors text-[14px] sm:text-[15px] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 sm:px-5 py-3 sm:py-3.5 bg-white border border-[#000000]/30 rounded-xl sm:rounded-l-xl sm:rounded-r-none text-[#1C3163] placeholder:text-gray-400 focus:outline-none focus:border-[#000000] transition-colors text-[14px] sm:text-[15px] disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 sm:px-8 py-3 sm:py-3.5 bg-[#e8d4b8] text-[#d5b584] rounded-xl sm:rounded-l-none sm:rounded-r-xl font-medium uppercase tracking-wide hover:bg-[#e0c9a8] transition-colors text-[13px] sm:text-[14px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 sm:px-8 py-3 sm:py-3.5 bg-[#e8d4b8] text-[#000000] rounded-xl sm:rounded-l-none sm:rounded-r-xl font-medium uppercase tracking-wide hover:bg-[#e0c9a8] transition-colors text-[13px] sm:text-[14px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Subscribing..." : "Subscribe"}
               </button>
             </form>
-          </div>    
-  </div>
-</div>
-
+          </div>
+        </div>
+      </div>
 
       <div>
         <div className="max-w-6xl flex flex-col md:flex-row py-[0px] mx-auto px-4 gap-8 md:gap-0 relative">
-          
           <div className="w-full md:w-[30%] flex justify-center items-center md:justify-start absolute inset-0 opacity-30 md:opacity-100 md:relative md:inset-auto z-0 md:z-auto md:pointer-events-none">
             <Image
               src={FooterIcon3}
@@ -172,8 +153,6 @@ const Footer = () => {
               className="w-[180px] sm:w-[220px] md:w-auto"
             />
           </div>
-
- 
 
           <div className="w-full md:w-[70%] font-montserrat font-[200] text-[14px] md:text-[16px] relative z-10 md:z-auto min-w-0 overflow-hidden">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-4 min-w-0">
@@ -244,7 +223,7 @@ const Footer = () => {
                       href="/book-a-session"
                       className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
-                      Book a Call
+                      Book a Styling Call
                     </Link>
                   </li>
                   <li>
@@ -274,10 +253,10 @@ const Footer = () => {
                   </li>
                   <li className="min-w-0 max-w-[15rem] sm:max-w-[15rem] md:max-w-none">
                     <a
-                      href="mailto:hello@lazana-jewelry.com"
+                      href="mailto:lazanajewels@gmail.com"
                       className="text-[#545454] hover:text-[black] transition-colors text-touvlo block w-full min-w-0 whitespace-normal break-all sm:break-words lg:whitespace-nowrap"
-                      >
-                      hello@lazana-jewelry.com
+                    >
+                      lazanajewels@gmail.com
                     </a>
                   </li>
                 </ul>
@@ -285,8 +264,6 @@ const Footer = () => {
             </div>
           </div>
         </div>
-
-
 
         <div className="w-full font-touvlo min-w-0">
           <div className="max-w-6xl mx-auto px-4 py-6 md:py-6 min-w-0">
@@ -296,7 +273,7 @@ const Footer = () => {
                 {/* Social Media Icons */}
                 <div className="flex gap-3">
                   <a
-                    href="https://www.instagram.com/lazanajewelry"
+                    href="https://instagram.com/lazana.jewelry"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"
@@ -309,19 +286,19 @@ const Footer = () => {
                     />
                   </a>
                   <a
-                    href="https://youtube.com/@lazanajewelry"
+                    href="https://api.whatsapp.com/send?phone=918089844007&text=അജു ഒരു കില്ലാഡി തന്നെ 😹"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"
-                    aria-label="YouTube"
+                    aria-label="WhatsApp"
                   >
                     <Image
-                      src={YouTubeIcon}
-                      alt="YouTube"
+                      src={WhatsAppIcon}
+                      alt="WhatsApp"
                       className="w-5 h-5 brightness-0"
                     />
                   </a>
-                  <a
+                  {/* <a
                     href="https://www.linkedin.com/in/francesca-wong-17506a58?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -333,12 +310,14 @@ const Footer = () => {
                       alt="LinkedIn"
                       className="w-5 h-5 brightness-0"
                     />
-                  </a>
+                  </a> */}
                 </div>
 
                 {/* Copyright and Links */}
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-black/80 text-[12px] sm:text-[14px] font-light min-w-0 flex-wrap">
-                  <p className="min-w-0 shrink-0">©{new Date().getFullYear()} — Copyright</p>
+                  <p className="min-w-0 shrink-0">
+                    (c) {new Date().getFullYear()} Copyright
+                  </p>
                   <div className="flex flex-wrap gap-2 sm:gap-4">
                     <Link
                       href="/terms-and-conditions"
@@ -367,7 +346,6 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        
       </div>
     </section>
   );

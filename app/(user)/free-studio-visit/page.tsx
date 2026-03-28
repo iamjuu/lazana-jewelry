@@ -65,20 +65,20 @@ const FreeStudioVisitPage = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
       <div className="w-full">
         <section className="w-full px-4 md:px-0 mt-[25px]">
           <div className="max-w-4xl  mx-auto">
             {/* Header */}
             <div className="mb-[25px]">
-              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] leading-tight mb-[25px]">
+              <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] leading-tight mb-[25px]">
                 Free Studio Visit
               </h1>
               <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo leading-relaxed max-w-2xl">
-                Schedule a free visit to our studio and experience our Lazana Jewelry
-                bowls in person. Fill out the form below and we&apos;ll get back
-                to you to arrange your visit.
+                Schedule a complimentary visit to our studio and experience
+                Lazana Jewelry in person. Fill out the form below and we&apos;ll
+                get back to you to arrange your visit.
               </p>
             </div>
 
@@ -94,7 +94,7 @@ const FreeStudioVisitPage = () => {
         placeholder="Full Name"
         value={formData.fullName}
         onChange={handleChange}
-        className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+        className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
         required
       />
     </div>
@@ -108,7 +108,7 @@ const FreeStudioVisitPage = () => {
           placeholder="Phone"
           value={formData.phone}
           onChange={handleChange}
-          className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+          className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
           required
         />
       </div>
@@ -119,7 +119,7 @@ const FreeStudioVisitPage = () => {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
-          className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+          className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
           required
         />
       </div>
@@ -133,7 +133,7 @@ const FreeStudioVisitPage = () => {
         value={formData.comment}
         onChange={handleChange}
         rows={6}
-        className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all resize-none"
+        className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all resize-none"
       />
     </div>
 
@@ -160,3 +160,6 @@ const FreeStudioVisitPage = () => {
 };
 
 export default FreeStudioVisitPage;
+
+
+

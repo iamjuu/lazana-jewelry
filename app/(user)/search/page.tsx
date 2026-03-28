@@ -234,12 +234,12 @@ const SearchPageContent = () => {
   const keyword = query.trim();
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
 
       <section className="w-full mt-[25px]" onClick={menuClose}>
         <div className="max-w-6xl mx-auto px-4">
-          <h1 className="font-seasons text-[#D5B584] text-[28px] md:text-[30px] lg:text-[32px] font-normal mb-[25px]">
+          <h1 className="font-seasons text-[#000000] text-[28px] md:text-[30px] lg:text-[32px] font-normal mb-[25px]">
             Search Results
           </h1>
 
@@ -251,11 +251,11 @@ const SearchPageContent = () => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search products..."
-                className="w-full px-6 py-4 pr-12 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#D5B584] font-touvlo"
+                className="w-full px-6 py-4 pr-12 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[14px] sm:text-[15px] md:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#000000] font-touvlo"
               />
               <button
                 type="submit"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#D5B584] hover:text-[#1C3163] transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#000000] hover:text-[#1C3163] transition-colors"
                 aria-label="Search"
               >
                 <Search size={24} />
@@ -633,7 +633,7 @@ const SearchPage = () => {
   return (
     <Suspense
       fallback={
-        <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+        <div className="bg-white min-h-screen">
           <Navbar />
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center text-[#1C3163]">
@@ -651,3 +651,5 @@ const SearchPage = () => {
 };
 
 export default SearchPage;
+
+

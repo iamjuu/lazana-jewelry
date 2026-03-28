@@ -245,7 +245,7 @@ const EventDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
@@ -260,7 +260,7 @@ const EventDetailPage = () => {
 
   if (!event) {
     return (
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
@@ -378,7 +378,7 @@ const EventDetailPage = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       <Navbar />
 
@@ -387,7 +387,7 @@ const EventDetailPage = () => {
           {/* Back Button */}
           <Link
             href="/events"
-            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#D5B584] mb-6 sm:mb-8 transition-colors text-[13px] sm:text-[14px] md:text-[16px] mt-[25px]"
+            className="inline-flex items-center gap-2 text-[#1C3163] hover:text-[#000000] mb-6 sm:mb-8 transition-colors text-[13px] sm:text-[14px] md:text-[16px] mt-[25px]"
           >
             <ArrowLeft className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 font-seasons text-[16px]" />
             <span className="font-seasons text-[16px]">Back to All Events</span>
@@ -569,7 +569,7 @@ const EventDetailPage = () => {
                     <button
                       onClick={handleBooking}
                       disabled={bookingLoading}
-                      className=" mt-[12px] w-full bg-[#1C3163] text-white px-5 sm:px-6 py-2.5 text-[12px] sm:text-[13px] md:text-[14px] font-medium uppercase tracking-wider hover:bg-[#D5B584] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className=" mt-[12px] w-full bg-[#1C3163] text-white px-5 sm:px-6 py-2.5 text-[12px] sm:text-[13px] md:text-[14px] font-medium uppercase tracking-wider hover:bg-[#000000] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {bookingLoading ? "Processing..." : "Reserve Your Spot"}
                     </button>
@@ -600,3 +600,5 @@ const EventDetailPage = () => {
 };
 
 export default EventDetailPage;
+
+

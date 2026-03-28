@@ -135,7 +135,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex-col bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2]  flex items-center justify-center px-4 sm:px-6">
+    <div className="min-h-screen bg-white flex-col flex items-center justify-center px-4 sm:px-6">
       <Navbar />
       <div className="w-full mt-[120px] sm:mt-[150px] max-w-lg">
         <div className="relative w-full max-w-[500px] mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg border border-zinc-200">
@@ -166,7 +166,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-md border border-[#FEC1A2] px-3 py-2 focus:border-[#FEC1A2] focus:outline-none focus:ring-2 focus:ring-[#FEC1A2]/20 bg-white"
+                  className="w-full rounded-md border border-zinc-300 px-3 py-2 focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10 bg-white"
                   placeholder="you@example.com"
                 />
               </div>
@@ -182,7 +182,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-md bg-[#FEC1A2] border border-[#F5A082] px-4 py-2 text-black font-medium transition-colors hover:bg-[#F5A082] disabled:opacity-50"
+                className="w-full rounded-md bg-black border border-black px-4 py-2 text-white font-medium transition-colors hover:bg-zinc-800 disabled:opacity-50"
               >
                 {loading ? "Logging in..." : "Login"}
               </button>
@@ -203,7 +203,7 @@ export default function LoginPage() {
                   maxLength={6}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  className="w-full rounded-md border border-[#FEC1A2] px-3 py-2 focus:border-[#FEC1A2] focus:outline-none focus:ring-2 focus:ring-[#FEC1A2]/20 bg-white text-center text-xl sm:text-2xl tracking-widest"
+                  className="w-full rounded-md border border-zinc-300 px-3 py-2 focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10 bg-white text-center text-xl sm:text-2xl tracking-widest"
                   placeholder="000000"
                 />
                 <p className="text-xs text-zinc-500 mt-1">Check your email for the 6-digit code</p>
@@ -220,7 +220,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-md bg-[#FEC1A2] border border-[#F5A082] px-4 py-2 text-black font-medium transition-colors hover:bg-[#F5A082] disabled:opacity-50"
+                className="w-full rounded-md bg-black border border-black px-4 py-2 text-white font-medium transition-colors hover:bg-zinc-800 disabled:opacity-50"
               >
                 {loading ? "Verifying..." : "Log In"}
               </button>

@@ -66,13 +66,13 @@ const SuccessPageContent = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
       
       <div className="max-w-2xl mx-auto px-4 py-16">
         {verifying ? (
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-            <Loader2 className="w-16 h-16 text-[#D5B584] animate-spin mx-auto mb-4" />
+            <Loader2 className="w-16 h-16 text-[#000000] animate-spin mx-auto mb-4" />
             <h2 className="text-2xl font-semibold text-[#1C3163] mb-2">
               Verifying Your Payment...
             </h2>
@@ -88,7 +88,7 @@ const SuccessPageContent = () => {
                 Booking Confirmed!
               </h1>
               <p className="text-gray-600">
-                Your private yoga session has been successfully booked
+                Your private appointment has been successfully booked
               </p>
             </div>
 
@@ -126,7 +126,7 @@ const SuccessPageContent = () => {
                 
                 <div>
                   <p className="text-sm text-gray-600">Amount Paid</p>
-                  <p className="font-semibold text-[#D5B584] text-lg">
+                  <p className="font-semibold text-[#000000] text-lg">
                     ${(bookingDetails.amount / 100).toFixed(2)}
                   </p>
                 </div>
@@ -134,7 +134,7 @@ const SuccessPageContent = () => {
                 <div>
                   <p className="text-sm text-gray-600">Payment Method</p>
                   <p className="font-semibold text-[#1C3163] capitalize">
-                    {bookingDetails.paymentProvider || "Stripe"}
+                    {bookingDetails.paymentProvider || "Razorpay"}
                   </p>
                 </div>
               </div>
@@ -150,7 +150,7 @@ const SuccessPageContent = () => {
             <div className="mt-8 flex gap-4">
               <button
                 onClick={() => router.push("/profile?tab=sessions")}
-                className="flex-1 bg-[#D5B584] hover:bg-[#C4A574] text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="flex-1 bg-[#000000] hover:bg-[#C4A574] text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 View My Bookings
               </button>
@@ -186,3 +186,5 @@ export default function SuccessPage() {
     </ProtectedRoute>
   );
 }
+
+

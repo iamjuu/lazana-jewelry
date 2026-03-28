@@ -66,7 +66,7 @@ function SuccessContent() {
 
   if (isVerifying) {
     return (
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center">
@@ -80,7 +80,7 @@ function SuccessContent() {
   }
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
 
       <section className="w-full py-12 md:py-16">
@@ -189,7 +189,7 @@ function SuccessContent() {
 export default function SuccessPage() {
   return (
     <Suspense fallback={
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center">
@@ -204,4 +204,5 @@ export default function SuccessPage() {
     </Suspense>
   );
 }
+
 

@@ -29,17 +29,17 @@ const ImageWithShimmer = ({
     <div className="relative w-full h-full">
       {/* Shimmer Placeholder */}
       {isLoading && (
-        <div className="absolute inset-0 bg-gradient-to-r from-[#D5B584]/20 via-[#D5B584]/40 to-[#D5B584]/20 rounded-lg overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#000000]/20 via-[#000000]/40 to-[#000000]/20 rounded-lg overflow-hidden">
           <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent" />
         </div>
       )}
 
       {/* Error State */}
       {hasError && (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#D5B584]/20 to-[#FEC1A2]/20 rounded-lg flex items-center justify-center">
+        <div className="absolute inset-0 bg-white rounded-lg flex items-center justify-center">
           <div className="text-center p-4">
             <svg 
-              className="w-12 h-12 mx-auto mb-2 text-[#D5B584]/50" 
+              className="w-12 h-12 mx-auto mb-2 text-[#000000]/50" 
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
@@ -80,4 +80,5 @@ const ImageWithShimmer = ({
 }
 
 export default ImageWithShimmer
+
 

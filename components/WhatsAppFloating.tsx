@@ -7,8 +7,8 @@ import { WhatsAppIconSvg } from "@/public/assets";
 
 const WhatsAppFloating = () => {
   const pathname = usePathname();
-  const whatsappNumber = "6596381988";
-  const whatsappText = encodeURIComponent("Hi");
+  const whatsappNumber = "918089844007";
+  const whatsappText = encodeURIComponent("അജു ഒരു കില്ലാഡി തന്നെ 😹");
   const [isBouncing, setIsBouncing] = useState(false);
 
   // Don't show WhatsApp button on admin pages and auth pages
@@ -28,7 +28,6 @@ const WhatsAppFloating = () => {
     const digitsOnly = String(whatsappNumber)
       .replace(/\D/g, "")
       .replace(/^0+/, "");
-    // Use the number as-is since it already includes country code (65 for Singapore)
     return `https://api.whatsapp.com/send?phone=${digitsOnly}&text=${whatsappText}`;
   };
 

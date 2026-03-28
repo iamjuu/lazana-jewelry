@@ -63,7 +63,7 @@ const BlogPage = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
       <div className="w-full">
         {/* Hero/Header Image with Centered Text */}
@@ -77,10 +77,10 @@ const BlogPage = () => {
             }}
           />
           {/* Gradient Overlay */}
-          {/* <div className="absolute inset-0 bg-gradient-to-br from-[#D5B584]/80 via-[#FEC1A2]/70 to-[#FDECE2]/80"></div> */}
+          {/* <div className="absolute inset-0 bg-gradient-to-br from-[#000000]/80 via-[#FEC1A2]/70 to-[#FDECE2]/80"></div> */}
           {/* Content */}
           <div className="relative z-10 h-full flex items-center justify-center font-seasons">
-            <h1 className="text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal text-center drop-shadow-lg font-seasons">
+            <h1 className="text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal text-center drop-shadow-lg font-seasons">
               Blog
             </h1>
           </div>
@@ -105,9 +105,9 @@ const BlogPage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-[25px] mb-[25px]">
               <div className="bg-white/50 backdrop-blur-sm rounded-lg p-6 text-center">
-                <div className="w-16 h-16 bg-[#D5B584]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-[#000000]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
-                    className="w-8 h-8 text-[#D5B584]"
+                    className="w-8 h-8 text-[#000000]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -130,9 +130,9 @@ const BlogPage = () => {
               </div>
 
               <div className="bg-white/50 backdrop-blur-sm rounded-lg p-6 text-center">
-                <div className="w-16 h-16 bg-[#D5B584]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-[#000000]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
-                    className="w-8 h-8 text-[#D5B584]"
+                    className="w-8 h-8 text-[#000000]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -154,9 +154,9 @@ const BlogPage = () => {
               </div>
 
               <div className="bg-white/50 backdrop-blur-sm rounded-lg p-6 text-center">
-                <div className="w-16 h-16 bg-[#D5B584]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-[#000000]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
-                    className="w-8 h-8 text-[#D5B584]"
+                    className="w-8 h-8 text-[#000000]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -262,3 +262,6 @@ const BlogPage = () => {
 };
 
 export default BlogPage;
+
+
+

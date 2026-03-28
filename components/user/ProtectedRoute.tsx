@@ -62,7 +62,7 @@ export default function ProtectedRoute({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1C3163] mx-auto mb-4"></div>
           <p className="text-[#1C3163]">Loading...</p>
@@ -77,6 +77,7 @@ export default function ProtectedRoute({
 
   return <>{children}</>;
 }
+
 
 
 

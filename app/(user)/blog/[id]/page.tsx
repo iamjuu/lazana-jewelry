@@ -89,7 +89,7 @@ const BlogDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
@@ -104,14 +104,14 @@ const BlogDetailPage = () => {
 
   if (!blog) {
     return (
-      <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <div className="bg-white min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center text-[#1C3163]">
             <p>Blog not found</p>
             <Link
               href="/blog"
-              className="text-[#D5B584] hover:underline mt-4 inline-block"
+              className="text-[#000000] hover:underline mt-4 inline-block"
             >
               Back to Blog
             </Link>
@@ -128,7 +128,7 @@ const BlogDetailPage = () => {
   const paragraphs = blog.description.split("\n\n").filter((p) => p.trim());
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
       <div className="w-full">
         <article className="w-full px-4 sm:px-6 mt-[45px]">
@@ -148,7 +148,7 @@ const BlogDetailPage = () => {
             {/* Author with Picture */}
             <div className="mb-8 md:mb-12">
               <Link href="/about" className="flex items-center gap-4 group">
-                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-[#D5B584]/30 group-hover:ring-[#D5B584] transition-all">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-[#000000]/30 group-hover:ring-[#000000] transition-all">
                   <Image
                     src={About2}
                     alt={blog.name || "Francesca Wong"}
@@ -160,7 +160,7 @@ const BlogDetailPage = () => {
                 <div>
                   <p className="text-[#1C3163] text-[14px] md:text-[16px] font-touvlo">
                     Written By{" "}
-                    <span className="text-[#D5B584] font-600 group-hover:underline font-touvlo">
+                    <span className="text-[#000000] font-600 group-hover:underline font-touvlo">
                       {"Francesca Wong"}
                     </span>
                   </p>
@@ -216,7 +216,7 @@ const BlogDetailPage = () => {
                       className="group flex-1"
                     >
                       <p className="text-[#1C3163] text-sm mb-2 md:text-[16px] font-touvlo">Previous</p>
-                      <p className="text-[#1C3163] text-lg md:text-[18px] font-medium group-hover:text-[#D5B584] transition-colors duration-200 font-seasons">
+                      <p className="text-[#1C3163] text-lg md:text-[18px] font-medium group-hover:text-[#000000] transition-colors duration-200 font-seasons">
                         {prevBlog.title}
                       </p>
                     </Link>
@@ -230,7 +230,7 @@ const BlogDetailPage = () => {
                       className="group flex-1 text-right sm:text-left sm:ml-auto"
                     >
                       <p className="text-[#1C3163] text-sm mb-2">Next</p>
-                      <p className="text-[#1C3163] text-lg md:text-xl font-medium group-hover:text-[#D5B584] transition-colors duration-200">
+                      <p className="text-[#1C3163] text-lg md:text-xl font-medium group-hover:text-[#000000] transition-colors duration-200">
                         {nextBlog.title}
                       </p>
                     </Link>
@@ -247,3 +247,5 @@ const BlogDetailPage = () => {
 };
 
 export default BlogDetailPage;
+
+

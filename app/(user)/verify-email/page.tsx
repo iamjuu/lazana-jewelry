@@ -136,7 +136,7 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-[#1C3163]">Loading...</div>
       </div>
     }>
@@ -144,4 +144,5 @@ export default function VerifyEmailPage() {
     </Suspense>
   );
 }
+
 

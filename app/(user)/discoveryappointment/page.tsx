@@ -454,7 +454,7 @@ const DiscoveryAppointmentPage = () => {
     }
   };
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       <Navbar />
       <div className="w-full">
@@ -462,7 +462,7 @@ const DiscoveryAppointmentPage = () => {
           <div className="max-w-6xl  mx-auto">
             {/* Header */}
             <div className="mb-[25px]">
-              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px font-seasons leading-tight mb-[25px]">
+              <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px font-seasons leading-tight mb-[25px]">
                 Schedule Your Discovery Session
               </h1>
               <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo">
@@ -691,7 +691,7 @@ const DiscoveryAppointmentPage = () => {
                 className="mt-12 transition-all duration-700 ease-out opacity-100 translate-y-0 scale-100"
               >
                 <div className="rounded-[24px] p-6 md:p-8 lg:p-10 bg-white shadow-lg transition-shadow duration-500 hover:shadow-2xl">
-                  <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px]  font-seasons leading-tight mb-[25px]">
+                  <h2 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px]  font-seasons leading-tight mb-[25px]">
                     Discovery Form
                   </h2>
                   <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo mb-2">
@@ -717,7 +717,7 @@ const DiscoveryAppointmentPage = () => {
                             value="yes"
                             checked={hasPriorJewelry === "yes"}
                             onChange={(e) => setHasPriorJewelry(e.target.value)}
-                            className="w-5 h-5 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2"
+                            className="w-5 h-5 text-[#000000] focus:ring-[#1C3163] focus:ring-2"
                           />
                           <span className="ml-2 text-[16px] text-[#545454]">
                             Yes
@@ -730,7 +730,7 @@ const DiscoveryAppointmentPage = () => {
                             value="no"
                             checked={hasPriorJewelry === "no"}
                             onChange={(e) => setHasPriorJewelry(e.target.value)}
-                            className="w-5 h-5 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2"
+                            className="w-5 h-5 text-[#000000] focus:ring-[#1C3163] focus:ring-2"
                           />
                           <span className="ml-2 text-[16px] text-[#545454]">
                             No
@@ -772,7 +772,7 @@ const DiscoveryAppointmentPage = () => {
                             onChange={() =>
                               handleExperienceLevelChange("beginner")
                             }
-                            className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
+                            className="mt-1 w-5 h-5 mr-0 text-[#000000] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             Beginner - I&apos;m new to Lazana Jewelry
@@ -787,7 +787,7 @@ const DiscoveryAppointmentPage = () => {
                             onChange={() =>
                               handleExperienceLevelChange("some-experience")
                             }
-                            className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
+                            className="mt-1 w-5 h-5 mr-0 text-[#000000] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             Some experience - I&apos;ve shopped fine jewelry
@@ -801,7 +801,7 @@ const DiscoveryAppointmentPage = () => {
                             onChange={() =>
                               handleExperienceLevelChange("experienced")
                             }
-                            className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
+                            className="mt-1 w-5 h-5 mr-0 text-[#000000] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             Experienced - I collect or wear jewelry often
@@ -826,7 +826,7 @@ const DiscoveryAppointmentPage = () => {
                             onChange={() =>
                               handleMainIntentionChange("specific-note")
                             }
-                            className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
+                            className="mt-1 w-5 h-5 mr-0 text-[#000000] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             I&apos;m looking for a specific style or collection
@@ -839,7 +839,7 @@ const DiscoveryAppointmentPage = () => {
                             onChange={() =>
                               handleMainIntentionChange("complete-set")
                             }
-                            className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
+                            className="mt-1 w-5 h-5 mr-0 text-[#000000] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             I want to complete or expand a set
@@ -852,7 +852,7 @@ const DiscoveryAppointmentPage = () => {
                             onChange={() =>
                               handleMainIntentionChange("ready-purchase")
                             }
-                            className="mt-1 w-5 h-5 mr-0 text-[#D5B584] rounded"
+                            className="mt-1 w-5 h-5 mr-0 text-[#000000] rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             I am ready to purchase if I find the right piece
@@ -867,7 +867,7 @@ const DiscoveryAppointmentPage = () => {
                             onChange={() =>
                               handleMainIntentionChange("gathering-inspiration")
                             }
-                            className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-2 rounded"
+                            className="mt-1 w-5 h-5 mr-0 text-[#000000] focus:ring-2 rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
                             I am gathering inspiration
@@ -925,3 +925,6 @@ const DiscoveryAppointmentPage = () => {
 };
 
 export default DiscoveryAppointmentPage;
+
+
+

@@ -530,7 +530,7 @@ export default function CategoriesPage() {
                     console.log("Checkbox changed to:", e.target.checked); // Debug log
                     handleFeaturedChange(e.target.checked);
                   }}
-                  className="w-4 h-4 text-[#D5B584] bg-zinc-700 border-zinc-600 rounded focus:ring-[#D5B584] focus:ring-2"
+                  className="w-4 h-4 text-[#000000] bg-zinc-700 border-zinc-600 rounded focus:ring-[#000000] focus:ring-2"
                 />
                 <label htmlFor="isFeatured" className="flex items-center gap-2 text-sm font-medium text-zinc-300 cursor-pointer">
                   <Star className={`w-4 h-4 ${formData.isFeatured ? 'text-yellow-400 fill-yellow-400' : 'text-yellow-400'}`} />
@@ -642,3 +642,4 @@ export default function CategoriesPage() {
     </div>
   );
 }
+

@@ -167,7 +167,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex-col bg-gradient-to-b from-[#FEC1A2] to-[#FDECE2] flex items-center justify-center">
+    <div className="min-h-screen flex-col flex items-center justify-center">
       <Navbar />
       <div className="w-full mt-[150px] max-w-lg">
         <div className="relative w-[500px] bg-white p-8 rounded-lg shadow-lg border border-zinc-200">

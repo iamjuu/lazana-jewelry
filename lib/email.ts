@@ -102,10 +102,10 @@ export async function sendEventBookingConfirmationToUser(bookingData: {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
+        .header { background-color: #000000; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
-        .event-details { background-color: #fff; border: 2px solid #D5B584; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .event-details { background-color: #fff; border: 2px solid #000000; border-radius: 8px; padding: 20px; margin: 20px 0; }
         .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e0e0e0; }
         .detail-row:last-child { border-bottom: none; }
         .detail-label { font-weight: bold; color: #5B7C99; }
@@ -149,7 +149,7 @@ export async function sendEventBookingConfirmationToUser(bookingData: {
             </div>
             <div class="detail-row">
               <span class="detail-label">Total Amount:</span>
-              <span class="detail-value" style="font-weight: bold; color: #D5B584;">USD $${bookingData.amount.toFixed(2)}</span>
+              <span class="detail-value" style="font-weight: bold; color: #000000;">USD $${bookingData.amount.toFixed(2)}</span>
             </div>
           </div>
           
@@ -311,7 +311,7 @@ export async function sendSubscriptionConfirmationToUser(email: string) {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
+        .header { background-color: #000000; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
@@ -465,9 +465,9 @@ export async function sendOTPEmail(email: string, otp: string, name: string) {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
+        .header { background-color: #000000; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
-        .otp-box { background-color: #fff; border: 2px solid #D5B584; border-radius: 8px; padding: 30px; text-align: center; margin: 20px 0; }
+        .otp-box { background-color: #fff; border: 2px solid #000000; border-radius: 8px; padding: 30px; text-align: center; margin: 20px 0; }
         .otp-code { font-size: 32px; font-weight: bold; color: #1C3163; letter-spacing: 8px; margin: 20px 0; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
       </style>
@@ -520,7 +520,7 @@ export async function sendEnquiryConfirmationToUser(data: {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
+        .header { background-color: #000000; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
@@ -666,7 +666,7 @@ export async function sendDiscoverySessionConfirmation(data: {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
+        .header { background-color: #000000; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
@@ -869,7 +869,7 @@ export async function sendPrivateSessionConfirmationToUser(data: {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
+        .header { background-color: #000000; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
         .details-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
@@ -1050,7 +1050,7 @@ export async function sendOrderStatusUpdateToUser(data: {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
+        .header { background-color: #000000; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .status-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
@@ -1142,7 +1142,7 @@ export async function sendUniversalProductOrderConfirmationToUser(
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
+        .header { background-color: #000000; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
         .info-box { background-color: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 20px 0; }
@@ -1250,7 +1250,7 @@ export async function sendRegularProductOrderConfirmationToUser(
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #D5B584; color: #fff; padding: 30px 20px; text-align: center; }
+        .header { background-color: #000000; color: #fff; padding: 30px 20px; text-align: center; }
         .content { padding: 30px 20px; background-color: #f9f9f9; }
         .success-box { background-color: #fff; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
         .info-box { background-color: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 20px 0; }
@@ -1617,3 +1617,4 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
     throw error;
   }
 }
+

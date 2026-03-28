@@ -101,14 +101,14 @@ const CalendarPage = () => {
   }
 
   return (
-    <div className=' bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen'>
+    <div className=' bg-white min-h-screen'>
       <Navbar />
       <div className="w-full">
         <section className="w-full px-4 md:px-0 py-[68px]">
           <div className="max-w-6xl pb-[106px] mx-auto">
             {/* Header */}
             <div className="mb-8 md:mb-12">
-              <h1 className=" font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-light leading-tight mb-3">
+              <h1 className=" font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-light leading-tight mb-3">
                 Schedule Your Call
               </h1>
               <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#5B7C99] font-light">
@@ -221,7 +221,7 @@ const CalendarPage = () => {
                   <div className="flex justify-center lg:justify-start">
                     <button
                       onClick={handleSubmit}
-                      className="bg-[#D5B584] text-white px-12 py-4 rounded-lg text-[16px] sm:text-[18px] font-medium hover:bg-[#C4A574] transition-colors duration-300 shadow-md"
+                      className="bg-[#000000] text-white px-12 py-4 rounded-lg text-[16px] sm:text-[18px] font-medium hover:bg-[#C4A574] transition-colors duration-300 shadow-md"
                     >
                       Submit
                     </button>
@@ -238,4 +238,7 @@ const CalendarPage = () => {
 }
 
 export default CalendarPage
+
+
+
 

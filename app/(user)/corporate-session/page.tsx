@@ -125,15 +125,15 @@ const CorporateSessionPage = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
       <div className="w-full">
         <section className="w-full px-4 md:px-0 mt-[25px]">
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="mb-[25px]">
-              <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] text-[#D5B584] font-seasons leading-tight mb-[25px]">
-                Corporate Session
+              <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] text-[#000000] font-seasons leading-tight mb-[25px]">
+                Corporate Gifting & Brand Enquiries
               </h1>
               <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo leading-relaxed max-w-2xl">
                 Fill out the form below and we&apos;ll respond within 2-3
@@ -159,7 +159,7 @@ const CorporateSessionPage = () => {
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                         required
                       />
                     </div>
@@ -172,7 +172,7 @@ const CorporateSessionPage = () => {
                         name="workEmail"
                         value={formData.workEmail}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                         required
                       />
                     </div>
@@ -185,7 +185,7 @@ const CorporateSessionPage = () => {
                         name="companyName"
                         value={formData.companyName}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                         required
                       />
                     </div>
@@ -198,7 +198,7 @@ const CorporateSessionPage = () => {
                         name="jobTitle"
                         value={formData.jobTitle}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                         required
                       />
                     </div>
@@ -211,7 +211,7 @@ const CorporateSessionPage = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                       />
                     </div>
                     <div>
@@ -223,7 +223,7 @@ const CorporateSessionPage = () => {
                         name="cityCountry"
                         value={formData.cityCountry}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                         required
                       />
                     </div>
@@ -244,7 +244,7 @@ const CorporateSessionPage = () => {
                         name="industry"
                         value={formData.industry}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                       >
                         <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="">Select Industry</option>
                         <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="Finance">Finance</option>
@@ -267,7 +267,7 @@ const CorporateSessionPage = () => {
                         name="companySize"
                         value={formData.companySize}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                       >
                         <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="">Select Company Size</option>
                         <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="1-50">1-50</option>
@@ -290,9 +290,9 @@ const CorporateSessionPage = () => {
                     </label>
                     <div className="space-y-2 sm:text-[15px]  text-[14px]  md:text-[16px]">
                       {[
-                        "Corporate Sound Healing Sessions",
-                        "Wellness Workshops or Retreats",
-                        "Ongoing Corporate Wellness Partners",
+                        "Corporate gifting",
+                        "Team styling event or trunk show",
+                        "Client appreciation gifts",
                         "Private Event or Brand Activation",
                         "Other",
                       ].map((option) => (
@@ -306,7 +306,7 @@ const CorporateSessionPage = () => {
                             onChange={() =>
                               handleCheckboxChange("enquiryTypes", option)
                             }
-                            className="w-4 h-4 text-[#D5B584] border-[#5B7C99] rounded focus:ring-[#D5B584]"
+                            className="w-4 h-4 text-[#000000] border-[#5B7C99] rounded focus:ring-[#000000]"
                           />
                           <span className="text-[#545454] text-[14px] font-touvlo">
                             {option}
@@ -320,7 +320,7 @@ const CorporateSessionPage = () => {
                 {/* Section 4: Session Details */}
                 <div>
                   <h2 className="text-[#1C3163] text-[19px] font-seasons font-medium mb-4">
-                    4. Session Details
+                    4. Project Details
                   </h2>
                   <div className="space-y-4">
                     <div>
@@ -333,7 +333,7 @@ const CorporateSessionPage = () => {
                         value={formData.preferredDates}
                         onChange={handleChange}
                         placeholder="DD-MM-YYYY"
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                       />
                     </div>
                     <div>
@@ -355,7 +355,7 @@ const CorporateSessionPage = () => {
                                 onChange={() =>
                                   handleRadioChange("preferredLocation", option)
                                 }
-                                className="w-4 h-4 text-[#D5B584] border-[#5B7C99] focus:ring-[#D5B584]"
+                                className="w-4 h-4 text-[#000000] border-[#5B7C99] focus:ring-[#000000]"
                               />
                               <span className="text-[#545454] text-[14px] font-touvlo">
                                 {option}
@@ -375,18 +375,18 @@ const CorporateSessionPage = () => {
                         value={formData.estimatedParticipants}
                         onChange={handleChange}
                         min="1"
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] placeholder-[#545454] text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                       />
                     </div>
                     <div>
                       <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] mb-2 font-touvlo">
-                        Preferred Session Duration
+                        Preferred Format
                       </label>
                       <select
                         name="preferredDuration"
                         value={formData.preferredDuration}
                         onChange={handleChange}
-                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all"
+                        className="w-full px-6 py-4 bg-[#E8E4E1] rounded-lg text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all"
                       >
                         <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="">Select Duration</option>
                         <option className="sm:text-[15px]  text-[14px]  md:text-[16px]" value="30 minutes">30 minutes</option>
@@ -405,15 +405,15 @@ const CorporateSessionPage = () => {
                   </h2>
                   <div>
                     <label className="block text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] mb-3 font-touvlo">
-                      What is the main intention of this session?
+                      What is the main goal of this project?
                     </label>
                     <div className="space-y-2 text-[14px] sm:text-[16px]">
                       {[
-                        "Stress reduction & relaxation",
-                        "Team bonding",
-                        "Focus & mental clarity",
-                        "Leadership or high-performance support",
-                        "Employee wellbeing initiative",
+                        "Client gifting",
+                        "Team appreciation",
+                        "Launch or campaign support",
+                        "VIP event experience",
+                        "Brand visibility",
                         "Other",
                       ].map((option) => (
                         <label
@@ -428,7 +428,7 @@ const CorporateSessionPage = () => {
                             onChange={() =>
                               handleCheckboxChange("sessionObjectives", option)
                             }
-                            className="w-4 h-4 text-[#D5B584] border-[#5B7C99] rounded focus:ring-[#D5B584]"
+                            className="w-4 h-4 text-[#000000] border-[#5B7C99] rounded focus:ring-[#000000]"
                           />
                           <span className="text-[#545454] text-[14px] font-touvlo">
                             {option}
@@ -453,7 +453,7 @@ const CorporateSessionPage = () => {
                       value={formData.comment}
                       onChange={handleChange}
                       rows={6}
-                      className="w-full px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#545454] placeholder-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#D5B584] transition-all resize-none"
+                      className="w-full px-6 py-4 bg-white/20 border-2 border-[#5B7C99] rounded-lg text-[#545454] placeholder-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#000000] transition-all resize-none"
                       placeholder="Any additional information you'd like to share..."
                     />
                   </div>
@@ -480,3 +480,6 @@ const CorporateSessionPage = () => {
 };
 
 export default CorporateSessionPage;
+
+
+

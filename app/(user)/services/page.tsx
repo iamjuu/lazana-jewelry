@@ -91,7 +91,7 @@ const ServicesPage = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2]  min-h-screen ">
+    <div className="bg-white  min-h-screen ">
       <Navbar />
 
       <main className="w-full md:px-4 ">
@@ -101,30 +101,28 @@ const ServicesPage = () => {
             {/* Left Column - Text Content */}
             <div className="w-full lg:w-1/2 mt-[25px] ">
               <div className="">
-                <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+                <h2 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
                   Services
                 </h2>
                 <p className="font-touvlo text-[14px] sm:text-[15px]  md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px] ">
-                  Whether through a guided sound bath, meditation or private
-                  session, Yoga and Sound Healing offers a powerful way to
-                  reconnect with your inner self, reduce stress, and achieve
-                  mental, emotional and physical balance.
+                  Whether you want help choosing a signature piece, arranging a
+                  private visit, or planning gifting for a team or event,
+                  Lazana Jewelry offers a more personal way to shop.
                 </p>
               </div>
 
               <div className="mt-[25px]">
-                <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-                  Work with Me
+                <h2 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+                  Work with Us
                 </h2>
                 <div className="mt-[25px]">
                   <h3 className="font-seasons text-[20px] sm:text-[24px] md:text-[18px] text-[#1C3163] leading-relaxed text-wrap">
-                    Healing & Transformation through Sound, Movement & Energy
-                    Work
+                    Private Styling, Studio Appointments & Corporate Gifting
                   </h3>
                   <p className="font-touvlo text-[14px] sm:text-[15px]   md:text-[16px] text-[#545454] leading-relaxed max-w-xl mt-[25px]">
-                    I offer tailored experiences for individuals, groups, and
-                    organizations seeking a deeper transformation through Yoga,
-                    Sound Healing, and Meditation.
+                    We offer tailored appointments for individual clients,
+                    gifting enquiries, brand activations, and companies looking
+                    for a polished jewelry experience.
                   </p>
                 </div>
               </div>
@@ -137,7 +135,7 @@ const ServicesPage = () => {
               <div className="relative w-full aspect-[4/3] md:aspect-[3/2] lg:aspect-[4/5] xl:aspect-square overflow-hidden  w-[450px] h-[350px] rounded-lg">
                 <Image
                   src="/assets/images/about/2025Frankie374.jpg"
-                  alt="Sound healing session"
+                  alt="Jewelry consultation"
                   fill
                   className="object-cover"
                   priority
@@ -150,13 +148,13 @@ const ServicesPage = () => {
         {/* 1. CORPORATE SESSIONS LOOP */}
         <section className="max-w-7xl mx-auto px-6 md:px-6 lg:px-0 mt-[25px] font-seasons">
         <div className="mt-[25px]">
-                <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-                  For Corporate & Group
+                <h2 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
+                  Corporate & Brand Enquiries
                 </h2>
               </div>
           {sessionsLoading ? (
-            <div className="text-center py-12 text-[#D5B584] mt-[25px]">
-              Loading sessions...
+            <div className="text-center py-12 text-[#000000] mt-[25px]">
+              Loading services...
             </div>
           ) : (
             <div className="relative overflow-hidden mt-[25px]">
@@ -192,7 +190,7 @@ const ServicesPage = () => {
                       {item.imageUrl && (
                         <Image
                           src={item.imageUrl}
-                          alt={item.title || "Session"}
+                          alt={item.title || "Service"}
                           fill
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
@@ -288,13 +286,13 @@ const ServicesPage = () => {
 
         {/* 2. PRIVATE & GROUP OFFERINGS SECTION */}
         <section className="max-w-7xl mx-auto px-6 md:px-6 lg:px-0 mt-[25px] font-seasons">
-          <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
-            Private & Group Offerings
+          <h2 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
+            Private Appointments
           </h2>
 
           {sessionsLoading ? (
-            <div className="text-center mt-[25px] text-[#D5B584] animate-pulse">
-              Loading sessions...
+            <div className="text-center mt-[25px] text-[#000000] animate-pulse">
+              Loading services...
             </div>
           ) : privateSessions.length > 0 ? (
             <div className="relative overflow-hidden mt-[25px]">
@@ -331,7 +329,7 @@ const ServicesPage = () => {
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}
-                          alt={item.title || "Private Session"}
+                          alt={item.title || "Private Appointment"}
                           fill
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
@@ -346,7 +344,7 @@ const ServicesPage = () => {
                         className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none ${expandedCardId === item._id ? "opacity-0" : ""}`}
                       >
                         <h3 className="text-white text-[18px] text-touvlo font-medium mb-3">
-                          {item.title || "Private Session"}
+                          {item.title || "Private Appointment"}
                         </h3>
                         <span className="text-white text-sm flex items-center gap-2">
                           Book Now <span className="text-[16px] text-touvlo">→</span>
@@ -368,7 +366,7 @@ const ServicesPage = () => {
                           ×
                         </button>
                         <h3 className="font-seasons text-[20px] text-[#D4A373] leading-tight shrink-0 pr-8">
-                          {item.title || "Private Session"}
+                          {item.title || "Private Appointment"}
                         </h3>
 
                         {item.description && (
@@ -433,8 +431,8 @@ const ServicesPage = () => {
             /* Fallback if length is 0 */
             <div className="text-center py-20 rounded-2xl">
               <p className="font-touvlo text-[#545454]">
-                No private sessions are currently scheduled. Please check back
-                soon.
+                No private appointments are currently available. Please check
+                back soon.
               </p>
             </div>
           )}
@@ -447,3 +445,6 @@ const ServicesPage = () => {
 };
 
 export default ServicesPage;
+
+
+
