@@ -167,7 +167,7 @@ export default function SubcategoriesPage() {
           uploadFormData.append('file', selectedImageFile);
           uploadFormData.append('folder', 'images');
           
-          const uploadResponse = await fetch('/api/upload/s3', {
+          const uploadResponse = await fetch('/api/upload/cloudinary', {
             method: 'POST',
             body: uploadFormData,
           });
@@ -237,7 +237,7 @@ export default function SubcategoriesPage() {
       // After successful update, delete old image from S3 if it was replaced
       if (isEdit && originalImageUrl && finalImageUrl && originalImageUrl !== finalImageUrl && originalImageUrl.startsWith('https://')) {
         try {
-          await fetch("/api/upload/s3/delete", {
+          await fetch("/api/upload/cloudinary/delete", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ url: originalImageUrl }),
@@ -444,7 +444,7 @@ export default function SubcategoriesPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-4 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-white"
-                  placeholder="e.g., Crystal Singing Bowls, Tibetan Bowls"
+                  placeholder="e.g., Gold, Silver, Gemstone"
                   required
                 />
               </div>

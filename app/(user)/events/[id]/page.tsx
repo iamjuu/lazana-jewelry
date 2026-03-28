@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Script from "next/script";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 import { Calendar, Clock, MapPin, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
+import { openRazorpayCheckout } from "@/lib/razorpay-client";
 
 type ApiEvent = {
   _id: string;
@@ -113,7 +115,7 @@ const EventDetailPage = () => {
     setBookingLoading(true);
 
     try {
-      // Create Stripe checkout session
+      // Create Razorpay order
       const response = await fetch("/api/payment/create-event-checkout", {
         method: "POST",
         headers: {
@@ -131,9 +133,32 @@ const EventDetailPage = () => {
 
       const data = await response.json();
 
-      if (data.success && data.data?.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.data.url;
+      if (data.success && data.data?.razorpayOrderId) {
+        openRazorpayCheckout({
+          key: data.data.key,
+          amount: data.data.amount,
+          currency: data.data.currency,
+          orderId: data.data.razorpayOrderId,
+          name: "Lazana Jewelry",
+          description: data.data.description,
+          prefill: data.data.prefill,
+          notes: {
+            sessionType: "event",
+            eventId: event._id,
+          },
+          onSuccess: (paymentResponse) => {
+            router.push(
+              `/events/${event._id}/success?razorpay_payment_id=${paymentResponse.razorpay_payment_id}&razorpay_order_id=${paymentResponse.razorpay_order_id}&razorpay_signature=${paymentResponse.razorpay_signature}`,
+            );
+          },
+          onError: (message) => {
+            toast.error(message);
+            setBookingLoading(false);
+          },
+          onDismiss: () => {
+            setBookingLoading(false);
+          },
+        });
       } else {
         toast.error(data.message || "Failed to create booking");
       }
@@ -354,6 +379,7 @@ const EventDetailPage = () => {
 
   return (
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       <Navbar />
 
       <div className="w-full] lg:py-[0px]">

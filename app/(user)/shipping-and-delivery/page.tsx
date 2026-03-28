@@ -94,7 +94,7 @@ const ShippingAndDeliveryPage = () => {
                   International orders may be subject to customs duties, import taxes, or other fees depending on your country of residence.
                 </p>
                 <p>
-                  These charges are the responsibility of the customer and are payable upon delivery. Crystal Bowl Studio has no control over these fees and cannot predict their amount.
+                  These charges are the responsibility of the customer and are payable upon delivery. Lazana Jewelry has no control over these fees and cannot predict their amount.
                 </p>
               </div>
             </div>
@@ -106,7 +106,7 @@ const ShippingAndDeliveryPage = () => {
               </h3>
               <div className="text-[#545454] text-[14px]  font-touvlo font -light leading-relaxed">
                 <p>
-                  All Crystal Bowl Studio bowls are custom made to order.
+                  Many Lazana Jewelry pieces are made to order.
                 </p>
                 <p>
                   Please allow 25–28 business days from order confirmation to delivery.
@@ -124,7 +124,7 @@ const ShippingAndDeliveryPage = () => {
               </h3>
               <div className="text-[#545454] text-[14px]  font-touvlo font-light leading-relaxed">
                 <p>
-                  Each bowl is carefully packaged using protective materials and includes its own padded crystal bowl travel case to ensure maximum safety during transit.
+                  Each order is carefully packaged using protective materials to ensure your Lazana Jewelry arrives safely.
                 </p>
                 <p>
                   All shipments are fully insured for your peace of mind.

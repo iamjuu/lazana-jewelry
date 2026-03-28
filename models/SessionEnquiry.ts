@@ -30,7 +30,7 @@ export interface SessionEnquiryType {
   amount?: number;
   paymentRef?: string;
   paymentStatus?: "pending" | "paid" | "failed";
-  paymentProvider?: "stripe" | "paypal" | "bank_transfer";
+  paymentProvider?: "stripe" | "razorpay" | "paypal" | "bank_transfer";
   seats?: number;
   slotId?: string;
   couponCode?: string;
@@ -84,7 +84,7 @@ const SessionEnquirySchema = new Schema<SessionEnquiryType>(
     },
     paymentProvider: {
       type: String,
-      enum: ["stripe", "paypal", "bank_transfer"],
+      enum: ["stripe", "razorpay", "paypal", "bank_transfer"],
     },
     seats: { type: Number },
     slotId: { type: String },

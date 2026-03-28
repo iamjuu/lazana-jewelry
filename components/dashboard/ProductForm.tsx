@@ -178,10 +178,10 @@
       return existing.map(normalizeVideoUrl);
     });
 
-    // Track pending image files (not yet uploaded to S3)
+    // Track pending image files (not yet uploaded)
     const [pendingImageFiles, setPendingImageFiles] = useState<(File | null)[]>([]);
     
-    // Track pending video files (not yet uploaded to S3)
+    // Track pending video files (not yet uploaded)
     const [pendingVideoFiles, setPendingVideoFiles] = useState<(File | null)[]>([]);
     
     // Track original media URLs when editing (for restore on cancel)
@@ -248,9 +248,9 @@
           newFormImages.push("");
         }
         
-      // Use local file preview (not uploaded to S3 yet)
+      // Use local file preview (not uploaded yet)
       newImages[index] = URL.createObjectURL(file);
-      newFormImages[index] = ""; // Will be set to S3 URL after upload
+      newFormImages[index] = ""; // Will be set to media URL after upload
         
         setUploadedImages(newImages);
         setFormData({ ...formData, images: newFormImages });
@@ -325,9 +325,9 @@
           newFormVideos.push("");
         }
         
-      // Use local file preview (not uploaded to S3 yet)
+      // Use local file preview (not uploaded yet)
       newVideos[index] = URL.createObjectURL(file);
-      newFormVideos[index] = ""; // Will be set to S3 URL after upload
+      newFormVideos[index] = ""; // Will be set to media URL after upload
         
         setUploadedVideos(newVideos);
         setFormData({ ...formData, videos: newFormVideos });
@@ -343,7 +343,7 @@
       
       const newVideos = [...uploadedVideos];
       const newFormVideos = [...formData.videos];
-      // Always remove from list so it goes off screen; S3 delete happens on Save
+      // Always remove from list so it goes off screen; storage delete happens on Save
       newVideos.splice(index, 1);
       newFormVideos.splice(index, 1);
       
@@ -447,7 +447,7 @@
       }
 
       try {
-        // Upload all pending images to S3 during form submission
+        // Upload all pending images during form submission
         const finalImages: string[] = [...formData.images];
         
         for (let i = 0; i < pendingImageFiles.length; i++) {
@@ -455,7 +455,7 @@
           if (file) {
             const uploadToastId = toast.loading(
               <div className="flex flex-col gap-2">
-                <span className="text-white font-medium">Uploading image {i + 1} to S3...</span>
+                <span className="text-white font-medium">Uploading image {i + 1}...</span>
                 <div className="w-full bg-zinc-700 rounded-full h-2">
                   <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '50%' }}></div>
                 </div>
@@ -468,7 +468,7 @@
               uploadFormData.append('file', file);
               uploadFormData.append('folder', 'images');
               
-              const uploadResponse = await fetch('/api/upload/s3', {
+              const uploadResponse = await fetch('/api/upload/cloudinary', {
                 method: 'POST',
                 body: uploadFormData,
               });
@@ -476,7 +476,7 @@
               const uploadData = await uploadResponse.json();
               
               if (!uploadResponse.ok || !uploadData.success || !uploadData.url) {
-                throw new Error(`Failed to upload image ${i + 1} to S3`);
+                throw new Error(`Failed to upload image ${i + 1}`);
               }
               
               // Insert or replace at index i
@@ -502,7 +502,7 @@
           }
         }
         
-        // Upload all pending videos to S3 during form submission
+        // Upload all pending videos via signed direct upload to Cloudinary
         const finalVideos: string[] = [...formData.videos];
         
         for (let i = 0; i < pendingVideoFiles.length; i++) {
@@ -510,7 +510,7 @@
           if (file) {
             const uploadToastId = toast.loading(
               <div className="flex flex-col gap-2">
-                <span className="text-white font-medium">Uploading video {i + 1} to S3...</span>
+                <span className="text-white font-medium">Uploading video {i + 1}...</span>
                 <div className="w-full bg-zinc-700 rounded-full h-2">
                   <div className="bg-emerald-600 h-2 rounded-full animate-pulse" style={{ width: '50%' }}></div>
                 </div>
@@ -519,32 +519,39 @@
             );
             
             try {
-              // Use presigned URL so the file goes directly to S3 (avoids Vercel 4.5 MB body limit)
-              const presignedRes = await fetch('/api/upload/s3/presigned', {
+              const presignedRes = await fetch('/api/upload/cloudinary/presigned', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   folder: 'videos',
-                  filename: file.name || `video-${Date.now()}.mp4`,
-                  contentType: file.type || 'video/mp4',
                 }),
               });
               const presignedData = await presignedRes.json();
-              if (!presignedRes.ok || !presignedData.success || !presignedData.uploadUrl || !presignedData.url) {
+              if (!presignedRes.ok || !presignedData.success || !presignedData.uploadUrl || !presignedData.fields) {
                 throw new Error(presignedData.message || 'Failed to get upload URL');
               }
+              const cloudForm = new FormData();
+              cloudForm.append('file', file);
+              cloudForm.append('api_key', presignedData.fields.api_key);
+              cloudForm.append('timestamp', presignedData.fields.timestamp);
+              cloudForm.append('signature', presignedData.fields.signature);
+              cloudForm.append('folder', presignedData.fields.folder);
               const putRes = await fetch(presignedData.uploadUrl, {
-                method: 'PUT',
-                body: file,
-                headers: { 'Content-Type': file.type || 'video/mp4' },
+                method: 'POST',
+                body: cloudForm,
               });
-              if (!putRes.ok) {
-                throw new Error(`Upload failed: ${putRes.status}`);
+              const uploadJson = await putRes.json();
+              if (!putRes.ok || uploadJson.error) {
+                throw new Error(uploadJson.error?.message || `Upload failed: ${putRes.status}`);
+              }
+              const secureUrl = uploadJson.secure_url as string | undefined;
+              if (!secureUrl) {
+                throw new Error('No secure_url from Cloudinary');
               }
               if (finalVideos.length <= i) {
-                finalVideos.push(presignedData.url);
+                finalVideos.push(secureUrl);
               } else {
-                finalVideos[i] = presignedData.url;
+                finalVideos[i] = secureUrl;
               }
               toast.dismiss(uploadToastId);
               toast.success(`Video ${i + 1} uploaded successfully!`, { duration: 2000 });
@@ -611,27 +618,27 @@
           throw new Error(data.message || "Failed to save product");
         }
 
-        // After successful update, delete old media from S3 if it was replaced
+        // After successful update, delete old media if it was replaced
         if (isEdit) {
           // Delete old images that were removed
           originalImages.forEach((oldImg, index) => {
             if (oldImg && !finalImages.includes(oldImg) && oldImg.startsWith('https://')) {
-              fetch("/api/upload/s3/delete", {
+              fetch("/api/upload/cloudinary/delete", {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ url: oldImg }),
-              }).catch(err => console.error("Error deleting old image from S3:", err));
+              }).catch(err => console.error("Error deleting old image:", err));
             }
           });
           
           // Delete old videos that were removed
           originalVideos.forEach((oldVideo, index) => {
             if (oldVideo && !finalVideos.includes(oldVideo) && oldVideo.startsWith('https://')) {
-              fetch("/api/upload/s3/delete", {
+              fetch("/api/upload/cloudinary/delete", {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ url: oldVideo }),
-              }).catch(err => console.error("Error deleting old video from S3:", err));
+              }).catch(err => console.error("Error deleting old video:", err));
             }
           });
         }
@@ -684,7 +691,7 @@
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="w-full rounded-md border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
-            placeholder="Crystal Healing Bowl"
+            placeholder="Gold chain necklace"
           />
         </div>
 

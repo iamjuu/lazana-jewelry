@@ -87,7 +87,7 @@ const Footer = () => {
                 href="/shop"
                 className="font-touvlo w-full bg-white text-[#1C3163] rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 text-left text-[14px] sm:text-[16px] md:text-[18px] hover:bg-white/90 transition-colors"
               >
-                Shop Crystal Bowls
+                Shop Lazana Jewelry
               </Link>
               <Link
                 href="/shop"
@@ -274,10 +274,10 @@ const Footer = () => {
                   </li>
                   <li className="min-w-0 max-w-[15rem] sm:max-w-[15rem] md:max-w-none">
                     <a
-                      href="mailto:hello@crystalbowlstudio.com"
+                      href="mailto:hello@lazana-jewelry.com"
                       className="text-[#545454] hover:text-[black] transition-colors text-touvlo block w-full min-w-0 whitespace-normal break-all sm:break-words lg:whitespace-nowrap"
                       >
-                      hello@crystalbowlstudio.com
+                      hello@lazana-jewelry.com
                     </a>
                   </li>
                 </ul>
@@ -296,7 +296,7 @@ const Footer = () => {
                 {/* Social Media Icons */}
                 <div className="flex gap-3">
                   <a
-                    href="https://www.instagram.com/crystalbowlstudio?igsh=MTA0NzZ4bjJmbzFtNQ=="
+                    href="https://www.instagram.com/lazanajewelry"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"
@@ -309,7 +309,7 @@ const Footer = () => {
                     />
                   </a>
                   <a
-                    href="https://youtube.com/@crystalbowlstudio?si=OAjik3e37JHr_Ltx"
+                    href="https://youtube.com/@lazanajewelry"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"

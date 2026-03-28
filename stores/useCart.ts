@@ -88,7 +88,7 @@ export const useCart = create<CartState>()(
       subtotal: () => get().items.reduce((sum, i) => sum + i.quantity * i.price, 0),
     }),
     {
-      name: "crystel-cart",
+      name: "lazana-jewelry-cart",
       partialize: (state) => ({ items: state.items }),
       // Clear cart if user is not logged in when store initializes
       onRehydrateStorage: () => (state) => {

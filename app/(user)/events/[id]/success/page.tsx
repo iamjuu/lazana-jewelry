@@ -11,14 +11,16 @@ import toast from 'react-hot-toast'
 export default function EventBookingSuccessPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const sessionId = searchParams.get('session_id')
+  const razorpayPaymentId = searchParams.get('razorpay_payment_id')
+  const razorpayOrderId = searchParams.get('razorpay_order_id')
+  const razorpaySignature = searchParams.get('razorpay_signature')
   const [verifying, setVerifying] = useState(true)
   const [verified, setVerified] = useState(false)
 
   useEffect(() => {
     const verifyBooking = async () => {
-      if (!sessionId) {
-        toast.error('Invalid session')
+      if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
+        toast.error('Invalid payment details')
         router.push('/events')
         return
       }
@@ -37,7 +39,11 @@ export default function EventBookingSuccessPage() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ sessionId }),
+          body: JSON.stringify({
+            razorpayPaymentId,
+            razorpayOrderId,
+            razorpaySignature,
+          }),
         })
 
         const data = await response.json()
@@ -59,7 +65,7 @@ export default function EventBookingSuccessPage() {
     }
 
     verifyBooking()
-  }, [sessionId, router])
+  }, [razorpayPaymentId, razorpayOrderId, razorpaySignature, router])
 
   if (verifying) {
     return (

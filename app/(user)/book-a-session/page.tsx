@@ -38,7 +38,7 @@ const BookASessionPage = () => {
                     </h2>
                     <p className="sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] text-[#545454] mb-4 leading-relaxed max-w-2xl font-touvlo">
                       This is for you if you want to come and visit in person to
-                      experience and listen to our Crystal Bowls live before
+                      experience and preview Lazana Jewelry live before
                       purchasing our collection.
                     </p>
                   </div>
@@ -67,7 +67,7 @@ const BookASessionPage = () => {
                     </h2>
                     <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[16px] text-[#545454] mb-4 leading-relaxed max-w-2xl font-touvlo">
                       A consultation call to help match you with your perfect
-                      crystal bowl. We&apos;ll explore your goals, answer your
+                      piece. We&apos;ll explore your goals, answer your
                       questions, and help you feel confident in choosing the
                       right bowls.
                     </p>
@@ -94,7 +94,7 @@ const BookASessionPage = () => {
                       Corporate Wellness Solutions
                     </h2>
                     <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[16px] text-[#545454]   mb-4 leading-relaxed max-w-2xl font-touvlo">
-                      Invite Crystal Bowl Studio into your workplace for team
+                      Invite Lazana Jewelry into your workplace for team
                       bonding, seminars, sound healing, recharge and rejuvenate.
                     </p>
                   </div>

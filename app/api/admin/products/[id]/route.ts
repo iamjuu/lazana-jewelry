@@ -4,7 +4,11 @@ import Product from "@/models/Product";
 import "@/models/Category"; // Register Category so Product ref resolves (avoids "Schema hasn't been registered for model Category")
 import { requireAdmin } from "@/lib/auth";
 import mongoose from "mongoose";
-import { uploadToS3, deleteFromS3, extractS3Key } from "@/lib/aws-s3";
+import {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+  parseCloudinaryUrl,
+} from "@/lib/cloudinary";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -160,50 +164,50 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       }
     }
     if (imageUrl !== undefined) {
-      // Get existing product images so we can delete removed ones from S3
+      // Get existing product images so we can delete removed ones from Cloudinary
       const existingProductForImages = await Product.findById(id).select('imageUrl').lean();
       const oldImages: string[] = existingProductForImages?.imageUrl && Array.isArray(existingProductForImages.imageUrl)
         ? existingProductForImages.imageUrl
         : [];
 
-      // Upload images to S3 and get URLs
-      console.log("Uploading images to S3 for update...");
+      // Upload images to Cloudinary and get URLs
+      console.log("Uploading images to Cloudinary for update...");
       const s3ImageUrls: string[] = [];
 
       for (let i = 0; i < imageUrl.length; i++) {
         const image = imageUrl[i];
 
-        // Skip if already an S3 URL
+        // Skip if already an HTTPS URL
         if (typeof image === 'string' && image.startsWith('https://')) {
           s3ImageUrls.push(image);
           continue;
         }
 
-        // Upload image to S3 (will be converted to WebP)
+        // Upload image to Cloudinary (will be converted to WebP)
         try {
           const filename = `product-${id}-${Date.now()}-${i + 1}.webp`;
-          const result = await uploadToS3(image, filename, 'images');
+          const result = await uploadToCloudinary(image, filename, 'images');
           s3ImageUrls.push(result.url);
-          console.log(`✓ Uploaded image ${i + 1} to S3 as WebP: ${result.url}`);
+          console.log(`✓ Uploaded image ${i + 1} to Cloudinary as WebP: ${result.url}`);
         } catch (uploadError) {
           console.error(`Failed to upload image ${i + 1}:`, uploadError);
           return NextResponse.json(
-            { success: false, message: `Failed to upload image ${i + 1} to S3` },
+            { success: false, message: `Failed to upload image ${i + 1} to Cloudinary` },
             { status: 500 }
           );
         }
       }
 
-      // Delete from S3 any old image that is no longer in the new list
+      // Delete from Cloudinary any old image that is no longer in the new list
       const imagesToDelete = oldImages.filter(
         (oldImg) => oldImg && oldImg.startsWith('https://') && !s3ImageUrls.includes(oldImg)
       );
       for (const url of imagesToDelete) {
         try {
-          const key = extractS3Key(url);
-          if (key) {
-            await deleteFromS3(key);
-            console.log(`✓ Deleted removed image from S3: ${key}`);
+          const parsed = parseCloudinaryUrl(url);
+          if (parsed) {
+            await deleteFromCloudinary(parsed.publicId, parsed.resourceType);
+            console.log(`✓ Deleted removed image from Cloudinary: ${parsed.publicId}`);
           }
         } catch (deleteError) {
           console.error(`Failed to delete old image ${url}:`, deleteError);
@@ -217,7 +221,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       const existingProduct = await Product.findById(id).select('videoUrl').lean();
       const oldVideos = existingProduct?.videoUrl ? (Array.isArray(existingProduct.videoUrl) ? existingProduct.videoUrl : [existingProduct.videoUrl]) : [];
 
-      // Handle videoUrl - upload to S3 if base64
+      // Handle videoUrl - upload to Cloudinary if base64
       const videoArray = Array.isArray(videoUrl) ? videoUrl : (videoUrl ? [videoUrl] : []);
       const s3VideoUrls: string[] = [];
 
@@ -227,28 +231,28 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
         
         if (!videoStr) continue;
 
-        // Skip if already an S3/external URL
+        // Skip if already an external URL
         if (videoStr.startsWith('https://') || videoStr.startsWith('http://')) {
           s3VideoUrls.push(videoStr);
           continue;
         }
 
-        // Upload base64 video to S3 - fail entire update if any upload fails
+        // Upload base64 video to Cloudinary - fail entire update if any upload fails
         try {
           const filename = `product-video-${id}-${Date.now()}-${i + 1}.mp4`;
-          const result = await uploadToS3(videoStr, filename, 'videos');
+          const result = await uploadToCloudinary(videoStr, filename, 'videos');
           s3VideoUrls.push(result.url);
-          console.log(`Uploaded video ${i + 1} to S3: ${result.url}`);
+          console.log(`Uploaded video ${i + 1} to Cloudinary: ${result.url}`);
         } catch (uploadError) {
           console.error(`Failed to upload video ${i + 1}:`, uploadError);
           return NextResponse.json(
-            { success: false, message: `Failed to upload video ${i + 1} to S3` },
+            { success: false, message: `Failed to upload video ${i + 1} to Cloudinary` },
             { status: 500 }
           );
         }
       }
 
-      // Delete old videos from S3 that are no longer in the new list
+      // Delete old videos from Cloudinary that are no longer in the new list
       const videosToDelete = oldVideos.filter(oldVideo => {
         if (!oldVideo || !oldVideo.startsWith('https://')) return false;
         return !s3VideoUrls.includes(oldVideo);
@@ -256,10 +260,10 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 
       for (const videoToDelete of videosToDelete) {
         try {
-          const s3Key = extractS3Key(videoToDelete);
-          if (s3Key) {
-            await deleteFromS3(s3Key);
-            console.log(`✓ Deleted old video from S3: ${s3Key}`);
+          const parsed = parseCloudinaryUrl(videoToDelete);
+          if (parsed) {
+            await deleteFromCloudinary(parsed.publicId, parsed.resourceType);
+            console.log(`✓ Deleted old video from Cloudinary: ${parsed.publicId}`);
           }
         } catch (deleteError) {
           console.error(`Failed to delete old video ${videoToDelete}:`, deleteError);
@@ -367,18 +371,18 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
       );
     }
 
-    // Note: Images are kept in S3, only videos are deleted
+    // Note: Images are kept in storage, only videos are deleted on product delete
 
-    // Delete videos from S3
+    // Delete videos from Cloudinary
     if (product.videoUrl) {
       const videosArray = Array.isArray(product.videoUrl) ? product.videoUrl : [product.videoUrl];
       for (const videoUrl of videosArray) {
         if (videoUrl && typeof videoUrl === 'string' && (videoUrl.startsWith('https://') || videoUrl.startsWith('http://'))) {
           try {
-            const s3Key = extractS3Key(videoUrl);
-            if (s3Key) {
-              await deleteFromS3(s3Key);
-              console.log(`✓ Deleted video from S3: ${s3Key}`);
+            const parsed = parseCloudinaryUrl(videoUrl);
+            if (parsed) {
+              await deleteFromCloudinary(parsed.publicId, parsed.resourceType);
+              console.log(`✓ Deleted video from Cloudinary: ${parsed.publicId}`);
             }
           } catch (deleteError) {
             console.error(`Failed to delete video ${videoUrl}:`, deleteError);

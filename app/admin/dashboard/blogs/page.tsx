@@ -268,7 +268,7 @@ export default function BlogsPage() {
           uploadFormData.append('file', selectedImageFile);
           uploadFormData.append('folder', 'images');
           
-          const uploadResponse = await fetch('/api/upload/s3', {
+          const uploadResponse = await fetch('/api/upload/cloudinary', {
             method: 'POST',
             body: uploadFormData,
           });
@@ -346,7 +346,7 @@ export default function BlogsPage() {
       // After successful update, delete old image from S3 if it was replaced
       if (isEdit && originalImageUrl && finalImageUrl && originalImageUrl !== finalImageUrl && originalImageUrl.startsWith('https://')) {
         try {
-          await fetch("/api/upload/s3/delete", {
+          await fetch("/api/upload/cloudinary/delete", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ url: originalImageUrl }),

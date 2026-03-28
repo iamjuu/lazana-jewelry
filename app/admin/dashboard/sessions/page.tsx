@@ -338,36 +338,40 @@ export default function SessionsPage() {
     try {
       // Delete old video if replacing
       if (formData.video) {
-        await fetch("/api/upload/s3/delete", {
+        await fetch("/api/upload/cloudinary/delete", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url: formData.video }),
         });
       }
 
-      // Upload new video to S3 via presigned URL (avoids Vercel 4.5 MB body limit)
-      const presignedRes = await fetch("/api/upload/s3/presigned", {
+      const presignedRes = await fetch("/api/upload/cloudinary/presigned", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           folder: "videos",
-          filename: selectedVideoFile.name || `session-video-${Date.now()}.mp4`,
-          contentType: selectedVideoFile.type || "video/mp4",
         }),
       });
       const presignedData = await presignedRes.json();
-      if (!presignedRes.ok || !presignedData.success || !presignedData.uploadUrl || !presignedData.url) {
+      if (!presignedRes.ok || !presignedData.success || !presignedData.uploadUrl || !presignedData.fields) {
         throw new Error(presignedData.message || "Failed to get upload URL");
       }
+      const cloudForm = new FormData();
+      cloudForm.append("file", selectedVideoFile);
+      cloudForm.append("api_key", presignedData.fields.api_key);
+      cloudForm.append("timestamp", presignedData.fields.timestamp);
+      cloudForm.append("signature", presignedData.fields.signature);
+      cloudForm.append("folder", presignedData.fields.folder);
       const putRes = await fetch(presignedData.uploadUrl, {
-        method: "PUT",
-        body: selectedVideoFile,
-        headers: { "Content-Type": selectedVideoFile.type || "video/mp4" },
+        method: "POST",
+        body: cloudForm,
       });
-      if (!putRes.ok) {
-        throw new Error("Failed to upload video to S3");
+      const uploadJson = await putRes.json();
+      if (!putRes.ok || uploadJson.error) {
+        throw new Error(uploadJson.error?.message || "Failed to upload video");
       }
-      const url = presignedData.url;
+      const url = uploadJson.secure_url as string;
+      if (!url) throw new Error("No secure_url from Cloudinary");
 
       setFormData({ ...formData, video: url });
       setPreviewUrl(url);
@@ -383,7 +387,7 @@ export default function SessionsPage() {
   const handleRemoveVideo = async () => {
     if (formData.video) {
       try {
-        await fetch("/api/upload/s3/delete", {
+        await fetch("/api/upload/cloudinary/delete", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url: formData.video }),
@@ -620,7 +624,7 @@ export default function SessionsPage() {
         uploadFormData.append('file', selectedImageFile);
         uploadFormData.append('folder', 'images');
         
-        const uploadResponse = await fetch('/api/upload/s3', {
+        const uploadResponse = await fetch('/api/upload/cloudinary', {
           method: 'POST',
           body: uploadFormData,
         });
@@ -671,7 +675,7 @@ export default function SessionsPage() {
       // After successful update, delete old image from S3 if it was replaced
       if (isEdit && originalImageUrl && finalImageUrl && originalImageUrl !== finalImageUrl && originalImageUrl.startsWith('https://')) {
         try {
-          await fetch("/api/upload/s3/delete", {
+          await fetch("/api/upload/cloudinary/delete", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ url: originalImageUrl }),

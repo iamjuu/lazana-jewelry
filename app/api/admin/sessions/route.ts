@@ -5,7 +5,7 @@ import PrivateSession from "@/models/PrivateSession";
 import CorporateSession from "@/models/CorporateSession";
 import FreeStudioVisit from "@/models/FreeStudioVisit";
 import { requireAdmin } from "@/lib/auth";
-import { uploadToS3 } from "@/lib/aws-s3";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 // GET - Fetch all sessions with pagination and search
 export async function GET(req: NextRequest) {
@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Upload image to S3 if provided (convert to WebP)
+    // Upload image to Cloudinary if provided (convert to WebP)
     let s3ImageUrl: string | undefined;
     if (imageUrl) {
       const imageStr = String(imageUrl).trim();
@@ -155,20 +155,20 @@ export async function POST(req: NextRequest) {
       } else {
         try {
           const filename = `session-${sessionType}-${Date.now()}.webp`;
-          const result = await uploadToS3(imageStr, filename, "images");
+          const result = await uploadToCloudinary(imageStr, filename, "images");
           s3ImageUrl = result.url;
-          console.log(`✓ Uploaded session image to S3 as WebP: ${result.url}`);
+          console.log(`✓ Uploaded session image to Cloudinary as WebP: ${result.url}`);
         } catch (uploadError) {
           console.error("Failed to upload session image:", uploadError);
           return NextResponse.json(
-            { success: false, message: "Failed to upload session image to S3" },
+            { success: false, message: "Failed to upload session image to Cloudinary" },
             { status: 500 },
           );
         }
       }
     }
 
-    // Upload video to S3 if provided
+    // Upload video to Cloudinary if provided
     let s3VideoUrl: string | undefined;
     if (videoUrl) {
       const videoStr = String(videoUrl).trim();
@@ -177,13 +177,13 @@ export async function POST(req: NextRequest) {
       } else {
         try {
           const filename = `session-${sessionType}-video-${Date.now()}.mp4`;
-          const result = await uploadToS3(videoStr, filename, "videos");
+          const result = await uploadToCloudinary(videoStr, filename, "videos");
           s3VideoUrl = result.url;
-          console.log(`✓ Uploaded session video to S3: ${result.url}`);
+          console.log(`✓ Uploaded session video to Cloudinary: ${result.url}`);
         } catch (uploadError) {
           console.error("Failed to upload session video:", uploadError);
           return NextResponse.json(
-            { success: false, message: "Failed to upload session video to S3" },
+            { success: false, message: "Failed to upload session video to Cloudinary" },
             { status: 500 },
           );
         }

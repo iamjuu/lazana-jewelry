@@ -13,41 +13,42 @@ const FAQPage = () => {
   const faqs = [
     {
       id: 1,
-      question: "What sizes do your bowls come in?",
+      question: "What sizes do your pieces come in?",
       answer: (
         <>
           <p>
-            Our crystal bowls come in various sizes to suit different healing practices and intentions. The size of your bowl depends on the note or chakra that you choose. 4th Octave bowls are between 5.7&quot;-7.7&quot;. 3rd Octave bowls are between 7&quot; - 8.8&quot;. Need help to choose? Book a discovery call{" "}
+            Lazana Jewelry offers a range of sizes and fits across necklaces,
+            rings, and bracelets. Need help choosing? Book a styling call{" "}
             <Link href="/discoveryappointment" className="text-[#1C3163] underline hover:opacity-80 transition-opacity">
               here
             </Link>
             .
           </p>
-          <Image src={Bowlsize} alt="Bowl Sizing" className=" sm:w-[50%] md:w-[50%] h-auto mt-4 rounded-lg" />
+          <Image src={Bowlsize} alt="Sizing reference" className=" sm:w-[50%] md:w-[50%] h-auto mt-4 rounded-lg" />
         </>
       )
     },
     {
       id: 2,
-      question: "What's the difference between the 3rd and 4th Octave?",
-      answer: "4th Octave Bowls are considered the standard octave of crystal bowls, clear and ethereal. 3rd Octave bowls are a lower pitch and deeper sound, more vibrations, more resonant in the body. It is personal preference which octave you want to work with and which sound you prefer, and how you intend to use the bowls in your practice or facilitation. Many practitioners choose to combine 3rd and 4th Octave bowls within the same set. This creates a richer spectrum of tone, allowing you to move between depth and clarity, grounding and lift, and ultimately offer a more layered sound experience. Shop our Harmonized Sets, designed to fit together in perfect harmony."
+      question: "What metals and finishes do you offer?",
+      answer: "Materials vary by collection—see each product page for metal type, plating, and finish. Many pieces are designed to layer together so you can mix metals intentionally.",
     },
     {
       id: 3,
-      question: "What tuning system should I order my bowls in? 432hz vs 528hz",
-      answer: "Our bowls are tuned to 432hz as standard (the healing frequency of nature) however we can also make your bowls in 528hz (the miracle frequency of unconditional love) or 440hz (western standard tuning) depending on your preference. If you would like you bowls in an alternative frequency please leave a note on your order at checkout and we can customise your order to your preferred frequency."
+      question: "How do I care for my jewelry?",
+      answer: "Store pieces separately, avoid harsh chemicals and prolonged water exposure, and polish with a soft cloth. Details are included with your order and on the product page.",
     },
     {
       id: 4,
-      question: "Can I order bowls in 440hz?",
-      answer: "Yes, absolutely! While our standard tuning is 432hz, we can customize your bowls to 440hz (western standard tuning) upon request. Simply leave a note at checkout specifying your preferred frequency, and we'll ensure your bowls are tuned exactly as you need them."
+      question: "Do you ship internationally?",
+      answer: "Yes. Shipping options and timelines are shown at checkout. International orders may be subject to duties and taxes payable on delivery.",
     },
     {
       id: 5,
-      question: "Can you help me choose my bowls?",
+      question: "Can you help me choose a piece?",
       answer: (
         <>
-          Of course! We&apos;re here to help you find the perfect crystal bowls for your practice. You can reach out to us through our contact form, email, or during checkout. We&apos;ll guide you through selecting the right size, note, chakra alignment, and frequency based on your healing intentions and practice needs. Or you can book a discovery call with me 
+          Of course! We&apos;re here to help you find Lazana Jewelry that fits your style. Reach out via our contact form, email, or book a discovery call{" "}
           <Link href="/discoveryappointment" className="text-[#1C3163] pl-2 underline hover:opacity-80 transition-opacity">
              here
           </Link>
@@ -57,18 +58,18 @@ const FAQPage = () => {
     },
     {
       id: 6,
-      question: "Can I order my bowls in any note/chakra?",
-      answer: "Yes! Each of our bowls can be customized to align with any specific note and chakra. Whether you're looking for root chakra (C), sacral chakra (D), solar plexus (E), heart chakra (F), throat chakra (G), third eye (A), or crown chakra (B), we can create your bowls to match your exact requirements. Just specify your preferences when placing your order."
+      question: "Can I request a custom or personalised piece?",
+      answer: "Depending on the collection, customisation may be available. Leave a note at checkout or contact us with your request and we will confirm what is possible.",
     },
     {
       id: 7,
-      question: "What are your bowls made from?",
-      answer: "Our bowls are crafted from 99.9% pure crystal quartz, sourced from North Carolina, which is known for its healing properties and premium sound quality. Some bowls are carefully infused with other crystals and precious elements to enhance its unique energy and resonance. This premium material ensures durability, clarity and harmony of sound, and powerful healing frequencies. "
+      question: "What are your pieces made from?",
+      answer: "Each Lazana Jewelry listing describes the metals, stones, and materials used. We focus on quality craftsmanship and clear product information.",
     },
     {
       id: 8,
-      question: "Do the bowls come with mallets / cases?",
-      answer: "Yes! Each  purchase includes  high-quality mallets designed specifically for crystal bowl sound healing. We also provide protective cases for safe storage and easy transportation. Our cases are lightweight yet durable, making them perfect for sound healers who travel. The mallets are crafted to produce the optimal resonance and are included at no additional cost with your bowl purchase."
+      question: "Do orders include packaging?",
+      answer: "Yes. Pieces are packaged with care for safe delivery. Gift-friendly packaging may be available—ask our team if you need something special.",
     }
   ];
 

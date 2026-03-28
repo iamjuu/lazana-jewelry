@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     if (existingSubscriber) {
       return NextResponse.json(
-        { success: false, message: "You are already subscribed with Crystal Bowl" },
+        { success: false, message: "You are already subscribed with Lazana Jewelry" },
         { status: 400 }
       );
     }
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     // Handle duplicate key error (MongoDB unique constraint)
     if (error.code === 11000 || error.message?.includes("duplicate")) {
       return NextResponse.json(
-        { success: false, message: "You are already subscribed with Crystal Bowl" },
+        { success: false, message: "You are already subscribed with Lazana Jewelry" },
         { status: 400 }
       );
     }

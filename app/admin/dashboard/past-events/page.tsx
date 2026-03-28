@@ -569,7 +569,7 @@ export default function PastEventsPage() {
           uploadFormData.append('file', selectedThumbnailFile);
           uploadFormData.append('folder', 'images');
           
-          const uploadResponse = await fetch('/api/upload/s3', {
+          const uploadResponse = await fetch('/api/upload/cloudinary', {
             method: 'POST',
             body: uploadFormData,
           });
@@ -608,7 +608,7 @@ export default function PastEventsPage() {
             uploadFormData.append('file', file);
             uploadFormData.append('folder', 'images');
             
-            const uploadResponse = await fetch('/api/upload/s3', {
+            const uploadResponse = await fetch('/api/upload/cloudinary', {
               method: 'POST',
               body: uploadFormData,
             });
@@ -650,32 +650,37 @@ export default function PastEventsPage() {
           );
           
           try {
-            // Use presigned URL so file goes directly to S3 (avoids Vercel 4.5 MB body limit)
-            const presignedRes = await fetch('/api/upload/s3/presigned', {
+            const presignedRes = await fetch('/api/upload/cloudinary/presigned', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 folder: 'videos',
-                filename: file.name || `past-event-video-${Date.now()}.mp4`,
-                contentType: file.type || 'video/mp4',
               }),
             });
             const presignedData = await presignedRes.json();
-            if (!presignedRes.ok || !presignedData.success || !presignedData.uploadUrl || !presignedData.url) {
+            if (!presignedRes.ok || !presignedData.success || !presignedData.uploadUrl || !presignedData.fields) {
               throw new Error(presignedData.message || 'Failed to get upload URL');
             }
+            const cloudForm = new FormData();
+            cloudForm.append('file', file);
+            cloudForm.append('api_key', presignedData.fields.api_key);
+            cloudForm.append('timestamp', presignedData.fields.timestamp);
+            cloudForm.append('signature', presignedData.fields.signature);
+            cloudForm.append('folder', presignedData.fields.folder);
             const putRes = await fetch(presignedData.uploadUrl, {
-              method: 'PUT',
-              body: file,
-              headers: { 'Content-Type': file.type || 'video/mp4' },
+              method: 'POST',
+              body: cloudForm,
             });
-            if (!putRes.ok) {
-              throw new Error(`Upload failed: ${putRes.status}`);
+            const uploadJson = await putRes.json();
+            if (!putRes.ok || uploadJson.error) {
+              throw new Error(uploadJson.error?.message || `Upload failed: ${putRes.status}`);
             }
+            const secureUrl = uploadJson.secure_url as string | undefined;
+            if (!secureUrl) throw new Error('No secure_url from Cloudinary');
             if (finalVideos.length <= i) {
-              finalVideos.push(presignedData.url);
+              finalVideos.push(secureUrl);
             } else {
-              finalVideos[i] = presignedData.url;
+              finalVideos[i] = secureUrl;
             }
             toast.dismiss(uploadToastId);
             toast.success(`Video ${i + 1} uploaded successfully!`, { duration: 2000 });
@@ -754,7 +759,7 @@ export default function PastEventsPage() {
         // Delete old thumbnail if replaced
         if (originalThumbnailUrl && finalThumbnailUrl && originalThumbnailUrl !== finalThumbnailUrl && originalThumbnailUrl.startsWith('https://')) {
           try {
-            await fetch("/api/upload/s3/delete", {
+            await fetch("/api/upload/cloudinary/delete", {
               method: "DELETE",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ url: originalThumbnailUrl }),
@@ -767,7 +772,7 @@ export default function PastEventsPage() {
         // Delete old photos that were removed
         originalPhotos.forEach((oldPhoto, index) => {
           if (oldPhoto && !finalPhotos.includes(oldPhoto) && oldPhoto.startsWith('https://')) {
-            fetch("/api/upload/s3/delete", {
+            fetch("/api/upload/cloudinary/delete", {
               method: "DELETE",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ url: oldPhoto }),
@@ -778,7 +783,7 @@ export default function PastEventsPage() {
         // Delete old videos that were removed
         originalVideos.forEach((oldVideo, index) => {
           if (oldVideo && !finalVideos.includes(oldVideo) && oldVideo.startsWith('https://')) {
-            fetch("/api/upload/s3/delete", {
+            fetch("/api/upload/cloudinary/delete", {
               method: "DELETE",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ url: oldVideo }),

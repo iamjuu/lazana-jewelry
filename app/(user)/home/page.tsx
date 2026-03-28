@@ -30,6 +30,7 @@ import {
 } from "@/public/assets";
 
 import Footer from "@/components/user/Footer";
+import { FillCdnImage } from "@/components/user/FillCdnImage";
 import { PremiumQuality } from "@/public/assets";
 import Link from "next/link";
 import { ArrowRight, Volume2, VolumeX } from "lucide-react";
@@ -180,7 +181,7 @@ const TestimonialsData = [
     id: 4,
     name: "John V.",
     testimonial:
-      "I have struggled with stress and anxiety my entire life, so I decided to give yoga a go this year. Frankie has shared so much knowledge, wisdom and has been an absolute inspiration to me. Frankie has given me the confidence I needed to consistently continue my practice, and I could not have continued without this guiding light. I have now completed more than fifty yoga sessions, so I joined Frankie's Yin, Gong and Crystal Bowl class and was absolutely blown away by this experience. Having struggled to calm my monkey mind and relax all throughout my life this class was incredible. We should all give ourselves this gift of retreat, rest and relaxation.",
+      "I have struggled with stress and anxiety my entire life, so I decided to give yoga a go this year. Frankie has shared so much knowledge, wisdom and has been an absolute inspiration to me. Frankie has given me the confidence I needed to consistently continue my practice, and I could not have continued without this guiding light. I have now completed more than fifty yoga sessions, so I joined Frankie's Yin, Gong and wellness class and was absolutely blown away by this experience. Having struggled to calm my monkey mind and relax all throughout my life this class was incredible. We should all give ourselves this gift of retreat, rest and relaxation.",
   },
   {
     id: 5,
@@ -475,21 +476,21 @@ const Index = () => {
       id: 1,
       image: PremiumQuality,
       title: " Premium Craftsmanship",
-      para: "Each piece is precision-crafted, made from 99.9% pure clear quartz, our bowls produce quality sound and long-lasting resonance.",
+      para: "Each piece is finished with care—quality materials and details you can see and feel.",
     },
 
     {
       id: 2,
       image: UniqueToYou,
       title: "Light Weight",
-      para: "Our bowls are light, durable, designed for travel-ready, portable anywhere, anytime in our protective cases",
+      para: "Lightweight designs made for everyday wear—easy to layer and take with you.",
     },
 
     {
       id: 3,
       image: Crystal,
       title: "Made for You",
-      para: "Each bowl is unique and can be customised by chakra, note, frequency, colour, and design to make it uniquely yours.",
+      para: "Each piece feels unique—choose finishes and styles that feel like you.",
     },
     {
       id: 4,
@@ -516,7 +517,7 @@ const Index = () => {
           onLoadedData={() => console.log("Video loaded successfully")}
         >
           <source
-            src="https://amzn-crystalbowl-bucket.s3.ap-southeast-1.amazonaws.com/videos/ttt.mp4"
+            src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.
@@ -527,12 +528,12 @@ const Index = () => {
 
           <div className="relative">
             <h1 className="font-seasons text-center pb-[60px] sm:pb-[80px] md:pb-[100px] lg:pb-[120px] px-4 text-[#D5B584] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[50px]  leading-tight">
-              Crystal Singing Bowls for
-              <br /> Sound Healing{" "}
+              Lazana Jewelry for
+              <br /> timeless style{" "}
               <span style={{ fontFamily: "var(--font-montserrat)" }}>
                 {"&"}
               </span>{" "}
-              Meditation.
+              everyday elegance.
             </h1>
           </div>
         </div>
@@ -557,12 +558,12 @@ const Index = () => {
 
         <CollectionSection categories={categories} loading={loading} />
 
-        {/* Shop Crystal Bowls - design from screenshot */}
+        {/* Shop Lazana Jewelry */}
         <section className="w-full  md:py-0  mt-[25px]">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex w-full items-center justify-between mb-6">
               <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-                Shop Crystal Bowls
+                Shop Lazana Jewelry
               </h2>
               <Link
                 href="/shop?category=all"
@@ -590,12 +591,10 @@ const Index = () => {
                     <Link href={`/shop?category=${category.slug}`}>
                       <div className="relative w-full aspect-[4/5] md:aspect-square rounded-xl overflow-hidden bg-white/50">
                         {category.imageUrl ? (
-                          <Image
+                          <FillCdnImage
                             src={normalizeImageUrl(category.imageUrl)}
                             alt={category.name}
-                            fill
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            unoptimized
                           />
                         ) : (
                           <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#D5B584] to-[#FEC1A2] flex items-center justify-center">
@@ -618,36 +617,30 @@ const Index = () => {
           <section className="w-full mt-[25px]">
             <div className="max-w-6xl mx-auto px-4">
               <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-                About Crystal Bowl Studio
+                About Lazana Jewelry
               </h2>
               {/* Wrapped in a fragment to replace the div but keep structure clean if needed, or just standard p tags */}
               <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] leading-[1.9] text-[#545454] mt-[25px]">
-                Crystal Bowl Studio is designed for modern, conscious living,
-                rooted in ancient traditions and wisdom. Each bowl is made from
-                99.9% pure  quartz crystal, carefully handcrafted and
-                quality-checked, to produce clarity, rich, ethereal vibrations
-                that supports meditation, relaxation, healing and
-                transformational work.{" "}
+                Lazana Jewelry is designed for modern living with timeless
+                craftsmanship. Each piece is carefully curated and finished to
+                bring lasting beauty and confidence to your everyday look.{" "}
                 <span className="font-semibold">
-                  Our bowls are lightweight, travel-friendly,
+                  Our collections are versatile and made to be worn often,
                 </span>{" "}
-                and designed in the most{" "}
+                with{" "}
                 <span className="font-semibold">
-                  elegant and luminous colours
+                  elegant details
                 </span>{" "}
-                to make your practice available and accessible, anywhere and
-                anytime.{" "}
+                you will reach for again and again.{" "}
                 <span className="font-semibold">
-                  Take them with you on your travels! No two bowls are ever the
-                  same.
+                  Discover pieces that feel personal—no two styling moments are the same.
                 </span>
               </p>
               <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">
-                Each Singing Bowl is crafted with its own unique energy and
-                intention, so you can choose one that matches your purpose, and
-                aesthetic. Crystal Bowl Studio designs beautifully crafted sound
-                healing tools that are easy to use and made to support and
-                enhance modern life.
+                Each piece is chosen with care so you can find something that
+                matches your taste and lifestyle. Lazana Jewelry offers
+                thoughtfully curated designs made to complement and elevate
+                modern life.
               </p>
             </div>
           </section>
@@ -655,7 +648,7 @@ const Index = () => {
           <div className="max-w-6xl flex flex-col mx-auto px-4 mt-[25px] ">
             <div className="flex w-full ">
               <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
-                What makes our Singing Bowls unique
+                What makes our jewelry unique
               </h1>
             </div>
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-[54px] mt-[25px] ">
@@ -723,12 +716,10 @@ const Index = () => {
                         {product.imageUrl &&
                         Array.isArray(product.imageUrl) &&
                         product.imageUrl.length > 0 ? (
-                          <Image
+                          <FillCdnImage
                             src={normalizeImageUrl(product.imageUrl[0])}
                             alt={product.name || "Product"}
-                            fill
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            unoptimized
                           />
                         ) : (
                           <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#D5B584] to-[#FEC1A2] flex items-center justify-center">
@@ -792,33 +783,24 @@ const Index = () => {
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex flex-col gap-4 md:gap-[25px]">
               <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-                What is Sound Healing?
+                Jewelry & intention
               </h1>
               <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed font-light font-touvlo">
-                Sound healing uses sound and vibration to support relaxation,
-                focus, and balance. From a scientific perspective, sound healing
-                is most often discussed in relation to its effects on the
-                nervous system and stress regulation. Research in psychology and
-                neuroscience shows that slow, continuous sounds can help reduce
-                stress-related arousal by engaging the parasympathetic nervous
-                system, which is the part of the nervous system responsible for
-                rest, recovery, and regulation.
+                We believe jewelry is more than decoration—it is a daily ritual
+                of intention. Wearing pieces you love can support confidence,
+                calm, and presence in small, meaningful ways.
               </p>
               <p className="text-[#545454] text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-light font-touvlo">
-                Singing bowls can significantly reduce tension, anxiety,
-                fatigue, and depressed mood after a single session of sound
-                meditation. <br />
-                <span className="italic font-touvlo">
-                  {" "}
-                  – National Library of Medicine
-                </span>
+                Studies in psychology link self-expression and mindful routines
+                with improved mood and stress regulation. Choosing jewelry that
+                resonates with you can be part of that practice.
               </p>
               <div className="">
                 <Link
                   href="/about"
                   className="font-seasons inline-flex items-center gap-2 text-[14px] sm:text-[16px] md:text-[16px] text-[#1C3163] hover:opacity-80 transition-opacity"
                 >
-                  Learn more about Sound Healing
+                  Learn more about Lazana Jewelry
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Link>
               </div>
@@ -868,10 +850,9 @@ const Index = () => {
                     >
                       {/* Image Container - Left Side */}
                       <div className="relative aspect-3/4 w-[50%] rounded-2xl md:rounded-3xl overflow-hidden shrink-0 font-touvlo">
-                        <Image
+                        <FillCdnImage
                           src={imageUrl}
                           alt={session.title || "Corporate Session"}
-                          fill
                           className="object-cover group-hover:scale-110 group-hover:brightness-110 transition-all duration-500 ease-out"
                         />
                       </div>
@@ -922,10 +903,9 @@ const Index = () => {
                     >
                       {/* Image Container - Left Side */}
                       <div className="relative aspect-3/4 w-[50%] rounded-2xl md:rounded-3xl overflow-hidden shrink-0">
-                        <Image
+                        <FillCdnImage
                           src={imageUrl}
                           alt={session.title || "Private Session"}
-                          fill
                           className="object-cover group-hover:scale-125 group-hover:rotate-2 group-hover:opacity-90 transition-all duration-700 ease-in-out"
                         />
                       </div>
@@ -1141,151 +1121,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Upcoming Events section */}
-
-        <section className="w-full  mt-[25px]">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex w-full  justify-between items-center">
-              <h2 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-                Upcoming Events
-              </h2>
-              <Link
-                href="/services"
-                className="font-seasons text-[#1C3163] inline-flex items-center gap-1 text-[14px] sm:text-[15px] md:text-[16px] font-normal"
-              >
-                <span>Explore our Services</span>
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#1C3163]" />
-              </Link>
-            </div>
-            {/* Events Grid */}
-            {upcomingEvents.length === 0 ? (
-              <div className="text-center py-12 text-[#1C3163]">
-                <p className="text-[16px]">No upcoming events at the moment</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-11 md:mt-[25px]">
-                {upcomingEvents.map((event) => {
-                  const eventDate = new Date(event.date);
-                  const monthNames = [
-                    "Jan",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun",
-                    "Jul",
-                    "Aug",
-                    "Sep",
-                    "Oct",
-                    "Nov",
-                    "Dec",
-                  ];
-                  let monthAbbr = monthNames[eventDate.getMonth()];
-                  let dayDisplay = eventDate.getDate().toString();
-
-                  // Handle date range display for the badge
-                  if (event.endDate) {
-                    const endDate = new Date(event.endDate);
-                    const endMonthAbbr = monthNames[endDate.getMonth()];
-                    const endDay = endDate.getDate();
-
-                    if (
-                      eventDate.getMonth() === endDate.getMonth() &&
-                      eventDate.getFullYear() === endDate.getFullYear()
-                    ) {
-                      // Same month: Feb 10-12
-                      dayDisplay = `${eventDate.getDate()}-${endDay}`;
-                    } else {
-                      // Diff month: Feb-Mar / 28-02
-                      monthAbbr = `${monthAbbr}-${endMonthAbbr}`;
-                      dayDisplay = `${eventDate.getDate()}-${endDay}`;
-                    }
-                  }
-
-                  // Format date for display: "Nov 7, 2025" or "Feb 10 - 12, 2025"
-                  const year = eventDate.getFullYear();
-                  let formattedFullDate = `${monthAbbr} ${dayDisplay}, ${year}`;
-
-                  if (event.endDate) {
-                    // For text display, use a cleaner full format if desired, or reuse the logic above
-                    // Reusing logic above to keep consistent with badge for now, but formatted nicely
-                    const endDate = new Date(event.endDate);
-                    const endMonthAbbr = monthNames[endDate.getMonth()];
-                    const endDay = endDate.getDate();
-                    const endYear = endDate.getFullYear();
-
-                    if (year === endYear) {
-                      if (eventDate.getMonth() === endDate.getMonth()) {
-                        formattedFullDate = `${monthNames[eventDate.getMonth()]} ${eventDate.getDate()} - ${endDay}, ${year}`;
-                      } else {
-                        formattedFullDate = `${monthNames[eventDate.getMonth()]} ${eventDate.getDate()} - ${endMonthAbbr} ${endDay}, ${year}`;
-                      }
-                    } else {
-                      formattedFullDate = `${monthAbbr} ${eventDate.getDate()}, ${year} - ${endMonthAbbr} ${endDay}, ${endYear}`;
-                    }
-                  } else {
-                    // Single day full format
-                    formattedFullDate = `${monthNames[eventDate.getMonth()]} ${eventDate.getDate()}, ${year}`;
-                  }
-
-                  // Format time if available
-                  const timeDisplay = event.time
-                    ? formatTime(
-                        event.day,
-                        event.time,
-                        event.date,
-                        event.endDate,
-                      )
-                    : "";
-
-                  const imageUrl = event.imageUrl
-                    ? event.imageUrl.startsWith("data:") ||
-                      event.imageUrl.startsWith("http")
-                      ? event.imageUrl
-                      : `data:image/jpeg;base64,${event.imageUrl}`
-                    : Yoga1;
-
-                  return (
-                    <div key={event._id} className="flex flex-col group ">
-                      <Link href={`/events/${event._id}`}>
-                        <div className="relative w-full aspect-[4/3]  overflow-hidden mb-0 group-hover:shadow-2xl transition-all duration-500">
-                          <Image
-                            src={imageUrl}
-                            alt={getEventDisplayTitle(event)}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="object-cover group-hover:scale-110 transition-all duration-500 ease-out"
-                          />
-                          {/* Date Badge - Upper Right Corner */}
-                          <div className="absolute top-2 right-2 bg-white   px-3 py-2 text-center shadow-lg">
-                            <div className="text-[#1C3163] text-[10px] sm:text-[11px] font-medium uppercase leading-tight">
-                              {monthAbbr}
-                            </div>
-                            <div className="text-[#1C3163] text-[18px] sm:text-[20px] md:text-[24px] font-semibold leading-tight">
-                              {dayDisplay}
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                      {/* Event Details - Light Beige Background */}
-                      <div className="mt-2 relative z-0">
-                        <h3 className="font-seasons text-[#1C3163] text-[14px] sm:text-[15px] md:text-[18px] font-normal leading-tight mb-2 tracking-wide">
-                          {getEventDisplayTitle(event)}
-                        </h3>
-                        <p className="text-gray-700 text-[12px] sm:text-[13px] md:text-[14px] font-light text-[#545454] font-touvlo whitespace-nowrap ">
-                          {formattedFullDate}
-                          <span className="ml-[2px] whitespace-nowrap">
-                            {timeDisplay}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </section>
+     n 
       </div>
       <Footer />
     </div>

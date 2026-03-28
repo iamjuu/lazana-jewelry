@@ -76,7 +76,7 @@ const FreeStudioVisitPage = () => {
                 Free Studio Visit
               </h1>
               <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo leading-relaxed max-w-2xl">
-                Schedule a free visit to our studio and experience our crystal
+                Schedule a free visit to our studio and experience our Lazana Jewelry
                 bowls in person. Fill out the form below and we&apos;ll get back
                 to you to arrange your visit.
               </p>

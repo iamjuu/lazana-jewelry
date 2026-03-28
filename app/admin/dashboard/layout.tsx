@@ -13,16 +13,16 @@ export const revalidate = 0;
 const navItems = [
   { label: "Dashboard", href: "/admin/dashboard" },
   { label: "Orders", href: "/admin/dashboard/orders" },
-  { label: "Yoga Sessions", href: "/admin/dashboard/sessions" },
-  { label: "Yoga Sessions Enquiries", href: "/admin/dashboard/enquiries" },
+  // { label: "Yoga Sessions", href: "/admin/dashboard/sessions" },
+  // { label: "Yoga Sessions Enquiries", href: "/admin/dashboard/enquiries" },
   { label: "Products", href: "/admin/dashboard/products" },
   { label: "Categories", href: "/admin/dashboard/categories" },
   { label: "Subcategories", href: "/admin/dashboard/subcategories" },
   { label: "Users", href: "/admin/dashboard/users" },
   { label: "Blogs", href: "/admin/dashboard/blogs" },
-  { label: "Events", href: "/admin/dashboard/events" },
-  { label: "Events Booking", href: "/admin/dashboard/event-bookings" },
-  { label: "Past Events", href: "/admin/dashboard/past-events" },
+  // { label: "Events", href: "/admin/dashboard/events" },
+  // { label: "Events Booking", href: "/admin/dashboard/event-bookings" },
+  // { label: "Past Events", href: "/admin/dashboard/past-events" },
   { label: "Coupon Management", href: "/admin/dashboard/coupons" },
   { label: "Settings", href: "/admin/dashboard/settings" },
 ];
@@ -47,7 +47,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       <aside className="hidden w-64 border-r border-zinc-800 bg-zinc-950 px-6 py-8 lg:flex lg:flex-col">
         <div>
           <Link href="/admin/dashboard" className="text-lg font-semibold text-white">
-            Crystal Bowl Studio
+            Lazana Jewelry
           </Link>
           <p className="mt-1 text-xs text-zinc-400">Admin Dashboard</p>
         </div>
@@ -63,7 +63,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         <header className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-4 py-4 sm:px-8">
           <div className="lg:hidden">
             <Link href="/admin/dashboard" className="text-lg font-semibold text-white">
-              Crystal Bowl Studio
+              Lazana Jewelry
             </Link>
           </div>
           <AdminLogoutButton />

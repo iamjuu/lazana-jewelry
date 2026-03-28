@@ -4,7 +4,7 @@ import Product from "@/models/Product";
 import "@/models/Category"; // Register Category so Product ref resolves (avoids "Schema hasn't been registered for model Category")
 import { requireAdmin } from "@/lib/auth";
 import mongoose from "mongoose";
-import { uploadToS3 } from "@/lib/aws-s3";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 export async function POST(req: NextRequest) {
   try {
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Upload images to S3 and get URLs
-    console.log("Uploading images to S3...");
+    console.log("Uploading images to Cloudinary...");
     const s3ImageUrls: string[] = [];
     
     for (let i = 0; i < imageUrl.length; i++) {
@@ -93,13 +93,13 @@ export async function POST(req: NextRequest) {
       // Upload image to S3 (will be converted to WebP)
       try {
         const filename = `product-${Date.now()}-${i + 1}.webp`;
-        const result = await uploadToS3(image, filename, 'images');
+        const result = await uploadToCloudinary(image, filename, 'images');
         s3ImageUrls.push(result.url);
         console.log(`✓ Uploaded image ${i + 1} to S3 as WebP: ${result.url}`);
       } catch (uploadError) {
         console.error(`Failed to upload image ${i + 1}:`, uploadError);
         return NextResponse.json(
-          { success: false, message: `Failed to upload image ${i + 1} to S3` },
+          { success: false, message: `Failed to upload image ${i + 1} to Cloudinary` },
           { status: 500 }
         );
       }
@@ -170,13 +170,13 @@ export async function POST(req: NextRequest) {
         // Upload base64 video to S3 - fail entire request if any upload fails
         try {
           const filename = `product-video-${Date.now()}-${i + 1}.mp4`;
-          const result = await uploadToS3(videoStr, filename, 'videos');
+          const result = await uploadToCloudinary(videoStr, filename, 'videos');
           s3VideoUrls.push(result.url);
           console.log(`Uploaded video ${i + 1} to S3: ${result.url}`);
         } catch (uploadError) {
           console.error(`Failed to upload video ${i + 1}:`, uploadError);
           return NextResponse.json(
-            { success: false, message: `Failed to upload video ${i + 1} to S3` },
+            { success: false, message: `Failed to upload video ${i + 1} to Cloudinary` },
             { status: 500 }
           );
         }

@@ -132,8 +132,8 @@ const montserrat = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Crystal Bowl Studio - Healing Through Sound",
-  description: "Experience the healing power of crystal singing bowls and yoga sessions",
+  title: "Lazana Jewelry",
+  description: "Discover fine jewelry and curated pieces at Lazana Jewelry",
   icons: {
     icon: [
       { url: "/assets/icon/android-chrome-512x512.png", sizes: "16x16", type: "image/png" },

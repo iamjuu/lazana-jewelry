@@ -1,17 +1,14 @@
 {
-  "name": "crystel",
+  "name": "lazana-jewelry",
   "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "migrate:product-image-bucket": "node scripts/migrate_product_image_bucket.js"
+    "lint": "eslint"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.966.0",
-    "@aws-sdk/s3-request-presigner": "^3.966.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.6",
@@ -22,6 +19,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/nodemailer": "^7.0.3",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.9.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "googleapis": "^166.0.0",

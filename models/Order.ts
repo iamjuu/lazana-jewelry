@@ -69,7 +69,7 @@ const OrderSchema = new Schema<OrderType>(
     deliveryStatusHistory: { type: [DeliveryStatusUpdateSchema], default: [] }, // Delivery status history
     currentMessage: { type: String },
     customerComments: { type: String },
-    paymentProvider: { type: String, enum: ["stripe"] },
+    paymentProvider: { type: String, enum: ["stripe", "razorpay"] },
     paymentRef: { type: String, index: true },
     shippingAddress: { type: ShippingAddressSchema, required: true },
     customerEmail: { type: String, required: true },

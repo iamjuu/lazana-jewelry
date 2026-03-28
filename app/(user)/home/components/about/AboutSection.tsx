@@ -20,10 +20,10 @@ const AboutSectionComponent = () => {
             <div className="w-full lg:w-[65%] xl:w-[60%]">
               <div className="flex flex-col   text-[14px] sm:text-[15px] md:text-[16px] lg:text-[16px] font-light text-black leading-relaxed sm:leading-relaxed md:leading-loose">
                 <p className="font-touvlo text-[#545454] text-[14px] sm:text-[15px] md:text-[16px]">
-                  Welcome to Crystal Bowl Studio.
+                  Welcome to Lazana Jewelry.
                 </p>
                 <p className="font-touvlo text-[#545454]  text-[14px] sm:text-[15px]  md:text-[16px]">
-                  Crystal Bowl Studio was founded by Francesca Wong, a former
+                  Lazana Jewelry was founded by Francesca Wong, a former
                   Corporate Executive with experience at KPMG, Citibank,
                   Alibaba, and Estée Lauder. After over a decade in global
                   finance, e-commerce, and luxury beauty, she embarked on a
@@ -39,7 +39,7 @@ const AboutSectionComponent = () => {
 
                 <p className="font-touvlo  text-[14px] sm:text-[15px] md:text-[16px] text-[#545454]">
                   Her mission is to make the power of Sound Healing accessible
-                  all over the world, anywhere anytime. Crystal Bowl Studio was
+                  all over the world, anywhere anytime. Lazana Jewelry was
                   born from the belief that healing tools should be
                   well-crafted, intentional, and accessible. Each bowl is
                   designed to aesthetically sound exquisite, and feel purposeful

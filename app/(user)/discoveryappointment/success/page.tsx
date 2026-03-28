@@ -11,14 +11,16 @@ import toast from 'react-hot-toast'
 function DiscoveryBookingSuccessContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const sessionId = searchParams.get('session_id')
+  const razorpayPaymentId = searchParams.get('razorpay_payment_id')
+  const razorpayOrderId = searchParams.get('razorpay_order_id')
+  const razorpaySignature = searchParams.get('razorpay_signature')
   const [verifying, setVerifying] = useState(true)
   const [verified, setVerified] = useState(false)
 
   useEffect(() => {
     const verifyBooking = async () => {
-      if (!sessionId) {
-        toast.error('Invalid session')
+      if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
+        toast.error('Invalid payment details')
         router.push('/discoveryappointment')
         return
       }
@@ -31,18 +33,34 @@ function DiscoveryBookingSuccessContent() {
           return
         }
 
+        const storedFormData = sessionStorage.getItem('discoveryCheckoutForm')
+        let formData = {}
+        if (storedFormData) {
+          try {
+            formData = JSON.parse(storedFormData)
+          } catch {
+            formData = {}
+          }
+        }
+
         const response = await fetch('/api/payment/verify-discovery-checkout', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ sessionId }),
+          body: JSON.stringify({
+            razorpayPaymentId,
+            razorpayOrderId,
+            razorpaySignature,
+            formData,
+          }),
         })
 
         const data = await response.json()
 
         if (data.success) {
+          sessionStorage.removeItem('discoveryCheckoutForm')
           setVerified(true)
           toast.success('Discovery session booked successfully!')
         } else {
@@ -59,7 +77,7 @@ function DiscoveryBookingSuccessContent() {
     }
 
     verifyBooking()
-  }, [sessionId, router])
+  }, [razorpayPaymentId, razorpayOrderId, razorpaySignature, router])
 
   if (verifying) {
     return (

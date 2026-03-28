@@ -27,7 +27,7 @@ const ReturnsAndRefundPolicyPage = () => {
               </h3>
               <div className="text-[#5A5A5A] text-[14px] sm:text-[16px] md:text-[14px] font-light leading-relaxed font-touvlo">
                 <p>
-                  All Crystal Bowl Studio bowls are custom made to order. Due to
+                  All Lazana Jewelry bowls are custom made to order. Due to
                   the unique and handcrafted nature of each piece, we do not
                   offer returns, exchanges, or refunds under any circumstances,
                   including change of mind.
@@ -61,10 +61,10 @@ const ReturnsAndRefundPolicyPage = () => {
                 <p>
                   📧{" "}
                   <a
-                    href="mailto:hello@crystalbowlstudio.com"
+                    href="mailto:hello@lazana-jewelry.com"
                     className="text-[#1C3163] hover:underline"
                   >
-                    hello@crystalbowlstudio.com
+                    hello@lazana-jewelry.com
                   </a>
                 </p>
                 <p>We will do our best to accommodate your request.</p>
@@ -90,10 +90,10 @@ const ReturnsAndRefundPolicyPage = () => {
                   <li>
                     Email your request to{" "}
                     <a
-                      href="mailto:hello@crystalbowlstudio.com"
+                      href="mailto:hello@lazana-jewelry.com"
                       className="text-[#1C3163] hover:underline"
                     >
-                      hello@crystalbowlstudio.com
+                      hello@lazana-jewelry.com
                     </a>
                   </li>
                 </ul>
@@ -117,15 +117,15 @@ const ReturnsAndRefundPolicyPage = () => {
                 <p>
                   📧{" "}
                   <a
-                    href="mailto:hello@crystalbowlstudio.com"
+                    href="mailto:hello@lazana-jewelry.com"
                     className="text-[#1C3163] hover:underline"
                   >
-                    hello@crystalbowlstudio.com
+                    hello@lazana-jewelry.com
                   </a>
                 </p>
                 <p>
                   We&apos;re here to help and ensure your experience with
-                  Crystal Bowl Studio is a positive one.
+                  Lazana Jewelry is a positive one.
                 </p>
               </div>
             </div>

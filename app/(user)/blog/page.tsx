@@ -91,11 +91,11 @@ const BlogPage = () => {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-[25px]">
               <h2 className="text-[#1C3163] text-[30px] lg:text-[32px] font-seasons font-normal mb-[25px]">
-                Insights on Sound Healing & Crystal Bowls
+                Insights on style & Lazana Jewelry
               </h2>
               <p className="text-[#545454] text-[16px] font-touvlo leading-relaxed max-w-3xl mx-auto">
                 Explore our collection of articles, guides, and stories about
-                the transformative power of crystal singing bowls, sound healing
+                the transformative power of fine jewelry and personal style
                 practices, and the ancient wisdom of vibrational therapy.
                 Whether you're a beginner or an experienced practitioner, you'll
                 find valuable insights to deepen your journey.

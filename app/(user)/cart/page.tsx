@@ -288,10 +288,10 @@ const CartPageContent = () => {
                   )}
                 </button>
 
-                {/* Stripe Badge */}
+                {/* Razorpay Badge */}
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mb-4 font-touvlo text-[#545454">
                   <Lock size={16} />
-                  <span>Secured by Stripe</span>
+                  <span>Secured by Razorpay</span>
                 </div>
 
                 {/* Trust Badges */}

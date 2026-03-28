@@ -796,7 +796,25 @@ export default function EnquiriesPage() {
 
                                           try {
 
-                                            const discoveryData = JSON.parse(enquiry.comment);
+                                            const raw = JSON.parse(enquiry.comment) as Record<string, any>;
+                                            const answers =
+                                              raw.answers && typeof raw.answers === "object"
+                                                ? raw.answers
+                                                : {};
+                                            const discoveryData = { ...raw, ...answers };
+                                            const selectedDate =
+                                              discoveryData.selectedDate ?? discoveryData.date;
+                                            const selectedTime =
+                                              discoveryData.selectedTime ?? discoveryData.time;
+                                            const priorJewelry =
+                                              discoveryData.hasPriorJewelry ??
+                                              discoveryData.hasCrystalBowls;
+                                            const pieceNotesText =
+                                              discoveryData.pieceNotes ??
+                                              discoveryData.notesAndAlchemies;
+                                            const stylePrefs =
+                                              discoveryData.stylePreferences ??
+                                              discoveryData.soundOrEnergy;
 
                                             return (
 
@@ -806,25 +824,25 @@ export default function EnquiriesPage() {
 
                                                   <p className="text-xs text-zinc-400 mb-1">Appointment Date & Time</p>
 
-                                                  <p className="text-white">{discoveryData.selectedDate} at {discoveryData.selectedTime}</p>
+                                                  <p className="text-white">{selectedDate || "—"} at {selectedTime || "—"}</p>
 
                                                 </div>
 
                                                 <div>
 
-                                                  <p className="text-xs text-zinc-400 mb-1">Has Crystal Bowls</p>
+                                                  <p className="text-xs text-zinc-400 mb-1">Has prior jewelry</p>
 
-                                                  <p className="text-white">{discoveryData.hasCrystalBowls || 'Not specified'}</p>
+                                                  <p className="text-white">{priorJewelry || "Not specified"}</p>
 
                                                 </div>
 
-                                                {discoveryData.notesAndAlchemies && (
+                                                {pieceNotesText && (
 
                                                   <div>
 
-                                                    <p className="text-xs text-zinc-400 mb-1">Notes and Alchemies</p>
+                                                    <p className="text-xs text-zinc-400 mb-1">Piece notes</p>
 
-                                                    <p className="text-white">{discoveryData.notesAndAlchemies}</p>
+                                                    <p className="text-white">{pieceNotesText}</p>
 
                                                   </div>
 
@@ -846,13 +864,13 @@ export default function EnquiriesPage() {
 
                                                 </div>
 
-                                                {discoveryData.soundOrEnergy && (
+                                                {stylePrefs && (
 
                                                   <div>
 
-                                                    <p className="text-xs text-zinc-400 mb-1">Sound or Energy Looking For</p>
+                                                    <p className="text-xs text-zinc-400 mb-1">Style preferences</p>
 
-                                                    <p className="text-white">{discoveryData.soundOrEnergy}</p>
+                                                    <p className="text-white">{stylePrefs}</p>
 
                                                   </div>
 

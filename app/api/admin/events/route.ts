@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Event from "@/models/Event";
 import { requireAdmin } from "@/lib/auth";
-import { uploadToS3 } from "@/lib/aws-s3";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 // GET - Fetch all events with pagination and search
 export async function GET(req: NextRequest) {
@@ -120,25 +120,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Handle image upload to S3 if provided
+    // Handle image upload to Cloudinary if provided
     let s3ImageUrl: string | undefined;
     if (imageUrl) {
       const imageStr = String(imageUrl).trim();
 
-      // Check if it's already an S3 URL
+      // Check if it's already a Cloudinary (or any HTTPS) URL
       if (imageStr.startsWith("https://")) {
         s3ImageUrl = imageStr;
       } else {
-        // Upload base64 image to S3 (will be converted to WebP)
+        // Upload base64 image to Cloudinary (will be converted to WebP)
         try {
           const filename = `event-${Date.now()}.webp`;
-          const result = await uploadToS3(imageStr, filename, "images");
+          const result = await uploadToCloudinary(imageStr, filename, "images");
           s3ImageUrl = result.url;
-          console.log(`✓ Uploaded event image to S3 as WebP: ${result.url}`);
+          console.log(`✓ Uploaded event image to Cloudinary as WebP: ${result.url}`);
         } catch (uploadError) {
           console.error("Failed to upload event image:", uploadError);
           return NextResponse.json(
-            { success: false, message: "Failed to upload event image to S3" },
+            { success: false, message: "Failed to upload event image to Cloudinary" },
             { status: 500 },
           );
         }

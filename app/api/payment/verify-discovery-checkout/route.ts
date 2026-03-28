@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
-import Stripe from "stripe";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
 import SessionEnquiry from "@/models/SessionEnquiry";
@@ -9,17 +8,16 @@ import {
   sendDiscoverySessionConfirmation,
   sendDiscoverySessionNotificationToAdmin,
 } from "@/lib/email";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-10-29.clover",
-});
+import {
+  getRazorpayInstance,
+  verifyRazorpaySignature,
+} from "@/lib/razorpay";
 
 export async function POST(req: NextRequest) {
   try {
     const authUser = await requireAuth(req);
     await connectDB();
 
-    // Fetch full user document to get email and phone
     const user = (await User.findById(authUser._id).lean()) as {
       email?: string;
       phone?: string;
@@ -29,93 +27,107 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, message: "User not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
-    const body = await req.json();
-    const { sessionId } = body;
+    const {
+      razorpayPaymentId,
+      razorpayOrderId,
+      razorpaySignature,
+      formData,
+    } = await req.json();
 
-    if (!sessionId) {
+    if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
       return NextResponse.json(
-        { success: false, message: "Session ID is required" },
-        { status: 400 },
+        { success: false, message: "Missing Razorpay payment details" },
+        { status: 400 }
       );
     }
 
-    // Retrieve the Stripe checkout session
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const isAuthentic = verifyRazorpaySignature({
+      orderId: razorpayOrderId,
+      paymentId: razorpayPaymentId,
+      signature: razorpaySignature,
+    });
 
-    if (session.payment_status !== "paid") {
+    if (!isAuthentic) {
       return NextResponse.json(
-        { success: false, message: "Payment not completed" },
-        { status: 400 },
+        { success: false, message: "Invalid payment signature" },
+        { status: 400 }
       );
     }
 
-    // Verify metadata
-    const metadata = session.metadata;
+    const razorpay = getRazorpayInstance();
+    const [payment, providerOrder] = await Promise.all([
+      razorpay.payments.fetch(razorpayPaymentId),
+      razorpay.orders.fetch(razorpayOrderId),
+    ]);
+
+    const metadata = providerOrder.notes;
     if (
       !metadata ||
       metadata.sessionType !== "discovery" ||
-      !metadata.sessionId ||
+      !metadata.discoverySessionId ||
       metadata.userId !== String(authUser._id)
     ) {
       return NextResponse.json(
-        { success: false, message: "Invalid session metadata" },
-        { status: 400 },
+        { success: false, message: "Invalid payment metadata" },
+        { status: 400 }
       );
     }
 
-    const discoverySessionId = metadata.sessionId;
+    if (payment.order_id !== razorpayOrderId) {
+      return NextResponse.json(
+        { success: false, message: "Payment does not belong to this order" },
+        { status: 400 }
+      );
+    }
 
-    // Fetch discovery session
-    const discoverySession =
-      await DiscoverySession.findById(discoverySessionId);
+    if (!["authorized", "captured"].includes(payment.status)) {
+      return NextResponse.json(
+        { success: false, message: `Payment status: ${payment.status}` },
+        { status: 400 }
+      );
+    }
+
+    const discoverySessionId = metadata.discoverySessionId;
+    const discoverySession = await DiscoverySession.findById(discoverySessionId);
     if (!discoverySession) {
       return NextResponse.json(
         { success: false, message: "Discovery session not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
-    // Check if session still has available seats
-    if (
-      (discoverySession.bookedSeats || 0) >= (discoverySession.totalSeats || 1)
-    ) {
+    if ((discoverySession.bookedSeats || 0) >= (discoverySession.totalSeats || 1)) {
       return NextResponse.json(
         { success: false, message: "This session is already fully booked" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    // Check if session enquiry already exists
+    const expectedAmount = Math.round((discoverySession.price || 0) * 100);
+    if (payment.amount !== expectedAmount || payment.currency !== "USD") {
+      return NextResponse.json(
+        { success: false, message: "Payment amount mismatch" },
+        { status: 400 }
+      );
+    }
+
     const existingBooking = await SessionEnquiry.findOne({
       userId: authUser._id,
       sessionId: discoverySessionId,
       sessionType: "discovery",
-      paymentRef: sessionId,
+      paymentRef: razorpayPaymentId,
     });
 
-    let booking;
-    if (existingBooking) {
-      booking = existingBooking;
-    } else {
-      // Create session enquiry
-      const bookingAmount = (session.amount_total || 0) / 100; // Convert from cents
-
-      // Extract form data from metadata
-      let formDataObj = {};
-      try {
-        formDataObj = JSON.parse(metadata.formData || "{}");
-      } catch (e) {
-        console.error("Error parsing formData from metadata:", e);
-      }
-
+    let booking = existingBooking;
+    if (!booking) {
       const commentData = {
         date: discoverySession.date || "TBD",
         time: discoverySession.startTime || "TBD",
-        answers: formDataObj,
+        answers: typeof formData === "object" && formData ? formData : {},
       };
 
       booking = await SessionEnquiry.create({
@@ -123,10 +135,10 @@ export async function POST(req: NextRequest) {
         sessionId: discoverySessionId,
         sessionType: "discovery",
         seats: 1,
-        amount: bookingAmount,
+        amount: payment.amount / 100,
         status: "pending",
-        paymentProvider: "stripe",
-        paymentRef: sessionId,
+        paymentProvider: "razorpay",
+        paymentRef: razorpayPaymentId,
         paymentStatus: "paid",
         fullName: user.name || "User",
         email: user.email || "N/A",
@@ -137,11 +149,9 @@ export async function POST(req: NextRequest) {
         bookedTime: discoverySession.startTime,
       });
 
-      // Update discovery session booked seats
       discoverySession.bookedSeats = (discoverySession.bookedSeats || 0) + 1;
       await discoverySession.save();
 
-      // Send confirmation email to user
       if (user.email) {
         sendDiscoverySessionConfirmation({
           selectedDate: discoverySession.date || "TBD",
@@ -151,23 +161,22 @@ export async function POST(req: NextRequest) {
         }).catch((error) => {
           console.error(
             "Failed to send discovery session confirmation email to user:",
-            error,
+            error
           );
         });
       }
 
-      // Send notification email to admin
       sendDiscoverySessionNotificationToAdmin({
         userName: user.name || "User",
         userEmail: user.email || "N/A",
         userPhone: user.phone || "N/A",
         selectedDate: discoverySession.date || "TBD",
         selectedTime: discoverySession.startTime || "TBD",
-        amount: bookingAmount,
+        amount: payment.amount / 100,
       }).catch((error) => {
         console.error(
           "Failed to send discovery session notification email to admin:",
-          error,
+          error
         );
       });
     }
@@ -181,7 +190,7 @@ export async function POST(req: NextRequest) {
     const status = e?.message === "UNAUTHORIZED" ? 401 : 500;
     return NextResponse.json(
       { success: false, message: e?.message || "Server error" },
-      { status },
+      { status }
     );
   }
 }

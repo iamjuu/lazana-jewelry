@@ -79,6 +79,12 @@ export {default as LinkedIcon} from './icon/linked.svg'
 export {default as AboutNew1 } from './images/landing/aboutnew1.jpg'
 export {default as AboutNew2 } from './images/landing/aboutnew2.jpg'
 
+export {default as jewleries1 } from './images/jowleries/pexels-bulat369-1243575272-34734540.jpg'
+export {default as jewleries2 } from './images/jowleries/pexels-bulat369-1243575272-35187498.jpg'
+export {default as jewleries3 } from './images/jowleries/pexels-lauraoliveira-34444125.jpg'
+export {default as jewleries4 } from './images/jowleries/pexels-vedat-29043373.jpg'
+
+
 // About Page New Images
 export {default as AboutIMG6097} from './images/about/IMG_6097.jpeg'
 export {default as AboutCrystal} from './images/about/crystal.jpg'

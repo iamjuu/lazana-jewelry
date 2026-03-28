@@ -18,20 +18,20 @@ export async function POST(_req: NextRequest) {
     // Sample products
     const sampleProducts = [
       {
-        name: "Crystal Singing Bowl - 8 inch",
-        description: "Beautiful crystal singing bowl perfect for meditation and healing",
+        name: "Sample necklace - 18 inch",
+        description: "Beautiful sample piece for your Lazana Jewelry catalog",
         price: 15000, // in smallest currency unit (paise)
         imageUrl: [],
       },
       {
-        name: "Tibetan Singing Bowl Set",
-        description: "Authentic handmade Tibetan singing bowl with cushion and mallet",
+        name: "Gold vermeil hoop earrings",
+        description: "Sample listing for your Lazana Jewelry catalog",
         price: 8000,
         imageUrl: [],
       },
       {
-        name: "Meditation Cushion",
-        description: "Comfortable meditation cushion filled with buckwheat hulls",
+        name: "Sterling silver chain bracelet",
+        description: "Adjustable bracelet—sample for development seed data",
         price: 3500,
         imageUrl: [],
       },

@@ -10,7 +10,7 @@ const BookingSchema = new Schema<BookingType>(
     status: { type: String, enum: ["pending", "confirmed", "cancelled"], default: "pending" },
     phone: { type: String, required: false },
     comment: { type: String, required: false },
-    paymentProvider: { type: String, enum: ["stripe", "paypal", "bank_transfer"], required: false },
+    paymentProvider: { type: String, enum: ["stripe", "razorpay", "paypal", "bank_transfer"], required: false },
     paymentRef: { type: String, required: false },
     paymentStatus: { type: String, enum: ["pending", "paid", "failed"], default: "pending" },
     sessionType: { type: String, enum: ["discovery", "private", "corporate", "event"], required: true, index: true },

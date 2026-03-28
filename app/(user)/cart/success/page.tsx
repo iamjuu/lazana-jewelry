@@ -174,7 +174,7 @@ function SuccessContent() {
               <div className="text-4xl mb-3">✨</div>
               <h3 className="text-[#1C3163] font-semibold mb-2">Delivered</h3>
               <p className="text-gray-600 text-sm">
-                Enjoy your crystal singing bowls!
+                Enjoy your Lazana Jewelry!
               </p>
             </div>
           </div>

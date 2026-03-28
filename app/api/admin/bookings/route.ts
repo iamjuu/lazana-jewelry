@@ -125,7 +125,7 @@ export async function GET(req: NextRequest) {
               title: session.title || booking.services || "Yoga Session",
               date: booking.bookedDate || session.date || "",
               time: booking.bookedTime || session.startTime || "",
-              location: "Crystal Bowl Studio", // Default location
+              location: "Lazana Jewelry", // Default location
             };
           }
         }

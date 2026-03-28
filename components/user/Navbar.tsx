@@ -12,12 +12,12 @@ import toast from "react-hot-toast";
 const navigationItems = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop", hasDropdown: true },
-  {
-    href: "/services",
-    label: "Sound Healing",
-    hasOfferingDropdown: true,
-    hovertrue: true,
-  },
+  // {
+  //   href: "/services",
+  //   label: "Sound Healing",
+  //   hasOfferingDropdown: true,
+  //   hovertrue: true,
+  // },
   { href: "/about", label: "About Us", hovertrue: true },
 ];
 
@@ -372,7 +372,7 @@ const Navbar = () => {
                 </Link>
               );
             })}
-            <Link
+            {/* <Link
               href="/book-a-session"
               onClick={() => setMobileMenuOpen(false)}
               className={`block py-2 px-3 text-[#D5B584] hover:text-[#1C3163] hover:bg-white/10 rounded transition ${pathname === "/book-a-session"
@@ -381,7 +381,7 @@ const Navbar = () => {
                 }`}
             >
               Book a Call
-            </Link>
+            </Link> */}
           </div>
         )}
 
@@ -457,7 +457,7 @@ const Navbar = () => {
                           href="/shop?category=all"
                           className="block py-3 px-4 text-[#1C3163] hover:text-white hover:bg-[#D5B584] transition hover:translate-x-2 rounded-md font-seasons"
                         >
-                          All Crystal singing bowls
+                          All Lazana Jewelry
                         </Link>
 
                         {categories.slice(0, 10).map((cat) => (
@@ -557,7 +557,7 @@ const Navbar = () => {
               );
             })}
 
-            <Link
+            {/* <Link
               href="/book-a-session"
               className={`text-[#D5B584] hover:text-[#1C3163] transition ${pathname === "/book-a-session"
                   ? "text-[#1C3163] font-semibold scale-110"
@@ -565,7 +565,7 @@ const Navbar = () => {
                 }`}
             >
               Book a Call
-            </Link>
+            </Link> */}
           </div>
 
           {/* RIGHT ICONS */}

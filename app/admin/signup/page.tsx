@@ -86,7 +86,7 @@ export default function AdminSignupPage() {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="w-full rounded-md border border-zinc-300 px-3 py-2"
-            placeholder="admin@crystalbow.com"
+            placeholder="admin@lazana-jewelry.com"
           />
         </div>
         <div>

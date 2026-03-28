@@ -426,7 +426,7 @@ export default function EventsPage() {
           uploadFormData.append("file", selectedImageFile);
           uploadFormData.append("folder", "images");
 
-          const uploadResponse = await fetch("/api/upload/s3", {
+          const uploadResponse = await fetch("/api/upload/cloudinary", {
             method: "POST",
             body: uploadFormData,
           });
@@ -531,7 +531,7 @@ export default function EventsPage() {
         originalImageUrl.startsWith("https://")
       ) {
         try {
-          await fetch("/api/upload/s3/delete", {
+          await fetch("/api/upload/cloudinary/delete", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ url: originalImageUrl }),

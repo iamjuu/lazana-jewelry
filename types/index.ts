@@ -146,7 +146,7 @@ export interface Order extends WithTimestamps {
   deliveryStatusHistory: DeliveryStatusUpdate[]; // Track delivery status updates with messages
   currentMessage?: string; // Latest admin message (can be updated without triggering email)
   customerComments?: string; // User's comments/questions
-  paymentProvider?: "stripe";
+  paymentProvider?: "stripe" | "razorpay";
   paymentRef?: string;
   shippingAddress: ShippingAddress;
   customerEmail: string;
@@ -257,7 +257,7 @@ export interface Booking extends WithTimestamps {
   status: BookingStatus;
   phone?: string;
   comment?: string;
-  paymentProvider?: "stripe" | "paypal" | "bank_transfer";
+  paymentProvider?: "stripe" | "razorpay" | "paypal" | "bank_transfer";
   paymentRef?: string;
   paymentStatus?: "pending" | "paid" | "failed";
   sessionType?: "discovery" | "private" | "corporate" | "event";

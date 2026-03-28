@@ -65,27 +65,27 @@ const AboutPage = () => {
       id: 1,
       image: PremiumQuality,
       title: " Premium Craftsmanship",
-      para: "Each piece is precision-crafted, made from 99.9% pure  quartz, our bowls produce quality sound and long-lasting resonance.",
+      para: "Each piece is finished with care—quality materials and details you can see and feel.",
     },
 
     {
       id: 2,
       image: UniqueToYou,
       title: "Light Weight",
-      para: "Our bowls are light, durable, designed for travel-ready, portable anywhere, anytime in our protective cases",
+      para: "Lightweight designs made for everyday wear—easy to layer and take with you.",
     },
 
     {
       id: 3,
       image: Crystal,
       title: "Made for You",
-      para: "Each bowl is unique and can be customised by chakra, note, frequency, colour, and design to make it uniquely yours.",
+      para: "Each piece feels unique—choose finishes and styles that feel like you.",
     },
     {
       id: 4,
       image: Intention,
       title: "With Intention",
-      para: "Each Bowl is precisely tuned, intentionally crafted with it’s own energy, so you can match with your unique energy and purpose. ",
+      para: "Designed with intention—pieces that complement your personal style and story.",
     },
   ];
 
@@ -100,66 +100,44 @@ const AboutPage = () => {
           {/* Left Side - Content */}
           <div className="">
             <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-              About Crystal Singing Bowls
+              About Lazana Jewelry
             </h2>
 
             <div className=" text-[#545454] mt-[25px]">
               <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed text-[#545454] text-left">
-                Crystal Singing Bowls are instruments of sound and vibration
-                widely used in meditation, sound healing, yoga, and mindfulness
-                practices. Unlike traditional metal singing bowls, which have
-                centuries-old roots in the Himalayas, Crystal Singing Bowls are
-                a more recent development. They emerged in the late twentieth
-                century, drawing on advances in quartz crystal manufacturing and
-                were later adopted by wellness practitioners for their clear,
-                sustained tones and simplicity.
+                Lazana Jewelry is a modern jewelry brand focused on timeless
+                design, quality materials, and pieces you can wear every day.
+                Our collections are curated to feel personal, versatile, and
+                easy to style—whether you are building a capsule wardrobe or
+                looking for a statement piece.
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
-                Crystal singing bowls are made from quartz crystal, a material
-                known for its stability and acoustic properties. When played,
-                they produce long-lasting tones that fill a space evenly,
-                creating a focused and immersive sound. Compared to metal bowls,
-                which often generate layered and overtone-rich sounds, quartz
-                crystal bowls are valued for their clarity and singular tone,
-                supporting relaxation, mental focus, and a deeper sense of
-                presence.
+                Each piece is designed with attention to comfort, finish, and
+                how it layers with the rest of your collection. We believe
+                jewelry should feel effortless—beautiful on its own and even
+                better when mixed and matched.
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
-                At Crystal Bowl Studio, our bowls are crafted with close
-                attention to sound quality, material purity, and thoughtful
-                design. Each bowl is crafted from{" "}
+                At Lazana Jewelry, we work with trusted makers and materials
+                so you can shop with confidence. Product pages list metals,
+                stones, and care notes—because details matter when you wear
+                something every day.
+              </p>
+
+              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
+                Craftsmanship means small variations that make handmade and
+                finished jewelry feel unique.{" "}
                 <span className="font-semibold">
-                  99.9% pure quartz crystal sourced from North Carolina
+                  No two pieces are exactly alike.
                 </span>
-                , a region known for exceptionally high-quality quartz. This
-                level of purity contributes to consistency in resonance and
-                tonal clarity, allowing the sound to remain steady and balanced
-                over time.
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
-                The production process involves extremely high temperatures,
-                reaching approximately 2,200 degrees celsius, during which the
-                quartz crystal is shaped and tuned with precision. Because this
-                process combines technical control with hands-on craftsmanship,
-                subtle variations arise naturally in each bowl&apos;s tone,
-                surface, and form.{" "}
-                <span className="font-semibold">
-                  No two bowls are exactly alike.
-                </span>{" "}
-                Each develops its own character through the process.
-              </p>
-
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
-                The specialised production facility and experienced team ensure
-                consistent quality. Their craftsmanship also makes it possible
-                to customise bowls to suit individual preferences or
-                professional needs. Designed as a Sound Healing instrument and a
-                mindful companion, our Crystal Singing Bowls are created to
-                support personal practice, group sessions, or quiet moments of
-                meditation.
+                Whether you are shopping for yourself or gifting someone
+                special, Lazana Jewelry is here to help you find pieces that
+                feel right for your story.
               </p>
             </div>
           </div>
@@ -171,7 +149,7 @@ const AboutPage = () => {
               <div className="relative w-full overflow-hidden shadow-lg">
                 <ImageWithShimmer
                   src="/assets/images/about/IMG_6097.jpeg"
-                  alt="Crystal bowl production process"
+                  alt="Lazana Jewelry craftsmanship"
                   width={500}
                   height={400}
                   className="w-full h-auto group-hover:scale-105 transition-transform duration-300 ease-out"
@@ -184,7 +162,7 @@ const AboutPage = () => {
               <div className="relative w-full overflow-hidden shadow-lg">
                 <ImageWithShimmer
                   src="/assets/images/about/s-l1600 (1) 2.jpeg"
-                  alt="Pure quartz crystal material"
+                  alt="Materials and detail"
                   width={500}
                   height={400}
                   className="w-full h-auto group-hover:scale-105 transition-transform duration-300 ease-out"
@@ -199,7 +177,7 @@ const AboutPage = () => {
           <div className=" pl:0 lg:pl-10">
           <div className="flex w-full  justify-start ">
             <h1 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
-              What makes our Singing Bowls unique
+              What makes our jewelry unique
             </h1>
           </div>
          
@@ -241,7 +219,7 @@ const AboutPage = () => {
               <div className="relative w-full overflow-hidden shadow-lg">
                 <ImageWithShimmer
                   src="/assets/images/about/0A262EFA-9BED-4990-9C85-E0A80F1AD829_1_105_c.jpeg"
-                  alt="Crystal singing bowls collection"
+                  alt="Lazana Jewelry collection"
                   width={500}
                   height={400}
                   className="w-full h-auto group-hover:scale-105 transition-transform duration-300 ease-out"
@@ -254,7 +232,7 @@ const AboutPage = () => {
               <div className="relative w-[350] overflow-hidden shadow-lg max-h-[350px] lg:max-h-[400px]">
                 <ImageWithShimmer
                   src="/assets/images/about/97FA431C-FA5F-4E86-B42D-2CD52185DB1B_1_105_c.jpeg"
-                  alt="Crystal singing bowls with mallet"
+                  alt="Lazana Jewelry styling"
                   width={500}
                   height={400}
                   className="w-full h-auto group-hover:scale-105 transition-transform duration-300 ease-out"
@@ -267,61 +245,39 @@ const AboutPage = () => {
           {/* Right Side - Content (order-1 on mobile so it shows first) */}
           <div className="order-1 lg:order-2">
             <h2 className="font-seasons text-[#D5B584] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-              About Sound Healing
+              Craft & intention
             </h2>
 
             <div className="text-[#545454] mt-[25px]">
               <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#545454] text-left">
-                Sound Healing refers to a range of practices that use sound and
-                vibration to support relaxation, focus, and overall well-being.
-                These practices may include sound baths, sound meditation, and
-                vibroacoustic therapy, and music-based mindfulness, using
-                instruments such as singing bowls, gongs, tuning forks, and
-                bells.
+                Lazana Jewelry brings together thoughtful design, quality
+                materials, and a calm, welcoming experience—whether you are
+                shopping online or visiting for a private styling session.
               </p>
 
               <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
-                From a scientific perspective, Sound Healing is often discussed
-                in relation to its effects on the nervous system and stress
-                regulation.{" "}
+                Our founder&apos;s background in yoga and mindfulness informs how
+                we talk about jewelry: not as a trend, but as something you
+                reach for when you want to feel grounded, confident, or simply
+                more like yourself.{" "}
                 <span className="font-semibold">
-                  Research in psychology and neuroscience shows that long,
-                  sustained, continuous sounds can help activate the
-                  parasympathetic nervous system, which is the part of the
-                  nervous system responsible for rest, recovery, and regulation.
+                  Research in consumer psychology often links self-expression and
+                  ritual with mood and stress regulation—ideas we take seriously
+                  when we design and curate each collection.
                 </span>
               </p>
 
               <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
-                Beyond these physiological effects, sound-based practices are
-                also closely linked to mindfulness. The sound waves provides a
-                simple, non-verbal focal point for attention, helping to reduce
-                mental distractions and support present-moment awareness.{" "}
-                <span className="font-semibold">
-                  Research on music and sound-based interventions has reported
-                  associations with reduced stress, improved mood, and greater
-                  emotional regulation.
-                </span>
+                We focus on finishes that wear well, silhouettes that layer
+                easily, and details you notice up close. If you are unsure where
+                to start, our team can help you explore metals, stones, and
+                proportions that suit your style and lifestyle.
               </p>
 
               <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
-                In addition, vibration also plays an important role in many
-                sound healing approaches. Lower-frequency sound waves can be
-                felt physically and heard, particularly when instruments such as
-                singing bowls are played nearby. Studies of Sound Meditation and
-                Sound Bath experiences have observed changes in breathing
-                patterns, heart rate, and tension, all commonly associated with
-                relaxation responses.
-              </p>
-
-              <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
-                Sound Healing is best understood as a complementary practice,
-                supporting well-being alongside meditation, movement, and
-                therapeutic care. At Crystal Bowl Studio, we approach Sound
-                Healing with this understanding, designing bowls that offer
-                clear, sustained sound and gentle vibration to support
-                listening, presence, and restorative calm in everyday modern
-                life.
+                Meaningful rituals can be small—like choosing a necklace you
+                wear every day. At Lazana Jewelry, we care how pieces feel on the
+                body and how they fit into your real life.
               </p>
             </div>
           </div>
@@ -339,13 +295,13 @@ const AboutPage = () => {
 
             <div className="space-y-4 text-black mt-[25px]">
               <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
-                Crystal Bowl Studio was founded by Francesca Wong, whose work
+                Lazana Jewelry was founded by Francesca Wong, whose work
                 brings together international business experience and
                 long-standing practice in Yoga and Sound Healing.
               </p>
 
               <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
-                Before establishing Crystal Bowl Studio, Francesca spent over a
+                Before establishing Lazana Jewelry, Francesca spent over a
                 decade working across global finance, e-commerce, and luxury
                 beauty, with experience at KPMG, Citibank, Alibaba, and Estée
                 Lauder. These environments shaped her understanding of
@@ -372,18 +328,16 @@ const AboutPage = () => {
               </p>
 
               <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-relaxed font-[300] text-[#545454]">
-                Francesca's experience in consumer-facing industries reflects
-                the way Crystal Bowl Studio approaches its products, the
-                integration of craftsmanship, practicality and usability,
-                creating sound healing instruments that are refined,
-                approachable. The Studio was created with the aim of making
-                Sound Healing practical and accessible to support and enhance
-                modern life and <b>The Vision:</b>
+                Francesca&apos;s experience in consumer-facing industries reflects
+                the way Lazana Jewelry approaches its products: craftsmanship,
+                practicality, and wearability—creating jewelry that feels refined
+                and approachable. The brand was created to make quality design
+                more accessible, and <b>The Vision:</b>
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-center">
                 <span className="font-semibold">
-                  &quot;To make Sound Healing accessible, anywhere and
+                  &quot;To make beautiful jewelry accessible, anywhere and
                   anytime.&quot;
                 </span>
               </p>
@@ -407,7 +361,7 @@ const AboutPage = () => {
               <div className="relative w-full aspect-[2/3] max-w-[200px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[320px] xl:max-w-[400px] rounded-[12px] sm:rounded-[15px] md:rounded-[18px] lg:rounded-[20px] overflow-hidden z-10">
                 <ImageWithShimmer
                   src="/assets/images/about/EF61277E-CA8A-456C-A0F2-5B74558B59A8_1_201_a.jpeg"
-                  alt="Francesca Wong, founder of Crystal Bowl Studio"
+                  alt="Francesca Wong, founder of Lazana Jewelry"
                   fill
                   className="object-cover group-hover:rotate-3 transition-transform duration-300 ease-out"
                   priority

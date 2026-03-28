@@ -14,21 +14,21 @@ const Icons = [
     id: 1,
     image: PremiumQuality,
     title: " Premium Craftsmanship",
-    para: "Each piece is precision-crafted, made from 99.9% pure quartz, our bowls produce quality sound and long-lasting resonance."
+    para: "Each piece is finished with care—quality materials and details you can see and feel."
   },
 
   {
     id: 2,
     image: UniqueToYou,
     title: "Light Weight",
-    para: "Our bowls are light, durable, designed for travel-ready, portable anywhere, anytime in our protective cases"
+    para: "Lightweight designs made for everyday wear—easy to layer and take with you."
   },
 
   {
     id: 3,
     image: Crystal,
     title: "Made for You",
-    para: "Each bowl is unique and can be customised by chakra, note, frequency, colour, and design to make it uniquely yours."
+    para: "Each piece feels unique—choose finishes and styles that feel like you."
   },
   {
     id: 4,
@@ -48,15 +48,15 @@ const CollectionSection: React.FC<CollectionSectionProps> = () => {
           <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
             Stressed or overwhelmed, but no time?
           </h1>
-          <p className="mt-[25px] font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose"> Let Crystal Sound clear your mind in 1 minute. </p>
+          <p className="mt-[25px] font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose"> Discover Lazana Jewelry—curated for you. </p>
         </div>
         <div>
 
           <h1 className="font-seasons text-[#e6b884] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
-            We make Crystal Singing Bowls for Sound Healing & Meditation</h1>
-          <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose mt-[25px]">Thoughtfully crafted Crystal Singing Bowls for clarity, relaxation, and modern mindful living.
+            We curate Lazana Jewelry for every occasion</h1>
+          <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] lg:text-[16px] font-light text-[#545454] leading-relaxed sm:leading-relaxed  text-center md:leading-loose mt-[25px]">Thoughtfully curated Lazana Jewelry for clarity, confidence, and modern living.
             <br />
-            Made from 99.9% pure  quartz crystal.
+            Crafted with quality materials and timeless design.
             <br />
             Lightweight, travel-friendly, and designed for everyday use.
           </p>

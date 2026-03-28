@@ -10,20 +10,22 @@ function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams?.get("orderId");
-  const paymentIntent = searchParams?.get("payment_intent");
+  const razorpayPaymentId = searchParams?.get("razorpay_payment_id");
+  const razorpayOrderId = searchParams?.get("razorpay_order_id");
+  const razorpaySignature = searchParams?.get("razorpay_signature");
   
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!orderId) {
-      setError("Order ID is missing");
+    if (!orderId || !razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
+      setError("Payment details are missing");
       setStatus("error");
       return;
     }
 
     verifyPayment();
-  }, [orderId, paymentIntent]);
+  }, [orderId, razorpayPaymentId, razorpayOrderId, razorpaySignature]);
 
   const verifyPayment = async () => {
     try {
@@ -33,16 +35,18 @@ function PaymentSuccessContent() {
         return;
       }
 
-      // Wait a bit to ensure Stripe has processed the payment after redirect
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
       const response = await fetch("/api/payment/verify-intent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ orderId, paymentIntent }),
+        body: JSON.stringify({
+          orderId,
+          razorpayPaymentId,
+          razorpayOrderId,
+          razorpaySignature,
+        }),
       });
 
       const data = await response.json();

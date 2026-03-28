@@ -1,9 +1,12 @@
 "use client";
 
 import React, { useMemo, useState, useRef, useEffect } from "react";
+import Script from "next/script";
 import toast from "react-hot-toast";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
+import { openRazorpayCheckout } from "@/lib/razorpay-client";
+import { useRouter } from "next/navigation";
 
 type AvailableSlot = {
   _id: string;
@@ -15,6 +18,7 @@ type AvailableSlot = {
 };
 
 const DiscoveryAppointmentPage = () => {
+  const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -34,12 +38,12 @@ const DiscoveryAppointmentPage = () => {
     phone: string;
   } | null>(null);
 
-  // Bowl Discovery Form state
-  const [hasCrystalBowls, setHasCrystalBowls] = useState<string | null>(null);
-  const [notesAndAlchemies, setNotesAndAlchemies] = useState<string>("");
+  // Discovery form state persisted client-side until Razorpay verification completes
+  const [hasPriorJewelry, setHasPriorJewelry] = useState<string | null>(null);
+  const [pieceNotes, setPieceNotes] = useState<string>("");
   const [experienceLevel, setExperienceLevel] = useState<string[]>([]);
   const [mainIntention, setMainIntention] = useState<string[]>([]);
-  const [soundOrEnergy, setSoundOrEnergy] = useState<string>("");
+  const [stylePreferences, setStylePreferences] = useState<string>("");
 
   // Form submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -385,7 +389,7 @@ const DiscoveryAppointmentPage = () => {
     setIsSubmitting(true);
 
     try {
-      // Create Stripe checkout session for discovery session
+      // Create Razorpay order for discovery session
       const response = await fetch("/api/payment/create-discovery-checkout", {
         method: "POST",
         headers: {
@@ -394,21 +398,49 @@ const DiscoveryAppointmentPage = () => {
         },
         body: JSON.stringify({
           sessionId: selectedSlotId,
-          formData: {
-            hasCrystalBowls,
-            notesAndAlchemies,
-            experienceLevel,
-            mainIntention,
-            soundOrEnergy,
-          },
         }),
       });
 
       const data = await response.json();
 
-      if (data.success && data.data?.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.data.url;
+      if (data.success && data.data?.razorpayOrderId) {
+        const discoveryFormData = {
+          hasPriorJewelry,
+          pieceNotes,
+          experienceLevel,
+          mainIntention,
+          stylePreferences,
+        };
+
+        sessionStorage.setItem(
+          "discoveryCheckoutForm",
+          JSON.stringify(discoveryFormData),
+        );
+
+        openRazorpayCheckout({
+          key: data.data.key,
+          amount: data.data.amount,
+          currency: data.data.currency,
+          orderId: data.data.razorpayOrderId,
+          name: "Lazana Jewelry",
+          description: data.data.description,
+          prefill: data.data.prefill,
+          notes: {
+            sessionType: "discovery",
+          },
+          onSuccess: (paymentResponse) => {
+            router.push(
+              `/discoveryappointment/success?razorpay_payment_id=${paymentResponse.razorpay_payment_id}&razorpay_order_id=${paymentResponse.razorpay_order_id}&razorpay_signature=${paymentResponse.razorpay_signature}`,
+            );
+          },
+          onError: (message) => {
+            toast.error(message);
+            setIsSubmitting(false);
+          },
+          onDismiss: () => {
+            setIsSubmitting(false);
+          },
+        });
       } else {
         toast.error(
           data.message || "Failed to initiate payment. Please try again.",
@@ -423,6 +455,7 @@ const DiscoveryAppointmentPage = () => {
   };
   return (
     <div className="bg-gradient-to-r from-[#FDECE2] to-[#FEC1A2] min-h-screen">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       <Navbar />
       <div className="w-full">
         <section className="w-full px-4 md:px-0 mt-[25px]">
@@ -652,7 +685,7 @@ const DiscoveryAppointmentPage = () => {
                 </div>
               </div>
 
-              {/* Bowl Discovery Form */}
+              {/* Discovery appointment form */}
               <div
                 ref={formRef}
                 className="mt-12 transition-all duration-700 ease-out opacity-100 translate-y-0 scale-100"
@@ -662,8 +695,8 @@ const DiscoveryAppointmentPage = () => {
                     Discovery Form
                   </h2>
                   <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo mb-2">
-                    Here are a few questions for you to fill out so we can
-                    better support you in finding your right bowl family.
+                    A few optional questions so we can prepare for your visit
+                    and help you find pieces that fit your style.
                   </p>
                   <p className="sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo mb-8 italic">
                     You can skip this section and submit your appointment with
@@ -671,19 +704,19 @@ const DiscoveryAppointmentPage = () => {
                   </p>
 
                   <div className="space-y-8">
-                    {/* Question 1: Do You Have Any Crystal Bowls? */}
+                    {/* Question 1: Prior Lazana Jewelry */}
                     <div>
                       <label className="block sm:text-[15px]  text-[14px]  md:text-[16px] text-[#1C3163] font-normal mb-4">
-                        Do you have any crystal bowls?
+                        Do you already own any Lazana Jewelry?
                       </label>
                       <div className="flex gap-6">
                         <label className="flex items-center cursor-pointer">
                           <input
                             type="radio"
-                            name="hasCrystalBowls"
+                            name="hasPriorJewelry"
                             value="yes"
-                            checked={hasCrystalBowls === "yes"}
-                            onChange={(e) => setHasCrystalBowls(e.target.value)}
+                            checked={hasPriorJewelry === "yes"}
+                            onChange={(e) => setHasPriorJewelry(e.target.value)}
                             className="w-5 h-5 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2"
                           />
                           <span className="ml-2 text-[16px] text-[#545454]">
@@ -693,10 +726,10 @@ const DiscoveryAppointmentPage = () => {
                         <label className="flex items-center cursor-pointer">
                           <input
                             type="radio"
-                            name="hasCrystalBowls"
+                            name="hasPriorJewelry"
                             value="no"
-                            checked={hasCrystalBowls === "no"}
-                            onChange={(e) => setHasCrystalBowls(e.target.value)}
+                            checked={hasPriorJewelry === "no"}
+                            onChange={(e) => setHasPriorJewelry(e.target.value)}
                             className="w-5 h-5 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2"
                           />
                           <span className="ml-2 text-[16px] text-[#545454]">
@@ -706,19 +739,19 @@ const DiscoveryAppointmentPage = () => {
                       </div>
                     </div>
 
-                    {/* Question 2: If Yes - Notes and Alchemies */}
-                    {hasCrystalBowls === "yes" && (
+                    {/* Question 2: If yes — piece notes */}
+                    {hasPriorJewelry === "yes" && (
                       <div>
                         <label className="block sm:text-[15px]  text-[14px]  md:text-[16px] text-[#1C3163] font-normal mb-4">
-                          If yes: Please list the notes and alchemies (if
-                          known):
+                          If yes: list pieces or collections you already own (if
+                          known), e.g. ring size, metal, or style names:
                         </label>
                         <textarea
-                          value={notesAndAlchemies}
-                          onChange={(e) => setNotesAndAlchemies(e.target.value)}
+                          value={pieceNotes}
+                          onChange={(e) => setPieceNotes(e.target.value)}
                           className="w-full px-4 py-3 border border-[#1C3163] rounded-lg text-[16px] text-[#545454] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#1C3163] resize-none"
                           rows={3}
-                          placeholder="Enter notes and alchemies here..."
+                          placeholder="e.g. gold hoops, silver chain length, ring size…"
                         />
                       </div>
                     )}
@@ -742,7 +775,7 @@ const DiscoveryAppointmentPage = () => {
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
-                            Beginner - I&apos;m new to crystal bowls studio
+                            Beginner - I&apos;m new to Lazana Jewelry
                           </span>
                         </label>
                         <label className="flex items-start cursor-pointer">
@@ -757,8 +790,8 @@ const DiscoveryAppointmentPage = () => {
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
-                            Some experience - I&apos;ve played or attended
-                            sessions
+                            Some experience - I&apos;ve shopped fine jewelry
+                            before
                           </span>
                         </label>
                         <label className="flex items-start cursor-pointer">
@@ -771,7 +804,7 @@ const DiscoveryAppointmentPage = () => {
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
-                            Experienced - I own/play bowls regularly
+                            Experienced - I collect or wear jewelry often
                           </span>
                         </label>
                       </div>
@@ -796,7 +829,7 @@ const DiscoveryAppointmentPage = () => {
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] focus:ring-[#1C3163] focus:ring-2 rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
-                            I&apos;m looking for a specific note/crystal studio
+                            I&apos;m looking for a specific style or collection
                           </span>
                         </label>
                         <label className="flex items-start cursor-pointer">
@@ -822,7 +855,7 @@ const DiscoveryAppointmentPage = () => {
                             className="mt-1 w-5 h-5 mr-0 text-[#D5B584] rounded"
                           />
                           <span className="ml-3 sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454]">
-                            I am ready to purchase if I find the right bowl
+                            I am ready to purchase if I find the right piece
                           </span>
                         </label>
                         <label className="flex items-start cursor-pointer">
@@ -843,21 +876,21 @@ const DiscoveryAppointmentPage = () => {
                       </div>
                     </div>
 
-                    {/* Question 5: Sound or Energy */}
+                    {/* Question 5: Style preferences */}
                     <div>
                       <label className="block sm:text-[15px]  text-[14px]  md:text-[16px] text-[#1C3163] font-normal mb-4">
-                        What kind of sound or energy are you looking for? (e.g.
-                        grounding, heart-opening, masculine/feminine balance..){" "}
+                        Any style preferences or inspiration? (e.g. minimal vs.
+                        statement, gold vs. silver, gift vs. everyday wear){" "}
                         <span className="text-[#545454] text-[14px]">
                           (Optional)
                         </span>
                       </label>
                       <textarea
-                        value={soundOrEnergy}
-                        onChange={(e) => setSoundOrEnergy(e.target.value)}
+                        value={stylePreferences}
+                        onChange={(e) => setStylePreferences(e.target.value)}
                         className="w-full px-4 py-3 border border-[#1C3163] rounded-lg sm:text-[15px]  text-[14px]  md:text-[16px] text-[#545454] font-touvlo focus:outline-none focus:ring-2 focus:ring-[#1C3163] resize-none"
                         rows={6}
-                        placeholder="Describe the kind of sound or energy you are looking for..."
+                        placeholder="Tell us what you are drawn to or what you would like to avoid…"
                       />
                     </div>
                   </div>

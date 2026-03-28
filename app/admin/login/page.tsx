@@ -118,7 +118,7 @@ function AdminLoginContent() {
 
   return (
     <div className="mx-auto max-w-md px-6 py-24  shadow-lg  mt-[60px] border-t border-b rounded-lg border-[#1C3163]">
-      <h1 className="font-seasons mb-2 text-3xl font-bold text-[#1C3163] whitespace-nowrap text-center">Crystal Bowl Studio </h1>
+      <h1 className="font-seasons mb-2 text-3xl font-bold text-[#1C3163] whitespace-nowrap text-center">Lazana Jewelry </h1>
       <p className="font-touvlo mb-6 text-sm text-[#1C3163] text-center">Administrator Login</p>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="mt-10">
@@ -132,7 +132,7 @@ function AdminLoginContent() {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="w-full rounded-md border border-zinc-300 px-3 py-2"
-            placeholder="admin@crystalbow.com"
+            placeholder="admin@lazana-jewelry.com"
           />
         </div>
         <div>

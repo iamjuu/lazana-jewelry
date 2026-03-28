@@ -1,26 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
-import Stripe from "stripe";
 import connectDB from "@/lib/mongodb";
 import Booking from "@/models/Booking";
 import Event from "@/models/Event";
 import User from "@/models/User";
 import EventCoupon from "@/models/EventCoupon";
 import mongoose from "mongoose";
-import { sendEventBookingConfirmationToUser, sendEventBookingNotificationToAdmin } from "@/lib/email";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-10-29.clover",
-});
+import {
+  sendEventBookingConfirmationToUser,
+  sendEventBookingNotificationToAdmin,
+} from "@/lib/email";
+import {
+  getRazorpayInstance,
+  verifyRazorpaySignature,
+} from "@/lib/razorpay";
 
 export async function POST(req: NextRequest) {
   try {
     const authUser = await requireAuth(req);
     await connectDB();
-    
-    // Fetch full user document to get email and phone
-    const user = await User.findById(authUser._id).lean() as { email?: string; phone?: string; name?: string } | null;
-    
+
+    const user = (await User.findById(authUser._id).lean()) as {
+      email?: string;
+      phone?: string;
+      name?: string;
+    } | null;
+
     if (!user) {
       return NextResponse.json(
         { success: false, message: "User not found" },
@@ -28,42 +33,71 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
-    const { sessionId } = body;
+    const {
+      razorpayPaymentId,
+      razorpayOrderId,
+      razorpaySignature,
+    } = await req.json();
 
-    if (!sessionId) {
+    if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
       return NextResponse.json(
-        { success: false, message: "Session ID is required" },
+        { success: false, message: "Missing Razorpay payment details" },
         { status: 400 }
       );
     }
 
-    // Retrieve the Stripe checkout session
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const isAuthentic = verifyRazorpaySignature({
+      orderId: razorpayOrderId,
+      paymentId: razorpayPaymentId,
+      signature: razorpaySignature,
+    });
 
-    if (session.payment_status !== "paid") {
+    if (!isAuthentic) {
       return NextResponse.json(
-        { success: false, message: "Payment not completed" },
+        { success: false, message: "Invalid payment signature" },
         { status: 400 }
       );
     }
 
-    // Verify metadata
-    const metadata = session.metadata;
-    if (!metadata || metadata.sessionType !== "event" || !metadata.eventId || metadata.userId !== String(authUser._id)) {
+    const razorpay = getRazorpayInstance();
+    const [payment, providerOrder] = await Promise.all([
+      razorpay.payments.fetch(razorpayPaymentId),
+      razorpay.orders.fetch(razorpayOrderId),
+    ]);
+
+    const metadata = providerOrder.notes;
+    if (
+      !metadata ||
+      metadata.sessionType !== "event" ||
+      !metadata.eventId ||
+      metadata.userId !== String(authUser._id)
+    ) {
       return NextResponse.json(
-        { success: false, message: "Invalid session metadata" },
+        { success: false, message: "Invalid payment metadata" },
+        { status: 400 }
+      );
+    }
+
+    if (payment.order_id !== razorpayOrderId) {
+      return NextResponse.json(
+        { success: false, message: "Payment does not belong to this order" },
+        { status: 400 }
+      );
+    }
+
+    if (!["authorized", "captured"].includes(payment.status)) {
+      return NextResponse.json(
+        { success: false, message: `Payment status: ${payment.status}` },
         { status: 400 }
       );
     }
 
     const eventId = metadata.eventId;
-    const quantity = metadata.quantity ? parseInt(metadata.quantity) : 1;
-    const couponCode = metadata.couponCode || null;
-    const couponId = metadata.couponId || null;
-    const discountAmount = metadata.discountAmount ? parseFloat(metadata.discountAmount) : 0;
+    const quantity = metadata.quantity ? parseInt(String(metadata.quantity), 10) : 1;
+    const couponCode = metadata.couponCode ? String(metadata.couponCode) : null;
+    const couponId = metadata.couponId ? String(metadata.couponId) : null;
+    const discountAmount = metadata.discountAmount ? parseFloat(String(metadata.discountAmount)) : 0;
 
-    // Fetch event
     const event = await Event.findById(eventId);
     if (!event) {
       return NextResponse.json(
@@ -72,43 +106,47 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if event still has available slots
     const availableSlots = (event.totalSeats || 0) - (event.bookedSeats || 0);
     if (availableSlots < quantity) {
       return NextResponse.json(
-        { success: false, message: `Only ${availableSlots} slot${availableSlots > 1 ? 's' : ''} available now` },
+        { success: false, message: `Only ${availableSlots} slot${availableSlots > 1 ? "s" : ""} available now` },
         { status: 400 }
       );
     }
 
-    // Check if booking already exists
+    const expectedAmount =
+      Math.round((event.price || 0) * 100) * quantity -
+      Math.round(discountAmount * 100);
+    if (payment.amount !== Math.max(1, expectedAmount) || payment.currency !== "USD") {
+      return NextResponse.json(
+        { success: false, message: "Payment amount mismatch" },
+        { status: 400 }
+      );
+    }
+
     const existingBooking = await Booking.findOne({
       userId: authUser._id,
       sessionId: eventId,
       sessionType: "event",
-      paymentRef: sessionId,
+      paymentRef: razorpayPaymentId,
     });
 
-    let booking;
-    if (existingBooking) {
-      booking = existingBooking;
-    } else {
-      // Create booking
+    let booking = existingBooking;
+    if (!booking) {
       const bookingData: any = {
         userId: authUser._id,
         sessionId: eventId,
         sessionType: "event",
         seats: quantity,
-        amount: (session.amount_total || 0) / 100, // Convert from cents
+        amount: payment.amount / 100,
         status: "confirmed",
-        paymentProvider: "stripe",
-        paymentRef: sessionId,
+        paymentProvider: "razorpay",
+        paymentRef: razorpayPaymentId,
         paymentStatus: "paid",
         phone: user.phone || "N/A",
-        comment: `Event: ${event.title} - ${event.date} at ${event.time} (${quantity} slot${quantity > 1 ? 's' : ''})`,
+        comment: `Event: ${event.title} - ${event.date} at ${event.time} (${quantity} slot${quantity > 1 ? "s" : ""})`,
       };
 
-      // Add coupon information if applicable
       if (couponCode && couponId) {
         bookingData.couponCode = couponCode;
         bookingData.couponId = couponId;
@@ -117,25 +155,22 @@ export async function POST(req: NextRequest) {
 
       booking = await Booking.create(bookingData);
 
-      // Record coupon usage if coupon was applied
       if (couponId && couponCode) {
         try {
           const coupon = await EventCoupon.findById(couponId);
           if (coupon) {
-            // Increment total usage count
             coupon.usedCount = (coupon.usedCount || 0) + 1;
-            
-            // Update per-user usage
             if (!coupon.userUsage) {
               coupon.userUsage = [];
             }
-            
+
             const userUsageIndex = coupon.userUsage.findIndex(
               (usage: any) => String(usage.userId) === String(authUser._id)
             );
-            
+
             if (userUsageIndex >= 0) {
-              coupon.userUsage[userUsageIndex].count = (coupon.userUsage[userUsageIndex].count || 0) + 1;
+              coupon.userUsage[userUsageIndex].count =
+                (coupon.userUsage[userUsageIndex].count || 0) + 1;
               coupon.userUsage[userUsageIndex].lastUsedAt = new Date();
             } else {
               coupon.userUsage.push({
@@ -144,20 +179,17 @@ export async function POST(req: NextRequest) {
                 lastUsedAt: new Date(),
               });
             }
-            
+
             await coupon.save();
           }
         } catch (error) {
           console.error("Error recording coupon usage:", error);
-          // Don't fail the booking if coupon recording fails
         }
       }
 
-      // Update event booked seats
       event.bookedSeats = (event.bookedSeats || 0) + quantity;
       await event.save();
 
-      // Send confirmation email to user
       if (user.email) {
         sendEventBookingConfirmationToUser({
           fullName: user.name || "Customer",
@@ -173,7 +205,6 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      // Send notification email to admin
       sendEventBookingNotificationToAdmin({
         fullName: user.name || "Customer",
         email: user.email || "",
@@ -203,4 +234,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

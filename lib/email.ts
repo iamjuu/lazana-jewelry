@@ -42,7 +42,7 @@ function getTransporter(): nodemailer.Transporter {
 async function sendEmail(to: string, subject: string, html: string) {
   // Same as your Hostinger snippet: display name + angle-address
   const mailOptions = {
-    from: `"Crystal Bowl Studio" <${process.env.EMAIL_USER}>`,
+    from: `"Lazana Jewelry" <${process.env.EMAIL_USER}>`,
     to,
     subject,
     html,
@@ -62,7 +62,7 @@ async function sendEmail(to: string, subject: string, html: string) {
       const isHostinger = (process.env.EMAIL_HOST || "").includes("hostinger");
       if (isHostinger) {
         console.error("💡 Hostinger SMTP auth failed. Check:");
-        console.error("   1. EMAIL_USER = full address (e.g. hello@crystalbowlstudio.com)");
+        console.error("   1. EMAIL_USER = full address (e.g. hello@lazana-jewelry.com)");
         console.error("   2. EMAIL_PASS: if password has # or special chars, wrap in quotes: EMAIL_PASS=\"YourPass#123\"");
         console.error("   3. In hPanel: Email → your account → ensure SMTP is enabled / password is correct");
         console.error("   4. Restart dev server after changing .env");
@@ -93,7 +93,7 @@ export async function sendEventBookingConfirmationToUser(bookingData: {
   slots: number;
   amount: number;
 }) {
-  const subject = "Event Booking Confirmed - Crystal Bowl Studio";
+  const subject = "Event Booking Confirmed - Lazana Jewelry";
   const html = `
     <!DOCTYPE html>
     <html>
@@ -116,7 +116,7 @@ export async function sendEventBookingConfirmationToUser(bookingData: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>✨ Crystal Bowl Studio</h1>
+          <h1>✨ Lazana Jewelry</h1>
           <p style="margin: 0; font-size: 18px;">Event Booking Confirmed</p>
         </div>
         <div class="content">
@@ -158,7 +158,7 @@ export async function sendEventBookingConfirmationToUser(bookingData: {
           </p>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -277,7 +277,7 @@ export async function sendEventBookingNotificationToAdmin(bookingData: {
           </p>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
           <p>This is an automated notification from your booking system.</p>
         </div>
       </div>
@@ -302,7 +302,7 @@ export async function sendEventBookingNotificationToAdmin(bookingData: {
 
 // Send subscription confirmation email to user
 export async function sendSubscriptionConfirmationToUser(email: string) {
-  const subject = "Welcome to Crystal Bowl Studio Newsletter! ✨";
+  const subject = "Welcome to Lazana Jewelry Newsletter! ✨";
   const html = `
     <!DOCTYPE html>
     <html>
@@ -320,7 +320,7 @@ export async function sendSubscriptionConfirmationToUser(email: string) {
     <body>
       <div class="container">
         <div class="header">
-          <h1>✨ Crystal Bowl Studio</h1>
+          <h1>✨ Lazana Jewelry</h1>
           <p style="margin: 0; font-size: 18px;">Welcome to Our Newsletter!</p>
         </div>
         <div class="content">
@@ -335,7 +335,7 @@ export async function sendSubscriptionConfirmationToUser(email: string) {
               <li>New collections and products</li>
               <li>Upcoming events and workshops</li>
               <li>Healing tips and insights</li>
-              <li>All the magic from Crystal Bowl Studio</li>
+              <li>All the magic from Lazana Jewelry</li>
             </ul>
             <p style="margin-top: 20px;">
               Stay tuned for our next update! We look forward to connecting with you.
@@ -347,7 +347,7 @@ export async function sendSubscriptionConfirmationToUser(email: string) {
           </p>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
           <p>You're receiving this email because you subscribed to our newsletter.</p>
         </div>
       </div>
@@ -379,7 +379,7 @@ export async function sendSubscriptionNotificationToAdmin(subscriptionData: {
     throw new Error("Admin email not configured");
   }
 
-  const subject = `New Newsletter Subscription - Crystal Bowl Studio`;
+  const subject = `New Newsletter Subscription - Lazana Jewelry`;
   const html = `
     <!DOCTYPE html>
     <html>
@@ -431,7 +431,7 @@ export async function sendSubscriptionNotificationToAdmin(subscriptionData: {
           </p>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
           <p>This is an automated notification from your newsletter subscription system.</p>
         </div>
       </div>
@@ -456,7 +456,7 @@ export async function sendSubscriptionNotificationToAdmin(subscriptionData: {
 
 // Send OTP email
 export async function sendOTPEmail(email: string, otp: string, name: string) {
-  const subject = "Your OTP Code - Crystal Bowl Studio";
+  const subject = "Your OTP Code - Lazana Jewelry";
   const html = `
     <!DOCTYPE html>
     <html>
@@ -475,19 +475,19 @@ export async function sendOTPEmail(email: string, otp: string, name: string) {
     <body>
       <div class="container">
         <div class="header">
-          <h1>✨ Crystal Bowl Studio</h1>
+          <h1>✨ Lazana Jewelry</h1>
           <p style="margin: 0; font-size: 18px;">Verification Code</p>
         </div>
         <div class="content">
           <p>Hello ${name},</p>
-          <p>Your one-time password (OTP) for Crystal Bowl Studio is:</p>
+          <p>Your one-time password (OTP) for Lazana Jewelry is:</p>
           <div class="otp-box">
             <div class="otp-code">${otp}</div>
           </div>
           <p>This code will expire in 10 minutes. Please do not share this code with anyone.</p>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -511,7 +511,7 @@ export async function sendEnquiryConfirmationToUser(data: {
   services: string;
   sessionType: string;
 }) {
-  const subject = "Enquiry Received - Crystal Bowl Studio";
+  const subject = "Enquiry Received - Lazana Jewelry";
   const html = `
     <!DOCTYPE html>
     <html>
@@ -529,7 +529,7 @@ export async function sendEnquiryConfirmationToUser(data: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>✨ Crystal Bowl Studio</h1>
+          <h1>✨ Lazana Jewelry</h1>
           <p style="margin: 0; font-size: 18px;">Enquiry Received</p>
         </div>
         <div class="content">
@@ -537,12 +537,12 @@ export async function sendEnquiryConfirmationToUser(data: {
             <h2 style="margin-top: 0; color: #10b981;">✅ Thank You for Your Enquiry!</h2>
             <p>Dear ${data.fullName},</p>
             <p>We have received your enquiry for <strong>${data.services}</strong>.</p>
-            ${data.sessionType === "corporate" ? '<p style="margin-top: 15px; font-weight: 500;">Our team will review your enquiry and respond within 2–3 business days.</p>' : "<p>Our team will get back to you soon. We appreciate your interest in Crystal Bowl Studio!</p>"}
-            ${data.sessionType === "corporate" ? '<p style="margin-top: 15px;">We appreciate your interest in Crystal Bowl Studio!</p>' : ""}
+            ${data.sessionType === "corporate" ? '<p style="margin-top: 15px; font-weight: 500;">Our team will review your enquiry and respond within 2–3 business days.</p>' : "<p>Our team will get back to you soon. We appreciate your interest in Lazana Jewelry!</p>"}
+            ${data.sessionType === "corporate" ? '<p style="margin-top: 15px;">We appreciate your interest in Lazana Jewelry!</p>' : ""}
           </div>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -628,7 +628,7 @@ export async function sendEnquiryNotificationToAdmin(data: {
           </table>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -657,7 +657,7 @@ export async function sendDiscoverySessionConfirmation(data: {
 }) {
   if (!data.email) return;
 
-  const subject = "Discovery Session Booked - Crystal Bowl Studio";
+  const subject = "Discovery Session Booked - Lazana Jewelry";
   const html = `
     <!DOCTYPE html>
     <html>
@@ -675,7 +675,7 @@ export async function sendDiscoverySessionConfirmation(data: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>✨ Crystal Bowl Studio</h1>
+          <h1>✨ Lazana Jewelry</h1>
           <p style="margin: 0; font-size: 18px;">Discovery Session Booked</p>
         </div>
         <div class="content">
@@ -689,7 +689,7 @@ export async function sendDiscoverySessionConfirmation(data: {
           </div>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -778,7 +778,7 @@ export async function sendDiscoverySessionNotificationToAdmin(data: {
           </table>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -816,7 +816,7 @@ export async function sendPrivateSessionConfirmationToUser(data: {
   sessionObjectives?: string[];
   comment?: string;
 }) {
-  const subject = "Private Session Request - Crystal Bowl Studio";
+  const subject = "Private Session Request - Lazana Jewelry";
 
   // Build session details section
   let sessionDetailsHtml = "";
@@ -879,7 +879,7 @@ export async function sendPrivateSessionConfirmationToUser(data: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>✨ Crystal Bowl Studio</h1>
+          <h1>✨ Lazana Jewelry</h1>
           <p style="margin: 0; font-size: 18px;">Private Session Confirmed</p>
         </div>
         <div class="content">
@@ -893,7 +893,7 @@ export async function sendPrivateSessionConfirmationToUser(data: {
           </div>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -995,7 +995,7 @@ export async function sendPrivateSessionNotificationToAdmin(data: {
           </p>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
           <p>This is an automated notification from your booking system.</p>
         </div>
       </div>
@@ -1059,7 +1059,7 @@ export async function sendOrderStatusUpdateToUser(data: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>✨ Crystal Bowl Studio</h1>
+          <h1>✨ Lazana Jewelry</h1>
           <p style="margin: 0; font-size: 18px;">Order Update</p>
         </div>
         <div class="content">
@@ -1072,7 +1072,7 @@ export async function sendOrderStatusUpdateToUser(data: {
           </div>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -1133,7 +1133,7 @@ export async function sendUniversalProductOrderConfirmationToUser(
     })
     .join("");
 
-  const subject = "Session Order Confirmed - Crystal Bowl Studio";
+  const subject = "Session Order Confirmed - Lazana Jewelry";
   const html = `
     <!DOCTYPE html>
     <html>
@@ -1154,7 +1154,7 @@ export async function sendUniversalProductOrderConfirmationToUser(
     <body>
       <div class="container">
         <div class="header">
-          <h1>✨ Crystal Bowl Studio</h1>
+          <h1>✨ Lazana Jewelry</h1>
           <p style="margin: 0; font-size: 18px;">Session Order Confirmed</p>
         </div>
         <div class="content">
@@ -1178,7 +1178,7 @@ export async function sendUniversalProductOrderConfirmationToUser(
           </div>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -1241,7 +1241,7 @@ export async function sendRegularProductOrderConfirmationToUser(
     })
     .join("");
 
-  const subject = "Order Confirmed - Crystal Bowl Studio";
+  const subject = "Order Confirmed - Lazana Jewelry";
   const html = `
     <!DOCTYPE html>
     <html>
@@ -1262,7 +1262,7 @@ export async function sendRegularProductOrderConfirmationToUser(
     <body>
       <div class="container">
         <div class="header">
-          <h1>✨ Crystal Bowl Studio</h1>
+          <h1>✨ Lazana Jewelry</h1>
           <p style="margin: 0; font-size: 18px;">Order Confirmed</p>
         </div>
         <div class="content">
@@ -1304,7 +1304,7 @@ export async function sendRegularProductOrderConfirmationToUser(
           </div>
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -1445,7 +1445,7 @@ export async function sendUniversalProductOrderNotificationToAdmin(
           }
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -1596,7 +1596,7 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
           }
         </div>
         <div class="footer">
-          <p>&copy; ${new Date().getFullYear()} Crystal Bowl Studio. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Lazana Jewelry. All rights reserved.</p>
         </div>
       </div>
     </body>

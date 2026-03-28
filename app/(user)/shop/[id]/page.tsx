@@ -646,7 +646,7 @@ const ProductDetailPage = () => {
                 Add to Cart
               </button>
 
-              {/* Buy Now with Stripe Button */}
+              {/* Buy Now with Razorpay */}
               <button
                 onClick={handleBuyNow}
                 disabled={buyingNow}
@@ -660,7 +660,7 @@ const ProductDetailPage = () => {
                 ) : (
                   <>
                     <span>Buy Now with</span>
-                    <span className="font-bold">Stripe</span>
+                    <span className="font-bold">Razorpay</span>
                   </>
                 )}
               </button>
@@ -678,21 +678,19 @@ const ProductDetailPage = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>Secure payment powered by Stripe</span>
+                <span>Secure payment powered by Razorpay</span>
               </div>
 
               {/* Relative Product - Show after cart button if current product is NOT a relative product */}
               {relativeProduct && !product.relativeproduct && (
                 <>
-                  {/* <h1 className="text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[20px] font-medium mb-4">
-                Learn how to play the crystal bowls
-                </h1> */}
+                  {/* Related product promo */}
 
                   <h1
                     className="font-seasons text-[#1C3163] text-[14px] sm:text-[18px] lg:text-[18px] font-medium mb-[25px] "
                     style={{ textShadow: "0.5px 0 0 currentColor" }}
                   >
-                    Learn how to play the crystal bowls
+                    Complete your look with Lazana Jewelry
                   </h1>
                   <Link href={`/shop/${relativeProduct._id}`}>
                     <div className="mb-8 border border-[#D5B584]/30 rounded-lg p-4 bg-white">
@@ -783,7 +781,7 @@ const ProductDetailPage = () => {
                     className="w-full py-4 flex items-center justify-between text-left "
                   >
                     <h3 className="text-[#1C3163] text-[19px] md:text-[20px] font-medium font-seasons">
-                      Bowl Sizing
+                      Sizing guide
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
                       {expandedSections.has("bowlSizing") ? "−" : "+"}
@@ -792,11 +790,8 @@ const ProductDetailPage = () => {
                   {expandedSections.has("bowlSizing") && (
                     <div className="pb-4 ">
                       <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
-                        Our crystal bowls come in various sizes to suit
-                        different healing practices and intentions. The size of
-                        your bowl depends on the note or chakra that you choose.
-                        4th Octave bowls are between 5.7”-7.7”. 3rd Octave bowls
-                        are between 7” - 8.8”. <br /> Need help to choose? Book a
+                        Our Lazana Jewelry pieces come in various sizes and
+                        fits. Need help choosing? Book a styling
                         discovery call 
         
                         <Link href="/discoveryappointment" className="text-[#1C3163] pl-2 underline hover:opacity-80 transition-opacity">here</Link>
@@ -822,22 +817,22 @@ const ProductDetailPage = () => {
                   {expandedSections.has("shipping") && (
                     <div className="pb-4">
                       <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mb-3">
-                        We offer Air Economy shipping to ensure your crystal
-                        bowls arrive safely and promptly. Shipping charges are
-                        calculated based on the total number of bowls in your
+                        We offer Air Economy shipping to ensure your Lazana
+                        Jewelry arrives safely. Shipping charges are
+                        calculated based on your
                         order:
                       </p>
                       <ul className="list-disc text-[14px]  list-inside text-[#545454] md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo">
-                        <li>1 Bowl: USD $65</li>
-                        <li>2-3 Bowls: USD $111</li>
-                        <li>4-7 Bowls: USD $155</li>
+                        <li>1 item: USD $65</li>
+                        <li>2-3 items: USD $111</li>
+                        <li>4-7 items: USD $155</li>
                         <li>
-                          8+ Bowls: Rates continue in cycles (8 = $65, 9-10 =
+                          8+ items: Rates continue in cycles (8 = $65, 9-10 =
                           $111, 11-14 = $155, and so on)
                         </li>
                       </ul>
                       <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mt-3">
-                        All orders are carefully packaged to protect your bowls
+                        All orders are carefully packaged to protect your jewelry
                         during transit. Delivery times vary by location,
                         typically 25-28 business days for international orders.
                       </p>
@@ -899,7 +894,7 @@ const ProductDetailPage = () => {
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
                     <h3 className="text-[#1C3163] text-[19px] md:text-[20px] font-medium font-seasons">
-                      What's the difference between 3rd and 4th Octave bowls?
+                      Materials & finishes
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
                       {expandedSections.has("octave") ? "−" : "+"}
@@ -908,19 +903,11 @@ const ProductDetailPage = () => {
                   {expandedSections.has("octave") && (
                     <div className="pb-4">
                       <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo">
-                        4th Octave Bowls are considered the standard octave of
-                        crystal bowls, clear and ethereal. 3rd Octave bowls are
-                        a lower pitch and deeper sound, more vibrations, more
-                        resonant in the body. It is personal preference which
-                        octave you want to work with and which sound you prefer,
-                        and how you intend to use the bowls in your practice or
-                        facilitation. Many practitioners choose to combine 3rd
-                        and 4th Octave bowls within the same set. This creates a
-                        richer spectrum of tone, allowing you to move between
-                        depth and clarity, grounding and lift, and ultimately
-                        offer a more layered sound experience. Shop our
-                        Harmonized Sets, designed to fit together in perfect
-                        harmony.
+                        Lazana Jewelry combines quality metals and thoughtful
+                        finishes. Details vary by piece—check the product
+                        description for metal type, plating, and care. Our team
+                        can help you choose pieces that layer beautifully
+                        together.
                       </p>
                     </div>
                   )}
@@ -933,7 +920,7 @@ const ProductDetailPage = () => {
                     className="w-full py-4 flex items-center justify-between text-left"
                   >
                     <h3 className="text-[#1C3163] text-[19px] md:text-[20px] font-medium font-seasons">
-                      Which tuning system are Our Bowls made in?
+                      Materials & authenticity
                     </h3>
                     <span className="text-[#1C3163] text-2xl">
                       {expandedSections.has("tuning") ? "−" : "+"}
@@ -942,34 +929,9 @@ const ProductDetailPage = () => {
                   {expandedSections.has("tuning") && (
                     <div className="">
                       <p className="text-[#545454] sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed mb-3 font-touvlo">
-                        Our bowls are available in multiple tuning frequencies
-                        to suit your preferences:
-                      </p>
-                      <ul className="list-disc list-inside text-[14px]  md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo text-[#545454]">
-                        <li>
-                          <strong>432 Hz:</strong> The healing frequency of
-                          nature, known for its calming and harmonizing effects.
-                          This is our standard tuning and is believed to
-                          resonate with the natural frequency of the universe.
-                        </li>
-                        <li>
-                          <strong>440 Hz:</strong> Western standard tuning,
-                          commonly used in modern music. This frequency is
-                          familiar to most ears and works well for general sound
-                          healing.
-                        </li>
-                        <li>
-                          <strong>528 Hz:</strong> The miracle frequency of
-                          unconditional love, known for its transformative and
-                          healing properties. This frequency is said to repair
-                          DNA and promote positive transformation.
-                        </li>
-                      </ul>
-                      <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed mt-3 font-touvlo">
-                        If you would like your bowls in an alternative
-                        frequency, please leave a note on your order at checkout
-                        and we can customize your order to your preferred
-                        frequency.
+                        Lazana Jewelry lists metals, plating, and stones on each
+                        product. If you need a certificate, additional photos, or
+                        sizing help, contact us or leave a note at checkout.
                       </p>
                     </div>
                   )}
