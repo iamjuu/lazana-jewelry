@@ -3,6 +3,8 @@ import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
 import { signToken } from "@/lib/auth";
 
+const LOGIN_SERVICE_ERROR = "Login service is temporarily unavailable. Please try again shortly.";
+
 // Verify OTP for login (only registered users)
 export async function POST(req: NextRequest) {
   try {
@@ -83,10 +85,10 @@ export async function POST(req: NextRequest) {
     });
 
     return res;
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Verify login OTP error:", err);
     return NextResponse.json(
-      { success: false, message: err?.message || "Server error" },
+      { success: false, message: LOGIN_SERVICE_ERROR },
       { status: 500 }
     );
   }

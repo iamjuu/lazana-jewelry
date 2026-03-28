@@ -790,7 +790,7 @@
 
         <div className="space-y-1">
           <label htmlFor="product-price" className="text-sm font-medium text-white">
-            Price ($) <span className="text-red-500">*</span>
+            Price (INR) <span className="text-red-500">*</span>
           </label>
           <input
             id="product-price"
@@ -804,13 +804,13 @@
             placeholder="29.99"
           />
           <p className="text-xs text-zinc-400">
-            Enter price in dollars (e.g., 29.99 for $29.99)
+            Enter price in INR (e.g., 2499 or 2499.00)
           </p>
         </div>
 
         <div className="space-y-1">
           <label htmlFor="product-discount" className="text-sm font-medium text-white">
-            Discount ($) <span className="text-zinc-400">(Optional)</span>
+            Discount (INR) <span className="text-zinc-400">(Optional)</span>
           </label>
           <input
             id="product-discount"

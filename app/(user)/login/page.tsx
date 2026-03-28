@@ -8,6 +8,13 @@ import { X } from "lucide-react";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 
+const LOGIN_SERVICE_ERROR = "Login service is temporarily unavailable. Please try again shortly.";
+
+function getApiErrorMessage(status: number, message: string | undefined, fallback: string) {
+  if (status >= 500) return LOGIN_SERVICE_ERROR;
+  return message || fallback;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [step, setStep] = useState<"email" | "otp">("email");
@@ -38,8 +45,9 @@ export default function LoginPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.message || "Failed to send OTP");
-        toast.error(data.message || "Failed to send OTP");
+        const message = getApiErrorMessage(res.status, data.message, "Failed to send OTP");
+        setError(message);
+        toast.error(message);
         
         // If user not registered, redirect to signup
         if (res.status === 404 && data.message?.toLowerCase().includes("not found")) {
@@ -75,8 +83,9 @@ export default function LoginPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.message || "Failed to resend OTP");
-        toast.error(data.message || "Failed to resend OTP");
+        const message = getApiErrorMessage(res.status, data.message, "Failed to resend OTP");
+        setError(message);
+        toast.error(message);
         return;
       }
 
@@ -111,8 +120,9 @@ export default function LoginPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.message || "OTP verification failed");
-        toast.error(data.message || "OTP verification failed");
+        const message = getApiErrorMessage(res.status, data.message, "OTP verification failed");
+        setError(message);
+        toast.error(message);
         return;
       }
 

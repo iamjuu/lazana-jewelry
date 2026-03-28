@@ -40,6 +40,18 @@ type MediaItem = {
   url: string;
   index: number;
 };
+
+const formatCurrency = (amount: number) => {
+  const rounded = Math.round(amount * 100) / 100;
+
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    currencyDisplay: "code",
+    minimumFractionDigits: rounded % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(rounded);
+};
 // Magnifier Component
 const ImageMagnifier = ({ src, alt }: { src: string; alt: string }) => {
   const [magnifierStyle, setMagnifierStyle] = useState<React.CSSProperties>({});
@@ -302,22 +314,14 @@ const ProductDetailPage = () => {
     })),
   ];
 
-  // Format price to show decimals only if needed
-  const formatPrice = (price: number) => {
-    const rounded = Math.round(price * 100) / 100;
-    if (rounded % 1 === 0) {
-      return `$${rounded}`;
-    }
-    return `$${rounded.toFixed(2)}`;
-  };
   const hasDiscount = product.discount && product.discount > 0;
   const originalPrice = product.price;
   const discountedPrice =
     hasDiscount && product.discount
       ? product.price - product.discount
       : product.price;
-  const priceInDollars = formatPrice(discountedPrice);
-  const originalPriceFormatted = formatPrice(originalPrice);
+  const displayPrice = formatCurrency(discountedPrice);
+  const originalPriceFormatted = formatCurrency(originalPrice);
 
   // Handle Add to Cart
   const handleAddToCart = () => {
@@ -605,7 +609,7 @@ const ProductDetailPage = () => {
                       className="font-seasons text-[#1C3163] text-[20px] sm:text-[20px] lg:text-[24px] font-medium"
                       style={{ textShadow: "0.5px 0 0 currentColor" }}
                     >
-                      {priceInDollars} USD
+                      {displayPrice}
                     </p>
                   </div>
                 ) : (
@@ -613,7 +617,7 @@ const ProductDetailPage = () => {
                     className="font-seasons text-[#1C3163] text-[20px] sm:text-[20px] lg:text-[24px] font-medium"
                     style={{ textShadow: "0.5px 0 0 currentColor" }}
                   >
-                    {priceInDollars} USD
+                    {displayPrice}
                   </p>
                 )}
               </div>
@@ -720,7 +724,7 @@ const ProductDetailPage = () => {
                             className="font-touvlo text-[#000000] text-[14px]"
                             style={{ textShadow: "0.5px 0 0 currentColor" }}
                           >
-                            {formatPrice(relativeProduct.price)} USD
+                            {formatCurrency(relativeProduct.price)}
                           </p>
                         </div>
                         <button
@@ -818,18 +822,12 @@ const ProductDetailPage = () => {
                     <div className="pb-4">
                       <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mb-3">
                         We offer Air Economy shipping to ensure your Lazana
-                        Jewelry arrives safely. Shipping charges are
-                        calculated based on your
-                        order:
+                        Jewelry arrives safely. Shipping charges are a flat
+                        rate for physical-product orders:
                       </p>
                       <ul className="list-disc text-[14px]  list-inside text-[#545454] md:text-[16px] sm:text-[15px] space-y-2 ml-2 font-touvlo">
-                        <li>1 item: USD $65</li>
-                        <li>2-3 items: USD $111</li>
-                        <li>4-7 items: USD $155</li>
-                        <li>
-                          8+ items: Rates continue in cycles (8 = $65, 9-10 =
-                          $111, 11-14 = $155, and so on)
-                        </li>
+                        <li>Flat shipping charge: INR 30.00</li>
+                        <li>Universal-product-only orders do not add shipping</li>
                       </ul>
                       <p className="text-[#545454] text-[14px]  md:text-[16px] sm:text-[15px] leading-relaxed font-touvlo mt-3">
                         All orders are carefully packaged to protect your jewelry
@@ -962,9 +960,9 @@ const ProductDetailPage = () => {
                       itemHasDiscount && item.discount
                         ? item.price - item.discount
                         : item.price;
-                    const itemDisplayPrice = formatPrice(itemDiscountedPrice);
+                    const itemDisplayPrice = formatCurrency(itemDiscountedPrice);
                     const itemDisplayOriginalPrice =
-                      formatPrice(itemOriginalPrice);
+                      formatCurrency(itemOriginalPrice);
 
                     return (
                       <div key={item._id} className="group">
@@ -1011,12 +1009,12 @@ const ProductDetailPage = () => {
                                     {itemDisplayOriginalPrice}
                                   </span>
                                   <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
-                                    {itemDisplayPrice} USD
+                                    {itemDisplayPrice}
                                   </span>
                                 </>
                               ) : (
                                 <span className="text-[#545454]   font-light text-[14px] whitespace-nowrap">
-                                  {itemDisplayPrice} USD
+                                  {itemDisplayPrice}
                                 </span>
                               )}
                               {/* <button 

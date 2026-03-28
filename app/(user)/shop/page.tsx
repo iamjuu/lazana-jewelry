@@ -63,6 +63,18 @@ const normalizeProductDisplayName = (name: string) => {
   );
 };
 
+const formatCurrency = (amount: number) => {
+  const rounded = Math.round(amount * 100) / 100;
+
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    currencyDisplay: "code",
+    minimumFractionDigits: rounded % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(rounded);
+};
+
 const ShopPageContent = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -819,21 +831,14 @@ const ShopPageContent = () => {
                         item.imageUrl && item.imageUrl.length > 1
                           ? getValidImageUrl(item.imageUrl[1]) || null
                           : null;
-                      // Price is already in dollars - format to always show 2 decimals for consistency
-                      const formatPrice = (price: number) => {
-                        const rounded = Math.round(price * 100) / 100;
-                        return rounded % 1 === 0
-                          ? `$${rounded}`
-                          : `$${rounded.toFixed(2)}`;
-                      };
                       const hasDiscount = item.discount && item.discount > 0;
                       const originalPrice = item.price;
                       const discountedPrice =
                         hasDiscount && item.discount
                           ? item.price - item.discount
                           : item.price;
-                      const displayPrice = formatPrice(discountedPrice);
-                      const displayOriginalPrice = formatPrice(originalPrice);
+                      const displayPrice = formatCurrency(discountedPrice);
+                      const displayOriginalPrice = formatCurrency(originalPrice);
 
                       const displayName = normalizeProductDisplayName(
                         item.name || "",
@@ -891,12 +896,12 @@ const ShopPageContent = () => {
                                       {displayOriginalPrice}
                                     </span>
                                     <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
-                                      {displayPrice} USD
+                                      {displayPrice}
                                     </span>
                                   </div>
                                 ) : (
                                   <span className="text-[#545454] font-light text-[14px] whitespace-nowrap">
-                                    {displayPrice} USD
+                                    {displayPrice}
                                   </span>
                                 )}
                               </div>

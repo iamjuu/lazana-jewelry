@@ -19,33 +19,21 @@ type CartItem = {
 };
 
 type DeliveryMethod = "Air Economy";
+
+const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    currencyDisplay: "code",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
  
-// Calculate shipping based on total bowl count
-// Pattern repeats every 7 bowls:
-// 1 Bowl: $65
-// 2-3 Bowls: $111
-// 4-7 Bowls: $155
-// 8 Bowls (8+0): $65 (same as 1)
-// 9-10 Bowls (8+1 to 8+2): $111 (same as 2-3)
-// 11-14 Bowls (8+3 to 8+6): $155 (same as 4-7)
-// 15 Bowls (8+7, wraps to 1): $65
-// And so on...
+// Flat shipping charge for physical products
 const calculateShippingByBowlCount = (bowlCount: number): number => {
   if (bowlCount <= 0) return 0;
-  
-  // Get the remainder when divided by 7 (pattern repeats every 7 bowls)
-  const remainder = bowlCount % 7;
-  
-  if (remainder === 1) {
-    // 1, 8, 15, 22, etc.
-    return 65;
-  } else if (remainder === 2 || remainder === 3) {
-    // 2-3, 9-10, 16-17, 23-24, etc.
-    return 111;
-  } else {
-    // 4-7, 11-14, 18-21, 25-28, etc. (remainder 0 means 7, 14, 21, etc.)
-    return 155;
-  }
+
+  return 30;
 };
 
 function OrderConfirmationContent() {
@@ -263,7 +251,7 @@ function OrderConfirmationContent() {
     if (totalBowls === 0) {
       breakdownText = "No delivery charge (universal products only)";
     } else {
-      breakdownText = `${totalBowls} piece${totalBowls > 1 ? "s" : ""} = $${total}`;
+      breakdownText = `${totalBowls} piece${totalBowls > 1 ? "s" : ""} = ${formatCurrency(total)}`;
       if (breakdown.length > 0) {
         breakdownText += ` (${breakdown.join(", ")})`;
       }
@@ -317,7 +305,7 @@ function OrderConfirmationContent() {
         setAppliedCoupon(data.data.coupon);
         setDiscountAmount(data.data.discountAmount);
         setCouponError("");
-        toast.success(`Coupon applied! Saved $${data.data.discountAmount.toFixed(2)}`);
+        toast.success(`Coupon applied! Saved ${formatCurrency(data.data.discountAmount)}`);
       } else {
         setCouponError(data.message || "Coupon code not available for this product");
         setAppliedCoupon(null);
@@ -559,7 +547,7 @@ function OrderConfirmationContent() {
                 <div className="p-3 border border-zinc-300 rounded-md bg-zinc-50">
                   <div className="font-medium text-[#1C3163]">Air Economy</div>
                   <div className="text-sm text-zinc-600 mt-1">
-                    1 Piece: $65 • 2-3 Pieces: $111 • 4-7 Pieces: $155
+                    {`Flat shipping charge: ${formatCurrency(30)}`}
                   </div>
                 </div>
               </div>
@@ -621,7 +609,7 @@ function OrderConfirmationContent() {
                           Coupon Applied: {appliedCoupon.couponName || couponCode}
                         </p>
                         <p className="text-xs text-green-600 mt-1">
-                          {appliedCoupon.discountPercent}% off - Saved ${discountAmount.toFixed(2)}
+                          {appliedCoupon.discountPercent}% off - Saved {formatCurrency(discountAmount)}
                         </p>
                       </div>
                       <button
@@ -670,7 +658,7 @@ function OrderConfirmationContent() {
                       Qty: {item.quantity} {item.isSet ? "(Set)" : "(Piece)"}
                     </p>
                     <p className="text-sm font-medium text-[#1C3163]">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      {formatCurrency(item.price * item.quantity)}
                     </p>
                   </div>
                 </div>
@@ -680,12 +668,12 @@ function OrderConfirmationContent() {
             <div className="border-t border-zinc-200 pt-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-zinc-600">Product Total:</span>
-                <span className="font-medium text-[#1C3163]">${productTotal.toFixed(2)}</span>
+                <span className="font-medium text-[#1C3163]">{formatCurrency(productTotal)}</span>
               </div>
 
               <div className="flex justify-between text-sm">
                 <span className="text-zinc-600">Delivery (Air Economy):</span>
-                <span className="font-medium text-[#1C3163]">${deliveryCharges.total}</span>
+                <span className="font-medium text-[#1C3163]">{formatCurrency(deliveryCharges.total)}</span>
               </div>
 
               <div className="text-xs text-zinc-500 italic pl-4">
@@ -695,14 +683,14 @@ function OrderConfirmationContent() {
               {discountAmount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
                   <span>Discount ({appliedCoupon?.discountPercent}%):</span>
-                  <span className="font-medium">-${discountAmount.toFixed(2)}</span>
+                  <span className="font-medium">-{formatCurrency(discountAmount)}</span>
                 </div>
               )}
 
               <div className="border-t border-zinc-200 pt-2 mt-2">
                 <div className="flex justify-between text-lg font-semibold">
-                  <span className="text-[#1C3163]">Total (USD):</span>
-                  <span className="text-[#1C3163]">${totalAmount.toFixed(2)}</span>
+                  <span className="text-[#1C3163]">Total (INR):</span>
+                  <span className="text-[#1C3163]">{formatCurrency(totalAmount)}</span>
                 </div>
               </div>
             </div>
@@ -733,6 +721,7 @@ export default function OrderConfirmationPage() {
     </Suspense>
   );
 }
+
 
 
 

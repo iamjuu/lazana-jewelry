@@ -29,10 +29,13 @@ type Props = {
 const formatCurrency = (amount: number) => {
   // Show decimals only if the number has decimal values
   const rounded = Math.round(amount * 100) / 100;
-  if (rounded % 1 === 0) {
-    return `$${rounded}`;
-  }
-  return `$${rounded.toFixed(2)}`;
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    currencyDisplay: "code",
+    minimumFractionDigits: rounded % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(rounded);
 };
 
 const getMainImageUrl = (product: ProductListItem) => {

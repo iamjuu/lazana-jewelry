@@ -4,6 +4,8 @@ import User from "@/models/User";
 import { sendOTPEmail } from "@/lib/email";
 import crypto from "crypto";
 
+const LOGIN_SERVICE_ERROR = "Login service is temporarily unavailable. Please try again shortly.";
+
 // Login with OTP - only for registered users
 export async function POST(req: NextRequest) {
   try {
@@ -37,7 +39,7 @@ export async function POST(req: NextRequest) {
     // Send OTP email
     try {
       await sendOTPEmail(email, otp, user.name);
-    } catch (emailError: any) {
+    } catch (emailError: unknown) {
       console.error("Email send error:", emailError);
       return NextResponse.json(
         { success: false, message: "Failed to send OTP email. Please check your email configuration." },
@@ -53,10 +55,10 @@ export async function POST(req: NextRequest) {
         expiresIn: 600, // 10 minutes in seconds
       },
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Login OTP error:", err);
     return NextResponse.json(
-      { success: false, message: err?.message || "Server error" },
+      { success: false, message: LOGIN_SERVICE_ERROR },
       { status: 500 }
     );
   }

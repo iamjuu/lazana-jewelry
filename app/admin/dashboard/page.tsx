@@ -208,7 +208,7 @@ export default async function DashboardPage() {
           </div>
 
           {/* Statistics Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-zinc-700/50">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-zinc-700/50">
             {/* Total Products */}
             <div className="group p-8 hover:bg-zinc-800/50 transition-all duration-300 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-transparent rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
@@ -250,27 +250,10 @@ export default async function DashboardPage() {
             </div>
 
             {/* Events */}
-            <div className="group p-8 hover:bg-zinc-800/50 transition-all duration-300 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-500/10 to-transparent rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 group-hover:bg-yellow-500/20 transition-colors">
-                    <svg className="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div className="px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20">
-                    <span className="text-xs font-semibold text-yellow-400">{stats.events.upcoming} Upcoming</span>
-                  </div>
-                </div>
-                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wide mb-2">Events</h3>
-                <p className="text-4xl font-bold text-white mb-1">{stats.events.total}</p>
-                <p className="text-xs text-zinc-500">{stats.events.past} completed events</p>
-              </div>
-            </div>
+          
 
             {/* Yoga Sessions */}
-            <YogaSessionsCard yogaSessions={stats.yogaSessions} />
+            {/* <YogaSessionsCard yogaSessions={stats.yogaSessions} /> */}
           </div>
 
      
@@ -278,18 +261,8 @@ export default async function DashboardPage() {
       </section>
 
         {/* Statistics Cards with Charts */}
-        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
-          <ChartCard
-            title="Total Bookings"
-            value={stats.bookings.total}
-            subtitle={`${stats.bookings.confirmed} confirmed, ${stats.bookings.pending} pending, ${stats.bookings.cancelled} cancelled`}
-          >
-            <BookingsPieChart
-              confirmed={stats.bookings.confirmed}
-              pending={stats.bookings.pending}
-              cancelled={stats.bookings.cancelled}
-            />
-          </ChartCard>
+        <section className="grid gap-6 sm:grid-cols-1 lg:grid-cols-1">
+         
           <ChartCard
             title="Total Users"
             value={stats.users.total}
