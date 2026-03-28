@@ -26,7 +26,11 @@ export async function DELETE(
       );
     }
     
-    const productsWithSubcategory = await Product.countDocuments({ subcategory: id });
+    const subcategoryId = new mongoose.Types.ObjectId(id);
+    const productsWithSubcategory = await Product.countDocuments({
+      subcategory: subcategoryId,
+      deleted: { $ne: true },
+    });
     
     if (productsWithSubcategory > 0) {
       return NextResponse.json(

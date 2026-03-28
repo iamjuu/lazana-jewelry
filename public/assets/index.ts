@@ -85,6 +85,7 @@ export {default as jewleries3 } from './images/jowleries/pexels-lauraoliveira-34
 export {default as jewleries4 } from './images/jowleries/pexels-vedat-29043373.jpg'
 export {default as landingjewleries1 } from './images/jowleries/pexels-vedat-29043373.jpg'
 export {default as landingjewleries2 } from './images/jowleries/pexels-vireshstudio-18016511.jpg'
+export const heroVideoJewloery = '/assets/images/jowleries/6806905-uhd_3840_2160_30fps.mp4';
 
 
 

@@ -29,7 +29,8 @@ export async function DELETE(
     // Query directly by ObjectId to avoid type casting errors
     const categoryId = new mongoose.Types.ObjectId(id);
     const productsWithCategory = await Product.countDocuments({
-      category: categoryId
+      category: categoryId,
+      deleted: { $ne: true },
     });
     
     if (productsWithCategory > 0) {

@@ -10,6 +10,7 @@ import {
   Bucket2,
   Bucket3,
   Crystal,
+  heroVideoJewloery,
   Intention,
   landingjewleries1,
   landingjewleries2,
@@ -477,28 +478,28 @@ const Index = () => {
     {
       id: 1,
       image: PremiumQuality,
-      title: " Premium Craftsmanship",
-      para: "Each piece is finished with care—quality materials and details you can see and feel.",
+      title: "Fine Jewelry Craftsmanship",
+      para: "Every piece is shaped with refined detailing, polished finishes, and quality materials that elevate everyday wear.",
     },
 
     {
       id: 2,
       image: UniqueToYou,
-      title: "Light Weight",
-      para: "Lightweight designs made for everyday wear—easy to layer and take with you.",
+      title: "Elegant Everyday Wear",
+      para: "Designed to feel light, comfortable, and effortless, our jewelry moves easily from daily styling to special occasions.",
     },
 
     {
       id: 3,
       image: Crystal,
-      title: "Made for You",
-      para: "Each piece feels unique—choose finishes and styles that feel like you.",
+      title: "Distinctive By Design",
+      para: "From delicate forms to statement silhouettes, each design brings a unique character that feels personal to your style.",
     },
     {
       id: 4,
       image: Intention,
-      title: "With Intention",
-      para: "Thoughtfully chosen details, finishes, and silhouettes designed to feel personal from the first wear.",
+      title: "Jewelry With Meaning",
+      para: "Thoughtful details, balanced proportions, and timeless styling come together in pieces made to be worn with intention.",
     },
   ];
 
@@ -507,7 +508,7 @@ const Index = () => {
       {/* Navbar moved outside overflow-hidden so it stays visible on mobile after scroll (iOS fix) */}
       <Navbar />
       <div className="relative z-10 h-screen w-full overflow-hidden sm:mt-0">
-        {/* <video
+        <video
           ref={videoRef}
           autoPlay
           loop
@@ -519,17 +520,17 @@ const Index = () => {
           onLoadedData={() => console.log("Video loaded successfully")}
         >
           <source
-            src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+            src={heroVideoJewloery}
             type="video/mp4"
           />
           Your browser does not support the video tag.
-        </video> */}
+        </video>
         <div className="w-full flex justify-center items-center">
           
      
         <div className="max-w-7xl  pt-[100px] ">
 
-        <Image src={landingjewleries2} alt="Lazana Jewelry hero" className="h-[600px] object-cover  px-2 md:object-fit rounded-2xl"/>
+        {/* <Image src={landingjewleries2} alt="Lazana Jewelry hero" className="h-[600px] object-cover  px-2 md:object-fit rounded-2xl"/> */}
         </div>
            </div>
 
@@ -644,7 +645,7 @@ const Index = () => {
             </div>
           </section>
 
-          <div className="max-w-6xl flex flex-col mx-auto px-4 mt-[25px] ">
+          <div className="max-w-6xl  py-16 flex flex-col mx-auto px-4 mt-[25px] ">
             <div className="flex w-full ">
               <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
                 What makes our jewelry unique
