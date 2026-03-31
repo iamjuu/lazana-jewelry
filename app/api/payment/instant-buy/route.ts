@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
       payment_method_types: ["card"],
       line_items: [{
         price_data: {
-          currency: "usd",
+          currency: "inr",
           product_data: {
             name: product.name,
             description: product.description,

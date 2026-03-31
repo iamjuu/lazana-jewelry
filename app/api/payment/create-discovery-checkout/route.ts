@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     const razorpay = getRazorpayInstance();
     const razorpayOrder = await razorpay.orders.create({
       amount,
-      currency: "USD",
+      currency: "INR",
       receipt: buildReceipt(discoverySession._id.toString()),
       notes: {
         userId: String(authUser._id),

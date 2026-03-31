@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
     const expectedAmount =
       Math.round((event.price || 0) * 100) * quantity -
       Math.round(discountAmount * 100);
-    if (payment.amount !== Math.max(1, expectedAmount) || payment.currency !== "USD") {
+    if (payment.amount !== Math.max(1, expectedAmount) || payment.currency !== "INR") {
       return NextResponse.json(
         { success: false, message: "Payment amount mismatch" },
         { status: 400 }

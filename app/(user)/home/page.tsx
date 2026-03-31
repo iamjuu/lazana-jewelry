@@ -278,6 +278,15 @@ const Index = () => {
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      currencyDisplay: "code",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Math.round(amount * 100) / 100);
+
   // Helper to convert base64 string to data URL if needed
   const normalizeImageUrl = (url: string): string => {
     if (!url) return "";
@@ -739,18 +748,19 @@ const Index = () => {
                       {product.discount ? (
                         <>
                           <span className="line-through mr-2">
-                            ${product.price}
+                            {formatCurrency(product.price)}
                           </span>
                           <span className="font-semibold text-[14px]">
-                            $
-                            {Math.round(
-                              (product.price - product.discount) * 100,
-                            ) / 100}
+                            {formatCurrency(
+                              Math.round(
+                                (product.price - product.discount) * 100,
+                              ) / 100,
+                            )}
                           </span>
                         </>
                       ) : (
                         <span className="font-semibold font-touvlo text-[#545454] text-[14px]">
-                          ${product.price} USD
+                          {formatCurrency(product.price)}
                         </span>
                       )}
                     </p>
@@ -1130,6 +1140,5 @@ const Index = () => {
 };
 
 export default Index;
-
 
 

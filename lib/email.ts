@@ -4,6 +4,18 @@ import nodemailer from "nodemailer";
 // Note: transporter is created once and reused to avoid connection issues
 let transporter: nodemailer.Transporter | null = null;
 
+function formatCurrency(amount: number) {
+  const rounded = Math.round(amount * 100) / 100;
+
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    currencyDisplay: "code",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(rounded);
+}
+
 function getTransporter(): nodemailer.Transporter {
   // Validate email configuration
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -149,7 +161,7 @@ export async function sendEventBookingConfirmationToUser(bookingData: {
             </div>
             <div class="detail-row">
               <span class="detail-label">Total Amount:</span>
-              <span class="detail-value" style="font-weight: bold; color: #000000;">USD $${bookingData.amount.toFixed(2)}</span>
+              <span class="detail-value" style="font-weight: bold; color: #000000;">${formatCurrency(bookingData.amount)}</span>
             </div>
           </div>
           
@@ -268,7 +280,7 @@ export async function sendEventBookingNotificationToAdmin(bookingData: {
             </tr>
             <tr>
               <td>Total Amount</td>
-              <td style="font-weight: bold; color: #10b981;">USD $${bookingData.amount.toFixed(2)}</td>
+              <td style="font-weight: bold; color: #10b981;">${formatCurrency(bookingData.amount)}</td>
             </tr>
           </table>
           
@@ -773,7 +785,7 @@ export async function sendDiscoverySessionNotificationToAdmin(data: {
             </tr>
             <tr>
               <td>Amount Paid:</td>
-              <td>S$${data.amount.toFixed(2)}</td>
+              <td>${formatCurrency(data.amount)}</td>
             </tr>
           </table>
         </div>
@@ -1126,7 +1138,7 @@ export async function sendUniversalProductOrderConfirmationToUser(
         <div style="flex: 1;">
           <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
           <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
-          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">USD $${(item.price * item.quantity).toFixed(2)}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">${formatCurrency(item.price * item.quantity)}</p>
         </div>
       </div>
     `;
@@ -1169,7 +1181,7 @@ export async function sendUniversalProductOrderConfirmationToUser(
             <h3>Order Items</h3>
             ${itemsHtml}
             <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
-              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: USD $${orderData.totalAmount.toFixed(2)}</p>
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: ${formatCurrency(orderData.totalAmount)}</p>
             </div>
           </div>
 
@@ -1234,7 +1246,7 @@ export async function sendRegularProductOrderConfirmationToUser(
         <div style="flex: 1;">
           <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
           <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
-          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">USD $${(item.price * item.quantity).toFixed(2)}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">${formatCurrency(item.price * item.quantity)}</p>
         </div>
       </div>
     `;
@@ -1281,16 +1293,16 @@ export async function sendRegularProductOrderConfirmationToUser(
                 ? `
               <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px;">
                 <p style="margin: 5px 0; color: #10b981;">Coupon Applied: ${orderData.couponCode}</p>
-                <p style="margin: 5px 0; color: #10b981;">Discount: USD $${orderData.discountAmount.toFixed(2)}</p>
+                <p style="margin: 5px 0; color: #10b981;">Discount: ${formatCurrency(orderData.discountAmount)}</p>
               </div>
             `
                 : ""
             }
             <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
-              <p style="margin: 5px 0; color: #666;">Product Total: USD $${orderData.productTotal.toFixed(2)}</p>
-              <p style="margin: 5px 0; color: #666;">Delivery Charges: USD $${orderData.deliveryCharges.toFixed(2)}</p>
-              ${orderData.discountAmount > 0 ? `<p style="margin: 5px 0; color: #10b981;">Discount: -USD $${orderData.discountAmount.toFixed(2)}</p>` : ""}
-              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: USD $${orderData.totalAmount.toFixed(2)}</p>
+              <p style="margin: 5px 0; color: #666;">Product Total: ${formatCurrency(orderData.productTotal)}</p>
+              <p style="margin: 5px 0; color: #666;">Delivery Charges: ${formatCurrency(orderData.deliveryCharges)}</p>
+              ${orderData.discountAmount > 0 ? `<p style="margin: 5px 0; color: #10b981;">Discount: -${formatCurrency(orderData.discountAmount)}</p>` : ""}
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: ${formatCurrency(orderData.totalAmount)}</p>
             </div>
           </div>
 
@@ -1363,7 +1375,7 @@ export async function sendUniversalProductOrderNotificationToAdmin(
         <div style="flex: 1;">
           <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
           <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
-          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">USD $${(item.price * item.quantity).toFixed(2)}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">${formatCurrency(item.price * item.quantity)}</p>
         </div>
       </div>
     `;
@@ -1416,7 +1428,7 @@ export async function sendUniversalProductOrderNotificationToAdmin(
             </tr>
             <tr>
               <td>Total Amount</td>
-              <td style="font-weight: bold; color: #10b981;">USD $${orderData.totalAmount.toFixed(2)}</td>
+              <td style="font-weight: bold; color: #10b981;">${formatCurrency(orderData.totalAmount)}</td>
             </tr>
           </table>
 
@@ -1424,7 +1436,7 @@ export async function sendUniversalProductOrderNotificationToAdmin(
             <h3>Order Items</h3>
             ${itemsHtml}
             <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
-              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: USD $${orderData.totalAmount.toFixed(2)}</p>
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: ${formatCurrency(orderData.totalAmount)}</p>
             </div>
           </div>
 
@@ -1502,7 +1514,7 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
         <div style="flex: 1;">
           <p style="margin: 0; font-weight: bold; color: #333; font-size: 16px;">${item.name}</p>
           <p style="margin: 5px 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} ${item.isSet ? "(Set)" : "(Piece)"}</p>
-          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">USD $${(item.price * item.quantity).toFixed(2)}</p>
+          <p style="margin: 5px 0; color: #1C3163; font-weight: bold; font-size: 16px;">${formatCurrency(item.price * item.quantity)}</p>
         </div>
       </div>
     `;
@@ -1554,7 +1566,7 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
             </tr>
             <tr>
               <td>Total Amount</td>
-              <td style="font-weight: bold; color: #10b981;">USD $${orderData.totalAmount.toFixed(2)}</td>
+              <td style="font-weight: bold; color: #10b981;">${formatCurrency(orderData.totalAmount)}</td>
             </tr>
           </table>
 
@@ -1566,16 +1578,16 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
                 ? `
               <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px;">
                 <p style="margin: 5px 0; color: #10b981;">Coupon Applied: ${orderData.couponCode}</p>
-                <p style="margin: 5px 0; color: #10b981;">Discount: USD $${(orderData.discountAmount || 0).toFixed(2)}</p>
+                <p style="margin: 5px 0; color: #10b981;">Discount: ${formatCurrency(orderData.discountAmount || 0)}</p>
               </div>
             `
                 : ""
             }
             <div style="padding: 15px; border-top: 2px solid #e0e0e0; margin-top: 10px; text-align: right;">
-              <p style="margin: 5px 0; color: #666;">Product Total: USD $${orderData.productTotal.toFixed(2)}</p>
-              <p style="margin: 5px 0; color: #666;">Delivery Charges: USD $${orderData.deliveryCharges.toFixed(2)}</p>
-              ${(orderData.discountAmount || 0) > 0 ? `<p style="margin: 5px 0; color: #10b981;">Discount: -USD $${orderData.discountAmount.toFixed(2)}</p>` : ""}
-              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: USD $${orderData.totalAmount.toFixed(2)}</p>
+              <p style="margin: 5px 0; color: #666;">Product Total: ${formatCurrency(orderData.productTotal)}</p>
+              <p style="margin: 5px 0; color: #666;">Delivery Charges: ${formatCurrency(orderData.deliveryCharges)}</p>
+              ${(orderData.discountAmount || 0) > 0 ? `<p style="margin: 5px 0; color: #10b981;">Discount: -${formatCurrency(orderData.discountAmount)}</p>` : ""}
+              <p style="margin: 10px 0 0 0; font-size: 20px; font-weight: bold; color: #1C3163;">Total: ${formatCurrency(orderData.totalAmount)}</p>
             </div>
           </div>
 
@@ -1617,4 +1629,3 @@ export async function sendOrderPlacementNotificationToAdmin(orderData: any) {
     throw error;
   }
 }
-

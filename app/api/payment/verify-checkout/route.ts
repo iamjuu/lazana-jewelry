@@ -99,8 +99,8 @@ export async function POST(req: NextRequest) {
     const orderData = {
       userId: user._id,
       items: items,
-      amount: session.amount_total ? Math.round(session.amount_total / 100) : 0, // Convert from cents to dollars
-      currency: session.currency?.toUpperCase() || "USD",
+      amount: session.amount_total ? Math.round(session.amount_total / 100) : 0, // Convert from the smallest currency unit
+      currency: session.currency?.toUpperCase() || "INR",
       status: "paid",
       paymentProvider: "stripe",
       paymentRef: sessionId,

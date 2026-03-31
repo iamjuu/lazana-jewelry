@@ -26,6 +26,15 @@ interface Order {
   paymentProvider?: string;
 }
 
+const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    currencyDisplay: "code",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+
 const OrdersPageContent = () => {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -200,7 +209,7 @@ const OrdersPageContent = () => {
                             </p>
                           </div>
                           <p className="text-[#1C3163] font-medium">
-                            ${item.price.toLocaleString("en-US")}
+                            {formatCurrency(item.price)}
                           </p>
                         </div>
                       ))}
@@ -213,7 +222,7 @@ const OrdersPageContent = () => {
                           Total Amount
                         </p>
                         <p className="text-[#1C3163] font-semibold text-xl">
-                          ${order.amount.toLocaleString("en-US")}
+                          {formatCurrency(order.amount)}
                         </p>
                       </div>
                       {order.paymentProvider && (

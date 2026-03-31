@@ -324,10 +324,14 @@ const EventDetailPage = () => {
   const isFullyBooked = availableSlots <= 0;
   const price = event.price || 0;
 
-  const formatPrice = (p: number) => {
-    const rounded = Math.round(p * 100) / 100;
-    return rounded % 1 === 0 ? rounded.toString() : rounded.toFixed(2);
-  };
+  const formatPrice = (p: number) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      currencyDisplay: "code",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Math.round(p * 100) / 100);
 
   const formatTimeWithDate = (
     day: string,
@@ -446,7 +450,7 @@ const EventDetailPage = () => {
                     {price > 0 && (
                       <div className="">
                         <p className="text-[#1C3163] text-[16px] sm:text-[18px] md:text-[18px] font-light font-touvlo">
-                          ${formatPrice(price)} USD
+                          {formatPrice(price)}
                         </p>
                       </div>
                     )}
@@ -487,7 +491,7 @@ const EventDetailPage = () => {
                                 {appliedCoupon.discountPercent || "Fixed"} off
                               </p>
                               <p className="text-green-600 text-[11px]">
-                                Save ${appliedCoupon.discountAmount.toFixed(2)}
+                                Save {formatPrice(appliedCoupon.discountAmount)}
                               </p>
                             </div>
                             <button
@@ -539,13 +543,13 @@ const EventDetailPage = () => {
                         <div className="flex justify-between">
                           <span className="text-[#6B5D4F]">Subtotal:</span>
                           <span className="text-[#1C3163]">
-                            ${formatPrice(price * quantity)}
+                            {formatPrice(price * quantity)}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-green-600">Discount:</span>
                           <span className="text-green-600">
-                            -${formatPrice(appliedCoupon.discountAmount)}
+                            -{formatPrice(appliedCoupon.discountAmount)}
                           </span>
                         </div>
                         <div className="flex justify-between pt-2 border-t border-[#1C3163]">
@@ -553,7 +557,6 @@ const EventDetailPage = () => {
                             Total:
                           </span>
                           <span className="text-[#1C3163] font-medium">
-                            $
                             {formatPrice(
                               Math.max(
                                 0,

@@ -18,6 +18,15 @@ type ProductDetails = {
   discount?: number;
 };
 
+const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    currencyDisplay: "code",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+
 const CartPageContent = () => {
   const router = useRouter();
   const { items, removeItem, increment, decrement, subtotal, totalQuantity, clearCart } = useCart();
@@ -193,16 +202,16 @@ const CartPageContent = () => {
                           {productDetails.get(item.id)?.hasDiscount ? (
                             <div className="flex items-center gap-2">
                               <p className="text-[#2C3E50] text-lg md:text-xl font-semibold">
-                                ${item.price.toLocaleString("en-US")}
+                                {formatCurrency(item.price)}
                               </p>
                               <p className="text-gray-400 text-sm md:text-base line-through">
-                                ${productDetails.get(item.id)?.originalPrice?.toLocaleString("en-US")}
+                                {formatCurrency(productDetails.get(item.id)?.originalPrice || 0)}
                               </p>
                             </div>
                           ) : (
                             <p className="font-touvlo text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">
-                          ${item.price.toLocaleString("en-US")}
-                        </p>
+                              {formatCurrency(item.price)}
+                            </p>
                           )}
                         </div>
 
@@ -229,7 +238,7 @@ const CartPageContent = () => {
                             </button>
                           </div>
                           <span className="text-sm text-gray-600">
-                            Subtotal: ${(item.price * item.quantity).toLocaleString("en-US")}
+                            Subtotal: {formatCurrency(item.price * item.quantity)}
                           </span>
                         </div>
                       </div>
@@ -259,12 +268,12 @@ const CartPageContent = () => {
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-[#2C3E50] font-touvlo">
                     <span className="text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">Subtotal ({totalQuantity()} items)</span>
-                    <span className="text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">${itemsSubtotal.toLocaleString("en-US")}</span>
+                    <span className="text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">{formatCurrency(itemsSubtotal)}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex justify-between text-[#1C3163] text-[16px] font-semibold font-touvlo">
                       <span className="text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">Total</span>
-                      <span className="text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">${totalAmount.toLocaleString("en-US")}</span>
+                      <span className="text-[14px] sm:text-[15px] md:text-[16px] leading-[1.9] text-[#545454]">{formatCurrency(totalAmount)}</span>
                     </div>
                   </div>
                 </div>

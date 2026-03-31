@@ -8,6 +8,15 @@ import { CheckCircle, Package, ArrowRight } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCart } from "@/stores/useCart";
 
+const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    currencyDisplay: "code",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+
 function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -122,7 +131,9 @@ function SuccessContent() {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Total Amount:</span>
                     <span className="text-[#1C3163] font-semibold">
-                      ${orderDetails.amount?.toLocaleString("en-US")}
+                      {typeof orderDetails.amount === "number"
+                        ? formatCurrency(orderDetails.amount)
+                        : "INR 0.00"}
                     </span>
                   </div>
                 </div>
@@ -204,5 +215,4 @@ export default function SuccessPage() {
     </Suspense>
   );
 }
-
 

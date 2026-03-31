@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       userId: user._id,
       items: orderItems,
       amount,
-      currency: "USD",
+      currency: "INR",
       status: "pending",
     });
 
