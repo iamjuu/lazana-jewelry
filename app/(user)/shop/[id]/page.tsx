@@ -7,6 +7,7 @@ import { Bucket1 } from "@/public/assets";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/stores/useCart";
+import WishlistButton from "@/components/user/WishlistButton";
 import toast from "react-hot-toast";
 
 import Bowlsize from "@/public/assets/images/productdesc/bowlsize2.jpeg";
@@ -145,6 +146,7 @@ const ProductDetailPage = () => {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [relativeProduct, setRelativeProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [buyingNow, setBuyingNow] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(),
   );
@@ -389,10 +391,14 @@ const ProductDetailPage = () => {
       return;
     }
 
-    // Redirect to order confirmation with instant buy params
-    router.push(
-      `/order-confirmation?type=instant&productId=${product._id}&quantity=1`,
-    );
+    try {
+      setBuyingNow(true);
+      router.push(
+        `/order-confirmation?type=instant&productId=${product._id}&quantity=1`,
+      );
+    } finally {
+      setBuyingNow(false);
+    }
   };
 
   return (
@@ -553,12 +559,18 @@ const ProductDetailPage = () => {
 
             {/* Right Side - Product Info */}
             <div className="flex flex-col">
-              <h1
-                className="font-seasons text-[#1C3163] text-[26px] sm:text-[28px] md:text-[30px] lg:text-[32px] font-normal leading-none"
-                style={{ textShadow: "0.5px 0 0 currentColor" }}
-              >
-                {product.name}
-              </h1>
+              <div className="flex items-start justify-between gap-4">
+                <h1
+                  className="font-seasons text-[#1C3163] text-[26px] sm:text-[28px] md:text-[30px] lg:text-[32px] font-normal leading-none"
+                  style={{ textShadow: "0.5px 0 0 currentColor" }}
+                >
+                  {product.name}
+                </h1>
+                <WishlistButton
+                  product={product}
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#1C3163]/15 bg-white shadow-sm transition hover:bg-[#F7F8FB]"
+                />
+              </div>
 
               <div className="">
                 {hasDiscount ? (
@@ -605,6 +617,15 @@ const ProductDetailPage = () => {
                   )} */}
                 </div>
               )}
+
+              <WishlistButton
+                product={product}
+                showLabel
+                iconSize={18}
+                activeLabel="Saved to wishlist"
+                inactiveLabel="Save to wishlist"
+                className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-[#1C3163]/15 px-4 py-2 font-touvlo text-sm text-[#1C3163] transition hover:bg-[#F7F8FB]"
+              />
 
               {/* Add to Cart Button */}
               <button

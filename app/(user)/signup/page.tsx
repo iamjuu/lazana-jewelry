@@ -152,6 +152,7 @@ export default function SignupPage() {
         sessionStorage.setItem("userRole", "user");
         sessionStorage.removeItem("adminToken");
         sessionStorage.removeItem("adminRole");
+        window.dispatchEvent(new Event("login"));
       }
 
       // Redirect to home

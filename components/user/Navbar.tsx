@@ -3,8 +3,9 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShoppingCart, User, Search, X, Menu } from "lucide-react";
+import { ShoppingCart, User, Search, X, Menu, Heart } from "lucide-react";
 import { useCart } from "@/stores/useCart";
+import { useWishlist } from "@/stores/useWishlist";
 import toast from "react-hot-toast";
 // Fonts are now defined in globals.css as font-seasons and font-touvlo
 
@@ -67,6 +68,10 @@ const Navbar = () => {
   const navRef = useRef<HTMLElement>(null);
 
   const { totalQuantity, items } = useCart();
+  const wishlistItems = useWishlist((state) => state.items);
+  const wishlistInitialized = useWishlist((state) => state.initialized);
+  const fetchWishlist = useWishlist((state) => state.fetchWishlist);
+  const clearWishlist = useWishlist((state) => state.clearWishlist);
 
   const [mounted, setMounted] = useState(false);
   const [cartCount, setCartCount] = useState(0);
@@ -177,9 +182,28 @@ const Navbar = () => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    setMounted(true);
-    setIsLoggedIn(!!sessionStorage.getItem("userToken"));
-  }, []);
+    const syncAuthState = () => {
+      const loggedIn = !!sessionStorage.getItem("userToken");
+      setMounted(true);
+      setIsLoggedIn(loggedIn);
+
+      if (loggedIn) {
+        fetchWishlist().catch(() => undefined);
+      } else {
+        clearWishlist();
+      }
+    };
+
+    syncAuthState();
+
+    window.addEventListener("login", syncAuthState);
+    window.addEventListener("logout", syncAuthState);
+
+    return () => {
+      window.removeEventListener("login", syncAuthState);
+      window.removeEventListener("logout", syncAuthState);
+    };
+  }, [clearWishlist, fetchWishlist]);
 
   useEffect(() => {
     if (mounted) setCartCount(totalQuantity());
@@ -236,6 +260,24 @@ const Navbar = () => {
             </button>
             <Link href="/profile" className="text-[#000000] hover:text-[#1C3163]">
               <User size={20} />
+            </Link>
+            <Link
+              href={isLoggedIn ? "/wishlist" : "/login"}
+              onClick={(e) => {
+                if (!isLoggedIn) {
+                  e.preventDefault();
+                  toast.error("Please login to continue");
+                  router.push("/login");
+                }
+              }}
+              className="relative text-[#000000] hover:text-[#1C3163]"
+            >
+              <Heart size={20} />
+              {mounted && wishlistInitialized && wishlistItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#1c3163] text-xs w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white">
+                  {wishlistItems.length}
+                </span>
+              )}
             </Link>
 
             <Link
@@ -446,11 +488,10 @@ const Navbar = () => {
                       <div
                         className="
                           absolute left-0 top-full mt-2 w-56
-                          bg-white/60 backdrop-blur-md
-                          shadow-lg border border-black/10
+                          bg-black/20 backdrop-blur-2xl
+                          shadow-xl border border-white/30
                           rounded-lg z-[1003] pointer-events-auto py-3
-                          !text-[18px]
-
+                          text-[18px]
                         "
                         onMouseEnter={() => {
                           if (shopHoverTimeoutRef.current)
@@ -592,6 +633,24 @@ const Navbar = () => {
             <Link href="/profile" className="text-[#000000] hover:text-[#1C3163]">
               <User size={24} />
             </Link>
+            <Link
+              href={isLoggedIn ? "/wishlist" : "/login"}
+              onClick={(e) => {
+                if (!isLoggedIn) {
+                  e.preventDefault();
+                  toast.error("Please login to continue");
+                  router.push("/login");
+                }
+              }}
+              className="relative text-[#000000] hover:text-[#1C3163]"
+            >
+              <Heart size={24} />
+              {mounted && wishlistInitialized && wishlistItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#1c3163] text-xs w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white font-touvlo">
+                  {wishlistItems.length}
+                </span>
+              )}
+            </Link>
 
             <Link
               href={isLoggedIn ? "/cart" : "/login"}
@@ -703,5 +762,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-

@@ -1,4 +1,4 @@
-import mongoose, { Schema, models, model } from "mongoose";
+import { Schema, models, model } from "mongoose";
 import type { IUser } from "@/types";
 
 const UserSchema = new Schema<IUser>(
@@ -12,6 +12,10 @@ const UserSchema = new Schema<IUser>(
     verificationToken: { type: String, default: null },
     phone: { type: String, required: false },
     imageUrl: { type: String, required: false },
+    wishlist: [{
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+    }],
     addresses: [{
       street: { type: String, required: false },
       city: { type: String, required: false },

@@ -133,6 +133,7 @@ export default function LoginPage() {
         // Clear any previous admin session so layout/middleware don't redirect to admin
         sessionStorage.removeItem("adminToken");
         sessionStorage.removeItem("adminRole");
+        window.dispatchEvent(new Event("login"));
         toast.success("Login successful!");
         router.push("/");
       }

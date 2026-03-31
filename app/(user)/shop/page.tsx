@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
+import WishlistButton from "@/components/user/WishlistButton";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { Bucket1, FliterIcon, SortIcon } from "@/public/assets";
@@ -298,12 +299,16 @@ const ShopPageContent = () => {
         // - DOMException AbortError
         // - Error with message
         // - raw string reason (e.g. "shop_fetch_cleanup")
+        const errorMeta =
+          typeof error === "object" && error !== null
+            ? (error as { message?: string; reason?: string; name?: string })
+            : {};
         const abortReason =
           typeof error === "string"
             ? error
-            : error?.message || error?.reason || "";
+            : errorMeta.message || errorMeta.reason || "";
         if (
-          error?.name === "AbortError" ||
+          errorMeta.name === "AbortError" ||
           abortReason === "shop_fetch_cleanup" ||
           abortReason === "request_timeout"
         ) {
@@ -782,6 +787,10 @@ const ShopPageContent = () => {
                           prefetch={false}
                         >
                           <div className="relative w-full aspect-square overflow-hidden rounded-lg bg-gray-100">
+                            <WishlistButton
+                              product={item}
+                              className="absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-sm transition hover:bg-white"
+                            />
                             {imageUrl ? (
                               <>
                                 {/* Use regular img tag instead of next/image to avoid iOS Safari memory crash */}
@@ -920,4 +929,3 @@ const ShopPage = () => {
 };
 
 export default ShopPage;
-

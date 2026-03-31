@@ -38,6 +38,26 @@ export interface IUser extends WithTimestamps {
     zipCode?: string;
     country?: string;
   };
+  wishlist?: Array<string | WishlistProduct>;
+}
+
+export interface WishlistProduct {
+  _id: string;
+  name: string;
+  price: number;
+  discount?: number;
+  shortDescription?: string;
+  description?: string;
+  imageUrl?: string[];
+  category?: string | { _id: string; name: string; slug: string };
+  subcategory?:
+    | string
+    | {
+        _id: string;
+        name: string;
+        slug: string;
+        category?: string | { _id: string; name: string; slug: string };
+      };
 }
 
 export interface IAdministrator extends WithTimestamps {
