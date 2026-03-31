@@ -21,6 +21,15 @@ type PaymentOrderData = {
   };
 };
 
+const formatCurrency = (amount: number, currency: string) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+    currencyDisplay: "code",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+
 function PaymentCheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -151,7 +160,7 @@ function PaymentCheckoutContent() {
                 Total Amount ({paymentData.currency}):
               </span>
               <span className="text-2xl font-bold text-[#1C3163]">
-                {(paymentData.amount / 100).toFixed(2)}
+                {formatCurrency(paymentData.amount / 100, paymentData.currency)}
               </span>
             </div>
             <p className="text-sm text-[#545454]">

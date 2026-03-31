@@ -1,15 +1,12 @@
 "use client";
 import React, { useState, useEffect, useRef, Suspense } from "react";
-import localFont from "next/font/local";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 import Image from "next/image";
-import { Plus, ChevronDown, X } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Bucket1, FliterIcon, SortIcon } from "@/public/assets";
 import Link from "next/link";
-import { useCart } from "@/stores/useCart";
-import { useRouter, useSearchParams } from "next/navigation";
-import toast from "react-hot-toast";
+import { useSearchParams } from "next/navigation";
 
 // Fonts are now defined in globals.css as font-seasons and font-touvlo
 
@@ -79,8 +76,6 @@ const ShopPageContent = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [categoryName, setCategoryName] = useState<string>("All Products");
-  const { addItem } = useCart();
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   // Get category from URL using useSearchParams (works with Next.js client-side navigation)
@@ -100,7 +95,6 @@ const ShopPageContent = () => {
 
   // Filter panel visibility
   const [showFilters, setShowFilters] = useState(true);
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -138,21 +132,6 @@ const ShopPageContent = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showSortDropdown]);
-
-  // Get sort label
-  const getSortLabel = () => {
-    if (filters.featured) return "FEATURED";
-    if (filters.newAddition) return "NEW ADDITION";
-    if (filters.sortBy === "price" && filters.sortOrder === "desc")
-      return "PRICE, HIGH TO LOW";
-    if (filters.sortBy === "price" && filters.sortOrder === "asc")
-      return "PRICE, LOW TO HIGH";
-    if (filters.sortBy === "name" && filters.sortOrder === "asc")
-      return "ALPHABETICALLY, A-Z";
-    if (filters.sortBy === "name" && filters.sortOrder === "desc")
-      return "ALPHABETICALLY, Z-A";
-    return "SORT PRODUCTS";
-  };
 
   const handleSortChange = (sortBy: string, sortOrder: string) => {
     if (sortBy === "featured") {
@@ -313,7 +292,7 @@ const ShopPageContent = () => {
             setCategoryName("All Products");
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Silently ignore aborts - they're expected when user changes page/filters.
         // In some browsers `abort(reason)` can surface as:
         // - DOMException AbortError
@@ -337,9 +316,9 @@ const ShopPageContent = () => {
         if (isMounted) {
           // Keep existing products on error (better UX than showing empty)
           // Only clear if we had no products before
-          if (products.length === 0) {
-            setProducts([]);
-          }
+          setProducts((currentProducts) =>
+            currentProducts.length === 0 ? [] : currentProducts,
+          );
           setCategoryName(
             categoryParam && categoryParam !== "all"
               ? categoryParam || "Category"
@@ -427,55 +406,6 @@ const ShopPageContent = () => {
       return url;
     }
     return ""; // Skip base64 images
-  };
-
-  // Handle Add to Cart
-  const handleAddToCart = (e: React.MouseEvent, item: Product) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Check if user is logged in
-    const token = sessionStorage.getItem("userToken");
-    if (!token) {
-      toast.error("Please login to add items to cart");
-      router.push("/login");
-      return;
-    }
-
-    // Calculate discounted price if applicable
-    const hasDiscount = item.discount && item.discount > 0;
-    const discountedPrice =
-      hasDiscount && item.discount ? item.price - item.discount : item.price;
-
-    // Get first image URL for cart (only http/https, skip base64)
-    const imageUrl =
-      item.imageUrl && item.imageUrl.length > 0
-        ? getValidImageUrl(item.imageUrl[0])
-        : "";
-
-    addItem({
-      id: item._id,
-      name: item.name,
-      price: discountedPrice, // Use discounted price
-      imageUrl: imageUrl,
-    });
-
-    toast.success("Added to cart!");
-  };
-
-  // Toggle expanded state for description
-  const toggleExpanded = (e: React.MouseEvent, itemId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setExpandedItems((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(itemId)) {
-        newSet.delete(itemId);
-      } else {
-        newSet.add(itemId);
-      }
-      return newSet;
-    });
   };
 
   const menuClose = () => {

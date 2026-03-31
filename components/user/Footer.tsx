@@ -182,32 +182,25 @@ const Footer = () => {
                       Services
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      href="/about"
-                      className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
-                    >
-                      About Us
-                    </Link>
-                  </li>
-                  <li>
+                 
+                  {/* <li>
                     <Link
                       href="/faq"
                       className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       FAQs
                     </Link>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
               <div className="min-w-0">
                 <ul className="space-y-2 min-w-0">
-                  <li>
+                <li>
                     <Link
-                      href="/events"
+                      href="/about"
                       className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
-                      Events
+                      About Us
                     </Link>
                   </li>
                   <li>
@@ -218,30 +211,30 @@ const Footer = () => {
                       Blog
                     </Link>
                   </li>
-                  <li>
+                  {/* <li>
                     <Link
                       href="/book-a-session"
                       className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Book a Styling Call
                     </Link>
-                  </li>
-                  <li>
+                  </li> */}
+                  {/* <li>
                     <Link
                       href="/shipping-and-delivery"
                       className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Shipping & Delivery
                     </Link>
-                  </li>
-                  <li>
+                  </li> */}
+                  {/* <li>
                     <Link
                       href="/returns-and-refund-policy"
                       className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Returns & Refund Policy
                     </Link>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
               <div className="min-w-0 overflow-hidden sm:overflow-visible">

@@ -52,7 +52,7 @@ const OrderSchema = new Schema<OrderType>(
     productTotal: { type: Number, required: true },
     deliveryCharges: { type: DeliveryChargesSchema, required: true },
     amount: { type: Number, required: true }, // productTotal + deliveryCharges.total
-    currency: { type: String, default: "USD" },
+    currency: { type: String, default: "INR" },
     status: { 
       type: String, 
       default: "pending",

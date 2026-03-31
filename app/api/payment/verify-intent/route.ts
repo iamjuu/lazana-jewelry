@@ -251,7 +251,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (payment.currency !== (order.currency || "USD").toUpperCase()) {
+    if (payment.currency !== (order.currency || "INR").toUpperCase()) {
       return NextResponse.json(
         { success: false, message: "Payment currency mismatch" },
         { status: 400 }

@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       phone?: string;
     } | null>();
 
-    const currency = (order.currency || "USD").toUpperCase();
+    const currency = "INR";
     const amount = Math.round(order.amount * 100);
 
     if (amount <= 0) {
@@ -59,6 +59,10 @@ export async function POST(req: NextRequest) {
         { success: false, message: "Invalid order amount" },
         { status: 400 }
       );
+    }
+
+    if (order.currency !== currency) {
+      order.currency = currency;
     }
 
     const razorpay = getRazorpayInstance();

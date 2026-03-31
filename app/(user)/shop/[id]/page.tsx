@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
 import Image from "next/image";
-import { Plus } from "lucide-react";
 import { Bucket1 } from "@/public/assets";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -146,12 +145,9 @@ const ProductDetailPage = () => {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [relativeProduct, setRelativeProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  const [buyingNow, setBuyingNow] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(),
   );
-  const [showFullShortDesc, setShowFullShortDesc] = useState(false);
-  const [showFullLongDesc, setShowFullLongDesc] = useState(false);
   const { addItem } = useCart();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -378,38 +374,6 @@ const ProductDetailPage = () => {
       name: relativeProduct.name,
       price: relativeDiscountedPrice, // Use discounted price
       imageUrl: imageUrl,
-    });
-
-    toast.success("Added to cart!");
-  };
-
-  // Handle Add Related Product to Cart
-  const handleAddRelatedProductToCart = (item: Product) => {
-    // Check if user is logged in
-    const token = sessionStorage.getItem("userToken");
-    if (!token) {
-      toast.error("Please login to add items to cart");
-      router.push("/login");
-      return;
-    }
-
-    // Calculate discounted price if discount exists
-    const itemDiscountedPrice =
-      item.discount && item.discount > 0
-        ? item.price - item.discount
-        : item.price;
-
-    // Get first image URL for cart
-    const itemImageUrl =
-      item.imageUrl && item.imageUrl.length > 0
-        ? normalizeImageUrl(item.imageUrl[0])
-        : "";
-
-    addItem({
-      id: item._id,
-      name: item.name,
-      price: itemDiscountedPrice,
-      imageUrl: itemImageUrl,
     });
 
     toast.success("Added to cart!");

@@ -556,7 +556,7 @@ const Index = () => {
 
         {/* collection section  */}
 
-        <CollectionSection categories={categories} loading={loading} />
+        {/* <CollectionSection categories={categories} loading={loading} /> */}
 
         {/* Shop Lazana Jewelry */}
         <section className="w-full  md:py-0  mt-[25px]">
@@ -645,7 +645,7 @@ const Index = () => {
             </div>
           </section>
 
-          <div className="max-w-6xl  py-16 flex flex-col mx-auto px-4 mt-[25px] ">
+          {/* <div className="max-w-6xl  py-16 flex flex-col mx-auto px-4 mt-[25px] ">
             <div className="flex w-full ">
               <h1 className="font-seasons text-black text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
                 What makes our jewelry unique
@@ -676,7 +676,7 @@ const Index = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </section>
         {/* holder  */}
 

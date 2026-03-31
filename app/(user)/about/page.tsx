@@ -109,7 +109,7 @@ const AboutPage = () => {
           </div>
         </div>
 
-        <div className="w-full flex flex-col py-16 mt-[25px]">
+        {/* <div className="w-full flex flex-col py-16 mt-[25px]">
           <div className=" pl:0 lg:pl-10">
             <div className="flex w-full  justify-start ">
               <h1 className="font-seasons text-[#000000] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none ">
@@ -143,10 +143,10 @@ const AboutPage = () => {
               ))}
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-[25px]">
+      <div className="max-w-7xl py-12 mx-auto px-4 sm:px-6 mt-[25px]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-start">
           <div className="relative w-full flex flex-col justify-center items-center gap-4 sm:gap-6  lg:mt-[40px] order-2 lg:order-1">
             <div className="relative w-full max-w-[300px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-[450px] xl:max-w-[500px] mx-auto lg:mx-0 group">
@@ -163,7 +163,7 @@ const AboutPage = () => {
     
           </div>
 
-          <div className="order-1 lg:order-2">
+          <div className="order-1   lg:order-2">
             <h2 className="font-seasons text-[#000000] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
               Craft & intention
             </h2>
@@ -213,7 +213,7 @@ const AboutPage = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 mt-[25px] ">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 mt-[25px] ">
         <div className="grid grid-cols-1  gap-6 sm:gap-8 lg:gap-12 items-center">
           <div className="">
             <h2 className="font-seasons text-[#000000] text-[28px] sm:text-[32px] md:text-[30px] lg:text-[32px] font-normal leading-none">
