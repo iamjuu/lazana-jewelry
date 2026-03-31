@@ -8,11 +8,21 @@ type NavItem = {
   href: string;
 };
 
-export default function DashboardNav({ items }: { items: NavItem[] }) {
+type DashboardNavProps = {
+  items: NavItem[];
+  className?: string;
+  onNavigate?: () => void;
+};
+
+export default function DashboardNav({
+  items,
+  className,
+  onNavigate,
+}: DashboardNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav className="mt-10 space-y-1">
+    <nav className={className ?? "mt-10 space-y-1"}>
       {items.map((item) => {
         // For Dashboard (/admin/dashboard), only match exactly, not sub-routes
         // For other routes, match exact or sub-routes
@@ -24,6 +34,7 @@ export default function DashboardNav({ items }: { items: NavItem[] }) {
           <Link
             key={item.href}
             href={item.href}
+            onClick={onNavigate}
             className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
               active 
                 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-500/10" 

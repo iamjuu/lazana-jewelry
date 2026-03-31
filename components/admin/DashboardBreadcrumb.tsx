@@ -45,38 +45,43 @@ export default function DashboardBreadcrumb() {
   const rootLabel = isAdminRoute ? "Home" : isDashboardRoute ? "Dashboard" : "Home";
 
   return (
-    <nav className="flex items-center gap-2 text-sm text-zinc-400" aria-label="Breadcrumb">
-      <Link
-        href={rootHref}
-        className="hover:text-white transition-colors"
-      >
-        {rootLabel}
-      </Link>
-      {breadcrumbs.map((crumb, index) => {
-        // Skip the first segment if it matches the root
-        const firstSegment = segments[0]?.toLowerCase();
-        if (index === 0 && (
-          (isDashboardRoute && firstSegment === "dashboard") ||
-          (isAdminRoute && firstSegment === "admin")
-        )) {
-          return null;
-        }
-        return (
-          <span key={crumb.href} className="flex items-center gap-2">
-            <span className="text-zinc-600">/</span>
-            {crumb.isLast ? (
-              <span className="text-white font-medium">{crumb.label}</span>
-            ) : (
-              <Link
-                href={crumb.href}
-                className="hover:text-white transition-colors"
-              >
-                {crumb.label}
-              </Link>
-            )}
-          </span>
-        );
-      })}
+    <nav
+      className="overflow-x-auto text-sm text-zinc-400 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      aria-label="Breadcrumb"
+    >
+      <div className="flex min-w-max items-center gap-2 pr-4">
+        <Link
+          href={rootHref}
+          className="shrink-0 transition-colors hover:text-white"
+        >
+          {rootLabel}
+        </Link>
+        {breadcrumbs.map((crumb, index) => {
+          // Skip the first segment if it matches the root
+          const firstSegment = segments[0]?.toLowerCase();
+          if (index === 0 && (
+            (isDashboardRoute && firstSegment === "dashboard") ||
+            (isAdminRoute && firstSegment === "admin")
+          )) {
+            return null;
+          }
+          return (
+            <span key={crumb.href} className="flex shrink-0 items-center gap-2">
+              <span className="text-zinc-600">/</span>
+              {crumb.isLast ? (
+                <span className="font-medium text-white">{crumb.label}</span>
+              ) : (
+                <Link
+                  href={crumb.href}
+                  className="transition-colors hover:text-white"
+                >
+                  {crumb.label}
+                </Link>
+              )}
+            </span>
+          );
+        })}
+      </div>
     </nav>
   );
 }

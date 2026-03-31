@@ -132,7 +132,7 @@ function AdminLoginContent() {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="w-full rounded-md border border-zinc-300 px-3 py-2"
-            placeholder="admin@lazana-jewelry.com"
+            placeholder="admin@gmail.com"
           />
         </div>
         <div>

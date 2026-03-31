@@ -6,6 +6,7 @@ import { getAuthUserFromToken } from "@/lib/auth";
 import DashboardNav from "@/components/admin/DashboardNav";
 import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 import DashboardBreadcrumb from "@/components/admin/DashboardBreadcrumb";
+import DashboardMobileMenu from "@/components/admin/DashboardMobileMenu";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -59,16 +60,18 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         </div>
       </aside>
 
-      <div className="flex-1">
-        <header className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-4 py-4 sm:px-8">
-          <div className="lg:hidden">
-            <Link href="/admin/dashboard" className="text-lg font-semibold text-white">
-              Lazana Jewelry
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center justify-between gap-4 border-b border-zinc-800 bg-zinc-950 px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <DashboardMobileMenu items={navItems} />
+            <Link href="/admin/dashboard" className="text-lg font-semibold text-white lg:hidden">
+              <span className="hidden sm:inline">Lazana Jewelry</span>
+              <span className="sm:hidden">Lazana</span>
             </Link>
           </div>
           <AdminLogoutButton />
         </header>
-        <div className="border-b border-zinc-800 bg-zinc-950 px-4 py-2 sm:px-8">
+        <div className="border-b border-zinc-800 bg-zinc-950 px-4 py-2 sm:px-6 lg:px-8">
           <DashboardBreadcrumb />
         </div>
         <main>{children}</main>
@@ -76,4 +79,3 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     </div>
   );
 }
-

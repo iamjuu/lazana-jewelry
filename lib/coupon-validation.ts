@@ -3,6 +3,15 @@ import ProductCoupon from "@/models/ProductCoupon";
 import EventCoupon from "@/models/EventCoupon";
 import mongoose from "mongoose";
 
+const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    currencyDisplay: "code",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Math.round(amount * 100) / 100);
+
 export interface CouponValidationResult {
   valid: boolean;
   message?: string;
@@ -93,7 +102,7 @@ export async function validateProductCoupon(
     } else if (coupon.discountType === "amount" && coupon.discountAmount) {
       // For fixed amount, ensure discount doesn't exceed total price
       discountAmount = Math.min(coupon.discountAmount, totalPrice);
-      message = `Coupon applied: USD ${coupon.discountAmount} off`;
+      message = `Coupon applied: ${formatCurrency(coupon.discountAmount)} off`;
     } else {
       return {
         valid: false,
@@ -202,7 +211,7 @@ export async function validateEventCoupon(
     } else if (coupon.discountType === "amount" && coupon.discountAmount) {
       // For fixed amount, ensure discount doesn't exceed event price
       discountAmount = Math.min(coupon.discountAmount, eventPrice);
-      message = `Coupon applied: USD ${coupon.discountAmount} off`;
+      message = `Coupon applied: ${formatCurrency(coupon.discountAmount)} off`;
     } else {
       return {
         valid: false,

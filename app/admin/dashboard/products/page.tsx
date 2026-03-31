@@ -65,7 +65,6 @@ export default function ProductsPage() {
 
   useEffect(() => {
     fetchProducts(currentPage, searchQuery);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, searchQuery]);
 
   const handleAddComplete = () => {
@@ -86,18 +85,18 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 p-6 sm:p-8">
+    <div className="min-h-screen bg-zinc-900 px-4 py-6 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-7xl">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-white">Products Management</h1>
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <h1 className="text-2xl font-bold text-white sm:text-3xl">Products Management</h1>
           {!showAddForm && (
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
               <button
                 onClick={() => {
                   setIsUniversalProduct(false);
                   setShowAddForm(true);
                 }}
-                className="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100"
+                className="inline-flex min-h-11 items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100"
               >
                 Add Product
               </button>
@@ -106,7 +105,7 @@ export default function ProductsPage() {
                   setIsUniversalProduct(true);
                   setShowAddForm(true);
                 }}
-                className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                className="inline-flex min-h-11 items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
               >
                 Add Universal Product
               </button>
@@ -117,14 +116,14 @@ export default function ProductsPage() {
         {/* Search */}
         {!showAddForm && (
           <div className="mb-6">
-            <div className="relative max-w-md">
+            <div className="relative w-full max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={20} />
               <input
                 type="text"
                 placeholder="Search products by name, description..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-zinc-600 bg-zinc-800 py-2.5 pl-10 pr-4 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -149,22 +148,22 @@ export default function ProductsPage() {
           <>
             <ProductList products={products} onRefresh={() => fetchProducts(currentPage)} />
             {totalPages > 1 && (
-              <div className="mt-6 flex items-center justify-between border-t border-zinc-700 pt-4">
+              <div className="mt-6 flex flex-col gap-3 border-t border-zinc-700 pt-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="text-sm text-zinc-400">
                   Page {currentPage} of {totalPages}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row">
                   <button
                     onClick={handlePrevPage}
                     disabled={currentPage === 1}
-                    className="rounded-md border border-zinc-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="rounded-md border border-zinc-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Previous
                   </button>
                   <button
                     onClick={handleNextPage}
                     disabled={currentPage === totalPages}
-                    className="rounded-md border border-zinc-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="rounded-md border border-zinc-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Next
                   </button>

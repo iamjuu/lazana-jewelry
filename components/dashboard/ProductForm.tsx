@@ -672,7 +672,7 @@
     };
 
     return (
-      <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-zinc-700 bg-zinc-800 p-6 shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-zinc-700 bg-zinc-800 p-4 shadow-sm sm:p-6">
         {isUniversalProduct && (
           <div className="mb-4 p-3 bg-blue-900/30 border border-blue-700 rounded-lg">
             <h3 className="text-lg font-semibold text-blue-300">Universal Product</h3>
@@ -965,7 +965,7 @@
                 placeholder="e.g., 5-6, 6-7, 7-8, or 8"
               />
               <p className="text-xs text-zinc-400">
-                Enter size: range like "5-6" or "7-8" (between) or single value like "8" (exact inches) - optional
+                Enter size: range like &quot;5-6&quot; or &quot;7-8&quot; (between) or single value like &quot;8&quot; (exact inches) - optional
               </p>
             </div>
 
@@ -1184,7 +1184,7 @@
           </div>
         )}
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <button
             type="submit"
             disabled={loading}
@@ -1205,4 +1205,3 @@
       </form>
     );
   }
-

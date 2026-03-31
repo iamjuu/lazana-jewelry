@@ -488,6 +488,15 @@ function ProfilePageContent() {
     return rounded % 1 === 0 ? String(rounded) : rounded.toFixed(2);
   };
 
+  const formatCurrency = (n: number): string =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      currencyDisplay: "code",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Math.round(n * 100) / 100);
+
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case "paid":
@@ -945,7 +954,7 @@ function ProfilePageContent() {
                                     </div>
                                   </div>
                                   <p className="text-black font-medium text-sm sm:text-base flex-shrink-0 pl-2 sm:pl-0">
-                                    ${formatAmount(item.price * item.quantity)}
+                                    {formatCurrency(item.price * item.quantity)}
                                   </p>
                                 </div>
                               );
@@ -968,7 +977,7 @@ function ProfilePageContent() {
                                     Delivery ({order.deliveryCharges.method === "Air Express" ? "Air Economy" : order.deliveryCharges.method})
                                   </p>
                                   <p className="text-black font-medium">
-                                    ${formatAmount(order.deliveryCharges.total)}
+                                    {formatCurrency(order.deliveryCharges.total)}
                                   </p>
                                 </div>
                                 {order.deliveryCharges.breakdown && (
@@ -989,16 +998,16 @@ function ProfilePageContent() {
                                     )}
                                   </div>
                                   <p className="text-green-600 font-medium">
-                                    -${formatAmount(order.discountAmount)}
+                                    -{formatCurrency(order.discountAmount)}
                                   </p>
                                 </div>
                               ) : null}
                             <div className="flex justify-between items-center pt-2 border-t border-gray-300">
                               <p className="text-black font-semibold text-lg">
-                                Total Amount (USD)
+                                Total Amount (INR)
                               </p>
                               <p className="text-black font-semibold text-lg">
-                                ${formatAmount(order.amount)}
+                                {formatCurrency(order.amount)}
                               </p>
                             </div>
                             {order.paymentProvider && (
@@ -1124,7 +1133,7 @@ function ProfilePageContent() {
                               <div className="flex justify-between">
                                 <span className="text-black">Amount:</span>
                                 <span className="text-black  text-black font-semibold text-lg">
-                                  ${formatAmount(booking.amount)}
+                                  {formatCurrency(booking.amount)}
                                 </span>
                               </div>
                             )}
@@ -1322,7 +1331,7 @@ function ProfilePageContent() {
                                     )}
                                   </div>
                                   <span className="text-green-600 font-medium">
-                                    -USD ${formatAmount(booking.discountAmount)}
+                                    -{formatCurrency(booking.discountAmount)}
                                   </span>
                                 </div>
                               )}
@@ -1332,7 +1341,7 @@ function ProfilePageContent() {
                                   Total Amount:
                                 </span>
                                 <span className="text-black font-semibold text-lg">
-                                  USD${formatAmount(booking.amount)}
+                                  {formatCurrency(booking.amount)}
                                 </span>
                               </div>
                             )}

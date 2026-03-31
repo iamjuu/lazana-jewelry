@@ -19,6 +19,14 @@ type ProductListItem = {
   videoUrl?: string | string[];
   relativeproduct?: boolean;
   bestSelling?: boolean;
+  isSet?: boolean;
+  numberOfSets?: number;
+  newAddition?: boolean;
+  featured?: boolean;
+  tuning?: string;
+  octave?: "3rd octave" | "4th octave";
+  size?: string;
+  weight?: "less than 1kg" | "less than 6kg" | "between 1-3kg" | "3-5kg" | "greater than 6kg";
 };
 
 type Props = {
@@ -97,6 +105,34 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
     onRefresh();
   };
 
+  const formatCreatedDate = (createdAt: string) =>
+    new Date(createdAt).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+
+  const getFormInitialData = (product: ProductListItem) => ({
+    name: product.name,
+    shortDescription: product.shortDescription,
+    description: product.description,
+    category: product.category,
+    subcategory: product.subcategory,
+    price: product.price.toString(),
+    discount: product.discount,
+    imageUrl: product.imageUrl || [],
+    videoUrl: product.videoUrl,
+    isSet: product.isSet,
+    numberOfSets: product.numberOfSets,
+    newAddition: product.newAddition,
+    featured: product.featured,
+    bestSelling: product.bestSelling,
+    tuning: product.tuning,
+    octave: product.octave,
+    size: product.size,
+    weight: product.weight,
+  });
+
   if (products.length === 0) {
     return (
       <div className="rounded-lg  p-10 text-center">
@@ -106,8 +142,93 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
   }
 
   return (
-    <div className="rounded-lg border border-zinc-700 bg-zinc-800 overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="overflow-hidden rounded-lg border border-zinc-700 bg-zinc-800">
+      <div className="divide-y divide-zinc-700 md:hidden">
+        {products.map((product) => (
+          <div
+            key={product._id}
+            className={`p-4 ${product.relativeproduct ? "bg-blue-900/20" : ""}`}
+          >
+            {editingId === product._id ? (
+              <ProductForm
+                productId={product._id}
+                initialData={getFormInitialData(product)}
+                onComplete={handleEditComplete}
+                onCancel={() => setEditingId(null)}
+                isUniversalProduct={!!product.relativeproduct}
+              />
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  {getMainImageUrl(product) ? (
+                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border border-zinc-700 bg-zinc-900">
+                      <img
+                        src={getMainImageUrl(product)}
+                        alt={product.name}
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    </div>
+                  ) : null}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="break-words font-medium text-white">{product.name}</p>
+                      {product.relativeproduct && (
+                        <span className="rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white" title="Universal Product">
+                          Universal
+                        </span>
+                      )}
+                      {product.videoUrl && (
+                        <span className="text-xs text-zinc-500" title="Has video">
+                          Video
+                        </span>
+                      )}
+                    </div>
+                    {product.description && (
+                      <p className="mt-1 line-clamp-3 text-xs text-zinc-400">{product.description}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 rounded-lg border border-zinc-700 bg-zinc-900/50 p-3 sm:grid-cols-2">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-zinc-500">Price</p>
+                    <p className="mt-1 font-medium text-white">
+                      {product.discount && product.discount > 0
+                        ? formatCurrency(product.price - product.discount)
+                        : formatCurrency(product.price)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-zinc-500">Created</p>
+                    <p className="mt-1 text-sm text-zinc-300">{formatCreatedDate(product.createdAt)}</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <button
+                    onClick={() => setEditingId(product._id)}
+                    className="rounded-md border border-zinc-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(product._id)}
+                    disabled={deletingId === product._id}
+                    className="rounded-md border border-red-600 px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-900/20 disabled:opacity-50"
+                  >
+                    {deletingId === product._id ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="border-b border-zinc-700 bg-zinc-900 text-left text-xs uppercase tracking-wide text-zinc-400">
@@ -127,26 +248,7 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
                   <td colSpan={4} className="px-6 py-4">
                     <ProductForm
                       productId={product._id}
-                      initialData={{
-                        name: product.name,
-                        shortDescription: product.shortDescription,
-                        description: product.description,
-                        category: product.category,
-                        subcategory: product.subcategory,
-                        price: product.price.toString(),
-                        discount: (product as any).discount,
-                        imageUrl: product.imageUrl || [],
-                        videoUrl: product.videoUrl,
-                        isSet: (product as any).isSet,
-                        numberOfSets: (product as any).numberOfSets,
-                        newAddition: (product as any).newAddition,
-                        featured: (product as any).featured,
-                        bestSelling: (product as any).bestSelling,
-                        tuning: (product as any).tuning,
-                        octave: (product as any).octave,
-                        size: (product as any).size,
-                        weight: (product as any).weight,
-                      }}
+                      initialData={getFormInitialData(product)}
                       onComplete={handleEditComplete}
                       onCancel={() => setEditingId(null)}
                       isUniversalProduct={!!product.relativeproduct}
@@ -195,11 +297,7 @@ export default function ProductList({ products: initialProducts, onRefresh }: Pr
                       }
                     </td>
                     <td className="px-6 py-4 text-zinc-400">
-                      {new Date(product.createdAt).toLocaleDateString(undefined, {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      {formatCreatedDate(product.createdAt)}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
