@@ -19,11 +19,7 @@ const AboutSectionComponent = () => {
                   Welcome to Lazana Jewelry.
                 </p>
                 <p className="font-touvlo text-[#545454]  text-[14px] sm:text-[15px]  md:text-[16px]">
-                  Lazana Jewelry was founded by Francesca Wong, whose
-                  background spans KPMG, Citibank, Alibaba, and Estee Lauder.
-                  After more than a decade in global finance, e-commerce, and
-                  luxury beauty, she set out to build a jewelry brand shaped by
-                  quality, clarity, and modern femininity.
+                  Lazana Jewelry was founded by Francesca Wong, whose background spans KPMG, Citibank, Alibaba, and Estee Lauder. After more than a decade in global finance, e-commerce, and luxury beauty, she set out to build a jewelry brand shaped by quality, clarity, and modern femininity.
                 </p>
 
                 <p
@@ -35,17 +31,14 @@ const AboutSectionComponent = () => {
                 </p>
 
                 <p className="font-touvlo  text-[14px] sm:text-[15px] md:text-[16px] text-[#545454]">
-                  Lazana Jewelry was born from the belief that everyday pieces
-                  should be beautifully made, easy to wear, and expressive
-                  without feeling overdone. Each design is chosen with
-                  attention to finish, comfort, proportion, and the way it
-                  layers into real life. This is jewelry made to feel polished,
-                  versatile, and distinctly yours.
+                  Lazana Jewelry was born from the belief that everyday pieces should be beautifully made, easy to wear, and expressive without feeling overdone. Each design is chosen with attention to finish, comfort, proportion, and the way it layers into real life. This is jewelry made to feel polished, versatile, and distinctly yours.
+
+               
                 </p>
 
                 <p className="font-touvlo text-[#545454]">
-                  May these pieces become part of your everyday story. -
-                  Francesca
+                May these pieces become part of your everyday story.
+                — Sanveer & Niha
                 </p>
                 <a
                   href="/about"

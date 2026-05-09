@@ -56,39 +56,22 @@ const AboutPage = () => {
 
             <div className=" text-[#545454] mt-[25px]">
               <p className="font-touvlo sm:text-[15px]  text-[14px]  md:text-[16px] leading-relaxed text-[#545454] text-left">
-                Lazana Jewelry is a modern jewelry brand focused on timeless
-                design, quality materials, and pieces you can wear every day.
-                Our collections are curated to feel personal, versatile, and
-                easy to style, whether you are building a capsule wardrobe or
-                looking for a statement piece.
+                Lazana Jewelry is a modern jewelry brand founded by Sanveer & Niha, focused on timeless design, quality materials, and pieces you can wear every day. Our collections are curated to feel personal, versatile, and easy to style, whether you are building a capsule wardrobe or looking for a statement piece.
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed text-[#545454] text-left mt-4">
-                Each piece is designed with attention to comfort, finish, and
-                how it layers with the rest of your collection. We believe
-                jewelry should feel effortless, beautiful on its own and even
-                better when mixed and matched.
+                Each piece is designed with attention to comfort, finish, and how it layers with the rest of your collection. We believe jewelry should feel effortless, beautiful on its own and even better when mixed and matched.
               </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
-                At Lazana Jewelry, we work with trusted makers and materials so
-                you can shop with confidence. Product pages list metals,
-                finishes, and care notes because details matter when you wear
-                something every day.
+                At Lazana Jewelry, we work with trusted makers and materials so you can shop with confidence. Product pages list metals, finishes, and care notes because details matter when you wear something every day.
               </p>
 
-              <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
-                Craftsmanship means small variations that make handmade and
-                finished jewelry feel unique.{" "}
-                <span className="font-semibold">
-                  No two pieces are exactly alike.
-                </span>
-              </p>
 
               <p className="font-touvlo text-[13px] sm:text-[14px] md:text-[16px] leading-relaxed font-[300] text-[#545454] text-left mt-4">
-                Whether you are shopping for yourself or gifting someone
-                special, Lazana Jewelry is here to help you find pieces that
-                feel right for your story.
+                Whether you are shopping for yourself or gifting someone special, Lazana Jewelry is here to help you find pieces that feel right for your story.
+
+                — Sanveer & Niha
               </p>
             </div>
           </div>
@@ -105,7 +88,7 @@ const AboutPage = () => {
                 />
               </div>
             </div>
-        
+
           </div>
         </div>
 
@@ -160,7 +143,7 @@ const AboutPage = () => {
                 />
               </div>
             </div>
-    
+
           </div>
 
           <div className="order-1   lg:order-2">
@@ -264,7 +247,7 @@ const AboutPage = () => {
             </div>
           </div>
 
-      
+
         </div>
       </div>
       <Footer />
