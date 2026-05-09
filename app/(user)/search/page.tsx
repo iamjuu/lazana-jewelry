@@ -285,7 +285,7 @@ const SearchPageContent = () => {
               onClick={menuClose}
               className="flex flex-col lg:flex-row gap-6 lg:gap-8 mt-[35px]"
             >
-              <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
+              <div className="flex flex-row  lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

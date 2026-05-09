@@ -163,7 +163,7 @@ export default function RootLayout({
       </head>
       <body className={`${montserrat.variable} ${touvloRegular.variable} ${ivyMode.variable} ${playfairDisplay.variable}`}>
         {children}  
-        <WhatsAppFloating />
+        {/* <WhatsAppFloating /> */}
         <Toaster position="top-right" />
       </body>
     </html>

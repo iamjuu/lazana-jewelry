@@ -450,7 +450,7 @@ const ShopPageContent = () => {
               {/* Left Side Icons - Filter and Sort */}
               <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mb-4 lg:mb-0 lg:items-start">
                 {/* Filter Icon Button */}
-                <button
+                {/* <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -465,7 +465,7 @@ const ShopPageContent = () => {
                     alt="filter"
                     className="w-5 h-5 lg:w-6 lg:h-6"
                   />
-                </button>
+                </button> */}
 
                 {/* Sort Icon Button with Dropdown */}
                 <div

@@ -174,14 +174,14 @@ const Footer = () => {
                       Shop
                     </Link>
                   </li>
-                  <li>
+                  {/* <li>
                     <Link
                       href="/services"
                       className="text-touvlo hover:text-[black] transition-colors text-[#545454] "
                     >
                       Services
                     </Link>
-                  </li>
+                  </li> */}
                  
                   {/* <li>
                     <Link
@@ -239,11 +239,11 @@ const Footer = () => {
               </div>
               <div className="min-w-0 overflow-hidden sm:overflow-visible">
                 <ul className="space-y-2 min-w-0">
-                  <li>
+                  {/* <li>
                     <span className="text-touvlo text-[#545454] block">
                       Based in Singapore
                     </span>
-                  </li>
+                  </li> */}
                   <li className="min-w-0 max-w-[15rem] sm:max-w-[15rem] md:max-w-none">
                     <a
                       href="mailto:lazanajewels@gmail.com"
@@ -279,7 +279,7 @@ const Footer = () => {
                     />
                   </a>
                   <a
-                    href="https://api.whatsapp.com/send?phone=918089844007&text=അജു ഒരു കില്ലാഡി തന്നെ 😹"
+                    href="https://api.whatsapp.com/send?phone=918089844007&text= Hi"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="size-12 rounded-full border border-black flex items-center justify-center hover:bg-black/10 transition-colors"
