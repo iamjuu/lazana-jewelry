@@ -543,10 +543,10 @@ const Index = () => {
         </div>
            </div>
 
-        <div className="relative z-10 h-full flex flex-col justify-between w-full">
+        <div className="relative  z-10 h-full flex flex-col justify-between w-full">
           <div className="min-h-[64px] md:min-h-[84px]" />
 
-          <div className="relative">
+          <div className="relative mb-24 md:mb-10  ">
             <h1 className="font-seasons text-center pb-[60px] sm:pb-[80px] md:pb-[100px] lg:pb-[120px] px-4 text-[#000000] text-[28px] sm:text-[32px] md:text-[40px] lg:text-[50px]  leading-tight">
               Lazana Jewelry for
               <br /> timeless style{" "}
